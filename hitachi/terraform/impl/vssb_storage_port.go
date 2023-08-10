@@ -46,13 +46,13 @@ func GetVssbPort(d *schema.ResourceData) (*terraformmodel.PortWithAuthSettings, 
 		return nil, err
 	}
 
-	portId := d.Get("port_id").(string)
-	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_BEGIN), portId)
+	portName := d.Get("port_name").(string)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_BEGIN), portName)
 
-	reconPort, reconPortAuthSetting, err := reconObj.GetPort(portId)
+	reconPort, reconPortAuthSetting, err := reconObj.GetPort(portName)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetStoragePort, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_GET_PORT_FAILED), portId)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_PORT_FAILED), portName)
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func GetVssbPort(d *schema.ResourceData) (*terraformmodel.PortWithAuthSettings, 
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_END), portId)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_END), portName)
 
 	return &terraformPort, nil
 }

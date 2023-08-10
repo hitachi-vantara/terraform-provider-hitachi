@@ -31,9 +31,9 @@ func DataSourceVssbStoragePortsRead(ctx context.Context, d *schema.ResourceData,
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	port_id := d.Get("port_id").(string)
+	port_name := d.Get("port_name").(string)
 
-	if port_id == "" {
+	if port_name == "" {
 
 		storagePorts, err := impl.GetVssbStoragePorts(d)
 		if err != nil {
@@ -56,8 +56,8 @@ func DataSourceVssbStoragePortsRead(ctx context.Context, d *schema.ResourceData,
 
 		return nil
 	} else {
-		if !utils.IsValidUUID(port_id) {
-			err := errors.New("port id is not a valid uuid, please provide a valid port id")
+		if !utils.IsValidPortName(port_name) {
+			err := errors.New("port name can not exceed 255 characters.")
 			return diag.FromErr(err)
 		}
 

@@ -26,7 +26,7 @@ type VssbStorageManager interface {
 	GetStoragePoolByPoolName(poolName string) (*vssbmodel.StoragePool, error)
 	// STORAGE PORTS
 	GetStoragePorts() (*vssbmodel.StoragePorts, error)
-	GetPort(portId string) (*vssbmodel.StoragePort, *vssbmodel.PortAuthSettings, error)
+	GetPort(portName string) (*vssbmodel.StoragePort, *vssbmodel.PortAuthSettings, error)
 
 	GetChapUsersAllowedToAccessPort(portID string) (*vssbmodel.ChapUsers, error)
 

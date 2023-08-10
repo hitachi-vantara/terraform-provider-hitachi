@@ -1,6 +1,8 @@
 package vssbstorage
 
 import (
+	"fmt"
+	"strings"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/vssb/provisioner/impl"
 	provisonermodel "terraform-provider-hitachi/hitachi/storage/vssb/provisioner/model"
@@ -49,7 +51,7 @@ func (psm *vssbStorageManager) GetStoragePorts() (*vssbmodel.StoragePorts, error
 }
 
 // GetPort gets ports information of vssb storage with port auth settings
-func (psm *vssbStorageManager) GetPort(portId string) (*vssbmodel.StoragePort, *vssbmodel.PortAuthSettings, error) {
+func (psm *vssbStorageManager) GetPort(portName string) (*vssbmodel.StoragePort, *vssbmodel.PortAuthSettings, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -66,7 +68,25 @@ func (psm *vssbStorageManager) GetPort(portId string) (*vssbmodel.StoragePort, *
 		return nil, nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_BEGIN), portId)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_BEGIN), portName)
+	allStoragePorts, err := psm.GetStoragePorts()
+	if err != nil {
+		log.WriteDebug("TFError| error in GetStoragePorts provisioner call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_PORT_FAILED), portName)
+		return nil, nil, err
+	}
+
+	portId := ""
+	for _, port := range allStoragePorts.Data {
+		if strings.EqualFold(portName, port.Nickname) {
+			portId = port.ID
+		}
+	}
+	if portId == "" {
+		log.WriteDebug("TFError| error getting specified port id from list of all ports")
+		log.WriteError(mc.GetMessage(mc.ERR_GET_PORT_FAILED), portName)
+		return nil, nil, fmt.Errorf("The specified port name could not be found.")
+	}
 	provPort, err := provObj.GetPort(portId)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetStoragePorts provisioner call, err: %v", err)

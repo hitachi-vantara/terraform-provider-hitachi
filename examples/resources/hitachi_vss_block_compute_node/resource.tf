@@ -1,5 +1,5 @@
 resource "hitachi_vss_block_compute_node" "mycompute" {
-  vss_block_address = ""
+  vss_block_address = "10.10.12.13"
   compute_node_name = "ComputeNode-RESTAPI123"
   os_type = "VMware"
   

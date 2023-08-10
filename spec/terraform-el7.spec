@@ -91,8 +91,8 @@ fi
 
 
 %build
-%define hitachi_base /opt/hitachi/terraform
-%define terraform %{hitachi_base}/terraform-provider-hitachi
+%define hitachi_base /opt/hitachi
+%define terraform %{hitachi_base}/terraform
 %define plugin_dir  .terraform.d/plugins
 %define terraform_plugin %{plugin_dir}/localhost/hitachi-vantara/hitachi/2.0/linux_amd64
 
@@ -198,7 +198,7 @@ for file in %{docs_src}/*/*.md; do
 
 done
 
-%define terraform %{hitachi_base}/terraform-provider-hitachi
+%define terraform %{hitachi_base}/terraform
 
 %define mytffiles %{_builddir}/mytffiles.txt
 

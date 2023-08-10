@@ -286,6 +286,13 @@ func IsValidUUID(uuid string) bool {
 	return r.MatchString(uuid)
 }
 
+func IsValidPortName(name string) bool {
+	if len(name) > 255 {
+		return false
+	}
+	return true
+}
+
 func ConvertInterfaceToSlice(interface_obj []interface{}) []string {
 	new_slice := make([]string, 0)
 	for _, v := range interface_obj {

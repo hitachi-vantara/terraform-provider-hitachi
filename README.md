@@ -34,24 +34,24 @@ Install the new version
 # /usr/bin/rpm -Uvh HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
 ```
 
-Check if the hitachi terraform plugin is installed. It must be linked to /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
+Check if the hitachi terraform plugin is installed. It must be linked to /opt/hitachi/terraform/terraform-provider-hitachi/bin/terraform-provider-hitachi
 ```
 # ls -l /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi 
-lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi -> /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
+lrwxrwxrwx. 1 root root 80 Aug  9 21:55 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi -> /opt/hitachi/terraform/terraform-provider-hitachi/bin/terraform-provider-hitachi
 ```
 
 ## Use the tf samples
-Navigate to /opt/hitachi-vantara/storage-systems/terraform-provider/samples
+Navigate to /opt/hitachi/terraform/terraform-provider-hitachi/examples
 ```
-# cd /opt/hitachi-vantara/storage-systems/terraform-provider/samples
-```
-
-Go to any samples directory. Example:
-```
-# cd data/hitachi_storage_data
+# cd /opt/hitachi/terraform/terraform-provider-hitachi/examples
 ```
 
-If not the first time using the sample directory, do cleanup
+Go to any examples directory. Example:
+```
+# cd data-sources/hitachi_vsp_storage
+```
+
+If not the first time using the examples directory, do cleanup
 ```
 # rm .terraform .terraform.lock.hcl terraform.tfstate
 # rm -rf san_settings

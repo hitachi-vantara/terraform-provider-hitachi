@@ -1,6 +1,6 @@
 data "hitachi_vss_block_storage_ports" "storagePorts" {
-  vss_block_address = ""
-  #port_id = "5f07176a-e10d-47b7-99b4-57b93806048b"
+  vss_block_address = "10.10.12.13"
+  port_name = "001-iSCSI-002"
 }
 
 output "storagePorts" {

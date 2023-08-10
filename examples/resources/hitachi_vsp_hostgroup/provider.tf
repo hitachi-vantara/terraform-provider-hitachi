@@ -9,8 +9,8 @@ terraform {
 
 provider "hitachi" {
   san_storage_system {
-    serial        = 40014
-    management_ip = ""
+    serial        = 10024
+    management_ip = "10.10.11.12"
     username      = var.hitachi_storage_user
     password      = var.hitachi_storage_password
   }

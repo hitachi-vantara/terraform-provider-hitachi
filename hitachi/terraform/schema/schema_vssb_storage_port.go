@@ -10,10 +10,10 @@ var DataVssbStoragePortSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
 	},
-	"port_id": &schema.Schema{
+	"port_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Port id of the storage device",
+		Description: "Port name of the storage device",
 		Default:     "",
 	},
 	// output

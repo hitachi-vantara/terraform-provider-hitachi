@@ -24,13 +24,13 @@ terraform {
 
 provider "hitachi" {
   hitachi_vss_block_provider {
-    vss_block_address = ""
+    vss_block_address = "10.10.12.13"
     username          = "username"
     password          = "password"
   }
   san_storage_system {
-    serial        = 40014
-    management_ip = ""
+    serial        = 10024
+    management_ip = "10.10.11.12"
     username      = "username"
     password      = "password"
   }
