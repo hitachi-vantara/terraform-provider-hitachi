@@ -14,7 +14,7 @@ provider "hitachi" {
     password          = "password"
   }
   san_storage_system {
-    serial        = 10024
+    serial        = 12345
     management_ip = "10.10.11.12"
     username      = "username"
     password      = "password"

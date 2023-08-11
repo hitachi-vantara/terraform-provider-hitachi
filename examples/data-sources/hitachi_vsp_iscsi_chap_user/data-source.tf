@@ -1,6 +1,6 @@
 
 data "hitachi_vsp_iscsi_chap_user" "my_iscsi_initiator_chap_user" {
-  serial              = 30078
+  serial              = 12345
   port_id             = "CL4-C"
   iscsi_target_number = 1
   chap_user_type      = "initiator" 
@@ -13,7 +13,7 @@ output "my_iscsi_initiator_chap_user_output" {
 }
 
 data "hitachi_vsp_iscsi_chap_users" "my_iscsi_chap_users" {
-  serial              = 30078
+  serial              = 12345
   port_id             = "CL4-C"
   iscsi_target_number = 1
 

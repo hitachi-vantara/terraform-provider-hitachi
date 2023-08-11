@@ -1,7 +1,7 @@
 
 
 data "hitachi_vss_block_iscsi_chap_users" "chap_user_by_id" {
-   vss_block_address   = ""
+   vss_block_address   = "10.10.12.13"
    target_chap_user = "a79c1a1d-2719-4e07-b800-faf9de73d0ae" //chap user id
 }
 

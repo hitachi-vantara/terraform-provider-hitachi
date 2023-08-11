@@ -33,18 +33,18 @@ output "mycomputeport" {
 
 ### Read-Only
 
-- `compute_port` (Block List) Outputs information about the volume (see [below for nested schema](#nestedblock--compute_port))
+- `compute_port` (List of Object) Outputs information about the computr port (see [below for nested schema](#nestedatt--compute_port))
 - `id` (String) The ID of this resource.
 
-<a id="nestedblock--compute_port"></a>
+<a id="nestedatt--compute_port"></a>
 ### Nested Schema for `compute_port`
 
 Read-Only:
 
-- `chap_users` (List of Object) (see [below for nested schema](#nestedatt--compute_port--chap_users))
-- `port_auth_settings` (List of Object) Information about the authentication settings for the compute port for the target operation. (see [below for nested schema](#nestedatt--compute_port--port_auth_settings))
+- `chap_users` (List of Object) (see [below for nested schema](#nestedobjatt--compute_port--chap_users))
+- `port_auth_settings` (List of Object) (see [below for nested schema](#nestedobjatt--compute_port--port_auth_settings))
 
-<a id="nestedatt--compute_port--chap_users"></a>
+<a id="nestedobjatt--compute_port--chap_users"></a>
 ### Nested Schema for `compute_port.chap_users`
 
 Read-Only:
@@ -54,7 +54,7 @@ Read-Only:
 - `target_chap_user_name` (String)
 
 
-<a id="nestedatt--compute_port--port_auth_settings"></a>
+<a id="nestedobjatt--compute_port--port_auth_settings"></a>
 ### Nested Schema for `compute_port.port_auth_settings`
 
 Read-Only:

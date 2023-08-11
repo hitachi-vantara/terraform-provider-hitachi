@@ -14,7 +14,7 @@ Creates a volume.
 
 ```terraform
 resource "hitachi_vss_block_volume" "volumecreate" {
-  vss_block_address = "172.25.58.151"
+  vss_block_address = "10.10.12.13"
   name              = "test-volume-newCol"
   capacity_gb       = 1.9
   storage_pool      = "SP01"

@@ -14,7 +14,7 @@ The following request creates a volume by using the specified parity groups or p
 
 ```terraform
 resource "hitachi_vsp_volume" "mylun" {
-  serial  = 40014
+  serial  = 12345
   size_gb = 1
   pool_id = 1
 }

@@ -1,9 +1,9 @@
-data "hitachi_vsp_storage" "s40014" {
-  serial = 40014
+data "hitachi_vsp_storage" "s12345" {
+  serial = 12345
 }
 
-output "s40014" {
-  value = data.hitachi_vsp_storage.s40014
+output "s12345" {
+  value = data.hitachi_vsp_storage.s12345
 }
 
 

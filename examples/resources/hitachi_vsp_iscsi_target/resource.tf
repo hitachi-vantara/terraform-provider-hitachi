@@ -1,5 +1,5 @@
 resource "hitachi_vsp_iscsi_target" "myiscsi" {
-  serial              = 30078
+  serial              = 12345
   iscsi_target_number = 1
   iscsi_target_alias   = "snewar-tgt1" 
   port_id             = "CL4-C"  

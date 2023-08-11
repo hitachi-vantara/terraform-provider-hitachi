@@ -14,7 +14,7 @@ The following request gets information items such as the pool status, the pool u
 
 ```terraform
 data "hitachi_vsp_dynamic_pools" "dynamicpool" {
-  serial  = 30078
+  serial  = 12345
   pool_id = 45
 }
 

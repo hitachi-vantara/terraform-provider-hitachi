@@ -1,6 +1,6 @@
 
 resource "hitachi_vsp_hostgroup" "myhg" {
-  serial           = 40014 
+  serial           = 12345 
   hostgroup_number = 23
   hostgroup_name   = "TESTING-HOSTGROUP" 
   port_id          = "CL1-A"           

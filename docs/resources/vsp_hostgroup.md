@@ -14,7 +14,7 @@ The following request creates a host group for the port. The host mode and the h
 
 ```terraform
 resource "hitachi_vsp_hostgroup" "myhg" {
-  serial           = 40014 
+  serial           = 12345 
   hostgroup_number = 23
   hostgroup_name   = "TESTING-HOSTGROUP" 
   port_id          = "CL1-A"           

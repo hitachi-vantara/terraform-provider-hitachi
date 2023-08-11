@@ -4,7 +4,7 @@
 // cann't be changed one the resource has been created 
 
 resource "hitachi_vsp_iscsi_chap_user" "my_iscsi_initiator_chap_user3" {
-  serial              = 30078                
+  serial              = 12345                
   port_id             = "CL4-C"              
   iscsi_target_number = 01                   
   chap_user_type      = "initiator"          

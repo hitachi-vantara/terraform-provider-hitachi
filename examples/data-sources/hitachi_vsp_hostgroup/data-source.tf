@@ -1,6 +1,6 @@
 
 data "hitachi_vsp_hostgroup" "hostgroup" {
-  serial           = 40014
+  serial           = 12345
   port_id          = "CL1-A"
   hostgroup_number = 10
 }
@@ -10,7 +10,7 @@ output "hostgroup" {
 }
 
 data "hitachi_vsp_hostgroups" "hostgroups" {
-  serial   = 40014
+  serial   = 12345
   port_ids = ["CL7-C", "CL7-A", "CL8-B", "CL9-C"]
 }
 
