@@ -16,8 +16,8 @@ description: |-
 terraform {
   required_providers {
     hitachi = {
-      version = "2.0"
-      source  = "localhost/hitachi-vantara/hitachi"
+      version = "2.0.0"
+      source  = "hitachi-vantara/hitachi"
     }
   }
 }
