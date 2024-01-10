@@ -74,7 +74,7 @@ func (psm *infraGwManager) GetHostGroup(storageId, port, hostGroupName string) (
 	}
 }
 
-// GetHostGroup gets host group information
+// GetHostGroupById gets host group information by hostgroup Id
 func (psm *infraGwManager) GetHostGroupById(id string, hostGrId string) (*model.HostGroup, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -102,37 +102,34 @@ func (psm *infraGwManager) ReconcileHostGroup(storageId string, createInput *mod
 	defer log.WriteExit()
 
 	var reconcilerHg *model.HostGroup = &model.HostGroup{}
-	// 1) If Hostroup Exisit - Update 2) Hostgroup Not Exist - Create New
-	if createInput.HostGroupName != "" {
-		// Get Hostgroup
-		hg, err, success := psm.GetHostGroup(storageId, createInput.Port, createInput.HostGroupName)
-		if err != nil {
-			log.WriteDebug("TFError| error in GetHostGroup provisioner call, err: %v", err)
-			log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_HOSTGROUP_FAILED), storageId, createInput.Port, createInput.HostGroupName)
-			return nil, err
-		}
 
-		if !success {
-			// Hostgroup does not exist - create new
-			reconcilerHg, err = psm.createHostGroup(storageId, createInput)
-			if err != nil {
-				log.WriteDebug("TFError| error in createHostGroup call, err: %v", err)
-				return reconcilerHg, err
-			}
-		} else {
-			// Hostgroup already exist
-			reconcilerHg, err = psm.updateHostGroup(storageId, hg.Data.ResourceId, createInput)
-			if err != nil {
-				log.WriteDebug("TFError| error in updateHostgroup call, err: %v", err)
-				return reconcilerHg, err
-			}
-		}
-	} else {
-		// Hostgroup number not given so new hostgroup will be create
-		var err error = nil
+	if createInput.HostGroupName == "" {
+		// Hostgroup name not given so throw err
+		err := fmt.Errorf("%s", "Hostgroup Name empty")
+		return reconcilerHg, err
+	}
+
+	// Get Hostgroup
+	hg, err, success := psm.GetHostGroup(storageId, createInput.Port, createInput.HostGroupName)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetHostGroup provisioner call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_HOSTGROUP_FAILED), storageId, createInput.Port, createInput.HostGroupName)
+		return nil, err
+	}
+
+	// 1) If Hostroup Exists - Update 2) Hostgroup does not Exist - Create New
+	if !success {
+		// Hostgroup does not exist - create new
 		reconcilerHg, err = psm.createHostGroup(storageId, createInput)
 		if err != nil {
 			log.WriteDebug("TFError| error in createHostGroup call, err: %v", err)
+			return reconcilerHg, err
+		}
+	} else {
+		// Hostgroup already exist
+		reconcilerHg, err = psm.updateHostGroup(storageId, hg.Data.ResourceId, createInput)
+		if err != nil {
+			log.WriteDebug("TFError| error in updateHostgroup call, err: %v", err)
 			return reconcilerHg, err
 		}
 	}

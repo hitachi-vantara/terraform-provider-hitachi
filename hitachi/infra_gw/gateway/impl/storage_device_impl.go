@@ -44,7 +44,7 @@ func (psm *infraGwManager) GetStorageDevice(storageId string) (*model.StorageDev
 }
 
 // AddStorageDevice adds storage device to a ucp system
-func (psm *infraGwManager) AddStorageDevice(storageId string, reqBody model.CreateStorageDeviceParam) (*string, error) {
+func (psm *infraGwManager) AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()

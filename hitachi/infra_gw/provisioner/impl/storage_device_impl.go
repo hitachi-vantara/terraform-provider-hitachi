@@ -49,7 +49,7 @@ func (psm *infraGwManager) GetStorageDevice(storageId string) (*model.StorageDev
 }
 
 // AddStorageDevice adds a storage device
-func (psm *infraGwManager) AddStorageDevice(storageId string, reqBody model.CreateStorageDeviceParam) (msg *string, err error) {
+func (psm *infraGwManager) AddStorageDevice(reqBody model.CreateStorageDeviceParam) (msg *string, err error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -66,5 +66,26 @@ func (psm *infraGwManager) AddStorageDevice(storageId string, reqBody model.Crea
 		return nil, err
 	}
 
-	return gatewayObj.AddStorageDevice(storageId, reqBody)
+	return gatewayObj.AddStorageDevice(reqBody)
+}
+
+// UpdateStorageDevice  updates a storage device
+func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (msg *string, err error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings{
+		Username: psm.setting.Username,
+		Password: psm.setting.Password,
+		Address:  psm.setting.Address,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return gatewayObj.UpdateStorageDevice(storageId, reqBody)
 }
