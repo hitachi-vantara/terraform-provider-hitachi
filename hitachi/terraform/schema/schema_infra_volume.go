@@ -1,0 +1,394 @@
+package terraform
+
+import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var InfraVolumeInfoSchema = map[string]*schema.Schema{
+	"storage_serial_number": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Serial number of storage",
+	},
+	"resource_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Resource Id",
+	},
+	"deduplication_compression_mode": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Deduplication Compression Mode",
+	},
+	"emulation_type": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Emulation type",
+	},
+	"format_or_shred_rate": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Format Or Shred Rate",
+	},
+	"ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Ldev ID of lun",
+	},
+	"name": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Name",
+	},
+	"parity_group_id": &schema.Schema{
+		Type:     schema.TypeList,
+		Computed: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+		Description: "Parity group ID",
+	},
+	"pool_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Pool ID",
+	},
+	"resource_group_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Resource group ID of volume",
+	},
+	"status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Status",
+	},
+	"total_capacity": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total capacity",
+	},
+	"used_capacity": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Used capacity",
+	},
+	"virtual_storage_device_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Virtual Storage Device Id",
+	},
+	"stripe_size": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Stripe Size",
+	},
+	"type": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Type",
+	},
+	"path_count": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Path Count",
+	},
+	"provision_type": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Provision Type",
+	},
+	"is_command_device": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether it is Command Device",
+	},
+	"logical_unit_id_hex_format": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Logical Unit Id in Hex Format",
+	},
+	"virtual_logical_unit_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Virtual Logical Unit Id",
+	},
+	"naa_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "NAA ID",
+	},
+	"dedup_compression_progress": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Dedup Compression Progress",
+	},
+	"dedup_compression_status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Dedup Compression Status",
+	},
+	"is_alua_enabled": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether alua is enabled on volume",
+	},
+	"is_dynamic_pool_volume": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether it is a dynamic pool volume",
+	},
+	"is_journal_pool_volume": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether it is a journal pool volume",
+	},
+	"is_pool_volume": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether it is a pool volume",
+	},
+	"pool_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Pool Name",
+	},
+	"quorum_disk_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Quorum Disk Id",
+	},
+	"is_in_gad_pair": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether it is in a Gad Pair",
+	},
+	"is_vvol": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Checks whether it is a VVol",
+	},
+
+	/*
+	 * The following properties came from 2.0
+	 * Need to figure out how to find these properties in 2.5
+	 */
+	"clpr_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "clpr ID",
+	},
+	"num_ports": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Number of ports available on volume",
+	},
+	"ports": &schema.Schema{
+		Type:     schema.TypeList,
+		Computed: true,
+		Optional: true,
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"port_id": &schema.Schema{
+					Type:        schema.TypeString,
+					Computed:    true,
+					Description: "Port ID",
+				},
+				"hostgroup_id": &schema.Schema{
+					Type:        schema.TypeInt,
+					Computed:    true,
+					Description: "HostGroup ID",
+				},
+				"hostgroup_name": &schema.Schema{
+					Type:        schema.TypeString,
+					Computed:    true,
+					Description: "HostGroup name",
+				},
+				"lun_id": &schema.Schema{
+					Type:        schema.TypeInt,
+					Computed:    true,
+					Description: "Lun ID",
+				},
+			},
+		},
+	},
+	"attributes": &schema.Schema{
+		Type:     schema.TypeList,
+		Computed: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+		Description: "List of attributes of volume",
+	},
+	"label": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Label",
+	},
+
+	"mpblade_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Mpblade ID",
+	},
+	"ss_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "SS ID",
+	},
+	"is_full_allocation_enabled": &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "It checks whether full allocation is enabled on volume",
+	},
+
+	/*
+		"data_reduction_mode": &schema.Schema{
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "It's data reduction mode of volume",
+		},
+	*/
+
+	"free_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Free capacity in MB",
+	},
+	"used_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Used capacity in MB",
+	},
+	"total_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total capacity in MB",
+	},
+}
+
+var DataInfraVolumeSchema = map[string]*schema.Schema{
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Unique ID of the storage device",
+	},
+	"serial": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Serial number of storage",
+	},
+	"ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Required:    true,
+		Description: "Ldev ID of lun",
+	},
+	// output
+	"volume": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is volume output",
+		Elem: &schema.Resource{
+			Schema: InfraVolumeInfoSchema,
+		},
+	},
+}
+
+var DataInfraVolumesSchema = map[string]*schema.Schema{
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Unique ID of the storage device",
+	},
+	"serial": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Serial number of storage",
+	},
+	"start_ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Required:    true,
+		Description: "Start ldev ID of lun",
+	},
+	"end_ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Required:    true,
+		Description: "End ldev ID of lun",
+	},
+	"undefined_ldev": &schema.Schema{
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Description: "If set to true, returns not allocated luns else otherwise",
+	},
+	// output
+	"volumes": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is volumes output",
+		Elem: &schema.Resource{
+			Schema: InfraVolumeInfoSchema,
+		},
+	},
+}
+
+/*
+var ResourceLunSchema = map[string]*schema.Schema{
+	"serial": &schema.Schema{
+		Type:        schema.TypeInt,
+		Required:    true,
+		Description: "Serial number of storage",
+	},
+	"ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Ldev ID of lun",
+	},
+	"pool_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Default: -1 ,
+		Description: "Pool ID in which volume is to be created",
+	},
+	"pool_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Pool Name in which volume is to be created",
+	},
+	"paritygroup_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Parity group ID in which volume is to be created",
+	},
+	"size_gb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Size of volume to be created in GB",
+	},
+	"name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Name of volume to be created",
+	},
+	//Remove dedup from this version
+
+		"dedup_mode": &schema.Schema{
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Dedup mode of volume to be created",
+		},
+
+
+	// output
+	"volume": &schema.Schema{
+		Type:        schema.TypeList,
+		Optional:    true,
+		Computed:    true,
+		Description: "This is volume output",
+		Elem: &schema.Resource{
+			Schema: LunInfoSchema,
+		},
+	},
+}
+*/
