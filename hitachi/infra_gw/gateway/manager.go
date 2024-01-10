@@ -17,10 +17,12 @@ type InfraGwManager interface {
 	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	GetVolumes(storageId string) (*model.Volumes, error)
 	GetUcpSystems() (*model.UcpSystems, error)
+	GetUcpSystemById(id string) (*model.UcpSystem, error)
 
 	CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
 	UpdateHostGroup(storageId, hostGroupId string, reqBody model.PatcheHostGroupParam) (*string, error)
 
 	CreateUcpSystem(reqBody model.CreateUcpSystemParam) (*string, error)
-	AddStorageDevice(storageId string, reqBody model.CreateStorageDeviceParam) (*string, error)
+	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
+	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
 }

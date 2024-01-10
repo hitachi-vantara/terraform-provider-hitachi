@@ -174,7 +174,7 @@ func CreateInfraStorageDevice(d *schema.ResourceData) (*[]terraformmodel.InfraSt
 
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_INFRA_STORAGE_DEVICE_FAILED), createInput.SerialNumber, createInput.ManagementAddress)
-		log.WriteDebug("TFError| error in Creating Hostgroup - ReconcileHostGroup , err: %v", err)
+		log.WriteDebug("TFError| error in  ReconcileStorageDevice , err: %v", err)
 		return nil, err
 	}
 

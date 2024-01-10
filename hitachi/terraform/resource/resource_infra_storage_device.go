@@ -39,7 +39,7 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 	defer log.WriteExit()
 
 	syncInfraStorageDeviceOperation.Lock() //??
-	defer syncInfraHostGroupOperation.Unlock()
+	defer syncInfraStorageDeviceOperation.Unlock()
 
 	log.WriteInfo("starting Infra Storage Device create")
 
