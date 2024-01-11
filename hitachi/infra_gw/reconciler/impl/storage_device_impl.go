@@ -99,10 +99,10 @@ func (psm *infraGwManager) updateStorageDevice(storageId string, createInput *mo
 	}
 	sId, err := provObj.UpdateStorageDevice(storageId, updateRequest)
 	if err != nil {
-		log.WriteDebug("TFError| error in AddStorageDevice call, err: %v", err)
+		log.WriteDebug("TFError| error in UpdateStorageDevice call, err: %v", err)
 		return nil, err
 	}
-	log.WriteDebug("TFError| Return value of AddStorageDevice : %v", storageId)
+	log.WriteDebug("TFError| Return value of UpdateStorageDevice : %v", storageId)
 
 	return psm.GetStorageDevice(*sId)
 }
@@ -209,27 +209,26 @@ func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput 
 			// The user did not provide any ucp_system information, so we will create one and onboard the storage to that system
 			reconcilerUcpSystem, err := psm.createUcpSystem(createInput)
 			if err != nil {
-				log.WriteDebug("TFError| error in createHostGroup call, err: %v", err)
+				log.WriteDebug("TFError| error in createUcpSystem call, err: %v", err)
 				return nil, err
 			}
 			createInput.UcpSystem = reconcilerUcpSystem.Data.SerialNumber
 		}
 		reconcilerSd, err := psm.addStorageDevice(createInput)
 		if err != nil {
-			log.WriteDebug("TFError| error in createHostGroup call, err: %v", err)
+			log.WriteDebug("TFError| error in addStorageDevice call, err: %v", err)
 			return nil, err
 		}
 		return reconcilerSd, nil
-	} else {
 
+	} else {
 		// The storage id is present, so this is an update
 		reconcilerSd, err := psm.updateStorageDevice(storageId, createInput)
 		if err != nil {
-			log.WriteDebug("TFError| error in createHostGroup call, err: %v", err)
+			log.WriteDebug("TFError| error in updateStorageDevice call, err: %v", err)
 			return nil, err
 		}
 		return reconcilerSd, nil
 
 	}
-
 }

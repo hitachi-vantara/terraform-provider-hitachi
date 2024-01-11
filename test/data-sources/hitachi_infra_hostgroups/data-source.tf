@@ -1,6 +1,6 @@
 data "hitachi_infra_storage_devices" "storage_devices" {
   #storage_id = "storage-9a3f87a8c9dc213e8ebd02b63b97b9e8"
-  serial = 611039
+  serial = 611032
 }
 /*
 data "hitachi_infra_hostgroup" "host_group" {
@@ -18,7 +18,7 @@ output "host_group" {
 
 
 data "hitachi_infra_hostgroups" "host_groups" {
-  serial = 611039
+  serial = 611032
   #storage_id = data.hitachi_infra_storage_devices.storage_devices.id
   #port_ids = ["CL7-A", "CL7-B"]
 }
