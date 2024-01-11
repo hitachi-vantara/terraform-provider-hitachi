@@ -197,7 +197,7 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 	return &taskString, err
 }
 
-func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*model.TaskResponse, error) {
+func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -208,11 +208,19 @@ func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody int
 		return nil, err
 	}
 
-	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)
+	var response model.Response
+	err = json.Unmarshal([]byte(*taskString), &response)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForTask call, err: %v", err)
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	return task, nil
+	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)
+	if err != nil {
+		log.WriteDebug("TFError| error in CheckResponseAndWaitForTask call, task: %v err: %v", task, err)
+		return nil, err
+	}
+
+	return &response.Data.ResourceId, nil
 }

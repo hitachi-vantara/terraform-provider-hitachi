@@ -52,3 +52,43 @@ type IscsiTarget struct {
 	Message string          `json:"message"`
 	Data    IscsiTargetInfo `json:"data"`
 }
+
+type CreateIscsiTargetParam struct {
+	IscsiName          string     `json:"iscsiName,omitempty"`
+	HostMode           string     `json:"hostMode,omitempty"`
+	HostModeOptions    []int      `json:"hostModeOptions,omitempty"`
+	Port               string     `json:"port,omitempty"`
+	IqnInitiators      []string   `json:"iqnInitiators,omitempty"`
+	Luns               []int      `json:"ldevs,omitempty"`
+	Iqn                string     `json:"iqn,omitempty"`
+	AuthenticationMode string     `json:"authenticationMode,omitempty"`
+	IsMutualAuth       bool       `json:"isMutualAuth"`
+	ChapUsers          []ChapUser `json:"chapUsers,omitempty"`
+	UcpSystem          string     `json:"ucpSystem,omitempty"`
+}
+
+type ChapUser struct {
+	ChapSecret string `json:"chapSecret,omitempty"`
+	ChapUserId string `json:"chapUserId,omitempty"`
+}
+
+type AddVolumesToIscsiTargetParam struct {
+	LdevIds []int `json:"ldevIds,omitempty"`
+}
+
+type RemoveVolumesFromIscsiTargetParam AddVolumesToIscsiTargetParam
+
+type AddIqnInitiatorsToIscsiTargetParam struct {
+	IqnInitiators []string `json:"iqnInitiators,omitempty"`
+}
+
+type RemoveIqnInitiatorsFromIscsiTargetParam AddIqnInitiatorsToIscsiTargetParam
+type UpdateTargetIqnInIscsiTargetParam AddIqnInitiatorsToIscsiTargetParam
+
+type UpdateHostModeParam struct {
+	HostMode        string `json:"hostMode,omitempty"`
+	HostModeOptions []int  `json:"hostModeOptions,omitempty"`
+}
+
+type SetChapUserParam ChapUser
+type UpdateChapUserParam ChapUser

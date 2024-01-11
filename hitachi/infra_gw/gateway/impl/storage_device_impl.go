@@ -50,13 +50,13 @@ func (psm *infraGwManager) AddStorageDevice(reqBody model.CreateStorageDevicePar
 	defer log.WriteExit()
 
 	apiSuf := "/storage/devices"
-	ret, err := httpmethod.PostCall(psm.setting, apiSuf, &reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, &reqBody)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
-	return ret, nil
+	return resourceId, nil
 }
 
 // UpdateStorageDevice updates storage device to a ucp system
@@ -66,11 +66,11 @@ func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.P
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s", storageId)
-	ret, err := httpmethod.PatchCall(psm.setting, apiSuf, &reqBody)
+	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, &reqBody)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
-	return ret, nil
+	return resourceId, nil
 }
