@@ -58,14 +58,13 @@ func (psm *infraGwManager) CreateHostGroup(storageId string, reqBody model.Creat
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups", storageId)
 
-	t, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
 	if err != nil {
-		apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups", storageId)
 		log.WriteDebug("TFError| error in CreateHostGroup - %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 
-	return t, nil
+	return resourceId, nil
 }
 
 // UpdateHostGroup .
@@ -76,12 +75,11 @@ func (psm *infraGwManager) UpdateHostGroup(storageId, hostGroupId string, reqBod
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups/%s", storageId, hostGroupId)
 
-	t, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody)
 	if err != nil {
-		apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups", storageId)
 		log.WriteDebug("TFError| error in UpdateHostGroup - %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 
-	return t, nil
+	return resourceId, nil
 }

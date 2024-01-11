@@ -49,11 +49,11 @@ func (psm *infraGwManager) CreateUcpSystem(reqBody model.CreateUcpSystemParam) (
 
 	apiSuf := "/systems"
 
-	t, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateUcpSystem - %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 
-	return t, nil
+	return resourceId, nil
 }
