@@ -15,11 +15,13 @@ type InfraGwManager interface {
 	GetStoragePools(storageId string) (*model.StoragePools, error)
 	GetStoragePool(storageId, poolId string) (*model.StoragePool, error)
 	GetIscsiTargets(storageId string, port string) (*model.IscsiTargets, error)
-	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
+	GetIscsiTarget(storageId, port, iscsiName string) (*model.IscsiTarget, error, bool)
+	GetIscsiTargetById(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	GetVolumes(storageId string) (*model.Volumes, error)
 	GetUcpSystems() (*model.UcpSystems, error)
 
 	ReconcileHostGroup(storageId string, createInput *model.CreateHostGroupParam) (*model.HostGroup, error)
 	ReconcileStorageDevice(storageId string, createInput *model.CreateStorageDeviceParam) (*model.StorageDevice, error)
+	ReconcileIscsiTarget(storageId string, createInput *model.CreateIscsiTargetParam) (*model.IscsiTarget, error)
 	// CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (task *model.TaskResponse, err error)
 }

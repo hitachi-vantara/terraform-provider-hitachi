@@ -34,9 +34,8 @@ type HostGroup struct {
 }
 
 type CreateHostGroupParam struct {
-	Port          string `json:"port,omitempty"`
-	HostGroupName string `json:"hostGroupName,omitempty"`
-	//HostGroupNumber int    `json:"hostGroupNumber,omitempty"`
+	Port            string `json:"port,omitempty"`
+	HostGroupName   string `json:"hostGroupName,omitempty"`
 	HostModeOptions []int  `json:"hostModeOptions,omitempty"`
 	HostMode        string `json:"hostMode,omitempty"`
 	Luns            []int  `json:"ldevs,omitempty"`

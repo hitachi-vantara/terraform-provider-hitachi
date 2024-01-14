@@ -168,33 +168,33 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_DASHBOARD_END:   "Successfully read dashboard information.",
 
 	// Infrastucture Gateway Message Ids
-	INFO_INFRA_GW_GET_HOST_GROUPS_BEGIN: "Reading all hostgroups information for infrastructure %s.",
-	ERR_INFRA_GW_GET_HOST_GROUPS_FAILED: "Failed to read all hostgroups information for infrastructure %s.",
-	INFO_INFRA_GW_GET_HOST_GROUPS_END:   "Successfully read all hostgroups information for infrastructure %s.",
+	INFO_INFRA_GET_HOST_GROUPS_BEGIN: "Reading all hostgroups information for infrastructure %s.",
+	ERR_INFRA_GET_HOST_GROUPS_FAILED: "Failed to read all hostgroups information for infrastructure %s.",
+	INFO_INFRA_GET_HOST_GROUPS_END:   "Successfully read all hostgroups information for infrastructure %s.",
 
-	INFO_INFRA_GW_GET_ISCSI_TARGETS_BEGIN: "Reading all iscsi targets information for infrastructure %s.",
-	ERR_INFRA_GW_GET_ISCSI_TARGETS_FAILED: "Failed to read all iscsi targets information for infrastructure %s.",
-	INFO_INFRA_GW_GET_ISCSI_TARGETS_END:   "Successfully read all iscsi targets information for infrastructure %s.",
+	INFO_INFRA_GET_ISCSI_TARGETS_BEGIN: "Reading all iscsi targets information for infrastructure %s.",
+	ERR_INFRA_GET_ISCSI_TARGETS_FAILED: "Failed to read all iscsi targets information for infrastructure %s.",
+	INFO_INFRA_GET_ISCSI_TARGETS_END:   "Successfully read all iscsi targets information for infrastructure %s.",
 
-	INFO_INFRA_GW_GET_PARITY_GROUPS_BEGIN: "Reading all parity groups information for infrastructure %s.",
-	ERR_INFRA_GW_GET_PARITY_GROUPS_FAILED: "Failed to read all parity groups information for infrastructure %s.",
-	INFO_INFRA_GW_GET_PARITY_GROUPS_END:   "Successfully read all parity groups information for infrastructure %s.",
+	INFO_INFRA_GET_PARITY_GROUPS_BEGIN: "Reading all parity groups information for infrastructure %s.",
+	ERR_INFRA_GET_PARITY_GROUPS_FAILED: "Failed to read all parity groups information for infrastructure %s.",
+	INFO_INFRA_GET_PARITY_GROUPS_END:   "Successfully read all parity groups information for infrastructure %s.",
 
-	INFO_INFRA_GW_GET_STORAGE_DEVICES_BEGIN: "Reading all storage devices information for infrastructure %s.",
-	ERR_INFRA_GW_GET_STORAGE_DEVICES_FAILED: "Failed to read all storage devices information for infrastructure %s.",
-	INFO_INFRA_GW_GET_STORAGE_DEVICES_END:   "Successfully read all storage devices information for infrastructure %s.",
+	INFO_INFRA_GET_STORAGE_DEVICES_BEGIN: "Reading all storage devices information for infrastructure %s.",
+	ERR_INFRA_GET_STORAGE_DEVICES_FAILED: "Failed to read all storage devices information for infrastructure %s.",
+	INFO_INFRA_GET_STORAGE_DEVICES_END:   "Successfully read all storage devices information for infrastructure %s.",
 
-	INFO_INFRA_GW_GET_STORAGE_POOLS_BEGIN: "Reading all storage pools information for infrastructure %s.",
-	ERR_INFRA_GW_GET_STORAGE_POOLS_FAILED: "Failed to read all storage pools information for infrastructure %s.",
-	INFO_INFRA_GW_GET_STORAGE_POOLS_END:   "Successfully read all storage pools information for infrastructure %s.",
+	INFO_INFRA_GET_STORAGE_POOLS_BEGIN: "Reading all storage pools information for infrastructure %s.",
+	ERR_INFRA_GET_STORAGE_POOLS_FAILED: "Failed to read all storage pools information for infrastructure %s.",
+	INFO_INFRA_GET_STORAGE_POOLS_END:   "Successfully read all storage pools information for infrastructure %s.",
 
-	INFO_INFRA_GW_GET_STORAGE_PORTS_BEGIN: "Reading all storage ports information for infrastructure %s.",
-	ERR_INFRA_GW_GET_STORAGE_PORTS_FAILED: "Failed to read all storage ports information for infrastructure %s.",
-	INFO_INFRA_GW_GET_STORAGE_PORTS_END:   "Successfully read all storage ports information for infrastructure %s.",
+	INFO_INFRA_GET_STORAGE_PORTS_BEGIN: "Reading all storage ports information for infrastructure %s.",
+	ERR_INFRA_GET_STORAGE_PORTS_FAILED: "Failed to read all storage ports information for infrastructure %s.",
+	INFO_INFRA_GET_STORAGE_PORTS_END:   "Successfully read all storage ports information for infrastructure %s.",
 
-	INFO_INFRA_GW_GET_VOLUMES_BEGIN: "Reading volumes information for infrastructure %s.",
-	ERR_INFRA_GW_GET_VOLUMES_FAILED: "Failed to read volumes information for infrastructure %s.",
-	INFO_INFRA_GW_GET_VOLUMES_END:   "Successfully read volumes information for infrastructure %s.",
+	INFO_INFRA_GET_VOLUMES_BEGIN: "Reading volumes information for infrastructure %s.",
+	ERR_INFRA_GET_VOLUMES_FAILED: "Failed to read volumes information for infrastructure %s.",
+	INFO_INFRA_GET_VOLUMES_END:   "Successfully read volumes information for infrastructure %s.",
 
 	INFO_INFRA_GET_UCP_SYSTEMS_BEGIN: "Reading ucp systems information for infrastructure %s.",
 	ERR_INFRA_GET_UCP_SYSTEMS_FAILED: "Failed to read ucp systems information for infrastructure %s.",
@@ -203,4 +203,12 @@ var MessageCatalog = map[interface{}]string{
 	INFO_CREATE_INFRA_STORAGE_DEVICE_BEGIN: "Adding storage device with serial number %s and management IP %s.",
 	ERR_CREATE_INFRA_STORAGE_DEVICE_FAILED: "Failed to add storage device with serial number %s and management IP %s.",
 	INFO_CREATE_INFRA_STORAGE_DEVICE_END:   "Successfully added storage device with serial number %s and management IP %s.",
+
+	INFO_CREATE_INFRA_ISCSI_TARGET_BEGIN: "Creating iscsi target on port %s and name %s.",
+	ERR_CREATE_INFRA_ISCSI_TARGET_FAILED: "Failed to create iscsi target on port %s and name %s.",
+	INFO_CREATE_INFRA_ISCSI_TARGET_END:   "Successfully created iscsi target on port %s and name %s.",
+
+	INFO_UPDATE_INFRA_ISCSI_TARGET_BEGIN: "Updating iscsi target on port %s and name %s.",
+	ERR_UPDATE_INFRA_ISCSI_TARGET_FAILED: "Failed to update iscsi target on port %s and name %s.",
+	INFO_UPDATE_INFRA_ISCSI_TARGET_END:   "Successfully updated iscsi target on port %s and name %s.",
 }

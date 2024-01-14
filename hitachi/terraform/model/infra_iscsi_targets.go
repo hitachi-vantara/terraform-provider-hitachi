@@ -13,3 +13,7 @@ type InfraIscsiTargets struct {
 	Message string                 `json:"message"`
 	Data    []InfraIscsiTargetInfo `json:"data"`
 }
+
+type CreateInfraIscsiTargetParam struct {
+	model.CreateIscsiTargetParam
+}

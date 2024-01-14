@@ -18,32 +18,34 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var syncInfraHostGroupOperation = &sync.Mutex{}
+var syncInfraIscsiTargetOperation = &sync.Mutex{}
 
-func ResourceInfraHostGroup() *schema.Resource {
+func ResourceInfraIscsiTarget() *schema.Resource {
 	return &schema.Resource{
 		Description:   `:meta:subcategory:VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.`,
-		CreateContext: resourceInfraHostGroupCreate,
+		CreateContext: resourceInfraIscsiTargetCreate,
 
-		ReadContext:   resourceInfraHostGroupRead,
-		UpdateContext: resourceInfraHostGroupUpdate,
-		DeleteContext: resourceInfraHostGroupDelete,
-		Schema:        schemaimpl.ResourceInfraHostGroupSchema,
-		//CustomizeDiff: resourceMyResourceCustomDiffInfraHostGroup,
+		ReadContext:   resourceInfraIscsiTargetRead,
+		UpdateContext: resourceInfraIscsiTargetUpdate,
+		DeleteContext: resourceInfraIscsiTargetDelete,
+		Schema:        schemaimpl.ResourceInfraIscsiTargetSchema,
+		//CustomizeDiff: resourceMyResourceCustomDiffInfraIscsiTarget,
 	}
 }
 
-func resourceInfraHostGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceInfraIscsiTargetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	syncInfraHostGroupOperation.Lock() //??
-	defer syncInfraHostGroupOperation.Unlock()
+	syncInfraIscsiTargetOperation.Lock() //??
+	defer syncInfraIscsiTargetOperation.Unlock()
 
-	log.WriteInfo("starting Infra Hostgroup create")
+	log.WriteInfo("starting Infra Iscsi Target create")
 
-	response, err := impl.CreateInfraHostGroup(d)
+	//serial := d.Get("serial").(int)
+
+	response, err := impl.CreateInfraIscsiTarget(d)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
@@ -51,12 +53,12 @@ func resourceInfraHostGroupCreate(ctx context.Context, d *schema.ResourceData, m
 
 	list := []map[string]interface{}{}
 	for _, item := range *response {
-		eachItem := impl.ConvertInfraHostGroupToSchema(&item)
+		eachItem := impl.ConvertInfraIscsiTargetToSchema(&item)
 		log.WriteDebug("it: %+v\n", *eachItem)
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("hostgroup", list); err != nil {
+	if err := d.Set("iscsitarget", list); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
@@ -64,28 +66,30 @@ func resourceInfraHostGroupCreate(ctx context.Context, d *schema.ResourceData, m
 	for _, item := range *response {
 		element := &item
 		d.SetId(element.ResourceId)
-		d.Set("hostgroup_name", element.HostGroupName)
-		d.Set("hostgroup_number", element.HostGroupId)
-		d.Set("port", element.Port)
+		/*
+			d.Set("hostgroup_name", element.HostGroupName)
+			d.Set("hostgroup_number", element.HostGroupId)
+			d.Set("port", element.Port)
+		*/
 		break
 	}
-	log.WriteInfo("hg created successfully")
+	log.WriteInfo("Iscsi Target created successfully")
 
 	return nil
 }
 
-func resourceInfraHostGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return datasourceimpl.DataSourceInfraHostGroupRead(ctx, d, m)
+func resourceInfraIscsiTargetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return datasourceimpl.DataSourceInfraIscsiTargetRead(ctx, d, m)
 }
 
-func resourceInfraHostGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceInfraIscsiTargetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteInfo("starting Infra Hostgroup update")
+	log.WriteInfo("starting Infra Iscsi Target update")
 
-	response, err := impl.UpdateInfraHostGroup(d)
+	response, err := impl.UpdateInfraIscsiTarget(d)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
@@ -93,12 +97,12 @@ func resourceInfraHostGroupUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	list := []map[string]interface{}{}
 	for _, item := range *response {
-		eachItem := impl.ConvertInfraHostGroupToSchema(&item)
+		eachItem := impl.ConvertInfraIscsiTargetToSchema(&item)
 		log.WriteDebug("it: %+v\n", *eachItem)
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("hostgroup", list); err != nil {
+	if err := d.Set("iscsitarget", list); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
@@ -106,31 +110,33 @@ func resourceInfraHostGroupUpdate(ctx context.Context, d *schema.ResourceData, m
 	for _, item := range *response {
 		element := &item
 		d.SetId(element.ResourceId)
-		d.Set("hostgroup_name", element.HostGroupName)
-		d.Set("hostgroup_number", element.HostGroupId)
-		d.Set("port", element.Port)
+		/*
+			d.Set("hostgroup_name", element.HostGroupName)
+			d.Set("hostgroup_number", element.HostGroupId)
+			d.Set("port", element.Port)
+		*/
 		break
 	}
 
-	log.WriteInfo("Infra Hostgroup updated successfully")
+	log.WriteInfo("Infra Iscsi Target updated successfully")
 
 	return nil
 }
 
-func resourceInfraHostGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceInfraIscsiTargetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteInfo("starting Infra Hostgroup delete")
+	log.WriteInfo("starting Infra Iscsi Target delete")
 
-	err := impl.DeleteHostGroup(d)
+	err := impl.DeleteIscsiTarget(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId("")
-	log.WriteInfo("Infra Hostgroup deleted successfully")
+	log.WriteInfo("Infra Iscsi Target deleted successfully")
 	return nil
 }
 

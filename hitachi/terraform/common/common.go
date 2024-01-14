@@ -133,3 +133,16 @@ func GetIscsiTargetId(address, storageId, port string, iscsi_id int) (string, er
 	}
 	return id, nil
 }
+
+func ValidateSerialAndStorageId(serial, storageId string) error {
+	if serial == "" && storageId == "" {
+		err := errors.New("both serial and storage_id can't be empty. Please specify one")
+		return err
+	}
+
+	if serial != "" && storageId != "" {
+		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
+		return err
+	}
+	return nil
+}

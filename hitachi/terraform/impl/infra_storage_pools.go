@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"errors"
 	"strconv"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -27,13 +26,8 @@ func GetInfraGwStoragePools(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
-		return nil, err
-	}
-
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -165,11 +159,11 @@ func GetInfraGwStoragePool(storageId, poolId string) (*[]terraformmodel.InfraSto
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_STORAGE_POOLS_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_POOLS_BEGIN), setting.Address)
 	reconResponse, err := reconObj.GetStoragePool(storageId, poolId)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetInfraGwStoragePool, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_STORAGE_POOLS_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_STORAGE_POOLS_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -180,7 +174,7 @@ func GetInfraGwStoragePool(storageId, poolId string) (*[]terraformmodel.InfraSto
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_STORAGE_POOLS_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_POOLS_END), setting.Address)
 
 	return &terraformResponse.Data, nil
 }
