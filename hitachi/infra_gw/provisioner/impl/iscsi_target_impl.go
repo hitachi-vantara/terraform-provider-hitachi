@@ -47,3 +47,50 @@ func (psm *infraGwManager) GetIscsiTarget(id string, iscsiTargetId string) (*mod
 
 	return gatewayObj.GetIscsiTarget(id, iscsiTargetId)
 }
+
+// CreateIscsiTarget .
+func (psm *infraGwManager) CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings{
+		Username: psm.setting.Username,
+		Password: psm.setting.Password,
+		Address:  psm.setting.Address,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return gatewayObj.CreateIscsiTarget(storageId, reqBody)
+}
+
+// UpdateIscsiTarget .
+func (psm *infraGwManager) UpdateIscsiTarget(storageId, hostGroupId string, reqBody model.CreateIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings{
+		Username: psm.setting.Username,
+		Password: psm.setting.Password,
+		Address:  psm.setting.Address,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	updateReqBody := model.UpdateHostModeParam{
+		HostMode:        reqBody.HostMode,
+		HostModeOptions: reqBody.HostModeOptions,
+	}
+
+	return gatewayObj.UpdateHostMode(storageId, hostGroupId, updateReqBody)
+}

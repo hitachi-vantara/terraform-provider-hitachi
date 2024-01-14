@@ -21,12 +21,12 @@ import (
 func DataSourceInfraIscsiTarget() *schema.Resource {
 	return &schema.Resource{
 		Description: ":meta:subcategory:VSP Storage iSCSI Target:The following request obtains information about iSCSI Target.",
-		ReadContext: dataSourceInfraIscsiTargetRead,
+		ReadContext: DataSourceInfraIscsiTargetRead,
 		Schema:      schemaimpl.DataInfraIscsiTargetSchema,
 	}
 }
 
-func dataSourceInfraIscsiTargetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceInfraIscsiTargetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()

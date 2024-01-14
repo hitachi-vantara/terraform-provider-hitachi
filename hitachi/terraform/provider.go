@@ -36,6 +36,7 @@ func Provider() *schema.Provider {
 			"hitachi_vss_block_compute_port":    resourceimpl.ResourceVssbStorageComputePort(),
 			"hitachi_infra_hostgroup":           resourceimpl.ResourceInfraHostGroup(),
 			"hitachi_infra_storage_device":      resourceimpl.ResourceInfraStorageDevice(),
+			"hitachi_infra_iscsi_target":        resourceimpl.ResourceInfraIscsiTarget(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":                datasourceimpl.DataSourceStorageSystem(),

@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
@@ -28,15 +27,11 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
-		return nil, err
-	}
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return nil, err
@@ -99,11 +94,11 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_VOLUMES_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_BEGIN), setting.Address)
 	response, err := reconObj.GetVolumes(storageId)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetVolumes, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_VOLUMES_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_VOLUMES_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -138,7 +133,7 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_VOLUMES_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_END), setting.Address)
 
 	return &terraformResponse.Data, nil
 }
@@ -151,15 +146,11 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
-		return nil, err
-	}
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return nil, err
@@ -211,11 +202,11 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_VOLUMES_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_BEGIN), setting.Address)
 	response, err := reconObj.GetVolumes(storageId)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetVolumes, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_VOLUMES_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_VOLUMES_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -238,7 +229,7 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_VOLUMES_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_END), setting.Address)
 
 	return &terraformResponse.Data, nil
 }

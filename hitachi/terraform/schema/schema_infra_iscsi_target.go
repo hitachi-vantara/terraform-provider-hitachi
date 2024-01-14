@@ -291,3 +291,120 @@ var DataInfraIscsiTargetsSchema = map[string]*schema.Schema{
 		},
 	},
 }
+
+var ResourceInfraIscsiTargetSchema = map[string]*schema.Schema{
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Unique ID of the storage device",
+	},
+	"serial": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Serial number of storage is required",
+	},
+	"port_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "Port ID in which the resource to be created",
+	},
+	"iscsi_target_number": &schema.Schema{ // similar to hostgroup number
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Resource will be created based on iSCSI target number",
+	},
+	"iscsi_target_alias": &schema.Schema{ // similar to hostgroup name
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "iSCSI target alias",
+	},
+	"iscsi_target_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "iSCSI target name",
+	},
+	"host_mode": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Host mode value to be given to create the resource",
+	},
+	"host_mode_options": &schema.Schema{
+		Type:        schema.TypeList,
+		Optional:    true,
+		Description: "Host mode options can be passed to create the resource",
+		Elem: &schema.Schema{
+			Type: schema.TypeInt,
+		},
+	},
+	"lun": &schema.Schema{
+		Type:        schema.TypeSet,
+		Optional:    true,
+		Description: "Lun input for the resource",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"ldev_id": {
+					Optional:    true,
+					Type:        schema.TypeInt,
+					Description: "Ldev ID of lun",
+				},
+				"lun_id": {
+					Optional:    true,
+					Type:        schema.TypeInt,
+					Description: "Lun ID of lun",
+				},
+			},
+		},
+	},
+	"initiator": &schema.Schema{
+		Type:        schema.TypeSet,
+		Optional:    true,
+		Description: "Initiator input for the resource",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"initiator_name": {
+					Optional:    true,
+					Type:        schema.TypeString,
+					Description: "Initiator name to create the resource",
+				},
+				"initiator_nickname": {
+					Optional:    true,
+					Type:        schema.TypeString,
+					Description: "Initiator nickname to create the resource",
+				},
+			},
+		},
+	},
+	"authentication_mode": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Authentication Mode",
+	},
+	"is_mutual_auth": &schema.Schema{
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Description: "Is Mutual Auth",
+	},
+	"chap_users": &schema.Schema{
+		Type:        schema.TypeList,
+		Optional:    true,
+		Description: "CHAP Users",
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
+	"ucp_system": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "The serial number of the preferred UCP system",
+	},
+	// output
+	"iscsitarget": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is iSCSI target output",
+		Elem: &schema.Resource{
+			Schema: IscsiTargetInfoSchema,
+		},
+	},
+}

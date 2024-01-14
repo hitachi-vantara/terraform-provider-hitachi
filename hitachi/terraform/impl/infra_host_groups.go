@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -71,13 +70,8 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
-		return nil, err
-	}
-
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -135,11 +129,11 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_HOST_GROUPS_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_BEGIN), setting.Address)
 	reconResponse, err := reconObj.GetHostGroups(storageId, port)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetInfraHostGroups, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_HOST_GROUPS_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_HOST_GROUPS_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -191,7 +185,7 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_HOST_GROUPS_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), setting.Address)
 
 	return &terraformResponse.Data, nil
 }
@@ -204,16 +198,22 @@ func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.Infr
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
-		return nil, err
-	}
+	/*
+		if serial == "" && storageId == "" {
+			err := errors.New("both serial and storage_id can't be empty. Please specify one")
+			return nil, err
+		}
 
+		if serial != "" && storageId != "" {
+			err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
+			return nil, err
+		}
+	*/
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return nil, err
@@ -274,11 +274,11 @@ func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.Infr
 
 	log.WriteDebug("TFDebug| port group filter will be apply %v size %v", portIdsMap, len(portIdsMap))
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_HOST_GROUPS_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_BEGIN), setting.Address)
 	reconResponse, err := reconObj.GetHostGroups(storageId, "")
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetInfraHostGroupsByPortIds, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_PARITY_GROUPS_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_PARITY_GROUPS_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -303,12 +303,12 @@ func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.Infr
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_HOST_GROUPS_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), setting.Address)
 
 	return &terraformResponse.Data, nil
 }
 
-func CreateInfraGwHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, error) {
+func CreateInfraHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -316,13 +316,8 @@ func CreateInfraGwHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHost
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
-		return nil, err
-	}
-
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -354,17 +349,7 @@ func CreateInfraGwHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHost
 			return nil, err
 		}
 	}
-	/*
-		port := d.Get("port_id").(string)
 
-		hostgroup_name := d.Get("hostgroup_name").(string)
-		hostgroup_id := -1
-		hid, okId := d.GetOk("hostgroup_number")
-		if okId {
-			hostgroup_id = hid.(int)
-		}
-		ucp_system := d.Get("ucp_system").(string)
-	*/
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
 		return nil, err
@@ -382,19 +367,6 @@ func CreateInfraGwHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHost
 		return nil, err
 	}
 
-	// pportID, phgnum := CheckSchemaIfHostGroupGet(d)
-	// if pportID != nil && phgnum != nil {
-	// 	hg, err := sanprov.GetHostGroup(*storageSetting, *pportID, *phgnum)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	if hg.ByteFormatCapacity == "" {
-	// 		// does not exist, or in the process of being deleted
-	// 		return nil, fmt.Errorf("Volume does not exist")
-	// 	}
-	// 	return hg, nil
-	// }
-
 	createInput, err := CreateInfraHostGroupRequestFromSchema(d)
 	if err != nil {
 		return nil, err
@@ -408,7 +380,6 @@ func CreateInfraGwHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHost
 		return nil, err
 	}
 
-	//hg, err := reconObj.ReconcileHostGroup(&reconcilerCreateHostGroupRequest)
 	hg, err := reconObj.ReconcileHostGroup(storageId, &reconcilerCreateHostGroupRequest)
 
 	if err != nil {
@@ -440,14 +411,6 @@ func CreateInfraHostGroupRequestFromSchema(d *schema.ResourceData) (*terraformmo
 		pid := portId.(string)
 		createInput.Port = pid
 	}
-
-	/*
-		hgnum, ok := d.GetOk("hostgroup_number")
-		if ok {
-			hid := hgnum.(int)
-			//createInput.HostGroupNumber = hid
-		}
-	*/
 
 	hgname, ok := d.GetOk("hostgroup_name")
 	if ok {
@@ -571,4 +534,95 @@ func ConvertInfraHostGroupToSchema(pg *terraformmodel.InfraHostGroupInfo) *map[s
 	sp["host_mode_options"] = hModeOptions
 
 	return &sp
+}
+
+func UpdateInfraHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	serial := common.GetSerialString(d)
+	storageId := d.Get("storage_id").(string)
+
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
+		return nil, err
+	}
+
+	address, err := cache.GetCurrentAddress()
+	if err != nil {
+		return nil, err
+	}
+
+	if storageId == "" {
+		storageId, err = common.GetStorageIdFromSerial(address, serial)
+		if err != nil {
+			return nil, err
+		}
+		d.Set("storage_id", storageId)
+	}
+
+	if serial == "" {
+		serial, err = common.GetSerialFromStorageId(address, storageId)
+		if err != nil {
+			return nil, err
+		}
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	storageSetting, err := cache.GetInfraSettingsFromCache(address)
+	if err != nil {
+		return nil, err
+	}
+
+	setting := model.InfraGwSettings{
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+		Address:  storageSetting.Address,
+	}
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
+		return nil, err
+	}
+
+	createInput, err := CreateInfraHostGroupRequestFromSchema(d)
+	if err != nil {
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), createInput.Port, createInput.HostGroupName)
+	reconcilerCreateHostGroupRequest := model.CreateHostGroupParam{}
+	err = copier.Copy(&reconcilerCreateHostGroupRequest, createInput)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
+
+	hg, err := reconObj.ReconcileHostGroup(storageId, &reconcilerCreateHostGroupRequest)
+
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), createInput.Port, createInput.HostGroupName)
+		log.WriteDebug("TFError| error in Creating Hostgroup - ReconcileHostGroup , err: %v", err)
+		return nil, err
+	}
+
+	terraformModelHostGroup := terraformmodel.InfraHostGroups{}
+	err = copier.Copy(&terraformModelHostGroup, hg)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_END), terraformModelHostGroup.Data[0].Port, terraformModelHostGroup.Data[0].HostGroupName)
+	return &terraformModelHostGroup.Data, nil
 }

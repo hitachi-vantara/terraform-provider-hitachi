@@ -45,11 +45,11 @@ func GetInfraStorageDevices(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_STORAGE_DEVICES_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_BEGIN), setting.Address)
 	reconStoragePorts, err := reconObj.GetStorageDevices()
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetInfraStorageDevices, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_STORAGE_DEVICES_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_STORAGE_DEVICES_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -60,7 +60,7 @@ func GetInfraStorageDevices(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_STORAGE_DEVICES_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_END), setting.Address)
 
 	log.WriteDebug("all: %+v\n", terraformStoragePorts)
 	log.WriteDebug("data: %+v\n", terraformStoragePorts.Data)
@@ -101,11 +101,11 @@ func GetInfraStorageDevice(d *schema.ResourceData, serial string) (*[]terraformm
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_STORAGE_DEVICES_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_BEGIN), setting.Address)
 	reconResponse, err := reconObj.GetStorageDevice(id)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetInfraGwStorageDevice, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_STORAGE_DEVICES_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_STORAGE_DEVICES_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -116,7 +116,7 @@ func GetInfraStorageDevice(d *schema.ResourceData, serial string) (*[]terraformm
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_STORAGE_DEVICES_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_END), setting.Address)
 
 	return &terraformResponse.Data, nil
 }

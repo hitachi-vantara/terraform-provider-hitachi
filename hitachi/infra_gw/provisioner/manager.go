@@ -24,4 +24,6 @@ type InfraGwManager interface {
 	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
 	CreateUcpSystem(reqBody model.CreateUcpSystemParam) (*string, error)
+	CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)
+	UpdateIscsiTarget(storageId, hostGroupId string, reqBody model.CreateIscsiTargetParam) (*string, error)
 }

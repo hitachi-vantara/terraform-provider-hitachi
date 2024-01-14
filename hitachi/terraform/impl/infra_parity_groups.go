@@ -1,7 +1,6 @@
 package terraform
 
 import (
-	"errors"
 	"strconv"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -27,15 +26,11 @@ func GetInfraParityGroups(d *schema.ResourceData) (*[]terraformmodel.InfraParity
 	serial := common.GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
-	if serial == "" && storageId == "" {
-		err := errors.New("both serial and storage_id can't be empty. Please specify one")
+	err := common.ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
 		return nil, err
 	}
 
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
-		return nil, err
-	}
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return nil, err
@@ -95,11 +90,11 @@ func GetInfraParityGroups(d *schema.ResourceData) (*[]terraformmodel.InfraParity
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_PARITY_GROUPS_BEGIN), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_PARITY_GROUPS_BEGIN), setting.Address)
 	reconParityGroups, err := reconObj.GetParityGroups(storageId)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetInfraParityGroups, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GW_GET_PARITY_GROUPS_FAILED), setting.Address)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_PARITY_GROUPS_FAILED), setting.Address)
 		return nil, err
 	}
 
@@ -128,7 +123,7 @@ func GetInfraParityGroups(d *schema.ResourceData) (*[]terraformmodel.InfraParity
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GW_GET_PARITY_GROUPS_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_PARITY_GROUPS_END), setting.Address)
 
 	return &terraformStoragePorts.Data, nil
 }
