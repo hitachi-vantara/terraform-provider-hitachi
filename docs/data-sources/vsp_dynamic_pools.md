@@ -46,6 +46,7 @@ output "dynamicpool" {
 ### Optional
 
 - `pool_id` (Number) Pool ID of the storage
+- `pool_name` (String) Pool Name of the storage
 
 ### Read-Only
 

@@ -44,6 +44,7 @@ resource "hitachi_vsp_volume" "mylun" {
 - `name` (String) Name of volume to be created
 - `paritygroup_id` (String) Parity group ID in which volume is to be created
 - `pool_id` (Number) Pool ID in which volume is to be created
+- `pool_name` (String) Pool Name in which volume is to be created
 - `size_gb` (Number) Size of volume to be created in GB
 
 ### Read-Only
