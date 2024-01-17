@@ -28,7 +28,7 @@ func main() {
 
 	if debugMode {
 		// TODO: update this string with the full name of your provider as used in your configs
-		userPluginDir := "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi"
+		userPluginDir := "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.5/linux_amd64/terraform-provider-hitachi"
 		// userPluginDir := "/root/.terraform.d/plugins/20-95.sie.hds.com/hv/hitachi/1.0/linux_amd64/terraform-provider-hitachi"
 		err := plugin.Debug(context.Background(), userPluginDir, opts)
 
