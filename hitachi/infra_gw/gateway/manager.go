@@ -42,4 +42,8 @@ type InfraGwManager interface {
 	GetUcpSystems() (*model.UcpSystems, error)
 	GetUcpSystemById(id string) (*model.UcpSystem, error)
 	CreateUcpSystem(reqBody model.CreateUcpSystemParam) (*string, error)
+
+	//User Managements
+	GetAllUsers() (*model.UserWithDetails, error)
+	GetUsersRoles(userId string) (*model.RoleWithDetails, error)
 }

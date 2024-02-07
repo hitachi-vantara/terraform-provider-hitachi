@@ -8,12 +8,12 @@ import (
 )
 
 // GetAllPartners gets partners information
-func (psm *infraGwManager) GetAllUsers() (*model.Partners, error) {
+func (psm *infraGwManager) GetAllUsers() (*model.UserWithDetails, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	var partners model.Partners
+	var partners model.UserWithDetails
 
 	apiSuf := "/rbac/users?onlyUcpUsers=true"
 
