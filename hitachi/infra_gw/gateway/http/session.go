@@ -12,14 +12,21 @@ import (
 	// sanmodel "terraform-provider-hitachi/hitachi/storage/san/model"
 )
 
-func GetUrl(ip string, urlPath string) string {
+func GetUrl(ip string, urlPath string, v3 bool) string {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+	var url string
+	if v3 {
+		url = fmt.Sprintf("https://%s/porcelain/v3%s", ip, urlPath)
 
-	url := fmt.Sprintf("https://%s/porcelain/v2%s", ip, urlPath)
+	} else {
+		url = fmt.Sprintf("https://%s/porcelain/v2%s", ip, urlPath)
+	}
+
 	log.WriteDebug("TFDebug|url: %s", url)
 	return url
+
 }
 
 // token timeout is 300 sec
@@ -56,7 +63,7 @@ func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
 		return "", fmt.Errorf("failed to marshal request body: %+v", err)
 	}
 
-	url := GetUrl(mgmtIP, "/auth/login")
+	url := GetUrl(mgmtIP, "/auth/login", false)
 	resJSONString, err := utils.HTTPPostWithCreds(url, nil, nil, reqBody) // no additional headers, no request body
 	if err != nil {
 		log.WriteError(err)

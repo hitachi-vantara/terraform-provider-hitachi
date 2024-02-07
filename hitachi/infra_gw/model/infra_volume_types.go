@@ -39,3 +39,20 @@ type Volumes struct {
 	Message string       `json:"message"`
 	Data    []VolumeInfo `json:"data"`
 }
+
+type CreateVolumeParams struct {
+	Name                         string `json:"name,omitempty"`
+	PoolID                       int    `json:"poolId,omitempty"`
+	ParityGroupId                string `json:"parityGroupId,omitempty"`
+	Capacity                     string `json:"capacity,omitempty"`
+	ResourceGroupId              int    `json:"resourceGroupId,omitempty"`
+	LunId                        int    `json:"lunId,omitempty"`
+	System                       string `json:"ucpSystem,omitempty"`
+	DeduplicationCompressionMode string `json:"deduplicationCompressionMode,omitempty"`
+}
+
+type UpdateVolumeParams struct {
+	Name                         string `json:"lunName,omitempty"`
+	Capacity                     string `json:"capacity,omitempty"`
+	DeduplicationCompressionMode string `json:"deduplicationCompressionMode,omitempty"`
+}

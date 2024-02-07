@@ -29,7 +29,7 @@ func DataSourceStorageChapUserRead(ctx context.Context, d *schema.ResourceData, 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteDebug("Resource Data = %v", *d)
+	log.WriteDebug("Resource Data = %v", d)
 
 	serial := d.Get("serial").(int)
 

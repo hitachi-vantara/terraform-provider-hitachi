@@ -22,7 +22,7 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interfa
 		return err
 	}
 
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 	resJSONString, err := utils.HTTPGet(url, &headers)
 	if err != nil {
 		log.WriteError(err)
@@ -60,7 +60,7 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 	}
 
 	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 
 	// TODO: uncomment following when you need to work on lock and unlock resources
 	// if reqBody == nil {
@@ -125,7 +125,7 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 	}
 
 	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 
 	taskString, err := utils.HTTPPatch(url, &headers, reqBodyInBytes)
 	if err != nil {
@@ -185,7 +185,7 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 	}
 
 	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 
 	taskString, err := utils.HTTPDeleteWithBody(url, &headers, reqBodyInBytes)
 	if err != nil {

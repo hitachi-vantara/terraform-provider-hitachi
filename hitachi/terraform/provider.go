@@ -34,9 +34,13 @@ func Provider() *schema.Provider {
 			"hitachi_vss_block_volume":          resourceimpl.ResourceVssbStorageCreateVolume(),
 			"hitachi_vss_block_iscsi_chap_user": resourceimpl.ResourceVssbStorageChapUser(),
 			"hitachi_vss_block_compute_port":    resourceimpl.ResourceVssbStorageComputePort(),
-			"hitachi_infra_hostgroup":           resourceimpl.ResourceInfraHostGroup(),
-			"hitachi_infra_storage_device":      resourceimpl.ResourceInfraStorageDevice(),
-			"hitachi_infra_iscsi_target":        resourceimpl.ResourceInfraIscsiTarget(),
+
+			//Infra resources
+
+			"hitachi_infra_hostgroup":      resourceimpl.ResourceInfraHostGroup(),
+			"hitachi_infra_storage_device": resourceimpl.ResourceInfraStorageDevice(),
+			"hitachi_infra_iscsi_target":   resourceimpl.ResourceInfraIscsiTarget(),
+			"hitachi_infra_vsp_volume":   resourceimpl.ResourceInfraStorageVOlume(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":                datasourceimpl.DataSourceStorageSystem(),
@@ -60,6 +64,7 @@ func Provider() *schema.Provider {
 			"hitachi_vss_block_iscsi_port_auth":  datasourceimpl.DataSourceVssbComputePort(),
 			"hitachi_vss_block_dashboard":        datasourceimpl.DataSourceVssbDashboard(),
 
+			//Infra data-resources
 			"hitachi_infra_storage_ports":   datasourceimpl.DataSourceInfraStoragePorts(),
 			"hitachi_infra_parity_groups":   datasourceimpl.DataSourceInfraParityGroups(),
 			"hitachi_infra_hostgroup":       datasourceimpl.DataSourceInfraHostGroup(),

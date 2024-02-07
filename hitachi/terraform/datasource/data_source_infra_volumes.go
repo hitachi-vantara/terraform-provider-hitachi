@@ -18,12 +18,12 @@ import (
 func DataSourceInfraVolumes() *schema.Resource {
 	return &schema.Resource{
 		Description: ":meta:subcategory:VSP Storage Parity Groups:The following request obtains information about Parity Groups.",
-		ReadContext: dataSourceInfraVolumesRead,
+		ReadContext: DataSourceInfraVolumesRead,
 		Schema:      schemaimpl.DataInfraVolumesSchema,
 	}
 }
 
-func dataSourceInfraVolumesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceInfraVolumesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()

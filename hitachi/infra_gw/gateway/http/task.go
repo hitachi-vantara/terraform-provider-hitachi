@@ -45,7 +45,7 @@ func CheckTaskStatus(storageSetting model.InfraGwSettings, taskId string) (*mode
 		return nil, err
 	}
 
-	url := GetUrl(storageSetting.Address, "/tasks/"+taskId)
+	url := GetUrl(storageSetting.Address, "/tasks/"+taskId, false)
 
 	resJSONString, err := utils.HTTPGet(url, &headers)
 	if err != nil {
@@ -143,6 +143,9 @@ func CheckResponseAndWaitForTask(storageSetting model.InfraGwSettings, resJSONSt
 	log.WriteDebug("TFDebug|Final Task: %+v", task)
 
 	if state != "Success" {
+		if task.Data.Events != nil {
+			return task, fmt.Errorf("task failed with unknown reason: %v", task)
+		}
 		return task, fmt.Errorf(task.Data.Events[0].Description)
 	}
 
