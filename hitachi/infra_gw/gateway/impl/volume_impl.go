@@ -27,6 +27,33 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	return &response, nil
 }
 
+// GetMTVolumes gets volumes information from multi-tenancy
+func (psm *infraGwManager) GetMTVolumes(storageid string, subscriberId *string) (*model.Volumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	var response model.Volumes
+	headers := map[string]string{
+		"partnerId": psm.setting.Password,
+	}
+	if subscriberId != nil {
+		headers["subscriberId"] = *subscriberId
+	}
+
+	apiSuf := fmt.Sprintf("/storage/%s/", storageid)
+	log.WriteDebug(apiSuf)
+	err := httpmethod.GetMTCall(psm.setting, apiSuf, headers, &response)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return &response, nil
+}
+
 // GetVolumes gets volumes information
 func (psm *infraGwManager) GetVolumeByID(storageId string, volumeID string) (*model.VolumeInfo, error) {
 	log := commonlog.GetLogger()
@@ -59,6 +86,21 @@ func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateV
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes", storageId)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	if err != nil {
+		log.WriteDebug("TFError| error in CreateVolume - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
+func (psm *infraGwManager) CreateMTVolume(storageId string, reqBody *model.CreateVolumeParams) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	apiSuf := fmt.Sprintf("/storage/%s/volumes", storageId)
 	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateVolume - %s API call, err: %v", apiSuf, err)

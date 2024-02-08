@@ -5,6 +5,8 @@ type InfraGwSettings struct {
 	Password string `json:"password"`
 	Address  string `json:"address"`
 	V3API    bool   `json:"v3api"`
+	PartnerId string `json:"partnerId"`
+	
 }
 
 type InfraGwStorageSettingsAndInfo struct {

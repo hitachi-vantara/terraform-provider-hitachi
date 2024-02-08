@@ -8,12 +8,12 @@ import (
 )
 
 // GetAllPartners gets partners information
-func (psm *infraGwManager) GetAllPartners() (*model.Partners, error) {
+func (psm *infraGwManager) GetAllPartners() (*[]model.Partner, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	var partners model.Partners
+	var partners []model.Partner
 	var apiSuf string
 	psm.setting.V3API = true
 

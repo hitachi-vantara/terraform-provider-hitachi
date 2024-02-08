@@ -28,6 +28,7 @@ func NewEx(setting model.InfraGwSettings) (spmanager.InfraGwManager, error) {
 }
 
 func New(userName, password, address string) (spmanager.InfraGwManager, error) {
+
 	psm := &infraGwManager{
 		setting: model.InfraGwSettings{
 			Username: userName,
@@ -35,5 +36,14 @@ func New(userName, password, address string) (spmanager.InfraGwManager, error) {
 			Address:  address,
 		},
 	}
+
+	
+	status,partnerId, _ := psm.GetPartnerIdWithStatus(userName)
+
+	if status {
+		psm.setting.PartnerId = *partnerId
+	}
+
 	return psm, nil
+
 }

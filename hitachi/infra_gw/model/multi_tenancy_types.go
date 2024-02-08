@@ -1,5 +1,10 @@
 package infra_gw
 
+const (
+	AdminRole        = "ucpAdminRole"
+	StorageAdminRole = "UcpAdvisorStorageAdmin"
+)
+
 type Partner struct {
 	PartnerID string `json:"partnerId"`
 	Type      string `json:"type"`
@@ -7,7 +12,7 @@ type Partner struct {
 }
 
 type Partners struct {
-	Partners []*Partner `json:"partners"`
+	Partners []Partner `json:"partners"`
 }
 
 type RegisterSubscriberReq struct {
@@ -19,7 +24,7 @@ type RegisterSubscriberReq struct {
 
 type RegisterPartnerReq struct {
 	Name        string `json:"name"`
-	PartnerID   int64  `json:"partnerId"`
+	PartnerID   string `json:"partnerId"`
 	Description string `json:"description"`
 }
 

@@ -46,4 +46,14 @@ type InfraGwManager interface {
 	//User Managements
 	GetAllUsers() (*model.UserWithDetails, error)
 	GetUsersRoles(userId string) (*model.RoleWithDetails, error)
+
+	//Multi-tenancy Management
+	GetAllPartners() (*[]model.Partner, error)
+	GetPartner(partnerId string) (*model.Partner, error)
+	GetAllSubscribers(partnerId string) (*model.Subscribers, error)
+	GetSubscriber(partnerId string, subscriberId string) (*model.Subscriber, error)
+	GetSubscriberResources(partnerId string, subscriberId string) (*model.SubscriberDetails, error)
+	RegisterSubscriber(reqBody *model.RegisterSubscriberReq) (*string, error)
+	RegisterPartner(reqBody *model.RegisterPartnerReq) (*string, error)
+	UnRegisterSubscriber(subscriberId string) (*string, error)
 }

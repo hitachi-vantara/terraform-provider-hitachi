@@ -4,6 +4,8 @@ import (
 	"fmt"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 // newDynamicPoolTestManager is for Testing and provide structure information for connection
@@ -25,16 +27,36 @@ func newMTTestManager() (*infraGwManager, error) {
 }
 
 // go test -v -run TestGetDynamicPools
-func TestGetPartnerIDwithStatus(t *testing.T) {
+func TestGetPartners(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	found, pid, err := psm.GetPartnerIdWithStatus("ucpadmin")
+	partners, err := psm.GetAllPartners()
 	if err != nil {
 		t.Errorf("Unexpected error in GetDynamicPools %v", err)
 		return
 	}
-	t.Logf("Response: %b %v", &found, pid)
+	t.Logf("Response: %v", partners)
+}
+
+func TestCreatePartner(t *testing.T) {
+	psm, err := newMTTestManager()
+	if err != nil {
+		t.Fatalf("Unexpected error %v", err)
+	}
+
+	newUUID := uuid.New().String()
+	reqBody := &model.RegisterPartnerReq{
+		Name:        "TestPartner",
+		PartnerID:   newUUID,
+		Description: "This is a test Part",
+	}
+	partners, err := psm.RegisterPartner(reqBody)
+	if err != nil {
+		t.Errorf("Unexpected error in GetDynamicPools %v", err)
+		return
+	}
+	t.Logf("Response: %v", partners)
 }

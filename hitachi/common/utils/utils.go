@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -299,4 +301,33 @@ func ConvertInterfaceToSlice(interface_obj []interface{}) []string {
 		new_slice = append(new_slice, v.(string))
 	}
 	return new_slice
+}
+
+func MakeResponse(resp http.Response) (string, error) {
+
+	var ErrorModel *PorcelainError
+
+	body, bodyerr := io.ReadAll(resp.Body)
+
+	if IsHttpError(resp.StatusCode) {
+
+		if bodyerr == nil {
+			err := json.Unmarshal(body, &ErrorModel)
+			if err != nil {
+				log.Debug(err)
+				return "", fmt.Errorf("%v", resp.Status)
+			}
+			return "", fmt.Errorf("%s", ErrorModel.Error.Message)
+		}
+		return "", fmt.Errorf("%v", resp.Status)
+
+	}
+	if bodyerr != nil {
+		log.Error(bodyerr)
+		return "", bodyerr
+	}
+
+	log.Debugf("HTTP Response: %s\n", string(body))
+	return string(body), nil
+
 }

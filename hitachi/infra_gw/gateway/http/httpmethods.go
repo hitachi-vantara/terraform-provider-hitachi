@@ -40,6 +40,42 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interfa
 	return nil
 }
 
+func GetMTCall(storageSetting model.InfraGwSettings, apiSuf string, headers map[string]string, output interface{}) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	authHeaders, err := GetAuthTokenHeader(storageSetting.Address, storageSetting.Username, storageSetting.Password)
+
+	
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
+		return err
+	}
+
+	for key, value := range authHeaders {
+		headers[key] = value
+	}
+
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
+	resJSONString, err := utils.HTTPGet(url, &headers)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in utils.HTTPGet call, err: %v", err)
+		return err
+	}
+
+	log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
+	err2 := json.Unmarshal([]byte(resJSONString), output)
+	if err2 != nil {
+		log.WriteDebug("TFError| error in Unmarshal, err: %v", err2)
+		return fmt.Errorf("failed to unmarshal json response: %+v", err2)
+	}
+
+	return nil
+}
+
 func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
