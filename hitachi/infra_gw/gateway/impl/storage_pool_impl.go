@@ -16,7 +16,7 @@ func (psm *infraGwManager) GetStoragePools(id string) (*model.StoragePools, erro
 	var storagePools model.StoragePools
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/pools", id)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &storagePools)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &storagePools)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -34,7 +34,7 @@ func (psm *infraGwManager) GetStoragePool(id, poolId string) (*model.StoragePool
 	var storagePool model.StoragePool
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/pools/%s", id, poolId)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &storagePool)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &storagePool)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)

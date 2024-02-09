@@ -16,7 +16,7 @@ func (psm *infraGwManager) GetStoragePorts(id string) (*model.StoragePorts, erro
 	var storagePorts model.StoragePorts
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/ports", id)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &storagePorts)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &storagePorts)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)

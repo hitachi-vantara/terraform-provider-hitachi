@@ -19,7 +19,7 @@ func (psm *infraGwManager) GetAllPartners() (*[]model.Partner, error) {
 
 	apiSuf = "/partners"
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &partners)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &partners)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -40,7 +40,7 @@ func (psm *infraGwManager) GetPartner(partnerId string) (*model.Partner, error) 
 
 	apiSuf = fmt.Sprintf("partner/%s", partnerId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &partner)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &partner)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -61,7 +61,7 @@ func (psm *infraGwManager) GetAllSubscribers(partnerId string) (*model.Subscribe
 
 	apiSuf = fmt.Sprintf("partner/%s/subscribers", partnerId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &subscribers)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &subscribers)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -82,7 +82,7 @@ func (psm *infraGwManager) GetSubscriber(partnerId string, subscriberId string) 
 
 	apiSuf = fmt.Sprintf("partner/%s/subscriber/%s", partnerId, subscriberId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &subscriber)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &subscriber)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -103,7 +103,7 @@ func (psm *infraGwManager) GetSubscriberResources(partnerId string, subscriberId
 
 	apiSuf = fmt.Sprintf("partner/%s/subscriber/%s/resources", partnerId, subscriberId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &subscriber)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &subscriber)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -122,7 +122,7 @@ func (psm *infraGwManager) RegisterSubscriber(reqBody *model.RegisterSubscriberR
 
 	apiSuf := "/register/subscriber"
 
-	resp, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resp, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -141,7 +141,7 @@ func (psm *infraGwManager) RegisterPartner(reqBody *model.RegisterPartnerReq) (*
 
 	apiSuf := "/register/partner"
 
-	resp, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resp, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -160,7 +160,7 @@ func (psm *infraGwManager) UnRegisterSubscriber(subscriberId string) (*string, e
 
 	apiSuf := fmt.Sprintf("unregister/subscriber/%s", subscriberId)
 
-	resp, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil)
+	resp, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)

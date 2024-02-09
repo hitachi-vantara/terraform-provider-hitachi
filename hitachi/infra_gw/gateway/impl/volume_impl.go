@@ -18,7 +18,7 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes", id)
 	log.WriteDebug(apiSuf)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &response)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -45,7 +45,7 @@ func (psm *infraGwManager) GetMTVolumes(storageid string, subscriberId *string) 
 
 	apiSuf := fmt.Sprintf("/storage/%s/", storageid)
 	log.WriteDebug(apiSuf)
-	err := httpmethod.GetMTCall(psm.setting, apiSuf, headers, &response)
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -63,7 +63,7 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeID string) (*mo
 	var response model.VolumeInfo
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes/%s", storageId, volumeID)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &response)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -86,7 +86,7 @@ func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateV
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes", storageId)
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateVolume - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -101,7 +101,7 @@ func (psm *infraGwManager) CreateMTVolume(storageId string, reqBody *model.Creat
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/%s/volumes", storageId)
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateVolume - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -117,7 +117,7 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeID string, reqBo
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes/%s", storageId, volumeID)
 
-	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in UpdateVolume - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -133,7 +133,7 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeID string) error
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes/%s", storageId, volumeID)
 
-	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil)
+	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteVolume - %s API call, err: %v", apiSuf, err)
 		return err

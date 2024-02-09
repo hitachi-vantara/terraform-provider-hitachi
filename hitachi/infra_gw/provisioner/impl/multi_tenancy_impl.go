@@ -101,6 +101,8 @@ func (psm *infraGwManager) GetPartnerIdWithStatus(username string) (bool, *strin
 	}
 
 	if partners != nil || len(*partners) > 0 {
+		log.WriteInfo("Found partner ID with %s", (*partners)[0].PartnerID)
+		log.WriteDebug("Found partner with %s", (*partners))
 		return *adminStatus, &(*partners)[0].PartnerID, nil
 	}
 	return false, nil, nil

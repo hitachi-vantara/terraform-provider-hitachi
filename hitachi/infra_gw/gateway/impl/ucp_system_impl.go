@@ -16,7 +16,7 @@ func (psm *infraGwManager) GetUcpSystems() (*model.UcpSystems, error) {
 	var ucpSystems model.UcpSystems
 
 	apiSuf := "/systems"
-	err := httpmethod.GetCall(psm.setting, apiSuf, &ucpSystems)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &ucpSystems)
 	if err != nil {
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -33,7 +33,7 @@ func (psm *infraGwManager) GetUcpSystemById(id string) (*model.UcpSystem, error)
 	var ucpSystem model.UcpSystem
 
 	apiSuf := fmt.Sprintf("/systems/%s", id)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &ucpSystem)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &ucpSystem)
 	if err != nil {
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -49,7 +49,7 @@ func (psm *infraGwManager) CreateUcpSystem(reqBody model.CreateUcpSystemParam) (
 
 	apiSuf := "/systems"
 
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateUcpSystem - %s API call, err: %v", apiSuf, err)
 		return nil, err

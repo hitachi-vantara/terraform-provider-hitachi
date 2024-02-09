@@ -17,7 +17,7 @@ func (psm *infraGwManager) GetAllUsers() (*model.UserWithDetails, error) {
 
 	apiSuf := "/rbac/users?onlyUcpUsers=true"
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &partners)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &partners)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -37,7 +37,7 @@ func (psm *infraGwManager) GetUsersRoles(userId string) (*model.RoleWithDetails,
 
 	apiSuf = fmt.Sprintf("/rbac/users/%s/roles", userId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &useRoles)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &useRoles)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)

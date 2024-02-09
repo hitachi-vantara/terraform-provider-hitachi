@@ -10,7 +10,7 @@ import (
 	//sanmodel "terraform-provider-hitachi/hitachi/storage/san/model"
 )
 
-func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interface{}) error {
+func GetCall(storageSetting model.InfraGwSettings, apiSuf string, reqHeaders *map[string]string, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -22,6 +22,10 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interfa
 		return err
 	}
 
+	for key, value := range headers {
+		(*reqHeaders)[key] = value
+	}
+
 	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 	resJSONString, err := utils.HTTPGet(url, &headers)
 	if err != nil {
@@ -40,14 +44,13 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interfa
 	return nil
 }
 
-func GetMTCall(storageSetting model.InfraGwSettings, apiSuf string, headers map[string]string, output interface{}) error {
+func GetMTCall(storageSetting model.InfraGwSettings, apiSuf string, reqHeaders *map[string]string, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	authHeaders, err := GetAuthTokenHeader(storageSetting.Address, storageSetting.Username, storageSetting.Password)
 
-	
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
@@ -55,11 +58,11 @@ func GetMTCall(storageSetting model.InfraGwSettings, apiSuf string, headers map[
 	}
 
 	for key, value := range authHeaders {
-		headers[key] = value
+		(*reqHeaders)[key] = value
 	}
 
 	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
-	resJSONString, err := utils.HTTPGet(url, &headers)
+	resJSONString, err := utils.HTTPGet(url, &authHeaders)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in utils.HTTPGet call, err: %v", err)
@@ -76,7 +79,7 @@ func GetMTCall(storageSetting model.InfraGwSettings, apiSuf string, headers map[
 	return nil
 }
 
-func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -86,6 +89,10 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return nil, err
+	}
+
+	for key, value := range headers {
+		(*reqHeaders)[key] = value
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
@@ -113,12 +120,12 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 	return &taskString, err
 }
 
-func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, redHeader *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	taskString, err := PostCallAsync(storageSetting, apiSuf, reqBody)
+	taskString, err := PostCallAsync(storageSetting, apiSuf, reqBody, redHeader)
 	if err != nil {
 		log.WriteDebug("TFError| error in PostCallAsync call, err: %v", err)
 		return nil, err
@@ -141,7 +148,7 @@ func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody inter
 	return &response.Data.ResourceId, nil
 }
 
-func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -151,6 +158,10 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return nil, err
+	}
+
+	for key, value := range headers {
+		(*reqHeaders)[key] = value
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
@@ -173,12 +184,12 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 	return &taskString, err
 }
 
-func PatchCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PatchCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	taskString, err := PatchCallAsync(storageSetting, apiSuf, reqBody)
+	taskString, err := PatchCallAsync(storageSetting, apiSuf, reqBody, reqHeaders)
 	if err != nil {
 		log.WriteDebug("TFError| error in PatchCallAsync call, err: %v", err)
 		return nil, err
@@ -201,7 +212,7 @@ func PatchCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody inte
 	return &response.Data.ResourceId, nil
 }
 
-func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -211,6 +222,10 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return nil, err
+	}
+
+	for key, value := range headers {
+		(*reqHeaders)[key] = value
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
@@ -233,12 +248,12 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 	return &taskString, err
 }
 
-func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	taskString, err := DeleteCallAsync(storageSetting, apiSuf, reqBody)
+	taskString, err := DeleteCallAsync(storageSetting, apiSuf, reqBody, reqHeaders)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteCallAsync call, err: %v", err)
 		return nil, err
