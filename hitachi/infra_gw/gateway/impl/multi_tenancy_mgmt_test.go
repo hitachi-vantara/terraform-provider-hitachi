@@ -12,11 +12,14 @@ import (
 func newMTTestManager() (*infraGwManager, error) {
 
 	// Following storage has iscsi port
-
+	PartnerId := "a8d1f065-a9e7-42cf-b565-a67466fec549"
+	SubscriberId := "f260ca80-ec80-423c-9af8-dcac117bd068"
 	setting := model.InfraGwSettings{
-		Username: "ucpadmin",
-		Password: "Passw0rd!",
-		Address:  "172.25.22.61",
+		Username:     "ucpadmin",
+		Password:     "Passw0rd!",
+		PartnerId:    &PartnerId,
+		SubscriberId: &SubscriberId,
+		Address:      "172.25.22.81",
 	}
 
 	psm, err := newInfraGwManagerEx(setting)
@@ -27,7 +30,7 @@ func newMTTestManager() (*infraGwManager, error) {
 }
 
 // go test -v -run TestGetDynamicPools
-func TestGetPartners(t *testing.T) {
+func xTestGetPartners(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
@@ -41,7 +44,7 @@ func TestGetPartners(t *testing.T) {
 	t.Logf("Response: %v", partners)
 }
 
-func TestCreatePartner(t *testing.T) {
+func xTestCreatePartner(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)

@@ -1,12 +1,12 @@
 package infra_gw
 
 type InfraGwSettings struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Address  string `json:"address"`
-	V3API    bool   `json:"v3api"`
-	PartnerId string `json:"partnerId"`
-	
+	Username     string  `json:"username"`
+	Password     string  `json:"password"`
+	Address      string  `json:"address"`
+	V3API        bool    `json:"v3api"`
+	PartnerId    *string `json:"partnerId"`
+	SubscriberId *string `json:"subscriberId"`
 }
 
 type InfraGwStorageSettingsAndInfo struct {

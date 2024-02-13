@@ -43,4 +43,7 @@ type InfraGwManager interface {
 	GetUcpSystems() (*model.UcpSystems, error)
 	GetUcpSystemById(id string) (*model.UcpSystem, error)
 	CreateUcpSystem(reqBody model.CreateUcpSystemParam) (*string, error)
+
+	//MT management
+	GetPartnerAndSubscriberId(username string) (bool, *string, *string, error)
 }

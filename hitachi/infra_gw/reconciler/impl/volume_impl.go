@@ -12,13 +12,9 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	provSetting := model.InfraGwSettings(psm.setting)
 
-	provObj, err := provisonerimpl.NewEx(objStorage)
+	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
@@ -37,19 +33,17 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 	if createInput != nil {
 		volumeInfo, ok := psm.GetVolumeByName(storageId, createInput.Name)
 		if !ok {
-			volId, err := psm.CreateVolume(storageId, createInput)
+			_, err := psm.CreateVolume(storageId, createInput)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateVolume call, err: %v", err)
 				return nil, err
 			}
-			volumeID = volId
 		} else {
 			_, err := psm.UpdateVolume(storageId, volumeInfo.ResourceId, createInput)
 			if err != nil {
 				log.WriteDebug("TFError| error in UpdateVolume call, err: %v", err)
 				return nil, err
 			}
-			volumeID = &volumeInfo.ResourceId
 
 		}
 	} else if createInput == nil && volumeID != nil {
@@ -62,29 +56,17 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 
 	}
 
-	provVolInfo, err := psm.GetVolumeByID(storageId, *volumeID)
-	if err != nil {
-		log.WriteDebug("TFError| error in GetVolumeByID call, err: %v", err)
-		return nil, err
-	}
-
-	log.WriteDebug("Volume here >>>>>>>>>>>>>>>>>>>> %s", provVolInfo)
-
-	return provVolInfo, nil
+	volumeInfo, _ := psm.GetVolumeByName(storageId, createInput.Name)
+	return volumeInfo, nil
 }
 
 func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateVolumeParams) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+	provSetting := model.InfraGwSettings(psm.setting)
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
-
-	provObj, err := provisonerimpl.NewEx(objStorage)
+	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
@@ -105,13 +87,9 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId string, reqBo
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	provSetting := model.InfraGwSettings(psm.setting)
 
-	provObj, err := provisonerimpl.NewEx(objStorage)
+	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
@@ -133,13 +111,9 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	provSetting := model.InfraGwSettings(psm.setting)
 
-	provObj, err := provisonerimpl.NewEx(objStorage)
+	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return err
@@ -160,13 +134,9 @@ func (psm *infraGwManager) GetVolumeByName(storageId string, volumeName string) 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	provSetting := model.InfraGwSettings(psm.setting)
 
-	provObj, err := provisonerimpl.NewEx(objStorage)
+	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, false
@@ -196,13 +166,9 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*mo
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	provSetting := model.InfraGwSettings(psm.setting)
 
-	provObj, err := provisonerimpl.NewEx(objStorage)
+	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err

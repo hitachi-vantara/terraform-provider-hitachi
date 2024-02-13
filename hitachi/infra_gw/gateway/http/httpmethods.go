@@ -22,47 +22,14 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, reqHeaders *ma
 		return err
 	}
 
-	for key, value := range headers {
-		(*reqHeaders)[key] = value
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
 	}
 
 	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 	resJSONString, err := utils.HTTPGet(url, &headers)
-	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPGet call, err: %v", err)
-		return err
-	}
-
-	log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
-	err2 := json.Unmarshal([]byte(resJSONString), output)
-	if err2 != nil {
-		log.WriteDebug("TFError| error in Unmarshal, err: %v", err2)
-		return fmt.Errorf("failed to unmarshal json response: %+v", err2)
-	}
-
-	return nil
-}
-
-func GetMTCall(storageSetting model.InfraGwSettings, apiSuf string, reqHeaders *map[string]string, output interface{}) error {
-	log := commonlog.GetLogger()
-	log.WriteEnter()
-	defer log.WriteExit()
-
-	authHeaders, err := GetAuthTokenHeader(storageSetting.Address, storageSetting.Username, storageSetting.Password)
-
-	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
-		return err
-	}
-
-	for key, value := range authHeaders {
-		(*reqHeaders)[key] = value
-	}
-
-	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
-	resJSONString, err := utils.HTTPGet(url, &authHeaders)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in utils.HTTPGet call, err: %v", err)
@@ -91,8 +58,10 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 		return nil, err
 	}
 
-	for key, value := range headers {
-		(*reqHeaders)[key] = value
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
@@ -160,8 +129,10 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 		return nil, err
 	}
 
-	for key, value := range headers {
-		(*reqHeaders)[key] = value
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
@@ -224,8 +195,10 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 		return nil, err
 	}
 
-	for key, value := range headers {
-		(*reqHeaders)[key] = value
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)

@@ -11,6 +11,7 @@ type InfraGwManager interface {
 	GetStorageDevice(storageId string) (*model.StorageDevice, error)
 	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
+	AddMTStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	// Storage Port Management
 	GetStoragePorts(storageId string) (*model.StoragePorts, error)
 	GetParityGroups(storageId string) (*model.ParityGroups, error)
@@ -33,10 +34,13 @@ type InfraGwManager interface {
 
 	//Volume management
 	GetVolumes(storageId string) (*model.Volumes, error)
-	GetVolumeByID(storageId string, volumeID string) (*model.VolumeInfo, error)
+	GetVolumeByID(storageId string, volumeID string) (*model.Volume, error)
 	CreateVolume(storageId string, reqBody *model.CreateVolumeParams) (*string, error)
+	CreateMTVolume(storageId string, reqBody *model.CreateVolumeParams) (*string, error)
 	UpdateVolume(storageId string, volumeID string, reqBody *model.UpdateVolumeParams) (*string, error)
 	DeleteVolume(storageId string, volumeID string) error
+	DeleteMTVolume(storageId string, volumeID string) error
+	GetVolumesByPartnerSubscriberID(storageId string) (*model.Volumes, error)
 
 	//UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)
@@ -50,7 +54,7 @@ type InfraGwManager interface {
 	//Multi-tenancy Management
 	GetAllPartners() (*[]model.Partner, error)
 	GetPartner(partnerId string) (*model.Partner, error)
-	GetAllSubscribers(partnerId string) (*model.Subscribers, error)
+	GetAllSubscribers(partnerId string) (*[]model.Subscriber, error)
 	GetSubscriber(partnerId string, subscriberId string) (*model.Subscriber, error)
 	GetSubscriberResources(partnerId string, subscriberId string) (*model.SubscriberDetails, error)
 	RegisterSubscriber(reqBody *model.RegisterSubscriberReq) (*string, error)

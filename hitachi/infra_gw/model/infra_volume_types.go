@@ -40,6 +40,12 @@ type Volumes struct {
 	Data    []VolumeInfo `json:"data"`
 }
 
+type Volume struct {
+	Path    string     `json:"path"`
+	Message string     `json:"message"`
+	Data    VolumeInfo `json:"data"`
+}
+
 type CreateVolumeParams struct {
 	Name                         string `json:"name,omitempty"`
 	PoolID                       int    `json:"poolId,omitempty"`

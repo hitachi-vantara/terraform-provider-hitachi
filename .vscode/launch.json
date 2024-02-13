@@ -11,9 +11,9 @@
             "mode": "local",
             // update following processId to debug
             // also, uncomment line -> time.Sleep(10 * time.Second) in provider.go
-            // command: ps -A | grep terraform
+            // command: ps -A | grep terraform-provi
             // copy processId of terraform-provi
-            "processId": 0
+            "processId": 1127331
         }
     ]
 }

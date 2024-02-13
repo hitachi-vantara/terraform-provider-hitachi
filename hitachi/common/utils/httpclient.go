@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"io"
 	"net/http"
 	"reflect"
 	"time"
@@ -83,18 +82,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }
 
 func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {

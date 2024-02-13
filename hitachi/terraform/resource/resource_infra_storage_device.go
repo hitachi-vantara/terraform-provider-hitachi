@@ -58,7 +58,7 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("storage_device", list); err != nil {
+	if err := d.Set("storage_devices", list); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
@@ -104,7 +104,7 @@ func resourceInfraStorageDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("storage_device", list); err != nil {
+	if err := d.Set("storage_devices", list); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}

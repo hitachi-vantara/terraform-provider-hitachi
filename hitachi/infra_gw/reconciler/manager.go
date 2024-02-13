@@ -42,4 +42,8 @@ type InfraGwManager interface {
 	GetUcpSystems() (*model.UcpSystems, error)
 
 	// CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (task *model.TaskResponse, err error)
+
+	//MT Management
+
+	GetPartnerAndSubscriberId(userName string) (*model.MTDetails, error)
 }

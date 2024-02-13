@@ -38,7 +38,7 @@ func (psm *infraGwManager) GetPartner(partnerId string) (*model.Partner, error) 
 	var apiSuf string
 	psm.setting.V3API = true
 
-	apiSuf = fmt.Sprintf("partner/%s", partnerId)
+	apiSuf = fmt.Sprintf("/partner/%s", partnerId)
 
 	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &partner)
 	if err != nil {
@@ -50,16 +50,16 @@ func (psm *infraGwManager) GetPartner(partnerId string) (*model.Partner, error) 
 }
 
 // GetAllSubscribers gets all subscribers information
-func (psm *infraGwManager) GetAllSubscribers(partnerId string) (*model.Subscribers, error) {
+func (psm *infraGwManager) GetAllSubscribers(partnerId string) (*[]model.Subscriber, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	var subscribers model.Subscribers
+	var subscribers *[]model.Subscriber
 	var apiSuf string
 	psm.setting.V3API = true
 
-	apiSuf = fmt.Sprintf("partner/%s/subscribers", partnerId)
+	apiSuf = fmt.Sprintf("/partner/%s/subscribers", partnerId)
 
 	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &subscribers)
 	if err != nil {
@@ -67,7 +67,7 @@ func (psm *infraGwManager) GetAllSubscribers(partnerId string) (*model.Subscribe
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
-	return &subscribers, nil
+	return subscribers, nil
 }
 
 // GetSubscriber gets  subscriber information
@@ -80,7 +80,7 @@ func (psm *infraGwManager) GetSubscriber(partnerId string, subscriberId string) 
 	var apiSuf string
 	psm.setting.V3API = true
 
-	apiSuf = fmt.Sprintf("partner/%s/subscriber/%s", partnerId, subscriberId)
+	apiSuf = fmt.Sprintf("/partner/%s/subscriber/%s", partnerId, subscriberId)
 
 	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &subscriber)
 	if err != nil {
@@ -101,7 +101,7 @@ func (psm *infraGwManager) GetSubscriberResources(partnerId string, subscriberId
 	var apiSuf string
 	psm.setting.V3API = true
 
-	apiSuf = fmt.Sprintf("partner/%s/subscriber/%s/resources", partnerId, subscriberId)
+	apiSuf = fmt.Sprintf("/partner/%s/subscriber/%s/resources", partnerId, subscriberId)
 
 	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &subscriber)
 	if err != nil {
@@ -158,7 +158,7 @@ func (psm *infraGwManager) UnRegisterSubscriber(subscriberId string) (*string, e
 
 	psm.setting.V3API = true
 
-	apiSuf := fmt.Sprintf("unregister/subscriber/%s", subscriberId)
+	apiSuf := fmt.Sprintf("/unregister/subscriber/%s", subscriberId)
 
 	resp, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {

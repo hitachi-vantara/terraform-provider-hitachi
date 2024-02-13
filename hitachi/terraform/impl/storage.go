@@ -152,6 +152,14 @@ func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.Infra
 			log.WriteDebug("TFError| error in NewEx, err: %v", err)
 			return nil, err
 		}
+
+		mtDetails, err := reconObj.GetPartnerAndSubscriberId(username)
+
+		if err == nil {
+			setting.PartnerId = &mtDetails.PartnerId
+			setting.SubscriberId = &mtDetails.SubscriberId
+		}
+
 		storageDevices, err := reconObj.GetStorageDevices()
 		if err != nil {
 			log.WriteDebug("TFError| error in NewEx, err: %v", err)

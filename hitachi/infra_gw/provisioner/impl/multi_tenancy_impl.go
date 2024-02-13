@@ -5,6 +5,8 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/infra_gw/gateway/impl"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
+
+	"github.com/google/uuid"
 )
 
 // GetUserAdminRoleStatus gets all UCP Systems information
@@ -67,7 +69,7 @@ func (psm *infraGwManager) GetUserDetailsByName(username string) (*model.User, e
 
 }
 
-func (psm *infraGwManager) GetPartnerIdWithStatus(username string) (bool, *string, error) {
+func (psm *infraGwManager) GetPartnerAndSubscriberId(username string) (bool, *string, *string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -81,29 +83,74 @@ func (psm *infraGwManager) GetPartnerIdWithStatus(username string) (bool, *strin
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
-		return false, nil, err
+		return false, nil, nil, err
 	}
 
 	adminStatus, _, err := psm.GetUserAdminRoleStatus(username)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetUserAdminRoleStatus call, err: %v", err)
-		return *adminStatus, nil, err
+		return *adminStatus, nil, nil, err
 	}
 
 	if !*adminStatus {
-		return *adminStatus, nil, nil
+		return *adminStatus, nil, nil, nil
 	}
 
 	partners, err := gatewayObj.GetAllPartners()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetAllUsers gateway call, err: %v", err)
-		return false, nil, err
+		log.WriteDebug("TFError| error in GetAllPartners gateway call, err: %v", err)
+		return false, nil, nil, err
 	}
 
-	if partners != nil || len(*partners) > 0 {
+	if len(*partners) > 0 {
+		subId, err := psm.GetOrCreateRandomSubscriber((*partners)[0].PartnerID)
+		if err != nil {
+			log.WriteDebug("TFError| error in GetAllSubscribers gateway call, err: %v", err)
+			return false, nil, nil, err
+		}
+
 		log.WriteInfo("Found partner ID with %s", (*partners)[0].PartnerID)
 		log.WriteDebug("Found partner with %s", (*partners))
-		return *adminStatus, &(*partners)[0].PartnerID, nil
+		return *adminStatus, &(*partners)[0].PartnerID, subId, nil
 	}
-	return false, nil, nil
+	return false, nil, nil, nil
+}
+
+func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings{
+		Username: psm.setting.Username,
+		Password: psm.setting.Password,
+		Address:  psm.setting.Address,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	subs, _ := gatewayObj.GetAllSubscribers(partnerId)
+
+	if subs == nil {
+		newSubscriberId := uuid.New().String()
+		reqData := &model.RegisterSubscriberReq{
+			Name:         model.DefaultSubscriberName,
+			PartnerID:    partnerId,
+			SubscriberID: newSubscriberId,
+		}
+		_, err := gatewayObj.RegisterSubscriber(reqData)
+
+		if err != nil {
+			log.WriteDebug("TFError| error in RegisterSubscriber gateway call, err: %v", err)
+			return nil, err
+		}
+		return &newSubscriberId, err
+	}
+
+	return &(*subs)[0].SubscriberId, nil
+
 }

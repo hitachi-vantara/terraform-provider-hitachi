@@ -1,7 +1,8 @@
 package terraform
 
 import (
-	"encoding/json"
+	// "encoding/json"
+
 	"fmt"
 	"strconv"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
@@ -13,7 +14,7 @@ import (
 
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 
-	model "terraform-provider-hitachi/hitachi/infra_gw/model"
+	// model "terraform-provider-hitachi/hitachi/infra_gw/model"
 	reconimpl "terraform-provider-hitachi/hitachi/infra_gw/reconciler/impl"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
@@ -67,11 +68,9 @@ func CreateInfraVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo,
 	if err != nil {
 		return nil, err
 	}
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	setting := reconcilermodel.InfraGwSettings(*storageSetting)
+
+	log.WriteDebug("Found settings for address %s>>>>>>>>>>>>>>>>>", address, setting)
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
@@ -114,22 +113,7 @@ func CreateInfraVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo,
 		return nil, err
 	}
 
-	jsonDataBefore, err := json.Marshal(&volData)
-	if err != nil {
-		log.WriteDebug("Error marshaling to JSON:", err)
-
-	}
-
-	log.WriteDebug("JsonBefore >>>>>>>>>>: %s", string(jsonDataBefore))
 	terraformModelVol := terraformmodel.InfraVolumeInfo{VolumeInfo: *volData}
-
-	jsonDataAfter, err := json.Marshal(terraformModelVol)
-	if err != nil {
-		log.WriteDebug("Error marshaling to JSON:", err)
-
-	}
-
-	log.WriteDebug("jsonDataAfter >>>>>>>>>>: %s", string(jsonDataAfter))
 
 	return &terraformModelVol, nil
 }
@@ -197,11 +181,7 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 		return nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	setting := reconcilermodel.InfraGwSettings(*storageSetting)
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
@@ -217,7 +197,7 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 		return nil, err
 	}
 
-	var result model.Volumes
+	var result reconcilermodel.Volumes
 	if isUndefindLdev {
 		result.Path = response.Path
 		result.Message = response.Message
@@ -305,11 +285,7 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 		return nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	setting := reconcilermodel.InfraGwSettings(*storageSetting)
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
@@ -325,7 +301,7 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 		return nil, err
 	}
 
-	var result model.Volumes
+	var result reconcilermodel.Volumes
 
 	result.Path = response.Path
 	result.Message = response.Message
@@ -481,11 +457,7 @@ func DeleteInfraVolume(d *schema.ResourceData) error {
 		return err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	setting := reconcilermodel.InfraGwSettings(*storageSetting)
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
@@ -536,11 +508,7 @@ func UpdateInfraVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo,
 		return nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	setting := reconcilermodel.InfraGwSettings(*storageSetting)
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {

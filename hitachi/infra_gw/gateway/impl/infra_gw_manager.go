@@ -17,6 +17,8 @@ func newInfraGwManagerEx(setting model.InfraGwSettings) (*infraGwManager, error)
 			Username: setting.Username,
 			Password: setting.Password,
 			Address:  setting.Address,
+			PartnerId: setting.PartnerId,
+			SubscriberId: setting.SubscriberId,
 			V3API: false,
 		},
 	}

@@ -111,3 +111,8 @@ type PatchStorageDeviceParam struct {
 	Password  string `json:"password,omitempty"`
 	OutOfBand bool   `json:"outOfBand,omitempty"`
 }
+
+type StorageDeviceToPartnerReq struct {
+	PartnerId  string `json:"partnerId"`
+	ResourceId string `json:"resourceId"`
+}
