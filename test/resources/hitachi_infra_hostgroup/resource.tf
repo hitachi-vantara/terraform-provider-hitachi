@@ -13,7 +13,7 @@ resource "hitachi_infra_hostgroup" "demo_fc_hg" {
     ldev_id = 294    
     lun     = 14  
   }
-  ucp_system = "UCP-CI-11234"
+  system = "UCP-CI-11234"
 }
 
 /*

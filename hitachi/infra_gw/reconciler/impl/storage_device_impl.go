@@ -196,7 +196,7 @@ func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput 
 				log.WriteDebug("TFError| error in createUcpSystem call, err: %v", err)
 				return nil, err
 			}
-			createInput.UcpSystem = reconcilerUcpSystem.Data.SerialNumber
+			createInput.UcpSystem = reconcilerUcpSystem.Data.Name
 		}
 		reconcilerSd, err := psm.addStorageDevice(createInput)
 		if err != nil {

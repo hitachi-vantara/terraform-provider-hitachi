@@ -100,21 +100,7 @@ func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody inter
 		return nil, err
 	}
 
-	var response model.Response
-	err = json.Unmarshal([]byte(*taskString), &response)
-	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
-		return nil, err
-	}
-
-	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)
-	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForTask call, task: %v err: %v", task, err)
-		return nil, err
-	}
-
-	return &response.Data.ResourceId, nil
+	return MakeFinalResponse(storageSetting, taskString)
 }
 
 func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
@@ -166,21 +152,7 @@ func PatchCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody inte
 		return nil, err
 	}
 
-	var response model.Response
-	err = json.Unmarshal([]byte(*taskString), &response)
-	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
-		return nil, err
-	}
-
-	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)
-	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForTask call, task: %v err: %v", task, err)
-		return nil, err
-	}
-
-	return &response.Data.ResourceId, nil
+	return MakeFinalResponse(storageSetting, taskString)
 }
 
 func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
@@ -232,12 +204,39 @@ func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody int
 		return nil, err
 	}
 
+	return MakeFinalResponse(storageSetting, taskString)
+}
+
+func MakeFinalResponse(storageSetting model.InfraGwSettings, taskString *string) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	var response model.Response
-	err = json.Unmarshal([]byte(*taskString), &response)
+	err := json.Unmarshal([]byte(*taskString), &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
+	}
+
+	if response.Data.TaskId == "" {
+
+		var basicResponse model.BasicResponse
+		err := json.Unmarshal([]byte(*taskString), &basicResponse)
+		if err != nil {
+			log.WriteError(err)
+			log.WriteDebug("TFError| error in Marshal call, err: %v", err)
+			return nil, err
+		}
+		response.Data.TaskId = basicResponse.TaskId
+
+		reString, err := json.Marshal(response)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return nil, err
+		}
+		taskString = func(s string) *string { return &s }(string(reString))
 	}
 
 	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)

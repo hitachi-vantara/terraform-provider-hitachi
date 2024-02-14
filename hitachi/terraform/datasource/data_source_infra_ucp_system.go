@@ -51,11 +51,11 @@ func DataSourceInfraUcpSystemRead(ctx context.Context, d *schema.ResourceData, m
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("ucp_systems", list); err != nil {
+	if err := d.Set("systems", list); err != nil {
 		return diag.FromErr(err)
 	}
 
-	log.WriteDebug("ucp_systems: %+v\n", response)
+	log.WriteDebug("systems: %+v\n", response)
 	if serial != "" && name != "" {
 		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	} else {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	// "time"
+
 	// "fmt"
 	// "strconv"
 	// "time"
@@ -77,7 +79,7 @@ func Provider() *schema.Provider {
 			"hitachi_infra_chap_users":      datasourceimpl.DataSourceInfraChapUsers(),
 			"hitachi_infra_volumes":         datasourceimpl.DataSourceInfraVolumes(),
 			"hitachi_infra_volume":          datasourceimpl.DataSourceInfraVolume(),
-			"hitachi_infra_ucp_systems":     datasourceimpl.DataSourceInfraUcpSystems(),
+			"hitachi_infra_systems":         datasourceimpl.DataSourceInfraUcpSystems(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

@@ -20,11 +20,48 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 		return nil, err
 	}
 
-	if psm.setting.PartnerId != nil {
-		return gatewayObj.GetVolumesByPartnerSubscriberID(id)
+	return gatewayObj.GetVolumes(id)
+}
+
+// GetVolumesFromLdevIds gets volumes information
+func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId int, toLdevId int) (*model.Volumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	gateSetting := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
 	}
 
-	return gatewayObj.GetVolumes(id)
+	return gatewayObj.GetVolumesFromLdevIds(id, fromLdevId, toLdevId)
+}
+
+func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId *int, toLdevId *int) (*model.MTVolumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	gateSetting := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	defaultId := 0
+	if fromLdevId == nil {
+		fromLdevId = &defaultId
+	}
+	if toLdevId == nil {
+		toLdevId = &defaultId
+	}
+
+	return gatewayObj.GetVolumesByPartnerSubscriberID(id, *fromLdevId, *toLdevId)
 }
 
 // GetVolume by id gets volume information

@@ -33,7 +33,7 @@ var InfraStorageDeviceSchema = map[string]*schema.Schema{
 		Description: "Username",
 	},
 
-	"ucp_systems": &schema.Schema{
+	"systems": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Description: "List of UCP Systems",
@@ -468,7 +468,7 @@ var ResourceInfraStorageDeviceSchema = map[string]*schema.Schema{
 		Description: "Out of band",
 	},
 
-	"ucp_system": &schema.Schema{
+	"system": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Description: "ID of the UCP System",

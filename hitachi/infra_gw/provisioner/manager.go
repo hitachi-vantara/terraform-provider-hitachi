@@ -38,6 +38,8 @@ type InfraGwManager interface {
 	CreateVolume(storageId string, redBody *model.CreateVolumeParams) (*string, error)
 	UpdateVolume(storageId string, volumeId string, redBody *model.UpdateVolumeParams) (*string, error)
 	DeleteVolume(storageId string, volumeId string) error
+	GetVolumesFromLdevIds(id string, fromLdevId int, toLdevId int) (*model.Volumes, error)
+	GetVolumesByPartnerSubscriberID(id string, fromLdevId *int, toLdevId *int) (*model.MTVolumes, error) 
 
 	//UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)

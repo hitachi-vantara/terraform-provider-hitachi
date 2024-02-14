@@ -79,7 +79,7 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceInfraStorageDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return datasourceimpl.DataSourceInfraHostGroupRead(ctx, d, m)
+	return datasourceimpl.DataSourceInfraStorageDevicesRead(ctx, d, m)
 }
 
 func resourceInfraStorageDeviceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

@@ -23,6 +23,46 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	return provObj.GetVolumes(id)
 }
 
+func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId *int, toLdevId *int) (*model.Volumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	provSetting := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(provSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+	defualtId := 0
+
+	if fromLdevId == nil {
+		fromLdevId = &defualtId
+	}
+	if toLdevId == nil {
+		toLdevId = &defualtId
+	}
+
+	return provObj.GetVolumesFromLdevIds(id, *fromLdevId, *toLdevId)
+}
+
+func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId int, toLdevId int) (*model.MTVolumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	provSetting := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(provSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return provObj.GetVolumesByPartnerSubscriberID(id, &fromLdevId, &toLdevId)
+}
+
 // ReconcileVolume will reconcile and call Create/Update/delete Volume
 func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.CreateVolumeParams, volumeID *string) (*model.VolumeInfo, error) {
 	log := commonlog.GetLogger()
@@ -126,6 +166,38 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 	}
 
 	return nil
+
+}
+
+func (psm *infraGwManager) GetMTVolumeByName(storageId string, volumeName string) (*model.VolumeInfo, bool) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	provSetting := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(provSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, false
+	}
+
+	volumes, err := provObj.GetVolumes(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetVolumes call, err: %v", err)
+		return nil, false
+	}
+
+	var ProvVolume *model.VolumeInfo
+	status := false
+	for _, volume := range volumes.Data {
+		if volume.Name == volumeName {
+			status = true
+			ProvVolume = &volume
+			break
+		}
+	}
+	return ProvVolume, status
 
 }
 

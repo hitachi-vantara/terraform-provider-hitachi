@@ -267,6 +267,70 @@ var InfraVolumeInfoSchema = map[string]*schema.Schema{
 	},
 }
 
+var PartnerInfraVolumeInfoSchema = map[string]*schema.Schema{
+	"storage_serial_number": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Serial number of storage",
+	},
+	"resource_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Resource Id",
+	},
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Storage Id",
+	},
+	"type": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Type of resource",
+	},
+	"entitlement_status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Entitlement Status of the volume",
+	},
+	"partner_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "partner Id id  of the volume",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the volume",
+	},
+	"used_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Used capacity in MB",
+	},
+	"total_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total capacity in MB",
+	},
+
+	"ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "ldev id of the volume",
+	},
+	"pool_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Pool Id of the volume",
+	},
+	"pool_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Pool name of the volume",
+	},
+}
+
 var DataInfraVolumeSchema = map[string]*schema.Schema{
 	"storage_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -329,6 +393,17 @@ var DataInfraVolumesSchema = map[string]*schema.Schema{
 		Description: "This is volumes output",
 		Elem: &schema.Resource{
 			Schema: InfraVolumeInfoSchema,
+		},
+	},
+
+	//output
+	"partner_volumes": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is partners volumes output",
+		Elem: &schema.Resource{
+			Schema: PartnerInfraVolumeInfoSchema,
 		},
 	},
 }

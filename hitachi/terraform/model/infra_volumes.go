@@ -8,12 +8,23 @@ type InfraVolumeInfo struct {
 	model.VolumeInfo
 }
 
+type MtInfraVolumeInfo struct {
+	model.MTVolumeInfo
+}
+
+
 type InfraVolumes struct {
 	Path    string            `json:"path"`
 	Message string            `json:"message"`
 	Data    []InfraVolumeInfo `json:"data"`
 }
 
+
+type MTInfraVolumes struct {
+	Path    string            `json:"path"`
+	Message string            `json:"message"`
+	Data    []MtInfraVolumeInfo `json:"data"`
+}
 
 type InfraVolumeTypes struct {
 	Name                         string `json:"name,omitempty"`

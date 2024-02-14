@@ -12,8 +12,9 @@
             // update following processId to debug
             // also, uncomment line -> time.Sleep(10 * time.Second) in provider.go
             // command: ps -A | grep terraform-provi
+            // command 2: watch -n 2 "ps -A | grep terraform-provi"
             // copy processId of terraform-provi
-            "processId": 1127331
+            "processId": 1640837
         }
     ]
 }

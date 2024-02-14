@@ -495,7 +495,7 @@ func CreateInfraIscsiTargetRequestFromSchema(d *schema.ResourceData) (*terraform
 		createInput.HostModeOptions = chapUsers
 	}
 
-	ucpSystem, ok := d.GetOk("ucp_system")
+	ucpSystem, ok := d.GetOk("system")
 	if ok {
 		us := ucpSystem.(string)
 		createInput.UcpSystem = us

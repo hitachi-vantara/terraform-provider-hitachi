@@ -62,3 +62,26 @@ type UpdateVolumeParams struct {
 	Capacity                     string `json:"capacity,omitempty"`
 	DeduplicationCompressionMode string `json:"deduplicationCompressionMode,omitempty"`
 }
+
+type MTVolumeInfo struct {
+	ResourceId        string `json:"resourceId"`
+	EntitlementStatus string `json:"entitlementStatus"`
+	PartnerId         string `json:"partnerId"`
+	SubscriberId      string `json:"subscriberId"`
+	StorageId         string `json:"storageId"`
+	Type              string `json:"type"`
+
+	StorageVolumeInfo struct {
+		TotalCapacity int64  `json:"totalCapacity"`
+		UsedCapacity  int64  `json:"usedCapacity"`
+		PoolName      string `json:"poolName"`
+		LdevId        int    `json:"ldevId"`
+		PoolId        int    `json:"poolId"`
+	} `json:"storageVolumeInfo"`
+}
+
+type MTVolumes struct {
+	Path    string         `json:"path"`
+	Message string         `json:"message"`
+	Data    []MTVolumeInfo `json:"data"`
+}

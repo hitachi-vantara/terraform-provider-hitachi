@@ -27,18 +27,38 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	return &response, nil
 }
 
+func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId int, toLdevId int) (*model.Volumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var response model.Volumes
+
+	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes?fromLdevId=%v&toLdevId=%v", id, fromLdevId, toLdevId)
+	log.WriteDebug(apiSuf)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &response)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return &response, nil
+}
+
 // GetMTVolumes gets volumes information from multi-tenancy
-func (psm *infraGwManager) GetMTVolumes(storageid string) (*model.Volumes, error) {
+func (psm *infraGwManager) GetMTVolumes(storageid string) (*model.MTVolumes, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	psm.setting.V3API = true
 
-	var response model.Volumes
+	var response model.MTVolumes
 	headers := map[string]string{
-		"partnerId":    *psm.setting.PartnerId,
-		"subscriberId": *psm.setting.SubscriberId,
+		"partnerId": *psm.setting.PartnerId,
+	}
+	if psm.setting.SubscriberId != nil {
+		headers["subscriberId"] = *psm.setting.SubscriberId
 	}
 
 	apiSuf := fmt.Sprintf("/storage/%s/volume", storageid)
@@ -60,17 +80,9 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeID string) (*mo
 
 	var response model.Volume
 
-	psm.setting.V3API = true
-
-	headers := map[string]string{
-		"partnerId": *psm.setting.PartnerId,
-	}
-	if psm.setting.SubscriberId != nil {
-		headers["subscriberId"] = *psm.setting.SubscriberId
-	}
 	apiSuf := fmt.Sprintf("/storage/devices/%s/volumes/%s", storageId, volumeID)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &response)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -88,28 +100,30 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeID string) (*mo
 }
 
 // Get GetVolumeByPartnerSubscriberID
-func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(storageId string) (*model.Volumes, error) {
+func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(storageId string, fromLdevId int, toLdevId int) (*model.MTVolumes, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	var response model.Volumes
+	var response model.MTVolumes
 
-	apiSuf := fmt.Sprintf("/storage/%s/volume", storageId)
+	psm.setting.V3API = true
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &response)
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+	if psm.setting.SubscriberId != nil {
+		headers["subscriberId"] = *psm.setting.SubscriberId
+	}
+
+	apiSuf := fmt.Sprintf("/storage/%s/volume?fromLdevId=%v&toLdevId=%v", storageId, fromLdevId, toLdevId)
+
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
-	jsonDataBefore, err := json.Marshal(response)
-	if err != nil {
-		log.WriteDebug("Error marshaling to JSON:", err)
-
-	}
-
-	log.WriteDebug("in gateway side in in get volume by id  >>>>>>>>>>: %s", string(jsonDataBefore))
 
 	return &response, nil
 }
