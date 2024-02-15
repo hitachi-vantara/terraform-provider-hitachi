@@ -9,7 +9,7 @@ import (
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 
-	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
+	// datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
 
@@ -65,7 +65,33 @@ func resourceInfraStorageVolumeCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceInfraStorageVolumeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return datasourceimpl.DataSourceInfraVolumesRead(ctx, d, m)
+
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	// fetch all volumes
+
+	volume, err := impl.GetInfraSingleVolume(d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	volumeSchma := impl.ConvertInfraVolumeToSchema(volume)
+	log.WriteDebug("lun: %+v\n", *volumeSchma)
+
+	volList := []map[string]interface{}{
+		*volumeSchma,
+	}
+
+	if err := d.Set("volume", volList); err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(volume.ResourceId)
+	log.WriteInfo("volumes read successfully")
+
+	return nil
 }
 
 func resourceInfraStorageVolumeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

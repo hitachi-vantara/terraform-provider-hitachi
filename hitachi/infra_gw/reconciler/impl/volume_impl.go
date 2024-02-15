@@ -71,15 +71,15 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 
 	// Get GetVolumeByName
 	if createInput != nil {
-		volumeInfo, ok := psm.GetVolumeByName(storageId, createInput.Name)
-		if !ok {
+		_, ok := psm.GetVolumeByName(storageId, createInput.Name)
+		if !ok && volumeID == nil {
 			_, err := psm.CreateVolume(storageId, createInput)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateVolume call, err: %v", err)
 				return nil, err
 			}
 		} else {
-			_, err := psm.UpdateVolume(storageId, volumeInfo.ResourceId, createInput)
+			_, err := psm.UpdateVolume(storageId, volumeID, createInput)
 			if err != nil {
 				log.WriteDebug("TFError| error in UpdateVolume call, err: %v", err)
 				return nil, err
@@ -122,7 +122,7 @@ func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateV
 
 }
 
-func (psm *infraGwManager) UpdateVolume(storageId string, volumeId string, reqBody *model.CreateVolumeParams) (*string, error) {
+func (psm *infraGwManager) UpdateVolume(storageId string, volumeId *string, reqBody *model.CreateVolumeParams) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -134,9 +134,21 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId string, reqBo
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
-	updateVolParams := model.UpdateVolumeParams{Name: reqBody.Name, Capacity: reqBody.Capacity, DeduplicationCompressionMode: reqBody.DeduplicationCompressionMode}
 
-	volumeID, err := provObj.UpdateVolume(storageId, volumeId, &updateVolParams)
+	updateVolParams := model.UpdateVolumeParams{}
+
+	if reqBody.Name != "" {
+
+		updateVolParams.Name = reqBody.Name
+	}
+	if reqBody.DeduplicationCompressionMode != "" {
+		updateVolParams.DeduplicationCompressionMode = reqBody.DeduplicationCompressionMode
+	}
+	if reqBody.Capacity != "" {
+		updateVolParams.Capacity = reqBody.Capacity
+	}
+
+	volumeID, err := provObj.UpdateVolume(storageId, *volumeId, &updateVolParams)
 	if err != nil {
 		log.WriteDebug("TFError| error in UpdateVolume call, err: %v", err)
 		return nil, err

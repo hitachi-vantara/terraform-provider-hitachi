@@ -347,6 +347,11 @@ var DataInfraVolumeSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "Ldev ID of lun",
 	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Id of the subscriber which is attached to the volume",
+	},
 	// output
 	"volume": &schema.Schema{
 		Type:        schema.TypeList,
@@ -384,6 +389,11 @@ var DataInfraVolumesSchema = map[string]*schema.Schema{
 		Type:        schema.TypeBool,
 		Optional:    true,
 		Description: "If set to true, returns not allocated luns else otherwise",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Id of the subscriber which is attached to the volume",
 	},
 	// output
 	"volumes": &schema.Schema{
@@ -423,13 +433,13 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
-		Optional:    true,
+		Required:    true,
 		Description: "name number of volume to be created",
 	},
 
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
+		Optional:    true,
 		Description: "Pool ID in which volume is to be created",
 	},
 	"lun_id": &schema.Schema{
@@ -444,20 +454,26 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	},
 	"parity_group_id": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
+		Optional:    true,
 		Description: "Parity group ID in which volume is to be created",
+	},
+
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Id of the subscriber which is attached to the volume",
 	},
 
 	"capacity": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
+		Optional:    true,
 		Description: "capacity(Size) of volume to be created",
 	},
 	//Remove dedup from this version
 
 	"system": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
+		Optional:    true,
 		Description: "System name under volume to be created",
 	},
 	"deduplication_compression_mode": &schema.Schema{

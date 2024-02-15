@@ -471,7 +471,7 @@ var ResourceInfraStorageDeviceSchema = map[string]*schema.Schema{
 	"system": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "ID of the UCP System",
+		Description: "Name of the System",
 	},
 
 	// output

@@ -18,12 +18,12 @@ import (
 func DataSourceInfraVolume() *schema.Resource {
 	return &schema.Resource{
 		Description: ":meta:subcategory:VSP Storage Volumess:The following request obtains information about Volumes.",
-		ReadContext: dataSourceInfraVolumeRead,
+		ReadContext: DataSourceInfraVolumeRead,
 		Schema:      schemaimpl.DataInfraVolumeSchema,
 	}
 }
 
-func dataSourceInfraVolumeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceInfraVolumeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -36,6 +36,7 @@ func dataSourceInfraVolumeRead(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	spList := []map[string]interface{}{}
+
 	for _, sp := range *volumes {
 		eachSp := impl.ConvertInfraVolumeToSchema(&sp)
 		log.WriteDebug("it: %+v\n", *eachSp)
