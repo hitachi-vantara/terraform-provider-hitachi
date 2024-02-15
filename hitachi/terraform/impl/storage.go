@@ -158,6 +158,9 @@ func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.Infra
 		if err == nil {
 			setting.PartnerId = &mtDetails.PartnerId
 			setting.SubscriberId = &mtDetails.SubscriberId
+		} else {
+			log.WriteDebug("TFError| error in GetPartnerAndSubscriberId, err: %v", err)
+			return nil, err
 		}
 
 		storageDevices, err := reconObj.GetStorageDevices()

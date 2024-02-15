@@ -306,7 +306,7 @@ func ConvertInterfaceToSlice(interface_obj []interface{}) []string {
 func MakeResponse(resp http.Response) (string, error) {
 
 	var ErrorModel *PorcelainError
-
+	var message string
 	body, bodyerr := io.ReadAll(resp.Body)
 
 	if IsHttpError(resp.StatusCode) {
@@ -317,7 +317,14 @@ func MakeResponse(resp http.Response) (string, error) {
 				log.Debug(err)
 				return "", fmt.Errorf("%v", resp.Status)
 			}
-			return "", fmt.Errorf("%s", ErrorModel.Error.Message)
+
+			if ErrorModel.Error.Message == "" {
+				message = ErrorModel.Message
+			} else {
+				message = ErrorModel.Error.Message
+			}
+
+			return "", fmt.Errorf("%s", message)
 		}
 		return "", fmt.Errorf("%v", resp.Status)
 

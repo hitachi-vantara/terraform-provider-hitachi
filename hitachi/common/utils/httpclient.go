@@ -21,8 +21,9 @@ func IsHttpError(statusCode int) bool {
 }
 
 type PorcelainError struct {
-	Path  string `json:"path"`
-	Error struct {
+	Path    string `json:"path"`
+	Message string `json:"message"`
+	Error   struct {
 		Message string `json:"message"`
 	} `json:"error"`
 }

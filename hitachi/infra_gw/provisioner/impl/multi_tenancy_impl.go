@@ -89,7 +89,7 @@ func (psm *infraGwManager) GetPartnerAndSubscriberId(username string) (bool, *st
 	adminStatus, _, err := psm.GetUserAdminRoleStatus(username)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetUserAdminRoleStatus call, err: %v", err)
-		return *adminStatus, nil, nil, err
+		return false, nil, nil, err
 	}
 
 	if !*adminStatus {

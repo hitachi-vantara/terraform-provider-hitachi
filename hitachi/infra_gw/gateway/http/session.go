@@ -67,6 +67,7 @@ func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
 	resJSONString, err := utils.HTTPPostWithCreds(url, nil, nil, reqBody) // no additional headers, no request body
 	if err != nil {
 		log.WriteError(err)
+		log.WriteError(resJSONString)
 		log.WriteDebug("TFError| error in HTTPPostWithCreds call, err: %v", err)
 		return "", err
 	}

@@ -16,7 +16,7 @@ func newMTTestManager() (*infraGwManager, error) {
 	SubscriberId := "f260ca80-ec80-423c-9af8-dcac117bd068"
 	setting := model.InfraGwSettings{
 		Username:     "ucpadmin",
-		Password:     "Passw0rd!",
+		Password:     "Passw0rd!d",
 		PartnerId:    &PartnerId,
 		SubscriberId: &SubscriberId,
 		Address:      "172.25.22.81",
@@ -30,7 +30,7 @@ func newMTTestManager() (*infraGwManager, error) {
 }
 
 // go test -v -run TestGetDynamicPools
-func xTestGetPartners(t *testing.T) {
+func TestGetPartners(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
