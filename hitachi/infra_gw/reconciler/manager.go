@@ -40,6 +40,7 @@ type InfraGwManager interface {
 	ReconcileVolume(storageId string, createInput *model.CreateVolumeParams, volumeID *string) (*model.VolumeInfo, error)
 	GetVolumesFromLdevIds(id string, fromLdevId *int, toLdevId *int) (*model.Volumes, error)
 	GetVolumesByPartnerSubscriberID(id string, fromLdevId int, toLdevId int) (*model.MTVolumes, error)
+	GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeInfo, error)
 
 	
 	// UCP System Management

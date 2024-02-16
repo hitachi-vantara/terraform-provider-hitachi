@@ -267,3 +267,46 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*mo
 	return volumesInfo, nil
 
 }
+
+func (psm *infraGwManager) GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeInfo, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	provSetting := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(provSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, nil, err
+	}
+
+	if psm.setting.PartnerId != nil {
+		mtVolumes, err := psm.GetVolumesByPartnerSubscriberID(storageId, 0, 0)
+		if err != nil {
+			log.WriteDebug("TFError| error in GetVolumesByPartnerSubscriberID call, err: %v", err)
+			return nil, nil, err
+		}
+
+		for _, mtVolume := range mtVolumes.Data {
+			if mtVolume.StorageVolumeInfo.LdevId == ldevId {
+				return nil, &mtVolume, nil
+			}
+		}
+	}
+
+	volumesInfo, err := provObj.GetVolumes(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetVolumes call, err: %v", err)
+		return nil, nil, err
+	}
+
+	for _, PrVolume := range volumesInfo.Data {
+		if PrVolume.LdevId == ldevId {
+			return &PrVolume, nil, nil
+		}
+	}
+
+	return nil, nil, nil
+
+}

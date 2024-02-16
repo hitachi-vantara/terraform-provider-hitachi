@@ -203,7 +203,7 @@ func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.Infra
 			IscsiTargetIdMap:  iscsiMap,
 		}
 
-		log.WriteDebug("TFDebug| Infra GW Info: %v", settingAndInfo)
+		// log.WriteDebug("TFDebug| Infra GW Info: %v", settingAndInfo)
 
 		// save this to a cache
 		cache.SetCurrentAddress(address)

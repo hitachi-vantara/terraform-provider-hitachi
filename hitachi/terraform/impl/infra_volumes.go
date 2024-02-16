@@ -283,7 +283,7 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 
 }
 
-func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, error) {
+func GetInfraVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo, *terraformmodel.MtInfraVolumeInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -298,13 +298,13 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if storageId == "" {
 		storageId, err = common.GetStorageIdFromSerial(address, serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		d.Set("storage_id", storageId)
 	}
@@ -312,16 +312,16 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 	if serial == "" {
 		serial, err = common.GetSerialFromStorageId(address, storageId)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		storage_serial_number, err = strconv.Atoi(serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	} else {
 		storage_serial_number, err = strconv.Atoi(serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 	d.Set("serial", storage_serial_number)
@@ -332,12 +332,12 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 	if ok {
 		ldev_id = ldevID.(int)
 		if ldev_id < 0 {
-			return nil, fmt.Errorf("ldev_id must be greater than or equal to 0")
+			return nil, nil, fmt.Errorf("ldev_id must be greater than or equal to 0")
 		}
 	}
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	setting := reconcilermodel.InfraGwSettings(*storageSetting)
@@ -353,41 +353,36 @@ func GetInfraVolume(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo, 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_BEGIN), setting.Address)
-	response, err := reconObj.GetVolumes(storageId)
+	procResponse, mtResponse, err := reconObj.GetVolumeByLDevId(storageId, ldev_id)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetVolumes, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_VOLUMES_FAILED), setting.Address)
-		return nil, err
+		return nil, nil, err
 	}
-
-	var result reconcilermodel.Volumes
-
-	result.Path = response.Path
-	result.Message = response.Message
-
-	if ldev_id >= 0 {
-		for _, p := range response.Data {
-			if p.LdevId == ldev_id {
-				result.Data = append(result.Data, p)
-			}
+	terraformResponse := terraformmodel.InfraVolumeInfo{}
+	terraformMtResponse := terraformmodel.MtInfraVolumeInfo{}
+	if procResponse != nil {
+		err = copier.Copy(&terraformResponse, procResponse)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil, nil, err
 		}
-	}
+	} else if mtResponse != nil {
 
-	// Converting reconciler to terraform
-	terraformResponse := terraformmodel.InfraVolumes{}
+		err = copier.Copy(&terraformMtResponse, mtResponse)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil, nil, err
+		}
 
-	err = copier.Copy(&terraformResponse, result)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
 	}
 	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_END), setting.Address)
 
-	return &terraformResponse.Data, nil
+	return &terraformResponse, &terraformMtResponse, nil
 }
 
 func GetInfraSingleVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo, error) {

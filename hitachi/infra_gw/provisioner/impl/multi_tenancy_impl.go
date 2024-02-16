@@ -109,8 +109,8 @@ func (psm *infraGwManager) GetPartnerAndSubscriberId(username string) (bool, *st
 			return false, nil, nil, err
 		}
 
-		log.WriteInfo("Found partner ID with %s", (*partners)[0].PartnerID)
-		log.WriteDebug("Found partner with %s", (*partners))
+		log.WriteInfo("Found the username %s with partner id %s and subscriber id %s", username, (*partners)[0].PartnerID, *subId)
+		log.WriteDebug("Found partner with %v", (*partners))
 		return *adminStatus, &(*partners)[0].PartnerID, subId, nil
 	}
 	return false, nil, nil, nil
@@ -148,6 +148,7 @@ func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*strin
 			log.WriteDebug("TFError| error in RegisterSubscriber gateway call, err: %v", err)
 			return nil, err
 		}
+		log.WriteInfo("Created one subscriber %s with partner ID %s", newSubscriberId, partnerId)
 		return &newSubscriberId, err
 	}
 
