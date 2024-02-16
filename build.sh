@@ -49,3 +49,6 @@ cd ${TERRAFORM_DIR}
 cp ./rpmbuild/RPMS/x86_64/*.rpm ${TERRAFORM_DIR}
 echo "Finished build rpm for ${BUILD_MODE} version..."
 
+rm -rf   ${RPMBUILD_DIR} || true
+
+rm -rf   terraform-provider-hitachi
