@@ -13,7 +13,7 @@ You must use Golang version 1.20, and set GOPATH to your Golang v1.20 directory.
 # ./build
 ```
 
-The RPM package is in /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
+The RPM package is in /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.5.0-1.el7.x86_64.rpm
 
 
 ## Install RPM package
@@ -31,13 +31,13 @@ Uninstall the old version
 
 Install the new version
 ```
-# /usr/bin/rpm -Uvh HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
+# /usr/bin/rpm -Uvh HV_Storage_Terraform-02.5.0-1.el7.x86_64.rpm
 ```
 
 Check if the hitachi terraform plugin is installed. It must be linked to /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
 ```
-# ls -l /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi 
-lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi -> /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
+# ls -l /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.5/linux_amd64/terraform-provider-hitachi 
+lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.5/linux_amd64/terraform-provider-hitachi -> /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
 ```
 
 ## Use the tf samples

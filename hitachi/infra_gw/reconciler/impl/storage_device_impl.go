@@ -54,11 +54,7 @@ func (psm *infraGwManager) addStorageDevice(createInput *model.CreateStorageDevi
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -80,11 +76,7 @@ func (psm *infraGwManager) updateStorageDevice(storageId string, createInput *mo
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -112,11 +104,7 @@ func (psm *infraGwManager) findUcpSystemBySerial(serial string) (*model.UcpSyste
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -151,11 +139,7 @@ func (psm *infraGwManager) createUcpSystem(reqBody *model.CreateStorageDevicePar
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -212,7 +196,7 @@ func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput 
 				log.WriteDebug("TFError| error in createUcpSystem call, err: %v", err)
 				return nil, err
 			}
-			createInput.UcpSystem = reconcilerUcpSystem.Data.SerialNumber
+			createInput.UcpSystem = reconcilerUcpSystem.Data.Name
 		}
 		reconcilerSd, err := psm.addStorageDevice(createInput)
 		if err != nil {

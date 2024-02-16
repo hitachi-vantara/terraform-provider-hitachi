@@ -152,6 +152,17 @@ func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.Infra
 			log.WriteDebug("TFError| error in NewEx, err: %v", err)
 			return nil, err
 		}
+
+		mtDetails, err := reconObj.GetPartnerAndSubscriberId(username)
+
+		if err == nil {
+			setting.PartnerId = &mtDetails.PartnerId
+			setting.SubscriberId = &mtDetails.SubscriberId
+		} else {
+			log.WriteDebug("TFError| error in GetPartnerAndSubscriberId, err: %v", err)
+			return nil, err
+		}
+
 		storageDevices, err := reconObj.GetStorageDevices()
 		if err != nil {
 			log.WriteDebug("TFError| error in NewEx, err: %v", err)
@@ -192,7 +203,7 @@ func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.Infra
 			IscsiTargetIdMap:  iscsiMap,
 		}
 
-		log.WriteDebug("TFDebug| Infra GW Info: %v", settingAndInfo)
+		// log.WriteDebug("TFDebug| Infra GW Info: %v", settingAndInfo)
 
 		// save this to a cache
 		cache.SetCurrentAddress(address)

@@ -10,7 +10,7 @@ import (
 	//sanmodel "terraform-provider-hitachi/hitachi/storage/san/model"
 )
 
-func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interface{}) error {
+func GetCall(storageSetting model.InfraGwSettings, apiSuf string, reqHeaders *map[string]string, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -22,7 +22,13 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interfa
 		return err
 	}
 
-	url := GetUrl(storageSetting.Address, apiSuf)
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
+	}
+
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 	resJSONString, err := utils.HTTPGet(url, &headers)
 	if err != nil {
 		log.WriteError(err)
@@ -40,7 +46,7 @@ func GetCall(storageSetting model.InfraGwSettings, apiSuf string, output interfa
 	return nil
 }
 
-func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -52,6 +58,12 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 		return nil, err
 	}
 
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
+	}
+
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
@@ -60,7 +72,7 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 	}
 
 	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 
 	// TODO: uncomment following when you need to work on lock and unlock resources
 	// if reqBody == nil {
@@ -77,35 +89,21 @@ func PostCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody 
 	return &taskString, err
 }
 
-func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, redHeader *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	taskString, err := PostCallAsync(storageSetting, apiSuf, reqBody)
+	taskString, err := PostCallAsync(storageSetting, apiSuf, reqBody, redHeader)
 	if err != nil {
 		log.WriteDebug("TFError| error in PostCallAsync call, err: %v", err)
 		return nil, err
 	}
 
-	var response model.Response
-	err = json.Unmarshal([]byte(*taskString), &response)
-	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
-		return nil, err
-	}
-
-	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)
-	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForTask call, task: %v err: %v", task, err)
-		return nil, err
-	}
-
-	return &response.Data.ResourceId, nil
+	return MakeFinalResponse(storageSetting, taskString)
 }
 
-func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -117,6 +115,12 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 		return nil, err
 	}
 
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
+	}
+
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
@@ -125,7 +129,7 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 	}
 
 	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 
 	taskString, err := utils.HTTPPatch(url, &headers, reqBodyInBytes)
 	if err != nil {
@@ -137,35 +141,21 @@ func PatchCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody
 	return &taskString, err
 }
 
-func PatchCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func PatchCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	taskString, err := PatchCallAsync(storageSetting, apiSuf, reqBody)
+	taskString, err := PatchCallAsync(storageSetting, apiSuf, reqBody, reqHeaders)
 	if err != nil {
 		log.WriteDebug("TFError| error in PatchCallAsync call, err: %v", err)
 		return nil, err
 	}
 
-	var response model.Response
-	err = json.Unmarshal([]byte(*taskString), &response)
-	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
-		return nil, err
-	}
-
-	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)
-	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForTask call, task: %v err: %v", task, err)
-		return nil, err
-	}
-
-	return &response.Data.ResourceId, nil
+	return MakeFinalResponse(storageSetting, taskString)
 }
 
-func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -177,6 +167,12 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 		return nil, err
 	}
 
+	if reqHeaders != nil {
+		for key, value := range *reqHeaders {
+			headers[key] = value
+		}
+	}
+
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
@@ -185,7 +181,7 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 	}
 
 	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
-	url := GetUrl(storageSetting.Address, apiSuf)
+	url := GetUrl(storageSetting.Address, apiSuf, storageSetting.V3API)
 
 	taskString, err := utils.HTTPDeleteWithBody(url, &headers, reqBodyInBytes)
 	if err != nil {
@@ -197,23 +193,50 @@ func DeleteCallAsync(storageSetting model.InfraGwSettings, apiSuf string, reqBod
 	return &taskString, err
 }
 
-func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func DeleteCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody interface{}, reqHeaders *map[string]string) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	taskString, err := DeleteCallAsync(storageSetting, apiSuf, reqBody)
+	taskString, err := DeleteCallAsync(storageSetting, apiSuf, reqBody, reqHeaders)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteCallAsync call, err: %v", err)
 		return nil, err
 	}
 
+	return MakeFinalResponse(storageSetting, taskString)
+}
+
+func MakeFinalResponse(storageSetting model.InfraGwSettings, taskString *string) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	var response model.Response
-	err = json.Unmarshal([]byte(*taskString), &response)
+	err := json.Unmarshal([]byte(*taskString), &response)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
+	}
+
+	if response.Data.TaskId == "" {
+
+		var basicResponse model.BasicResponse
+		err := json.Unmarshal([]byte(*taskString), &basicResponse)
+		if err != nil {
+			log.WriteError(err)
+			log.WriteDebug("TFError| error in Marshal call, err: %v", err)
+			return nil, err
+		}
+		response.Data.TaskId = basicResponse.TaskId
+
+		reString, err := json.Marshal(response)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return nil, err
+		}
+		taskString = func(s string) *string { return &s }(string(reString))
 	}
 
 	task, err := CheckResponseAndWaitForTask(storageSetting, taskString)

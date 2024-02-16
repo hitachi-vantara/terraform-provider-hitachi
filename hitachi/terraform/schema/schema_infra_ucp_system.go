@@ -122,7 +122,7 @@ var InfraUcpSystemSchema = map[string]*schema.Schema{
 					Type:        schema.TypeString,
 					Description: "Health State",
 				},
-				"ucp_systems": &schema.Schema{
+				"systems": &schema.Schema{
 					Type:        schema.TypeList,
 					Computed:    true,
 					Description: "List of UCP Systems",
@@ -369,11 +369,11 @@ var DataInfraUcpSystemSchema = map[string]*schema.Schema{
 	},
 
 	// output
-	"ucp_systems": &schema.Schema{
+	"systems": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is ucp systems output",
+		Description: "This is systems output",
 		Elem: &schema.Resource{
 			Schema: InfraUcpSystemSchema,
 		},

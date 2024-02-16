@@ -266,7 +266,7 @@ var ResourceInfraHostGroupSchema = map[string]*schema.Schema{
 			},
 		},
 	},
-	"ucp_system": &schema.Schema{
+	"system": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Description: "The serial number of the preferred UCP system",

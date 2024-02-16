@@ -1,7 +1,7 @@
 
 data "hitachi_infra_volume" "volume" {
-  serial  = 611032
-  ldev_id = 32749
+  serial  = 40014
+  ldev_id = 562
 }
 
 output "volume" {
@@ -9,15 +9,17 @@ output "volume" {
 }
 
 
-/*
-data "hitachi_infra_volumes" "volume1" {
-  serial         = 611032
-  start_ldev_id  = 0
-  end_ldev_id    = 32749
-  undefined_ldev = false
-}
 
-output "volume1" {
-  value = data.hitachi_infra_volumes.volume1
-}
-*/
+# data "hitachi_infra_volumes" "volume1" {
+#   serial         = 40014
+#   start_ldev_id  = 0
+#   end_ldev_id    = 10
+#   undefined_ldev = false
+#   subscriber_id = "46519299-c43c-4c6e-a680-81dce45a3fca"
+  
+# }
+
+# output "volume1" {
+#   value = data.hitachi_infra_volumes.volume1
+# }
+

@@ -1,7 +1,7 @@
 resource "hitachi_infra_hostgroup" "demo_fc_hg" {  
-  serial = 611032
+  serial = 611039
   hostgroup_number = 02  
-  hostgroup_name = "demo-hostgroup-5"   
+  hostgroup_name = "demo-hostgroup-k"   
   port_id = "CL1-A"    
   host_mode_options = [54]   
   host_mode ="vmware extension"
@@ -13,7 +13,7 @@ resource "hitachi_infra_hostgroup" "demo_fc_hg" {
     ldev_id = 294    
     lun     = 14  
   }
-  ucp_system = "UCP-CI-12035"
+  system = "UCP-CI-11234"
 }
 
 /*

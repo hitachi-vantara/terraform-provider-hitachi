@@ -3,8 +3,6 @@ package terraform
 import (
 	"context"
 	// "fmt"
-	"strconv"
-	"time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 
@@ -18,37 +16,56 @@ import (
 func DataSourceInfraVolume() *schema.Resource {
 	return &schema.Resource{
 		Description: ":meta:subcategory:VSP Storage Volumess:The following request obtains information about Volumes.",
-		ReadContext: dataSourceInfraVolumeRead,
+		ReadContext: DataSourceInfraVolumeRead,
 		Schema:      schemaimpl.DataInfraVolumeSchema,
 	}
 }
 
-func dataSourceInfraVolumeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceInfraVolumeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	// fetch all volumes
 
-	volumes, err := impl.GetInfraVolume(d)
+	porcvolume, mtVolume, err := impl.GetInfraVolume(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	spList := []map[string]interface{}{}
-	for _, sp := range *volumes {
-		eachSp := impl.ConvertInfraVolumeToSchema(&sp)
-		log.WriteDebug("it: %+v\n", *eachSp)
-		spList = append(spList, *eachSp)
+
+	if mtVolume != nil {
+
+		volumeSchma := impl.ConvertPartnersInfraVolumeToSchema(mtVolume)
+		log.WriteDebug("volume: %+v\n", *volumeSchma)
+
+		volList := []map[string]interface{}{
+			*volumeSchma,
+		}
+
+		if err := d.Set("subscriber_volume", volList); err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("volume", nil)
+
+		d.SetId(mtVolume.ResourceId)
+
+	} else if porcvolume != nil {
+		volumeSchma := impl.ConvertInfraVolumeToSchema(porcvolume)
+		log.WriteDebug("volume: %+v\n", *volumeSchma)
+
+		volList := []map[string]interface{}{
+			*volumeSchma,
+		}
+
+		if err := d.Set("volume", volList); err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("subscriber_volume", nil)
+		d.SetId(mtVolume.ResourceId)
+
 	}
 
-	if err := d.Set("volume", spList); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-	log.WriteInfo("volumes read successfully")
-
+	log.WriteInfo("volume read successfully")
 	return nil
-
 }

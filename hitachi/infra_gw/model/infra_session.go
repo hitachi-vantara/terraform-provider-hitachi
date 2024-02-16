@@ -32,3 +32,11 @@ type Response struct {
 		State      string `json:"state"`
 	} `json:"data"`
 }
+
+type BasicResponse struct {
+	
+		TaskId     string `json:"taskId"`
+		ResourceId string `json:"resourceId"`
+		State      string `json:"state"`
+
+}

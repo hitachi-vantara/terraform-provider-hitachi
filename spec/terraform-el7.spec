@@ -1,5 +1,5 @@
 name:          HV_Storage_Terraform
-Version:       02.0.0
+Version:       02.5.0
 Release:       284
 #Release:      1%{?dist}
 Summary:       Hitachi Vantara storage plugin provider for terraform
@@ -8,7 +8,7 @@ Vendor:        Hitachi Vantara
 Group:         Adapters 
 License:       hiAdapterLicense
 URL:           http://www.hitachivantara.com 
-Source0:       HV_Storage_Terraform-02.0.0.tar.gz        
+Source0:       HV_Storage_Terraform-02.5.0.tar.gz        
 ExclusiveArch: x86_64
 BuildRoot:     %{_tmppath}/%{name}-%{version}.%{release}-root-%(%{__id_u} -n)
 AutoReqProv:   no 
@@ -95,9 +95,9 @@ fi
 %define hitachi_base /opt/hitachi
 %define terraform %{hitachi_base}/terraform
 %define plugin_dir  .terraform.d/plugins
-%define terraform_plugin %{plugin_dir}/localhost/hitachi-vantara/hitachi/2.0/linux_amd64
+%define terraform_plugin %{plugin_dir}/localhost/hitachi-vantara/hitachi/2.5/linux_amd64
 
-%define source_dir %{_topdir}/HV_Storage_Terraform-02.0.0
+%define source_dir %{_topdir}/HV_Storage_Terraform-02.5.0
 %define examples_src %{source_dir}/examples
 %define docs_src %{source_dir}/docs
 

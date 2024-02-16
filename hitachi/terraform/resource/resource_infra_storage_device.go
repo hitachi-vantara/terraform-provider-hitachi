@@ -58,7 +58,7 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("storage_device", list); err != nil {
+	if err := d.Set("storage_devices", list); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
@@ -79,7 +79,7 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceInfraStorageDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return datasourceimpl.DataSourceInfraHostGroupRead(ctx, d, m)
+	return datasourceimpl.DataSourceInfraStorageDevicesRead(ctx, d, m)
 }
 
 func resourceInfraStorageDeviceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -104,7 +104,7 @@ func resourceInfraStorageDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 		list = append(list, *eachItem)
 	}
 
-	if err := d.Set("storage_device", list); err != nil {
+	if err := d.Set("storage_devices", list); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}

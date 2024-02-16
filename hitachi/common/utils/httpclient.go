@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"reflect"
 	"time"
@@ -19,6 +18,14 @@ func IsHttpError(statusCode int) bool {
 		return true
 	}
 	return false
+}
+
+type PorcelainError struct {
+	Path    string `json:"path"`
+	Message string `json:"message"`
+	Error   struct {
+		Message string `json:"message"`
+	} `json:"error"`
 }
 
 func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
@@ -76,18 +83,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }
 
 func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
@@ -144,18 +140,7 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }
 
 func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string]string, httpBody []byte) (string, error) {
@@ -197,18 +182,7 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }
 
 func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
@@ -248,18 +222,7 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }
 
 func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
@@ -309,18 +272,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }
 
 func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
@@ -362,16 +314,5 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-		return "", err
-	}
-
-	log.Debugf("HTTP Response: %s\n", string(body))
-	return string(body), nil
+	return MakeResponse(*resp)
 }

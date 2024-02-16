@@ -1,21 +1,23 @@
-resource "hitachi_vsp_hostgroup" "demo_fc_hg" {  
-  serial = 30595    
+resource "hitachi_infra_hostgroup" "demo_fc_hg" {  
+  serial = 611032
   hostgroup_number = 02  
-  hostgroup_name = "demo-hostgroup"   
-  port_id = "CL7-A"    
+  hostgroup_name = "demo-hostgroup-5"   
+  port_id = "CL1-A"    
   host_mode_options = [54]   
   host_mode ="vmware extension"
   wwn {    
-    host_wwn = "200000109B95413F"    
-    wwn_nickname = "esxi-1"  
+    host_wwn = "200000109B95416F"    
+    wwn_nickname = "esxi-4"  
   }
   lun {    
     ldev_id = 294    
-    lun     = 12  
+    lun     = 14  
   }
+  system = "UCP-CI-12035"
 }
 
-resource "hitachi_vsp_hostgroup" "demo_fc_hg1" {  
+/*
+resource "hitachi_infra_hostgroup" "demo_fc_hg1" {  
   serial = 30595    
   hostgroup_number = 03  
   hostgroup_name = "demo-hostgroup1"   
@@ -31,6 +33,7 @@ resource "hitachi_vsp_hostgroup" "demo_fc_hg1" {
     lun     = 12  
   }
 }
+*/
 
 
 

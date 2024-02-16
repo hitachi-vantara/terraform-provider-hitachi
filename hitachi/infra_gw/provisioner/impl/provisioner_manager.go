@@ -14,9 +14,12 @@ type infraGwManager struct {
 func newInfraGwManagerEx(setting model.InfraGwSettings) (*infraGwManager, error) {
 	psm := &infraGwManager{
 		setting: model.InfraGwSettings{
-			Username: setting.Username,
-			Password: setting.Password,
-			Address:  setting.Address,
+			Username:     setting.Username,
+			Password:     setting.Password,
+			Address:      setting.Address,
+			PartnerId:    setting.PartnerId,
+			SubscriberId: setting.SubscriberId,
+			V3API:        false,
 		},
 	}
 	return psm, nil
@@ -28,6 +31,7 @@ func NewEx(setting model.InfraGwSettings) (spmanager.InfraGwManager, error) {
 }
 
 func New(userName, password, address string) (spmanager.InfraGwManager, error) {
+
 	psm := &infraGwManager{
 		setting: model.InfraGwSettings{
 			Username: userName,
@@ -35,5 +39,7 @@ func New(userName, password, address string) (spmanager.InfraGwManager, error) {
 			Address:  address,
 		},
 	}
+
 	return psm, nil
+
 }

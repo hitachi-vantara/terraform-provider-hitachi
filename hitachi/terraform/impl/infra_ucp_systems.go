@@ -210,7 +210,7 @@ func ConvertInfraUcpSystemToSchema(pg *terraformmodel.InfraUcpSystemInfo) *map[s
 			"microcode_version": device.MicrocodeVersion,
 			"resource_state":    device.ResourceState,
 			"health_state":      device.HealthState,
-			"ucp_systems":       device.UcpSystems,
+			"systems":           device.UcpSystems,
 			"svp_ip":            device.SvpIp,
 			"gateway_address":   device.GatewayAddress,
 		}

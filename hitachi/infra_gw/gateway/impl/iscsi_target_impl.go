@@ -21,7 +21,7 @@ func (psm *infraGwManager) GetIscsiTargets(id string, port string) (*model.Iscsi
 	} else {
 		apiSuf = fmt.Sprintf("/storage/devices/%s/iscsiTargets?port=%s", id, port)
 	}
-	err := httpmethod.GetCall(psm.setting, apiSuf, &iscsiTargets)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &iscsiTargets)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -40,7 +40,7 @@ func (psm *infraGwManager) GetIscsiTarget(id string, iscsiTargetId string) (*mod
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s", id, iscsiTargetId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, &iscsiTarget)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &iscsiTarget)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -57,7 +57,7 @@ func (psm *infraGwManager) CreateIscsiTarget(storageId string, reqBody model.Cre
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets", storageId)
 
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -74,7 +74,7 @@ func (psm *infraGwManager) AddVolumesToIscsiTarget(storageId, iscsiTargetId stri
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/volumes", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in AddVolumesToIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -91,7 +91,7 @@ func (psm *infraGwManager) RemoveVolumesFromIscsiTarget(storageId, iscsiTargetId
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/volumes", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in RemoveVolumesFromIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -108,7 +108,7 @@ func (psm *infraGwManager) AddIqnInitiatorsToIscsiTarget(storageId, iscsiTargetI
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/iqns", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in AddIqnInitiatorsToIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -125,7 +125,7 @@ func (psm *infraGwManager) RemoveIqnInitiatorsFromIscsiTarget(storageId, iscsiTa
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/volumes", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in RemoveIqnInitiatorsFromIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -142,7 +142,7 @@ func (psm *infraGwManager) UpdateHostMode(storageId, iscsiTargetId string, reqBo
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/iqns", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in UpdateHostMode - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -159,7 +159,7 @@ func (psm *infraGwManager) SetChapUser(storageId, iscsiTargetId string, reqBody 
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/chapUser", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in SetChapUser - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -176,7 +176,7 @@ func (psm *infraGwManager) UpdateChapUser(storageId, iscsiTargetId string, reqBo
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/chapUser", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in UpdateChapUser - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -193,7 +193,7 @@ func (psm *infraGwManager) UpdateTargetIqnInIscsiTarget(storageId, iscsiTargetId
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/chapUser", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody)
+	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in UpdateTargetIqnInIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -210,7 +210,7 @@ func (psm *infraGwManager) DeleteIscsiTarget(storageId, iscsiTargetId string) (*
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s", storageId, iscsiTargetId)
 
-	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil)
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
@@ -227,7 +227,7 @@ func (psm *infraGwManager) RemoveChapUser(storageId, iscsiTargetId, chapUserId s
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/chapUsers/%s", storageId, iscsiTargetId, chapUserId)
 
-	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil)
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in RemoveChapUser - %s API call, err: %v", apiSuf, err)
 		return nil, err

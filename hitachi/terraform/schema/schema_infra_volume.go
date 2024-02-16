@@ -267,6 +267,70 @@ var InfraVolumeInfoSchema = map[string]*schema.Schema{
 	},
 }
 
+var PartnerInfraVolumeInfoSchema = map[string]*schema.Schema{
+	"storage_serial_number": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Serial number of storage",
+	},
+	"resource_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Resource Id",
+	},
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Storage Id",
+	},
+	"type": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Type of resource",
+	},
+	"entitlement_status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Entitlement Status of the volume",
+	},
+	"partner_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "partner Id id  of the volume",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the volume",
+	},
+	"used_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Used capacity in MB",
+	},
+	"total_capacity_in_mb": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total capacity in MB",
+	},
+
+	"ldev_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "ldev id of the volume",
+	},
+	"pool_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Pool Id of the volume",
+	},
+	"pool_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Pool name of the volume",
+	},
+}
+
 var DataInfraVolumeSchema = map[string]*schema.Schema{
 	"storage_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -283,6 +347,11 @@ var DataInfraVolumeSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "Ldev ID of lun",
 	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Id of the subscriber which is attached to the volume",
+	},
 	// output
 	"volume": &schema.Schema{
 		Type:        schema.TypeList,
@@ -291,6 +360,15 @@ var DataInfraVolumeSchema = map[string]*schema.Schema{
 		Description: "This is volume output",
 		Elem: &schema.Resource{
 			Schema: InfraVolumeInfoSchema,
+		},
+	},
+	"subscriber_volume": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is subscriber's volume output",
+		Elem: &schema.Resource{
+			Schema: PartnerInfraVolumeInfoSchema,
 		},
 	},
 }
@@ -321,6 +399,11 @@ var DataInfraVolumesSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Description: "If set to true, returns not allocated luns else otherwise",
 	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Id of the subscriber which is attached to the volume",
+	},
 	// output
 	"volumes": &schema.Schema{
 		Type:        schema.TypeList,
@@ -331,54 +414,82 @@ var DataInfraVolumesSchema = map[string]*schema.Schema{
 			Schema: InfraVolumeInfoSchema,
 		},
 	},
+
+	//output
+	"partner_volumes": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is partners volumes output",
+		Elem: &schema.Resource{
+			Schema: PartnerInfraVolumeInfoSchema,
+		},
+	},
 }
 
-/*
-var ResourceLunSchema = map[string]*schema.Schema{
+var ResourceInfraVolumeSchema = map[string]*schema.Schema{
+
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Unique ID of the storage device",
+	},
+
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
+		Optional:    true,
 		Description: "Serial number of storage",
 	},
-	"ldev_id": &schema.Schema{
-		Type:        schema.TypeInt,
-		Optional:    true,
-		Description: "Ldev ID of lun",
+	"name": &schema.Schema{
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "name number of volume to be created",
 	},
+
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
-		Default: -1 ,
 		Description: "Pool ID in which volume is to be created",
 	},
-	"pool_name": &schema.Schema{
-		Type:        schema.TypeString,
+	"lun_id": &schema.Schema{
+		Type:        schema.TypeInt,
 		Optional:    true,
-		Description: "Pool Name in which volume is to be created",
+		Description: "Lun ID in which volume is to be created",
 	},
-	"paritygroup_id": &schema.Schema{
+	"resource_group_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Resource group id which volume is to be created",
+	},
+	"parity_group_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Description: "Parity group ID in which volume is to be created",
 	},
-	"size_gb": &schema.Schema{
-		Type:        schema.TypeInt,
-		Optional:    true,
-		Description: "Size of volume to be created in GB",
-	},
-	"name": &schema.Schema{
+
+	"subscriber_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Name of volume to be created",
+		Description: "Id of the subscriber which is attached to the volume",
+	},
+
+	"capacity": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "capacity(Size) of volume to be created",
 	},
 	//Remove dedup from this version
 
-		"dedup_mode": &schema.Schema{
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Dedup mode of volume to be created",
-		},
-
+	"system": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "System name under volume to be created",
+	},
+	"deduplication_compression_mode": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "deduplicationCompressionMode of the volume to be created",
+	},
 
 	// output
 	"volume": &schema.Schema{
@@ -387,8 +498,7 @@ var ResourceLunSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "This is volume output",
 		Elem: &schema.Resource{
-			Schema: LunInfoSchema,
+			Schema: InfraVolumeInfoSchema,
 		},
 	},
 }
-*/

@@ -2,6 +2,9 @@ package terraform
 
 import (
 	"context"
+	"time"
+
+	// "time"
 
 	// "fmt"
 	// "strconv"
@@ -34,9 +37,13 @@ func Provider() *schema.Provider {
 			"hitachi_vss_block_volume":          resourceimpl.ResourceVssbStorageCreateVolume(),
 			"hitachi_vss_block_iscsi_chap_user": resourceimpl.ResourceVssbStorageChapUser(),
 			"hitachi_vss_block_compute_port":    resourceimpl.ResourceVssbStorageComputePort(),
-			"hitachi_infra_hostgroup":           resourceimpl.ResourceInfraHostGroup(),
-			"hitachi_infra_storage_device":      resourceimpl.ResourceInfraStorageDevice(),
-			"hitachi_infra_iscsi_target":        resourceimpl.ResourceInfraIscsiTarget(),
+
+			//Infra resources
+
+			"hitachi_infra_hostgroup":      resourceimpl.ResourceInfraHostGroup(),
+			"hitachi_infra_storage_device": resourceimpl.ResourceInfraStorageDevice(),
+			"hitachi_infra_iscsi_target":   resourceimpl.ResourceInfraIscsiTarget(),
+			"hitachi_infra_vsp_volume":     resourceimpl.ResourceInfraStorageVOlume(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":                datasourceimpl.DataSourceStorageSystem(),
@@ -60,6 +67,7 @@ func Provider() *schema.Provider {
 			"hitachi_vss_block_iscsi_port_auth":  datasourceimpl.DataSourceVssbComputePort(),
 			"hitachi_vss_block_dashboard":        datasourceimpl.DataSourceVssbDashboard(),
 
+			//Infra data-resources
 			"hitachi_infra_storage_ports":   datasourceimpl.DataSourceInfraStoragePorts(),
 			"hitachi_infra_parity_groups":   datasourceimpl.DataSourceInfraParityGroups(),
 			"hitachi_infra_hostgroup":       datasourceimpl.DataSourceInfraHostGroup(),
@@ -71,7 +79,7 @@ func Provider() *schema.Provider {
 			"hitachi_infra_chap_users":      datasourceimpl.DataSourceInfraChapUsers(),
 			"hitachi_infra_volumes":         datasourceimpl.DataSourceInfraVolumes(),
 			"hitachi_infra_volume":          datasourceimpl.DataSourceInfraVolume(),
-			"hitachi_infra_ucp_systems":     datasourceimpl.DataSourceInfraUcpSystems(),
+			"hitachi_infra_systems":         datasourceimpl.DataSourceInfraUcpSystems(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -97,7 +105,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	sanList := []map[string]interface{}{}
 
 	// Uncomment following line if you want to debug Terraform, also update processId in launch.json file
-	// time.Sleep(15 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	ssarray, err := impl.RegisterStorageSystem(d)
 	if err != nil {

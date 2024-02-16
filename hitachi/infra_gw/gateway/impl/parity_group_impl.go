@@ -16,7 +16,7 @@ func (psm *infraGwManager) GetParityGroups(id string) (*model.ParityGroups, erro
 	var parityGroups model.ParityGroups
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/parityGroups", id)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &parityGroups)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &parityGroups)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)

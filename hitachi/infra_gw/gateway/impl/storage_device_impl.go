@@ -16,7 +16,7 @@ func (psm *infraGwManager) GetStorageDevices() (*model.StorageDevices, error) {
 	var storageDevices model.StorageDevices
 
 	apiSuf := "/storage/devices"
-	err := httpmethod.GetCall(psm.setting, apiSuf, &storageDevices)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &storageDevices)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -34,7 +34,7 @@ func (psm *infraGwManager) GetStorageDevice(storageId string) (*model.StorageDev
 	var storageDevice model.StorageDevice
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s", storageId)
-	err := httpmethod.GetCall(psm.setting, apiSuf, &storageDevice)
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &storageDevice)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -50,7 +50,43 @@ func (psm *infraGwManager) AddStorageDevice(reqBody model.CreateStorageDevicePar
 	defer log.WriteExit()
 
 	apiSuf := "/storage/devices"
-	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, &reqBody)
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, &reqBody, nil)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return resourceId, nil
+}
+
+// AddMTStorageDevice adds storage device to a ucp system multi-tenancy
+func (psm *infraGwManager) AddMTStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+
+	apiSuf := "/storage/devices"
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, &reqBody, &headers)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return resourceId, nil
+}
+
+func (psm *infraGwManager) AddStorageDeviceToPartner(reqBody *model.StorageDeviceToPartnerReq) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	apiSuf := "/storage"
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, &reqBody, nil)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -66,7 +102,7 @@ func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.P
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s", storageId)
-	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, &reqBody)
+	resourceId, err := httpmethod.PatchCall(psm.setting, apiSuf, &reqBody, nil)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
