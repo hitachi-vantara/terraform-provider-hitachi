@@ -52,6 +52,6 @@ type SubscriberDetails struct {
 }
 
 type MTDetails struct {
-	PartnerId    string `json:"partnerId"`
-	SubscriberId string `json:"subscriberId"`
+	PartnerId    *string `json:"partnerId"`
+	SubscriberId *string `json:"subscriberId"`
 }
