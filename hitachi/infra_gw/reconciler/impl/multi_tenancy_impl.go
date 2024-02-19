@@ -31,9 +31,10 @@ func (psm *infraGwManager) GetPartnerAndSubscriberId(userName string) (*model.MT
 		log.WriteDebug("TFError| error in GetPartnerAndSubscriberId call, err: %v", err)
 		return nil, err
 	}
+
 	if status {
-		mtDetails.PartnerId = *partnerId
-		mtDetails.SubscriberId = *subscriberId
+		mtDetails.PartnerId = partnerId
+		mtDetails.SubscriberId = subscriberId
 	}
 	return &mtDetails, nil
 }

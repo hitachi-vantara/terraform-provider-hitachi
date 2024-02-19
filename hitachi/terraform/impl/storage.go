@@ -156,8 +156,8 @@ func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.Infra
 		mtDetails, err := reconObj.GetPartnerAndSubscriberId(username)
 
 		if err == nil {
-			setting.PartnerId = &mtDetails.PartnerId
-			setting.SubscriberId = &mtDetails.SubscriberId
+			setting.PartnerId = mtDetails.PartnerId
+			setting.SubscriberId = mtDetails.SubscriberId
 		} else {
 			log.WriteDebug("TFError| error in GetPartnerAndSubscriberId, err: %v", err)
 			return nil, err
