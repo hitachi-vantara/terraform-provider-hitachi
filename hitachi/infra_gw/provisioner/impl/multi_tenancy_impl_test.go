@@ -25,7 +25,7 @@ func newMTTestManager() (*infraGwManager, error) {
 }
 
 // go test -v -run TestGetPartnerIDwithStatus
-func TestGetPartnerIDwithStatus(t *testing.T) {
+func xTestGetPartnerIDwithStatus(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)

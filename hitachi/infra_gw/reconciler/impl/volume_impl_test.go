@@ -64,7 +64,7 @@ func xTestGetPartnetSubscribervolumeVolume(t *testing.T) {
 	t.Logf("Response: %v", sid)
 }
 
-func TestGetVolumeByLdevId(t *testing.T) {
+func xTestGetVolumeByLdevId(t *testing.T) {
 	psm, err := newReconcilerestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)

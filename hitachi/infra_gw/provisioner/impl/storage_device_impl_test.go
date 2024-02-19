@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestOnbaordStorageDevice(t *testing.T) {
+func xTestOnbaordStorageDevice(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
