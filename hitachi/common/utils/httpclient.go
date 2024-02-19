@@ -28,6 +28,14 @@ type PorcelainError struct {
 	} `json:"error"`
 }
 
+type BadRequestError struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail"`
+	Instance string `json:"instance"`
+}
+
 func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},

@@ -306,22 +306,31 @@ func ConvertInterfaceToSlice(interface_obj []interface{}) []string {
 func MakeResponse(resp http.Response) (string, error) {
 
 	var ErrorModel *PorcelainError
+	var BadRequestError *BadRequestError
 	var message string
-	body, bodyerr := io.ReadAll(resp.Body)
+	body, bodyErr := io.ReadAll(resp.Body)
 
 	if IsHttpError(resp.StatusCode) {
 
-		if bodyerr == nil {
+		if bodyErr == nil {
 			err := json.Unmarshal(body, &ErrorModel)
 			if err != nil {
 				log.Debug(err)
 				return "", fmt.Errorf("%v", resp.Status)
 			}
 
-			if ErrorModel.Error.Message == "" {
+			if ErrorModel.Error.Message != "" {
+				message = ErrorModel.Error.Message
+			} else if ErrorModel.Message != "" {
 				message = ErrorModel.Message
 			} else {
-				message = ErrorModel.Error.Message
+
+				err := json.Unmarshal(body, &BadRequestError)
+				if err != nil {
+					log.Debug(err)
+					return "", fmt.Errorf("%v", resp.Status)
+				}
+				message = fmt.Sprintf("%s: %s", BadRequestError.Title, BadRequestError.Detail)
 			}
 
 			return "", fmt.Errorf("%s", message)
@@ -329,9 +338,9 @@ func MakeResponse(resp http.Response) (string, error) {
 		return "", fmt.Errorf("%v", resp.Status)
 
 	}
-	if bodyerr != nil {
-		log.Error(bodyerr)
-		return "", bodyerr
+	if bodyErr != nil {
+		log.Error(bodyErr)
+		return "", bodyErr
 	}
 
 	log.Debugf("HTTP Response: %s\n", string(body))
