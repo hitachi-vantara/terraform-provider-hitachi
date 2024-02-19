@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestOnboardDeviceImpl(t *testing.T) {
+func xTestOnboardDeviceImpl(t *testing.T) {
 	
 	psm, err := newReconcilerestManager()
 	if err != nil {

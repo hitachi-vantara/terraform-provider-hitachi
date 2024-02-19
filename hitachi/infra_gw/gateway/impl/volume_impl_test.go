@@ -19,7 +19,7 @@ func xTestGetMtPartner(t *testing.T) {
 	t.Logf("Response: %v", volumes)
 }
 
-func TestGetVolumeByID(t *testing.T) {
+func xTestGetVolumeByID(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)

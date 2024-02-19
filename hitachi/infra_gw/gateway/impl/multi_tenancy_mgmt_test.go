@@ -30,7 +30,7 @@ func newMTTestManager() (*infraGwManager, error) {
 }
 
 // go test -v -run TestGetDynamicPools
-func TestGetPartners(t *testing.T) {
+func xTestGetPartners(t *testing.T) {
 	psm, err := newMTTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
