@@ -118,6 +118,18 @@ func GetSerialString(d *schema.ResourceData) string {
 	return serial
 }
 
+func GetSerialStringFromDiff(d *schema.ResourceDiff) string {
+	serial_number := -1
+	serial := ""
+
+	sid, okId := d.GetOk("serial")
+	if okId {
+		serial_number = sid.(int)
+		serial = strconv.Itoa(serial_number)
+	}
+	return serial
+}
+
 func GetIscsiTargetId(address, storageId, port string, iscsi_id int) (string, error) {
 
 	m, err := cache.GetInfraGwStorageIdToIscsiIdMap(address, storageId)

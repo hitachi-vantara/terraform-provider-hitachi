@@ -3,6 +3,7 @@ package terraform
 import (
 	"context"
 	"sync"
+	"time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 
@@ -29,6 +30,11 @@ func ResourceInfraStorageDevice() *schema.Resource {
 		UpdateContext: resourceInfraStorageDeviceUpdate,
 		DeleteContext: resourceInfraStorageDeviceDelete,
 		Schema:        schemaimpl.ResourceInfraStorageDeviceSchema,
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(5 * time.Minute),
+			Delete: schema.DefaultTimeout(5 * time.Minute),
+			Update: schema.DefaultTimeout(5 * time.Minute),
+		},
 		//CustomizeDiff: resourceMyResourceCustomDiffInfraHostGroup,
 	}
 }
@@ -44,6 +50,9 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 	log.WriteInfo("starting Infra Storage Device create")
 
 	//serial := d.Get("serial").(int)
+
+	_, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+	defer cancel()
 
 	response, err := impl.CreateInfraStorageDevice(d)
 	if err != nil {

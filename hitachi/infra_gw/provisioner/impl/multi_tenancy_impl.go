@@ -5,8 +5,6 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/infra_gw/gateway/impl"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
-
-	"github.com/google/uuid"
 )
 
 // GetUserAdminRoleStatus gets all UCP Systems information
@@ -133,14 +131,14 @@ func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*strin
 		return nil, err
 	}
 
-	subs, _ := gatewayObj.GetAllSubscribers(partnerId)
+	subs, _ := gatewayObj.GetSubscriber(partnerId, partnerId)
 
 	if subs == nil {
-		newSubscriberId := uuid.New().String()
+		// newSubscriberId := uuid.New().String()
 		reqData := &model.RegisterSubscriberReq{
 			Name:         model.DefaultSubscriberName,
 			PartnerID:    partnerId,
-			SubscriberID: newSubscriberId,
+			SubscriberID: partnerId,
 		}
 		_, err := gatewayObj.RegisterSubscriber(reqData)
 
@@ -148,10 +146,10 @@ func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*strin
 			log.WriteDebug("TFError| error in RegisterSubscriber gateway call, err: %v", err)
 			return nil, err
 		}
-		log.WriteInfo("Created one subscriber %s with partner ID %s", newSubscriberId, partnerId)
-		return &newSubscriberId, err
+		log.WriteInfo("Created one subscriber %s with partner ID %s", partnerId, partnerId)
+		return &partnerId, err
 	}
 
-	return &(*subs)[0].SubscriberId, nil
+	return &subs.SubscriberId, nil
 
 }

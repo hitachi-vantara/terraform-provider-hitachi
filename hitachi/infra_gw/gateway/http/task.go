@@ -143,9 +143,15 @@ func CheckResponseAndWaitForTask(storageSetting model.InfraGwSettings, resJSONSt
 	log.WriteDebug("TFDebug|Final Task: %+v", task)
 
 	if state != "Success" {
-		if task.Data.Events == nil {
-			return task, fmt.Errorf("task failed with unknown reason: %v", task.Message)
+		if task.Data.Events == nil || len(task.Data.Events) == 0 {
+			return task, fmt.Errorf("task %s", func() string {
+				if len(task.Message) > 0 {
+					return fmt.Sprintf("failed with unknown reason: %v", task.Message)
+				}
+				return "failed with unknown reason"
+			}())
 		}
+
 		return task, fmt.Errorf(task.Data.Events[0].Description)
 	}
 

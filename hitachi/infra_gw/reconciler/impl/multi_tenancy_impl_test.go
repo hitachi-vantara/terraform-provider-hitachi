@@ -16,7 +16,7 @@ func newReconcilerestManagerForPartner() (*infraGwManager, error) {
 	setting := model.InfraGwSettings{
 		Username: "ucpadmin",
 		Password: "Passw0rd!",
-		Address:  "172.25.20.56",
+		Address:  "172.25.22.81",
 		V3API:    false,
 		// 	PartnerId:    &partnerId,
 		// 	SubscriberId: &subscrierId,
