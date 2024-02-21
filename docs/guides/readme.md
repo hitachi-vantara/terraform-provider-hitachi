@@ -41,14 +41,14 @@ lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hita
 ```
 
 ## Use the tf samples
-Navigate to /opt/hitachi-vantara/storage-systems/terraform-provider/samples
+Navigate to /opt/hitachi/terraform/examples/
 ```
-# cd /opt/hitachi-vantara/storage-systems/terraform-provider/samples
+# cd /opt/hitachi/terraform/examples/
 ```
 
 Go to any samples directory. Example:
 ```
-# cd data/hitachi_storage_data
+# cd data-sources/hitachi_vsp_volumes
 ```
 
 If not the first time using the sample directory, do cleanup

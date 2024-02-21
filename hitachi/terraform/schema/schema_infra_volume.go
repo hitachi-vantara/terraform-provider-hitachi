@@ -449,16 +449,19 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
+		Default:     -1,
 		Description: "Pool ID in which volume is to be created",
 	},
 	"lun_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
+		Default:     -1,
 		Description: "Lun ID in which volume is to be created",
 	},
 	"resource_group_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
+		Default:     -1,
 		Description: "Resource group id which volume is to be created",
 	},
 	"parity_group_id": &schema.Schema{
@@ -490,7 +493,6 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Description: "deduplicationCompressionMode of the volume to be created",
 	},
-	
 
 	// output
 	"volume": &schema.Schema{

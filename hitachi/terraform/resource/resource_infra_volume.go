@@ -38,9 +38,9 @@ func ResourceInfraStorageVOlume() *schema.Resource {
 		Schema:        schemaimpl.ResourceInfraVolumeSchema,
 		CustomizeDiff: InfraVolumeDIffValidate,
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(5 * time.Minute),
-			Delete: schema.DefaultTimeout(5 * time.Minute),
-			Update: schema.DefaultTimeout(5 * time.Minute),
+			Create: schema.DefaultTimeout(2 * time.Minute),
+			Delete: schema.DefaultTimeout(2 * time.Minute),
+			Update: schema.DefaultTimeout(2 * time.Minute),
 		},
 	}
 }
@@ -173,9 +173,9 @@ func InfraVolumeDIffValidate(ctx context.Context, d *schema.ResourceDiff, m inte
 	if serial != "" && storageId != "" {
 		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
 		return err
-	} else if serial == "" && storageId == "" { 
+	} else if serial == "" && storageId == "" {
 		err := errors.New("either serial or storage_id can't be empty. Please specify one")
-        return err
+		return err
 	}
 
 	if storageId == "" {
@@ -206,24 +206,29 @@ func InfraVolumeDIffValidate(ctx context.Context, d *schema.ResourceDiff, m inte
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
 		return err
 	}
-	var volok bool = true
+	var volOk bool = true
 
 	name, _ := d.GetOk("name")
 
 	if d.Id() == "" {
-		_, volok = reconObj.GetVolumeByName(storageId, name.(string))
+		_, volOk = reconObj.GetVolumeByName(storageId, name.(string))
 	}
 
-	mandatoryFields := []string{"pool_id", "parity_group_id", "capacity", "system"}
+	mandatoryFields := []string{"parity_group_id", "capacity", "system"}
 	missingFields := []string{}
 
 	for _, field := range mandatoryFields {
 		_, ok := d.GetOk(field)
-		if !ok && !volok {
+		if !ok && !volOk {
 			missingFields = append(missingFields, field)
 		}
 	}
 
+	pool_id, _ := d.GetOk("pool_id")
+
+	if pool_id.(int) == -1 && !volOk {
+		missingFields = append(missingFields, "pool_id")
+	}
 	if len(missingFields) > 0 {
 		return fmt.Errorf("mandatory fields missing for new volume creation: %s", strings.Join(missingFields, ", "))
 	}
