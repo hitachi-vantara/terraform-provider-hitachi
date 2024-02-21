@@ -1,5 +1,19 @@
 #!/bin/bash
 # Terraform Storage build script.
+'
+display_usage() {
+	echo "Format to run the script: ${0} <build_number>"
+}
+
+if [[ -z $1 ]]; then
+	echo "Missing parameter"
+	display_usage
+	exit 1
+elif [[ $1 == --help || $1 == -h ]]; then
+	display_usage
+	exit 1
+fi
+'
 
 BUILD_MODE=${1:-Release}
 echo "Build Mode: ${BUILD_MODE}"
