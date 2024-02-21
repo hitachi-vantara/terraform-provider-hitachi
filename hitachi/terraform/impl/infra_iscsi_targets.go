@@ -61,6 +61,8 @@ func GetInfraGwIscsiTargets(d *schema.ResourceData) (*[]terraformmodel.InfraIscs
 			return nil, err
 		}
 	}
+	d.Set("serial", storage_serial_number)
+
 	port := d.Get("port_id").(string)
 
 	iscsi_name := d.Get("iscsi_name").(string)
