@@ -38,9 +38,9 @@ func ResourceInfraStorageVOlume() *schema.Resource {
 		Schema:        schemaimpl.ResourceInfraVolumeSchema,
 		CustomizeDiff: InfraVolumeDIffValidate,
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(5 * time.Minute),
-			Delete: schema.DefaultTimeout(5 * time.Minute),
-			Update: schema.DefaultTimeout(5 * time.Minute),
+			Create: schema.DefaultTimeout(2 * time.Minute),
+			Delete: schema.DefaultTimeout(2 * time.Minute),
+			Update: schema.DefaultTimeout(2 * time.Minute),
 		},
 	}
 }
