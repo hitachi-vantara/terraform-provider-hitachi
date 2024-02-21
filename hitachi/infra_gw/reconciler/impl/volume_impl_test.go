@@ -34,11 +34,11 @@ func TestCreateUpdateVolume(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
 	}
-
+	pooldId := 0
 	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
 	storageId := "storage-39f4eef0175c754bb90417358b0133c3"
 	createInput := model.CreateVolumeParams{Name: "testVol222Name", Capacity: "100MB", DeduplicationCompressionMode: "ENABLED",
-		System: "Logical-UCP-30595", PoolID: 4, ParityGroupId: "1-1"}
+		System: "Logical-UCP-30595", PoolID: &pooldId, ParityGroupId: "1-1"}
 	sid, err := psm.ReconcileVolume(storageId, &createInput, nil)
 	if err != nil {
 		t.Errorf("Unexpected error in GetPartnerIdWithStatus %v", err)

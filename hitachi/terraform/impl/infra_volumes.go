@@ -512,20 +512,20 @@ func CreateInfraVolumeRequestFromSchema(d *schema.ResourceData, setting *reconci
 		createInput.Name = name.(string)
 	}
 
-	pool_id, ok := d.GetOk("pool_id")
-	if ok {
+	pool_id := d.Get("pool_id").(int)
+	if pool_id != -1 {
 
-		createInput.PoolID = pool_id.(int)
+		createInput.PoolID = &pool_id
 	}
 
-	lun_id, ok := d.GetOk("lun_id")
-	if ok {
-		createInput.LunId = lun_id.(int)
+	lun_id := d.Get("lun_id").(int)
+	if lun_id != -1 {
+		createInput.LunId = &lun_id
 	}
 
-	resourceGroupId, ok := d.GetOk("resource_group_id")
-	if ok {
-		createInput.ResourceGroupId = resourceGroupId.(int)
+	resourceGroupId := d.Get("resource_group_id").(int)
+	if resourceGroupId != -1 {
+		createInput.ResourceGroupId = &resourceGroupId
 	}
 
 	paritygroup_id, ok := d.GetOk("parity_group_id")
@@ -534,6 +534,15 @@ func CreateInfraVolumeRequestFromSchema(d *schema.ResourceData, setting *reconci
 
 	}
 
+	poolID, isSet := d.GetOk("pool_id")
+	if isSet {
+		actualPoolID := poolID.(int)
+		if actualPoolID == 0 {
+			// "pool_id" is explicitly set to 0
+		}
+	} else {
+		// "pool_id" is not set at all
+	}
 	capacity, ok := d.GetOk("capacity")
 
 	if ok {
