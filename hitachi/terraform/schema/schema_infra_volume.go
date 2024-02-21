@@ -449,6 +449,7 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
+		Default:     -1,
 		Description: "Pool ID in which volume is to be created",
 	},
 	"lun_id": &schema.Schema{
@@ -490,7 +491,6 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Description: "deduplicationCompressionMode of the volume to be created",
 	},
-	
 
 	// output
 	"volume": &schema.Schema{
