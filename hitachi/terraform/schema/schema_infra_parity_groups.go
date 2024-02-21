@@ -21,7 +21,7 @@ var InfraParityGroupSchema = map[string]*schema.Schema{
 		Description: "ID of Parity Group",
 	},
 	"free_capacity": &schema.Schema{
-		Type:        schema.TypeInt,
+		Type:        schema.TypeString,
 		Computed:    true,
 		Description: "Free Capacity",
 	},
@@ -31,7 +31,7 @@ var InfraParityGroupSchema = map[string]*schema.Schema{
 		Description: "ID of Resource Group",
 	},
 	"total_capacity": &schema.Schema{
-		Type:        schema.TypeInt,
+		Type:        schema.TypeString,
 		Computed:    true,
 		Description: "Total Capacity",
 	},
