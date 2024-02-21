@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"strconv"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	common "terraform-provider-hitachi/hitachi/terraform/common"
@@ -42,6 +43,22 @@ func GetInfraGwStoragePorts(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 		}
 		d.Set("storage_id", storageId)
 	}
+	if serial == "" {
+		serial, err = common.GetSerialFromStorageId(address, storageId)
+		if err != nil {
+			return nil, err
+		}
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, err
+		}
+	}
+	d.Set("serial", storage_serial_number)
 
 	port_id := d.Get("port_id").(string)
 
