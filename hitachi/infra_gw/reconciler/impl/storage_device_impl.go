@@ -216,3 +216,24 @@ func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput 
 
 	}
 }
+
+func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	provSetting := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(provSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return err
+	}
+
+	err = provObj.DeleteStorageDevice(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error in DeleteVolume call, err: %v", err)
+		return err
+	}
+	return nil
+}

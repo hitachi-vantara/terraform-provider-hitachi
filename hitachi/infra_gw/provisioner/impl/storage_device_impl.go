@@ -89,3 +89,23 @@ func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.P
 
 	return gatewayObj.UpdateStorageDevice(storageId, reqBody)
 }
+
+// DeleteStorageDevice deletes a storage device
+func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+	gateSetting := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return err
+	}
+
+	if psm.setting.SubscriberId != nil {
+		return gatewayObj.DeleteMTStorageDevice(storageId)
+	}
+
+	return gatewayObj.DeleteStorageDevice(storageId)
+}

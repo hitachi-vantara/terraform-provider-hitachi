@@ -9,6 +9,7 @@ type InfraGwManager interface {
 	GetStorageDevices() (*model.StorageDevices, error)
 	GetStorageDevice(storageId string) (*model.StorageDevice, error)
 	ReconcileStorageDevice(storageId string, createInput *model.CreateStorageDeviceParam) (*model.StorageDevice, error)
+	DeleteStorageDevice(storageId string) error
 
 	// Storage port management
 	GetStoragePorts(storageId string) (*model.StoragePorts, error)
@@ -42,7 +43,6 @@ type InfraGwManager interface {
 	GetVolumesByPartnerSubscriberID(id string, fromLdevId int, toLdevId int) (*model.MTVolumes, error)
 	GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeInfo, error)
 
-	
 	// UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)
 

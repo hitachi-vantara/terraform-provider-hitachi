@@ -110,3 +110,40 @@ func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.P
 	}
 	return resourceId, nil
 }
+
+// DeleteStorageDevice deletes a storage device from a ucp system
+func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	apiSuf := fmt.Sprintf("/storage/devices/%s", storageId)
+	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return err
+	}
+	return nil
+}
+
+func (psm *infraGwManager) DeleteMTStorageDevice(storageId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+	apiSuf := fmt.Sprintf("/storage/devices/%s?isDelete=true", storageId)
+
+	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, &headers)
+	if err != nil {
+		log.WriteDebug("TFError| error in DeleteVolume - %s API call, err: %v", apiSuf, err)
+		return err
+	}
+
+	return nil
+}
