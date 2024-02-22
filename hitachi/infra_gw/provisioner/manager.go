@@ -12,6 +12,7 @@ type InfraGwManager interface {
 	GetStoragePorts(storageId string) (*model.StoragePorts, error)
 	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
+	DeleteStorageDevice(storageId string) error
 
 	//Parity Group Management
 	GetParityGroups(storageId string) (*model.ParityGroups, error)
@@ -39,7 +40,7 @@ type InfraGwManager interface {
 	UpdateVolume(storageId string, volumeId string, redBody *model.UpdateVolumeParams) (*string, error)
 	DeleteVolume(storageId string, volumeId string) error
 	GetVolumesFromLdevIds(id string, fromLdevId int, toLdevId int) (*model.Volumes, error)
-	GetVolumesByPartnerSubscriberID(id string, fromLdevId *int, toLdevId *int) (*model.MTVolumes, error) 
+	GetVolumesByPartnerSubscriberID(id string, fromLdevId *int, toLdevId *int) (*model.MTVolumes, error)
 
 	//UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)

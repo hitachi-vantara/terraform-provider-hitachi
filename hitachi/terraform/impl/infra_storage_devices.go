@@ -172,11 +172,114 @@ func CreateInfraStorageDevice(d *schema.ResourceData) (*[]terraformmodel.InfraSt
 }
 
 func DeleteInfraStorageDevice(d *schema.ResourceData) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	serial := common.GetSerialString(d)
+	storageId := d.Get("storage_id").(string)
+
+	address, err := cache.GetCurrentAddress()
+	if err != nil {
+		return err
+	}
+
+	if storageId == "" {
+		storageId, err = common.GetStorageIdFromSerial(address, serial)
+		if err != nil {
+			return err
+		}
+		d.Set("storage_id", storageId)
+	}
+
+	storageSetting, err := cache.GetInfraSettingsFromCache(address)
+	if err != nil {
+		return err
+	}
+
+	setting := model.InfraGwSettings(*storageSetting)
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
+		return err
+	}
+
+	//storageId = d.State().ID
+
+	err = reconObj.DeleteStorageDevice(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error in DeleteStorageDevice, err: %v", err)
+		return err
+	}
 	return nil
 }
 
 func UpdateInfraStorageDevice(d *schema.ResourceData) (*[]terraformmodel.InfraStorageDeviceInfo, error) {
-	return nil, nil
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	serial := common.GetSerialString(d)
+	storageId := d.Get("storage_id").(string)
+
+	address, err := cache.GetCurrentAddress()
+	if err != nil {
+		return nil, err
+	}
+
+	if storageId == "" {
+		storageId, err = common.GetStorageIdFromSerial(address, serial)
+		if err != nil {
+			return nil, err
+		}
+		d.Set("storage_id", storageId)
+	}
+
+	storageSetting, err := cache.GetInfraSettingsFromCache(address)
+	if err != nil {
+		return nil, err
+	}
+
+	setting := model.InfraGwSettings(*storageSetting)
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
+		return nil, err
+	}
+
+	createInput, err := CreateInfraStorageDeviceRequestFromSchema(d)
+	if err != nil {
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_INFRA_STORAGE_DEVICE_BEGIN), createInput.SerialNumber, createInput.ManagementAddress)
+	reconcilerCreateStorageDeviceRequest := model.CreateStorageDeviceParam{}
+	err = copier.Copy(&reconcilerCreateStorageDeviceRequest, createInput)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
+
+	sd, err := reconObj.ReconcileStorageDevice(storageId, &reconcilerCreateStorageDeviceRequest)
+
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_INFRA_STORAGE_DEVICE_FAILED), createInput.SerialNumber, createInput.ManagementAddress)
+		log.WriteDebug("TFError| error in  ReconcileStorageDevice , err: %v", err)
+		return nil, err
+	}
+
+	terraformModelResponse := terraformmodel.InfraStorageDevices{}
+	err = copier.Copy(&terraformModelResponse, sd)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_INFRA_STORAGE_DEVICE_END), createInput.SerialNumber, createInput.ManagementAddress)
+	return &terraformModelResponse.Data, nil
+
 }
 
 func CreateInfraStorageDeviceRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateInfraStorageDeviceParam, error) {
