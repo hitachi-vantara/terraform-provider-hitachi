@@ -21,6 +21,14 @@ resource "hitachi_infra_vsp_volume" "newvol2" {
   parity_group_id = "1-1"
   system ="Logical-UCP-30595"
   deduplication_compression_mode = "DISABLED"
+
+  
+    // Increase the timeout value for create/update operations accordingly
+
+    timeouts {
+    create = "10m"
+    update = "10m"
+  }
 }
 
 
@@ -49,11 +57,22 @@ output "volumesData" {
 - `storage_id` (String) Unique ID of the storage device
 - `subscriber_id` (String) Id of the subscriber which is attached to the volume
 - `system` (String) System name under volume to be created
+- `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `volume` (Block List) This is volume output (see [below for nested schema](#nestedblock--volume))
+
+<a id="nestedblock--timeouts"></a>
+### Nested Schema for `timeouts`
+
+Optional:
+
+- `create` (String)
+- `delete` (String)
+- `update` (String)
+
 
 <a id="nestedblock--volume"></a>
 ### Nested Schema for `volume`
