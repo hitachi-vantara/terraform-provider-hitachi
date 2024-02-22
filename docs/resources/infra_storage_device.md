@@ -19,7 +19,14 @@ resource "hitachi_infra_storage_device" "demo_sd" {
   username = "maintenance"
   password = "raid-maintenance"
   gateway_address = "172.25.20.35"
-  #systems = "UCP-CI-12035"
+  #system = "UCP-CI-12035"
+
+
+  // Increase the timeout value for create/update operations accordingly
+    timeouts {
+    create = "10m"
+    update = "10m"
+  }
 }
 ```
 
@@ -38,11 +45,22 @@ resource "hitachi_infra_storage_device" "demo_sd" {
 
 - `out_of_band` (Boolean) Out of band
 - `system` (String) Name of the System
+- `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `storage_devices` (Block List) This is storage devices output (see [below for nested schema](#nestedblock--storage_devices))
+
+<a id="nestedblock--timeouts"></a>
+### Nested Schema for `timeouts`
+
+Optional:
+
+- `create` (String)
+- `delete` (String)
+- `update` (String)
+
 
 <a id="nestedblock--storage_devices"></a>
 ### Nested Schema for `storage_devices`
