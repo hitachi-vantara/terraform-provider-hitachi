@@ -66,7 +66,7 @@ func (psm *infraGwManager) addStorageDevice(createInput *model.CreateStorageDevi
 		log.WriteDebug("TFError| error in AddStorageDevice call, err: %v", err)
 		return nil, err
 	}
-	log.WriteDebug("TFError| Return value of AddStorageDevice : %v", storageId)
+	log.WriteDebug("Return value of AddStorageDevice : %s", *storageId)
 
 	return psm.GetStorageDevice(*storageId)
 }

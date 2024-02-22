@@ -10,8 +10,8 @@ terraform {
 provider "hitachi" {
   hitachi_infrastructure_gateway_provider {
     address = "10.10.10.10"
-    username      = var.hitachi_storage_user
-    password      = var.hitachi_storage_password
+    username      = var.hitachi_gateway_user
+    password      = var.hitachi_gateway_password
   }
 
 }
