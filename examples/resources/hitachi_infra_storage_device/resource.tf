@@ -4,7 +4,7 @@ resource "hitachi_infra_storage_device" "demo_sd" {
   username = "maintenance"
   password = "raid-maintenance"
   gateway_address = "172.25.20.35"
-  #systems = "UCP-CI-12035"
+  #system = "UCP-CI-12035"
 
 
   // Increase the timeout value for create/update operations accordingly
