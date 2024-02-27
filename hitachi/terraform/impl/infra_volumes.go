@@ -436,7 +436,10 @@ func CreateInfraVolumeRequestFromSchema(d *schema.ResourceData, setting *reconci
 	if ok {
 		createInput.System = system.(string)
 
+	} else {
+		createInput.System = reconcilermodel.DefaultSystemSerialNumber
 	}
+
 	deduplicationCompressionMode, ok := d.GetOk("deduplication_compression_mode")
 	if ok {
 		createInput.DeduplicationCompressionMode = deduplicationCompressionMode.(string)
