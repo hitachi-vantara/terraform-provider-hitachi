@@ -19,6 +19,7 @@ import (
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
+	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
 	// mc "terraform-provider-hitachi/hitachi/messagecatalog"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/model"
@@ -192,11 +193,25 @@ func GetValidateStorageIDFromSerial(d *schema.ResourceDiff) (*string, error) {
 	return &storageId, nil
 }
 
-func GetValidateStorageIDFromSerialResource(d *schema.ResourceData) (*string, *string, error) {
+func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{}) (*string, *string, error) {
+	if m != nil {
+
+		providerLists := m.(*terraformmodel.AllStorageTypes)
+
+		if len(providerLists.InfraGwInfo) == 0 {
+			return nil, nil, nil
+		}
+	}
 
 	serial := GetSerialString(d)
 	storageId := d.Get("storage_id").(string)
 
+	err := ValidateSerialAndStorageId(serial, storageId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var storage_serial_number int
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return nil, nil, err
@@ -207,12 +222,30 @@ func GetValidateStorageIDFromSerialResource(d *schema.ResourceData) (*string, *s
 			return nil, nil, err
 		}
 	}
+
+	if serial == "" {
+		serial, err = GetSerialFromStorageId(address, storageId)
+		if err != nil {
+			return nil, nil, err
+		}
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, nil, err
+		}
+	} else {
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	d.Set("serial", storage_serial_number)
+
 	return &storageId, &address, nil
 }
 
-func GetInfraGatewaySettings(d *schema.ResourceData) (*string, *reconcilermodel.InfraGwSettings, error) {
+func GetInfraGatewaySettings(d *schema.ResourceData, m interface{}) (*string, *reconcilermodel.InfraGwSettings, error) {
 
-	storage_id, address, err := GetValidateStorageIDFromSerialResource(d)
+	storage_id, address, err := GetValidateStorageIDFromSerialResource(d, m)
 
 	if err != nil {
 		return nil, nil, err
@@ -231,5 +264,6 @@ func GetInfraGatewaySettings(d *schema.ResourceData) (*string, *reconcilermodel.
 			setting.SubscriberId = &subIdw
 		}
 	}
+
 	return storage_id, &setting, nil
 }

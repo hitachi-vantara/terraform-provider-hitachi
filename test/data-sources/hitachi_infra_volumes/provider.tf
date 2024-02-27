@@ -8,19 +8,13 @@ terraform {
 }
 
 provider "hitachi" {
-  hitachi_infrastructure_gateway_provider {
-    #address = "172.25.22.64"
-    address = "172.25.22.81"
-    username      = "ucpadmin"
-    password      = "Passw0rd!"
-  }
-
   # hitachi_infrastructure_gateway_provider {
-  #   address = "172.25.22.64"
+  #   address = "172.25.20.56"
   #   # address = "172.25.22.81"
   #   username      = "ucpadmin"
   #   password      = "Passw0rd!"
   # }
+
 
    san_storage_system {
     serial        = 611039

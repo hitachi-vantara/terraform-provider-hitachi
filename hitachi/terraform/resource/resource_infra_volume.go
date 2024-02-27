@@ -56,7 +56,7 @@ func resourceInfraStorageVolumeCreate(ctx context.Context, d *schema.ResourceDat
 	SyncVolumeOperation.Lock() //??
 	defer SyncVolumeOperation.Unlock()
 
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d)
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 
 	if storage_id != nil {
 		volumeInfo, err := impl.CreateInfraVolume(d)
@@ -113,7 +113,7 @@ func resourceInfraStorageVolumeRead(ctx context.Context, d *schema.ResourceData,
 	defer log.WriteExit()
 
 	// fetch all volumes
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d)
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 	if storage_id != nil {
 
 		volume, err := impl.GetInfraSingleVolume(d)
@@ -147,7 +147,7 @@ func resourceInfraStorageVolumeUpdate(ctx context.Context, d *schema.ResourceDat
 	defer log.WriteExit()
 
 	log.WriteInfo("starting volume update")
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d)
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 
 	if storage_id != nil {
 		volumeInfo, err := impl.UpdateInfraVolume(d)
@@ -207,7 +207,7 @@ func resourceInfraStorageVolumeDelete(ctx context.Context, d *schema.ResourceDat
 	defer log.WriteExit()
 
 	log.WriteInfo("starting volume delete")
-	storage_id, _ ,_:= common.GetValidateStorageIDFromSerialResource(d)
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 	if storage_id != nil {
 		err := impl.DeleteInfraVolume(d)
 		if err != nil {
