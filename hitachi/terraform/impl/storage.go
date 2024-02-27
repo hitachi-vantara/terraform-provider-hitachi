@@ -46,6 +46,7 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 
 	vssbList := []*terraformmodel.StorageVersionInfo{}
 	ss_vssb_items := d.Get("hitachi_vss_block_provider").([]interface{})
+
 	if len(ss_vssb_items) > 0 {
 		vssbList, err = GetVssbStorageSystem(ss_vssb_items)
 		if err != nil {
@@ -56,7 +57,9 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 
 	infra_gw_list := []*terraformmodel.InfraGwSettings{}
 	ss_ingra_gw_items := d.Get("hitachi_infrastructure_gateway_provider").([]interface{})
+
 	if len(ss_ingra_gw_items) > 0 {
+
 		infra_gw_list, err = GetInfraGwSystem(ss_ingra_gw_items)
 		if err != nil {
 			log.WriteDebug("TFError| error in GetVssbStorageSystem, err: %v", err)

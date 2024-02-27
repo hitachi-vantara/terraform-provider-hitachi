@@ -2,8 +2,8 @@ package terraform
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,6 +17,8 @@ import (
 
 	reconcilermodel "terraform-provider-hitachi/hitachi/infra_gw/model"
 	common "terraform-provider-hitachi/hitachi/terraform/common"
+	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
+	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
 	// datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
@@ -24,11 +26,12 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/jinzhu/copier"
 )
 
 var SyncVolumeOperation = &sync.Mutex{}
 
-func ResourceInfraStorageVOlume() *schema.Resource {
+func ResourceInfraStorageVolume() *schema.Resource {
 	return &schema.Resource{
 		Description:   ":meta:subcategory:VSP Storage Volume:The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.",
 		CreateContext: resourceInfraStorageVolumeCreate,
@@ -38,9 +41,9 @@ func ResourceInfraStorageVOlume() *schema.Resource {
 		Schema:        schemaimpl.ResourceInfraVolumeSchema,
 		CustomizeDiff: InfraVolumeDIffValidate,
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(2 * time.Minute),
-			Delete: schema.DefaultTimeout(2 * time.Minute),
-			Update: schema.DefaultTimeout(2 * time.Minute),
+			Create: schema.DefaultTimeout(5 * time.Minute),
+			Delete: schema.DefaultTimeout(5 * time.Minute),
+			Update: schema.DefaultTimeout(5 * time.Minute),
 		},
 	}
 }
@@ -53,29 +56,51 @@ func resourceInfraStorageVolumeCreate(ctx context.Context, d *schema.ResourceDat
 	SyncVolumeOperation.Lock() //??
 	defer SyncVolumeOperation.Unlock()
 
-	_, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
-	defer cancel()
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d)
 
-	log.WriteInfo("starting volume create")
+	if storage_id != nil {
+		volumeInfo, err := impl.CreateInfraVolume(d)
+		if err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
 
-	volumeInfo, err := impl.CreateInfraVolume(d)
-	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		volume := impl.ConvertInfraVolumeToSchema(volumeInfo)
+		log.WriteDebug("Volume: %+v\n", *volume)
+		volList := []map[string]interface{}{
+			*volume,
+		}
+
+		if err := d.Set("volume", volList); err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		//d.Set("ldev_id", logicalUnit.LdevID) // input may have an empty ldev_id
+		d.SetId(volumeInfo.ResourceId)
+	} else {
+		serial := d.Get("serial").(int)
+
+		logicalUnit, err := impl.CreateLun(d)
+		if err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		lun := impl.ConvertLunToSchema(logicalUnit, serial)
+		log.WriteDebug("lun: %+v\n", *lun)
+		lunList := []map[string]interface{}{
+			*lun,
+		}
+		if err := d.Set("volume", lunList); err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		//d.Set("ldev_id", logicalUnit.LdevID) // input may have an empty ldev_id
+		d.SetId(strconv.Itoa(logicalUnit.LdevID))
+		log.WriteInfo("lun created successfully")
 	}
-
-	volume := impl.ConvertInfraVolumeToSchema(volumeInfo)
-	log.WriteDebug("Volume: %+v\n", *volume)
-	volList := []map[string]interface{}{
-		*volume,
-	}
-	if err := d.Set("volume", volList); err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
-	}
-
-	//d.Set("ldev_id", logicalUnit.LdevID) // input may have an empty ldev_id
-	d.SetId(volumeInfo.ResourceId)
 	log.WriteInfo("volume created successfully")
 
 	return nil
@@ -88,24 +113,29 @@ func resourceInfraStorageVolumeRead(ctx context.Context, d *schema.ResourceData,
 	defer log.WriteExit()
 
 	// fetch all volumes
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d)
+	if storage_id != nil {
 
-	volume, err := impl.GetInfraSingleVolume(d)
-	if err != nil {
-		return diag.FromErr(err)
+		volume, err := impl.GetInfraSingleVolume(d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		volumeSchma := impl.ConvertInfraVolumeToSchema(volume)
+		log.WriteDebug("lun: %+v\n", *volumeSchma)
+
+		volList := []map[string]interface{}{
+			*volumeSchma,
+		}
+
+		if err := d.Set("volume", volList); err != nil {
+			return diag.FromErr(err)
+		}
+
+		d.SetId(volume.ResourceId)
+	} else {
+		return datasourceimpl.DataSourceStorageLunRead(ctx, d, m)
 	}
-
-	volumeSchma := impl.ConvertInfraVolumeToSchema(volume)
-	log.WriteDebug("lun: %+v\n", *volumeSchma)
-
-	volList := []map[string]interface{}{
-		*volumeSchma,
-	}
-
-	if err := d.Set("volume", volList); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(volume.ResourceId)
 	log.WriteInfo("volumes read successfully")
 
 	return nil
@@ -117,23 +147,55 @@ func resourceInfraStorageVolumeUpdate(ctx context.Context, d *schema.ResourceDat
 	defer log.WriteExit()
 
 	log.WriteInfo("starting volume update")
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d)
 
-	volumeInfo, err := impl.UpdateInfraVolume(d)
-	if err != nil {
-		return diag.FromErr(err)
+	if storage_id != nil {
+		volumeInfo, err := impl.UpdateInfraVolume(d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		volume := impl.ConvertInfraVolumeToSchema(volumeInfo)
+		log.WriteDebug("volume: %+v\n", *volume)
+		volList := []map[string]interface{}{
+			*volume,
+		}
+		if err := d.Set("volume", volList); err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		d.SetId(volumeInfo.ResourceId)
+	} else {
+		serial := d.Get("serial").(int)
+
+		logicalUnit, err := impl.UpdateLun(d)
+		if err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		terraformModelLun := terraformmodel.LogicalUnit{}
+		err = copier.Copy(&terraformModelLun, logicalUnit)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil
+		}
+
+		lun := impl.ConvertLunToSchema(&terraformModelLun, serial)
+		log.WriteDebug("lun: %+v\n", *lun)
+		lunList := []map[string]interface{}{
+			*lun,
+		}
+		if err := d.Set("volume", lunList); err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		d.Set("ldev_id", logicalUnit.LdevID) // input may have an empty ldev_id
+		d.SetId(strconv.Itoa(logicalUnit.LdevID))
 	}
 
-	volume := impl.ConvertInfraVolumeToSchema(volumeInfo)
-	log.WriteDebug("volume: %+v\n", *volume)
-	volList := []map[string]interface{}{
-		*volume,
-	}
-	if err := d.Set("volume", volList); err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
-	}
-
-	d.SetId(volumeInfo.ResourceId)
 	log.WriteInfo("volume updated successfully")
 
 	return nil
@@ -145,45 +207,68 @@ func resourceInfraStorageVolumeDelete(ctx context.Context, d *schema.ResourceDat
 	defer log.WriteExit()
 
 	log.WriteInfo("starting volume delete")
+	storage_id, _ ,_:= common.GetValidateStorageIDFromSerialResource(d)
+	if storage_id != nil {
+		err := impl.DeleteInfraVolume(d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 
-	err := impl.DeleteInfraVolume(d)
-	if err != nil {
-		return diag.FromErr(err)
+		d.SetId("")
+		log.WriteInfo("volume deleted successfully")
+		return nil
+	} else {
+		err := impl.DeleteLun(d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		d.SetId("")
+		log.WriteInfo("lun deleted successfully")
+		return nil
 	}
 
-	d.SetId("")
-	log.WriteInfo("volume deleted successfully")
-	return nil
 }
 
 func InfraVolumeDIffValidate(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
+	// providerConfig := d.Get("provider_config")
+	// var storageId string
+	directSerial := d.Get("serial").(int)
+
+	sanStorageSetting, sanError := cache.GetSanSettingsFromCache(strconv.Itoa(directSerial))
+
+	storageId, infraError := common.GetValidateStorageIDFromSerial(d)
+
+	if sanError != nil && storageId == nil {
+		return sanError
+	} else if infraError != nil && sanStorageSetting == nil {
+		return infraError
+	}
+
+	if storageId != nil && sanStorageSetting != nil {
+		return fmt.Errorf("found Same Serial number in both the provider %v", directSerial)
+	}
+
+	if storageId != nil {
+
+		// The resource is configured with hitachi_infrastructure_gateway_provider
+		return ValidateInfraVolumeDIff(d, *storageId)
+
+	} else if sanStorageSetting != nil {
+		return ValidateSanStorageVolumeDIff(d)
+	}
+	return nil
+}
+
+func ValidateInfraVolumeDIff(d *schema.ResourceDiff, storageId string) error {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	serial := common.GetSerialStringFromDiff(d)
-	storageId := d.Get("storage_id").(string)
-
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return err
-	}
-
-	if serial != "" && storageId != "" {
-		err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
-		return err
-	} else if serial == "" && storageId == "" {
-		err := errors.New("either serial or storage_id can't be empty. Please specify one")
-		return err
-	}
-
-	if storageId == "" {
-		storageId, err = common.GetStorageIdFromSerial(address, serial)
-		if err != nil {
-			return err
-		}
-
 	}
 
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
@@ -214,21 +299,16 @@ func InfraVolumeDIffValidate(ctx context.Context, d *schema.ResourceDiff, m inte
 		_, volOk = reconObj.GetVolumeByName(storageId, name.(string))
 	}
 
-	mandatoryFields := []string{"parity_group_id", "capacity", "system"}
+	mandatoryIntFields := []string{"pool_id", "size_gb"}
 	missingFields := []string{}
 
-	for _, field := range mandatoryFields {
-		_, ok := d.GetOk(field)
-		if !ok && !volOk {
+	for _, field := range mandatoryIntFields {
+		data, _ := d.GetOk(field)
+		if data.(int) == -1 && !volOk {
 			missingFields = append(missingFields, field)
 		}
 	}
 
-	pool_id, _ := d.GetOk("pool_id")
-
-	if pool_id.(int) == -1 && !volOk {
-		missingFields = append(missingFields, "pool_id")
-	}
 	if len(missingFields) > 0 {
 		return fmt.Errorf("mandatory fields missing for new volume creation: %s", strings.Join(missingFields, ", "))
 	}

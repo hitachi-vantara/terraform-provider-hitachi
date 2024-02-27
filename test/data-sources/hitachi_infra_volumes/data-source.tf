@@ -1,12 +1,17 @@
 
 data "hitachi_infra_volume" "volume" {
-  serial  = 40014
-  ldev_id = 562
+  serial  = 40015
+  ldev_id = 1
 }
 
-output "volume" {
-  value = data.hitachi_infra_volume.volume
+
+data "hitachi_infra_volume" "volume2" {
+  serial  = 611039
+  ldev_id = 1
 }
+# output "volume" {
+#   value = data.hitachi_infra_volume.volume
+# }
 
 
 

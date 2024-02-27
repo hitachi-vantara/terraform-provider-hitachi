@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"time"
 
 	// "time"
 
@@ -28,7 +29,7 @@ func Provider() *schema.Provider {
 		Schema: schemaimpl.ProviderSchema,
 		ResourcesMap: map[string]*schema.Resource{
 
-			"hitachi_vsp_volume":                resourceimpl.ResourceStorageLun(),
+			// "hitachi_vsp_volume":                resourceimpl.ResourceStorageLun(),
 			"hitachi_vsp_hostgroup":             resourceimpl.ResourceStorageHostGroup(),
 			"hitachi_vsp_iscsi_target":          resourceimpl.ResourceStorageIscsiTarget(),
 			"hitachi_vsp_iscsi_chap_user":       resourceimpl.ResourceStorageIscsiChapUser(),
@@ -42,7 +43,7 @@ func Provider() *schema.Provider {
 			"hitachi_infra_hostgroup":      resourceimpl.ResourceInfraHostGroup(),
 			"hitachi_infra_storage_device": resourceimpl.ResourceInfraStorageDevice(),
 			"hitachi_infra_iscsi_target":   resourceimpl.ResourceInfraIscsiTarget(),
-			"hitachi_infra_vsp_volume":     resourceimpl.ResourceInfraStorageVOlume(),
+			"hitachi_vsp_volume":     resourceimpl.ResourceInfraStorageVolume(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":                datasourceimpl.DataSourceStorageSystem(),
@@ -104,7 +105,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	sanList := []map[string]interface{}{}
 
 	// Uncomment following line if you want to debug Terraform, also update processId in launch.json file
-	// time.Sleep(15 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	ssarray, err := impl.RegisterStorageSystem(d)
 	if err != nil {
