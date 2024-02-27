@@ -116,3 +116,8 @@ type StorageDeviceToPartnerReq struct {
 	PartnerId  string `json:"partnerId"`
 	ResourceId string `json:"resourceId"`
 }
+
+const (
+	DefaultSystemName         = "terraform-ucp-system"
+	DefaultSystemSerialNumber = "Logical-UCP-95054"
+)

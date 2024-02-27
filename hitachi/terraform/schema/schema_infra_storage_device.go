@@ -458,7 +458,7 @@ var ResourceInfraStorageDeviceSchema = map[string]*schema.Schema{
 
 	"gateway_address": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
+		Optional:    true,
 		Description: "Gateway Address",
 	},
 
@@ -471,7 +471,7 @@ var ResourceInfraStorageDeviceSchema = map[string]*schema.Schema{
 	"system": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Name of the System",
+		Description: "Name of the System to be on-boarded",
 	},
 
 	// output

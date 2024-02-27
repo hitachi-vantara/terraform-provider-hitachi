@@ -442,8 +442,8 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "name number of volume to be created",
+		Optional:    true,
+		Description: "Name number of volume to be created",
 	},
 
 	"pool_id": &schema.Schema{
@@ -452,11 +452,11 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 		Default:     -1,
 		Description: "Pool ID in which volume is to be created",
 	},
-	"lun_id": &schema.Schema{
+	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Default:     -1,
-		Description: "Lun ID in which volume is to be created",
+		Description: "Ldev ID of lun (Required )",
 	},
 	"resource_group_id": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -464,10 +464,15 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 		Default:     -1,
 		Description: "Resource group id which volume is to be created",
 	},
-	"parity_group_id": &schema.Schema{
+	"paritygroup_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Description: "Parity group ID in which volume is to be created",
+	},
+	"pool_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Pool Name in which volume is to be created",
 	},
 
 	"subscriber_id": &schema.Schema{
@@ -476,17 +481,17 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 		Description: "Id of the subscriber which is attached to the volume",
 	},
 
-	"capacity": &schema.Schema{
-		Type:        schema.TypeString,
+	"size_gb": &schema.Schema{
+		Type:        schema.TypeInt,
 		Optional:    true,
-		Description: "capacity(Size) of volume to be created",
+		Description: "Size of volume to be created in GB",
 	},
 	//Remove dedup from this version
 
 	"system": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "System name under volume to be created",
+		Description: "System name under volume to be created for infra gateway provider",
 	},
 	"deduplication_compression_mode": &schema.Schema{
 		Type:        schema.TypeString,

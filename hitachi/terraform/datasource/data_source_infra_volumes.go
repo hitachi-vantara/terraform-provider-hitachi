@@ -7,6 +7,7 @@ import (
 	"time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	common "terraform-provider-hitachi/hitachi/terraform/common"
 
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
@@ -27,44 +28,72 @@ func DataSourceInfraVolumesRead(ctx context.Context, d *schema.ResourceData, m i
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 
-	// fetch all volumes
+	if storage_id != nil {
 
-	volumes, mtVolumes, err := impl.GetInfraVolumes(d)
+		// fetch all volumes
 
-	if err != nil {
-		return diag.FromErr(err)
-	}
+		volumes, mtVolumes, err := impl.GetInfraVolumes(d)
 
-	spList := []map[string]interface{}{}
-	if mtVolumes == nil {
-		for _, sp := range *volumes {
-			eachSp := impl.ConvertInfraVolumeToSchema(&sp)
-			log.WriteDebug("it: %+v\n", *eachSp)
-			spList = append(spList, *eachSp)
-		}
-
-		if err := d.Set("volumes", spList); err != nil {
+		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-		log.WriteInfo("volumes read successfully")
+
+		spList := []map[string]interface{}{}
+		if mtVolumes == nil {
+			for _, sp := range *volumes {
+				eachSp := impl.ConvertInfraVolumeToSchema(&sp)
+				log.WriteDebug("it: %+v\n", *eachSp)
+				spList = append(spList, *eachSp)
+			}
+
+			if err := d.Set("volumes", spList); err != nil {
+				return diag.FromErr(err)
+			}
+			d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+			log.WriteInfo("volumes read successfully")
+
+		} else {
+			for _, sp := range *mtVolumes {
+				eachSp := impl.ConvertPartnersInfraVolumeToSchema(&sp)
+				log.WriteDebug("it: %+v\n", *eachSp)
+				spList = append(spList, *eachSp)
+			}
+
+			if err := d.Set("partner_volumes", spList); err != nil {
+				return diag.FromErr(err)
+			}
+
+			d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+			log.WriteInfo("volumes read successfully")
+		}
 
 	} else {
-		for _, sp := range *mtVolumes {
-			eachSp := impl.ConvertPartnersInfraVolumeToSchema(&sp)
-			log.WriteDebug("it: %+v\n", *eachSp)
-			spList = append(spList, *eachSp)
-		}
+		serial := d.Get("serial").(int)
 
-		if err := d.Set("partner_volumes", spList); err != nil {
+		logicalUnits, err := impl.GetRangeOfLuns(d)
+		if err != nil {
 			return diag.FromErr(err)
 		}
 
+		lunList := []map[string]interface{}{}
+
+		for _, lun := range *logicalUnits {
+			eachLun := impl.ConvertLunToSchema(&lun, serial)
+			log.WriteDebug("eachLun: %+v\n", &eachLun)
+			lunList = append(lunList, *eachLun)
+		}
+
+		if err := d.Set("volumes", lunList); err != nil {
+			return diag.FromErr(err)
+		}
+
+		// always run
 		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-		log.WriteInfo("volumes read successfully")
+		//d.SetId(strconv.Itoa(logicalUnits.LdevID))
+		log.WriteInfo("range of luns read successfully")
+
 	}
-
 	return nil
-
 }

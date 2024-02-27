@@ -45,3 +45,5 @@ type AllStorageTypes struct {
 	VssbStorageVersionInfo []*StorageVersionInfo
 	InfraGwInfo            []*InfraGwSettings
 }
+
+type ProviderType string
