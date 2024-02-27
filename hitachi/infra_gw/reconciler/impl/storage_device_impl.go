@@ -182,7 +182,9 @@ func (psm *infraGwManager) GetOrCreateDefaultUcpSystem(reqBody *model.CreateStor
 	}
 
 	// First check if the ucp system we are about to create already exists
-
+	if reqBody.GatewayAddress == "" {
+		reqBody.GatewayAddress = objStorage.Address
+	}
 	ucp, err := psm.FindUcpSystemByName(model.DefaultSystemName)
 
 	if err != nil {

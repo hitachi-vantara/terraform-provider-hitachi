@@ -51,8 +51,6 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 
 	//serial := d.Get("serial").(int)
 
-	_, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
-	defer cancel()
 
 	response, err := impl.CreateInfraStorageDevice(d)
 	if err != nil {
