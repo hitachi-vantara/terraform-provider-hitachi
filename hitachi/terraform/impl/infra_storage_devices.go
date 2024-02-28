@@ -313,6 +313,8 @@ func CreateInfraStorageDeviceRequestFromSchema(d *schema.ResourceData) (*terrafo
 	if ok {
 		gwa := gwAddress.(string)
 		createInput.GatewayAddress = gwa
+	} else {
+		createInput.GatewayAddress = ""
 	}
 
 	outOfBand, ok := d.GetOk("out_of_band")

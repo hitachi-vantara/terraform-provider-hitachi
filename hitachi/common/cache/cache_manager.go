@@ -128,6 +128,9 @@ func GetSanSettingsFromCache(serialNumber string) (*sanmodel.StorageDeviceSettin
 
 	data, err := ReadFromSanCache(serialNumber)
 
+	if serialNumber == "0" {
+		return nil, fmt.Errorf("valid serial number is not provided for direct connection")
+	}
 	//Uncomment if required
 	// log.WriteDebug("ssi: %+v type: %v", data, reflect.TypeOf(data))
 

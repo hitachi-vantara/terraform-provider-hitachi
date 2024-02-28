@@ -167,6 +167,43 @@ func (psm *infraGwManager) FindUcpSystemByName(name string) (*model.UcpSystem, e
 
 }
 
+func (psm *infraGwManager) FindStorageSystemByNameAndSerial(name string, serialNumber string) (*model.UcpSystem, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+	ucpSystems, err := provObj.GetUcpSystems()
+	if err != nil {
+		e2 := fmt.Errorf("failed to get Ucp Systems, error code: %v", err)
+		log.WriteDebug("TFError| error in GetUcpSystems call, err: %v", err)
+		return nil, e2
+	}
+
+	var result model.UcpSystem
+	for _, ucp := range ucpSystems.Data {
+		if ucp.Name == name && ucp.SerialNumber == serialNumber {
+			result.Path = ucpSystems.Path
+			result.Message = ucpSystems.Message
+			result.Data = ucp
+			return &result, nil
+		} else if ucp.Name != name && ucp.SerialNumber == serialNumber {
+			e2 := fmt.Errorf("storage with Serial number %s on-boarded to different system named %s", serialNumber, ucp.Name)
+			return nil, e2
+		}
+	}
+
+	e2 := fmt.Errorf("storage serial number is not on-boarded %s", serialNumber)
+	return nil, e2
+
+}
+
 // createUcpSystem .
 func (psm *infraGwManager) GetOrCreateDefaultUcpSystem(reqBody *model.CreateStorageDeviceParam) (*model.UcpSystem, error) {
 	log := commonlog.GetLogger()
@@ -182,7 +219,9 @@ func (psm *infraGwManager) GetOrCreateDefaultUcpSystem(reqBody *model.CreateStor
 	}
 
 	// First check if the ucp system we are about to create already exists
-
+	if reqBody.GatewayAddress == "" {
+		reqBody.GatewayAddress = objStorage.Address
+	}
 	ucp, err := psm.FindUcpSystemByName(model.DefaultSystemName)
 
 	if err != nil {

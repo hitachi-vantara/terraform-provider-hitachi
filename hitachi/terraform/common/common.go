@@ -211,11 +211,12 @@ func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{
 		return nil, nil, err
 	}
 
-	var storage_serial_number int
+	// var storage_serial_number int
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return nil, nil, err
 	}
+
 	if storageId == "" {
 		storageId, err = GetStorageIdFromSerial(address, serial)
 		if err != nil {
@@ -223,22 +224,22 @@ func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{
 		}
 	}
 
-	if serial == "" {
-		serial, err = GetSerialFromStorageId(address, storageId)
-		if err != nil {
-			return nil, nil, err
-		}
-		storage_serial_number, err = strconv.Atoi(serial)
-		if err != nil {
-			return nil, nil, err
-		}
-	} else {
-		storage_serial_number, err = strconv.Atoi(serial)
-		if err != nil {
-			return nil, nil, err
-		}
-	}
-	d.Set("serial", storage_serial_number)
+	// if serial == "" {
+	// 	serial, err = GetSerialFromStorageId(address, storageId)
+	// 	if err != nil {
+	// 		return nil, nil, err
+	// 	}
+	// 	storage_serial_number, err = strconv.Atoi(serial)
+	// 	if err != nil {
+	// 		return nil, nil, err
+	// 	}
+	// } else {
+	// 	storage_serial_number, err = strconv.Atoi(serial)
+	// 	if err != nil {
+	// 		return nil, nil, err
+	// 	}
+	// }
+	// d.Set("serial", storage_serial_number)
 
 	return &storageId, &address, nil
 }

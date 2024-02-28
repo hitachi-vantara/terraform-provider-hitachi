@@ -45,6 +45,8 @@ type InfraGwManager interface {
 
 	// UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)
+	FindUcpSystemByName(name string) (*model.UcpSystem, error)
+	FindStorageSystemByNameAndSerial(name string, serialNumber string) (*model.UcpSystem, error)
 
 	// CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (task *model.TaskResponse, err error)
 
