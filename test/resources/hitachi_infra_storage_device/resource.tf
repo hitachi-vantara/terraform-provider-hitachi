@@ -4,7 +4,7 @@ resource "hitachi_infra_storage_device" "demo_sd" {
   username = "maintenance"
   password = "raid-maintenance"
   # gateway_address = "172.25.22.81"
-  # out_of_band = false
+  out_of_band = true
   # system = "UCP-SYS2"
  
 }

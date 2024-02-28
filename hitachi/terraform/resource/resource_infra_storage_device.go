@@ -51,7 +51,6 @@ func resourceInfraStorageDeviceCreate(ctx context.Context, d *schema.ResourceDat
 
 	//serial := d.Get("serial").(int)
 
-
 	response, err := impl.CreateInfraStorageDevice(d)
 	if err != nil {
 		d.SetId("")
@@ -119,11 +118,6 @@ func resourceInfraStorageDeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	for _, item := range *response {
 		element := &item
 		d.SetId(element.ResourceId)
-		/*
-			d.Set("hostgroup_name", element.HostGroupName)
-			d.Set("hostgroup_number", element.HostGroupId)
-			d.Set("port", element.Port)
-		*/
 		break
 	}
 

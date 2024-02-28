@@ -42,9 +42,10 @@ type InfraGwManager interface {
 	GetVolumesByPartnerSubscriberID(id string, fromLdevId int, toLdevId int) (*model.MTVolumes, error)
 	GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeInfo, error)
 
-	
 	// UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)
+	FindUcpSystemByName(name string) (*model.UcpSystem, error)
+	FindStorageSystemByNameAndSerial(name string, serialNumber string) (*model.UcpSystem, error)
 
 	// CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (task *model.TaskResponse, err error)
 

@@ -309,6 +309,25 @@ func ValidateInfraVolumeDIff(d *schema.ResourceDiff, storageId string) error {
 		}
 	}
 
+	system, ok := d.GetOk("system")
+
+	if ok {
+		_, err := reconObj.FindUcpSystemByName(system.(string))
+		if err != nil {
+			return fmt.Errorf("%v", err)
+		}
+	}
+
+	serial, ok := d.GetOk("serial")
+
+	if ok && !volOk {
+
+		_, err := reconObj.FindStorageSystemByNameAndSerial(reconcilermodel.DefaultSystemName, serial.(string))
+		if err != nil {
+			return fmt.Errorf("%v", err)
+		}
+	}
+
 	if len(missingFields) > 0 {
 		return fmt.Errorf("mandatory fields missing for new volume creation: %s", strings.Join(missingFields, ", "))
 	}
