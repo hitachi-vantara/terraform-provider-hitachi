@@ -4,6 +4,7 @@ import (
 	"strconv"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	utils "terraform-provider-hitachi/hitachi/common/utils"
 	common "terraform-provider-hitachi/hitachi/terraform/common"
 
 	// mc "terraform-provider-hitachi/hitachi/messagecatalog"
@@ -133,9 +134,9 @@ func ConvertInfraGwParityGroupToSchema(pg *terraformmodel.InfraParityGroupInfo) 
 		"storage_serial_number":      storage_serial_number,
 		"resource_id":                pg.ResourceId,
 		"parity_group_id":            pg.ParityGroupId,
-		"free_capacity":              pg.FreeCapacity,
+		"free_capacity":              utils.TransformSizeToUnit(uint64(pg.FreeCapacity)),
 		"resource_group_id":          pg.ResourceGroupId,
-		"total_capacity":             pg.TotalCapacity,
+		"total_capacity":             utils.TransformSizeToUnit(uint64(pg.TotalCapacity)),
 		"ldev_ids":                   pg.LdevIds,
 		"raid_level":                 pg.RaidLevel,
 		"drive_type":                 pg.DriveType,

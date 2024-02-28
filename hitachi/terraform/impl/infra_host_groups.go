@@ -103,6 +103,7 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 			return nil, err
 		}
 	}
+	d.Set("serial", storage_serial_number)
 
 	port := d.Get("port_id").(string)
 	hostgroup_name := d.Get("hostgroup_name").(string)
@@ -150,7 +151,7 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 			}
 		}
 		if !found {
-			err = fmt.Errorf("Hostgroup name  %s not found", hostgroup_name)
+			err = fmt.Errorf("hostgroup name  %s not found", hostgroup_name)
 			log.WriteDebug("Hostgroup name  %s not found", hostgroup_name)
 			return nil, err
 		}
@@ -167,7 +168,7 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 			}
 		}
 		if !found {
-			err = fmt.Errorf("Hostgroup number  %d not found", hostgroup_id)
+			err = fmt.Errorf("hostgroup number  %d not found", hostgroup_id)
 			log.WriteDebug("Hostgroup number  %d not found", hostgroup_id)
 			return nil, err
 		}

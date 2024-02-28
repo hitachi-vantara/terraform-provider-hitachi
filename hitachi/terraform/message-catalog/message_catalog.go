@@ -204,6 +204,10 @@ var MessageCatalog = map[interface{}]string{
 	ERR_CREATE_INFRA_STORAGE_DEVICE_FAILED: "Failed to add storage device with serial number %s and management IP %s.",
 	INFO_CREATE_INFRA_STORAGE_DEVICE_END:   "Successfully added storage device with serial number %s and management IP %s.",
 
+	INFO_UPDATE_INFRA_STORAGE_DEVICE_BEGIN: "Updating storage device with serial number %s and management IP %s.",
+	ERR_UPDATE_INFRA_STORAGE_DEVICE_FAILED: "Failed to update storage device with serial number %s and management IP %s.",
+	INFO_UPDATE_INFRA_STORAGE_DEVICE_END:   "Successfully updated storage device with serial number %s and management IP %s.",
+
 	INFO_CREATE_INFRA_ISCSI_TARGET_BEGIN: "Creating iscsi target on port %s and name %s.",
 	ERR_CREATE_INFRA_ISCSI_TARGET_FAILED: "Failed to create iscsi target on port %s and name %s.",
 	INFO_CREATE_INFRA_ISCSI_TARGET_END:   "Successfully created iscsi target on port %s and name %s.",
