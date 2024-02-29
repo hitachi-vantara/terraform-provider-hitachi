@@ -323,12 +323,9 @@ func CreateInfraStorageDeviceRequestFromSchema(d *schema.ResourceData) (*terrafo
 		createInput.OutOfBand = oob
 	}
 
-	ucpSystem, ok := d.GetOk("system")
+	system, ok := d.GetOk("systems")
 	if ok {
-		us := ucpSystem.(string)
-		createInput.UcpSystem = us
-	} else {
-		createInput.UcpSystem = ""
+		createInput.UcpSystem = system.(string)
 	}
 
 	log.WriteDebug("createInput: %+v", createInput)

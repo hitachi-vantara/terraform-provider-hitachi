@@ -233,15 +233,17 @@ func resourceInfraStorageVolumeDelete(ctx context.Context, d *schema.ResourceDat
 func InfraVolumeDIffValidate(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
 	// providerConfig := d.Get("provider_config")
 	// var storageId string
+
+	storageSettings := m.(*terraformmodel.AllStorageTypes)
 	directSerial := d.Get("serial").(int)
 
 	sanStorageSetting, sanError := cache.GetSanSettingsFromCache(strconv.Itoa(directSerial))
 
 	storageId, infraError := common.GetValidateStorageIDFromSerial(d)
 
-	if sanError != nil && storageId == nil {
+	if sanError != nil && len(storageSettings.VspStorageSystem) > 0 {
 		return sanError
-	} else if infraError != nil && sanStorageSetting == nil {
+	} else if infraError != nil && len(storageSettings.InfraGwInfo) > 0 {
 		return infraError
 	}
 
@@ -312,17 +314,20 @@ func ValidateInfraVolumeDIff(d *schema.ResourceDiff, storageId string) error {
 	system, ok := d.GetOk("system")
 
 	if ok {
-		_, err := reconObj.FindUcpSystemByName(system.(string))
+		found, _, err := reconObj.FindUcpSystemByName(system.(string))
 		if err != nil {
 			return fmt.Errorf("%v", err)
 		}
+		if !(*found) {
+			return fmt.Errorf("provided system does not exist %s", system.(string))
+		}
 	}
 
-	serial, ok := d.GetOk("serial")
+	serial := common.GetSerialStringFromDiff(d)
 
-	if ok && !volOk {
+	if serial != "" && !volOk {
 
-		_, err := reconObj.FindStorageSystemByNameAndSerial(reconcilermodel.DefaultSystemName, serial.(string))
+		_, err := reconObj.FindStorageSystemByNameAndSerial(reconcilermodel.DefaultSystemName, serial)
 		if err != nil {
 			return fmt.Errorf("%v", err)
 		}

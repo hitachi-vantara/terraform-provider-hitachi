@@ -468,13 +468,10 @@ var ResourceInfraStorageDeviceSchema = map[string]*schema.Schema{
 		Description: "Out of band",
 	},
 
-	"systems": &schema.Schema{
-		Type:     schema.TypeList,
-		Optional: true,
-		Elem: &schema.Schema{
-			Type: schema.TypeString,
-		},
-		Description: "List of names of the Systems to be on-boarded",
+	"system": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Names of the System to be on-boarded",
 	},
 
 	// output

@@ -21,7 +21,6 @@ resource "hitachi_infra_storage_device" "demo_sd" {
   gateway_address = "172.25.20.35"
   #system = "UCP-CI-12035"
 
-
   // Increase the timeout value for create/update operations accordingly
     timeouts {
     create = "10m"
@@ -35,7 +34,6 @@ resource "hitachi_infra_storage_device" "demo_sd" {
 
 ### Required
 
-- `gateway_address` (String) Gateway Address
 - `management_address` (String) Management Address
 - `password` (String) Management Address
 - `serial` (Number) Serial Number of the storage device
@@ -43,8 +41,9 @@ resource "hitachi_infra_storage_device" "demo_sd" {
 
 ### Optional
 
+- `gateway_address` (String) Gateway Address
 - `out_of_band` (Boolean) Out of band
-- `system` (String) Name of the System
+- `system` (String) Names of the System to be on-boarded
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 
 ### Read-Only

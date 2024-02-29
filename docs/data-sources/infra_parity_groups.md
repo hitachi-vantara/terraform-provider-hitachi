@@ -50,7 +50,7 @@ Read-Only:
 
 - `copyback_mode` (Boolean) Whether callback mode is enabled
 - `drive_type` (String) Drive type
-- `free_capacity` (Number) Free Capacity
+- `free_capacity` (String) Free Capacity
 - `is_accelerated_compression` (Boolean) Whether accelerated_compression is enabled
 - `is_encryption_enabled` (Boolean) Whether encryption is enabled
 - `is_pool_array_group` (Boolean) Whether pool array group is enabled
@@ -61,6 +61,6 @@ Read-Only:
 - `resource_id` (String) Resource  ID
 - `status` (String) Status
 - `storage_serial_number` (Number) Serial number of storage
-- `total_capacity` (Number) Total Capacity
+- `total_capacity` (String) Total Capacity
 
 

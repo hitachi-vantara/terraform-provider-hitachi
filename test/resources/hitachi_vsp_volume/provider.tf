@@ -8,11 +8,17 @@ terraform {
 }
 
 provider "hitachi" {
-  san_storage_system {
-    serial        = 30595
-    management_ip = "172.25.47.115"
-    username      = "ms_vmware"
-    password      ="Hitachi1"
+  hitachi_infrastructure_gateway_provider {
+    address = "172.25.22.81"
+    username      = "ucpadmin"
+    password      = "Passw0rd!"
   }
+
+  # san_storage_system {
+  #   serial        = 40015
+  #   management_ip = "172.25.47.116"
+  #   username      = "maintenance"
+  #   password      ="raid-maintenance"
+  # }
 
 }

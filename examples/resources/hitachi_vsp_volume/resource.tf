@@ -13,4 +13,7 @@ resource "hitachi_vsp_volume" "mylun" {
   serial  = 12345
   size_gb = 1
   pool_id = 1
+  #name = "hitachi_vsp_volume"
+   # system ="Logical-UCP-611"
+  # subscriber_id = "46519299-c43c-4c6e-a680-81dce45a3fcb"
 }

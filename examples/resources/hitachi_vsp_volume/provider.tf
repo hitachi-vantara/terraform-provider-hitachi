@@ -14,5 +14,11 @@ provider "hitachi" {
     username      = var.hitachi_storage_user
     password      = var.hitachi_storage_password
   }
+ 
+  # hitachi_infrastructure_gateway_provider {
+  #   address = "10.10.11.13"
+  #   username      = var.hitachi_gateway_user
+  #   password      = var.hitachi_gateway_password
+  # }
 
 }
