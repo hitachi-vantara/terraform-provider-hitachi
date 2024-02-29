@@ -142,7 +142,7 @@ type MTPortInfo struct {
 	Mode              string `json:"mode"`
 }
 
-type MTStoragePortInfo struct {
+type MTStorageInfo struct {
 	ResourceId        string              `json:"resourceId"`
 	Type              string              `json:"type"`
 	StorageId         string              `json:"storageId"`
@@ -158,4 +158,14 @@ type MTStoragePortInfo struct {
 	ShadowImageInfo   MTShadowImageInfo   `json:"shadowImageInfo"`
 	SnapshotPairInfo  MTSnapshotPairInfo  `json:"snapshotPairInfo"`
 	HurPairInfo       MTHurPairInfo       `json:"hurPairInfo"`
+}
+type TFError struct {
+	Message string `json:"message"`
+}
+
+type MTStorage struct {
+	Path    string          `json:"path"`
+	Message string          `json:"message"`
+	Error   TFError         `json:"error"`
+	Data    []MTStorageInfo `json:"data"`
 }
