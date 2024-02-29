@@ -121,3 +121,16 @@ const (
 	DefaultSystemName         = "terraform-ucp-system"
 	DefaultSystemSerialNumber = "Logical-UCP-95054"
 )
+
+type MTStorageDevice struct {
+	Storage struct {
+		ResourceId   string   `json:"resourceId"`
+		SerialNumber string   `json:"serialNumber"`
+		UcpSystems   []string `json:"ucpSystems"`
+	} `json:"storage"`
+	PartnerId    string `json:"partnerId"`
+	SubscriberId string `json:"subscriberId"`
+	StorageId    string `json:"storageId"`
+}
+
+type MTStorageDevices []MTStorageDevice
