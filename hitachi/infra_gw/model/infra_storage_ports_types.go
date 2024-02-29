@@ -91,14 +91,6 @@ type MTStorageVolumeInfo struct {
 	PoolName      string `json:"poolName"`
 }
 
-type MTHostGroupInfo struct {
-	HostGroupName   string `json:"hostGroupName"`
-	HostGroupId     int    `json:"hostGroupId"`
-	ResourceGroupId int    `json:"resourceGroupId"`
-	Port            string `json:"port"`
-	HostMode        string `json:"hostMode"`
-}
-
 type DpVolume struct {
 	LogicalUnitId int    `json:"logicalUnitId"`
 	Size          string `json:"size"`
