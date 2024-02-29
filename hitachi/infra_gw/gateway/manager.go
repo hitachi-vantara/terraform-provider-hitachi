@@ -21,10 +21,17 @@ type InfraGwManager interface {
 
 	// Hostgroups Management
 	GetHostGroups(storageId string, port string) (*model.HostGroups, error)
+	GetHostGroupsByPartnerIdOrSubscriberID(storageId string) (*model.MTHostGroups, error)
 	GetHostGroup(storageId, hostGroupId string) (*model.HostGroup, error)
 	CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
+	CreateMTHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
 	UpdateHostGroup(storageId, hostGroupId string, reqBody model.PatcheHostGroupParam) (*string, error)
-	UpdateHostMode(storageId, iscsiTargetId string, reqBody model.UpdateHostModeParam) (*string, error)
+	AddVolumesToHostGroup(storageId, hostGroupId string, reqBody model.AddVolumesToHostGroupParam) (*string, error)
+	AddVolumesToHostGroupToSubscriber(storageId, hostGroupId string, reqBody model.AddVolumesToHostGroupParam) (*string, error)
+	DeleteVolumesFromHostGroup(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) error
+	DeleteVolumesFromHostGroupFromSubscriber(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) error
+	DeleteHostGroup(storageId, hostGroupId string) error
+	DeleteMTHostGroup(storageId, hostGroupId string) error
 
 	// Storage Pool Management
 	GetStoragePools(storageId string) (*model.StoragePools, error)
@@ -34,6 +41,7 @@ type InfraGwManager interface {
 	GetIscsiTargets(storageId string, port string) (*model.IscsiTargets, error)
 	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)
+	UpdateHostMode(storageId, iscsiTargetId string, reqBody model.UpdateHostModeParam) (*string, error)
 
 	//Volume management
 	GetVolumes(storageId string) (*model.Volumes, error)
