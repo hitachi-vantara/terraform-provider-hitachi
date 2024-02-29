@@ -178,24 +178,24 @@ func (psm *infraGwManager) AddVolumesToHostGroupToSubscriber(storageId, hostGrou
 }
 
 // DeleteVolumesFromHostGroup .
-func (psm *infraGwManager) DeleteVolumesFromHostGroup(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) (*string, error) {
+func (psm *infraGwManager) DeleteVolumesFromHostGroup(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups/%s/volumes", storageId, hostGroupId)
 
-	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, nil)
+	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteVolumesFromHostGroup - %s API call, err: %v", apiSuf, err)
-		return nil, err
+		return err
 	}
 
-	return resourceId, nil
+	return nil
 }
 
 // DeleteVolumesFromHostGroupFromSubscriber .
-func (psm *infraGwManager) DeleteVolumesFromHostGroupFromSubscriber(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) (*string, error) {
+func (psm *infraGwManager) DeleteVolumesFromHostGroupFromSubscriber(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -208,13 +208,13 @@ func (psm *infraGwManager) DeleteVolumesFromHostGroupFromSubscriber(storageId, h
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups/%s/volumes", storageId, hostGroupId)
 
-	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, &headers)
+	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, &headers)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteVolumesFromHostGroupFromSubscriber - %s API call, err: %v", apiSuf, err)
-		return nil, err
+		return err
 	}
 
-	return resourceId, nil
+	return nil
 }
 
 // DeleteHostGroup .
