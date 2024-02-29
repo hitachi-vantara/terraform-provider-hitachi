@@ -8,10 +8,15 @@ terraform {
 }
 
 provider "hitachi" {
+  # hitachi_vss_block_provider {
+  #   vss_block_address = "172.25.45.108"
+  #   username          = "ucpa"
+  #   password          = "Hitachi1"
+  # }
   hitachi_vss_block_provider {
-    vss_block_address = "10.76.47.55"
-    username          = var.hitachi_storage_user
-    password          = var.hitachi_storage_password
+    vss_block_address = "172.25.58.151"
+    username          = "admin"
+    password          = "vssb-789"
   }
 
 }

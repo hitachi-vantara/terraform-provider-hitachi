@@ -3,18 +3,18 @@
 page_title: "hitachi_vsp_volumes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Volume:It returns all luns information from given storage device.
+  :meta:subcategory:VSP Storage Parity Groups:The following request obtains information about Parity Groups.
 ---
 
 # hitachi_vsp_volumes (Data Source)
 
-:meta:subcategory:VSP Storage Volume:It returns all luns information from given storage device.
+:meta:subcategory:VSP Storage Parity Groups:The following request obtains information about Parity Groups.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VSP Volume Data Retrieval
+# Hitachi VSP Volume Data Retrieval from VSP Direct Connect and Gateway connections
 #
 # This section defines a data source block to fetch information about a specific
 # volume from a Hitachi Virtual Storage Platform (VSP) using HashiCorp Configuration
@@ -65,17 +65,39 @@ output "volume1" {
 ### Required
 
 - `end_ldev_id` (Number) End ldev ID of lun
-- `serial` (Number) Serial number of storage
 - `start_ldev_id` (Number) Start ldev ID of lun
 
 ### Optional
 
+- `serial` (Number) Serial number of storage
+- `storage_id` (String) Unique ID of the storage device
+- `subscriber_id` (String) Id of the subscriber which is attached to the volume
 - `undefined_ldev` (Boolean) If set to true, returns not allocated luns else otherwise
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `partner_volumes` (Block List) This is partners volumes output (see [below for nested schema](#nestedblock--partner_volumes))
 - `volumes` (Block List) This is volumes output (see [below for nested schema](#nestedblock--volumes))
+
+<a id="nestedblock--partner_volumes"></a>
+### Nested Schema for `partner_volumes`
+
+Read-Only:
+
+- `entitlement_status` (String) Entitlement Status of the volume
+- `ldev_id` (Number) ldev id of the volume
+- `partner_id` (String) partner Id id  of the volume
+- `pool_id` (Number) Pool Id of the volume
+- `pool_name` (String) Pool name of the volume
+- `resource_id` (String) Resource Id
+- `storage_id` (String) Storage Id
+- `storage_serial_number` (Number) Serial number of storage
+- `subscriber_id` (String) subscriber Id id  of the volume
+- `total_capacity_in_mb` (Number) Total capacity in MB
+- `type` (String) Type of resource
+- `used_capacity_in_mb` (Number) Used capacity in MB
+
 
 <a id="nestedblock--volumes"></a>
 ### Nested Schema for `volumes`
@@ -84,24 +106,47 @@ Read-Only:
 
 - `attributes` (List of String) List of attributes of volume
 - `clpr_id` (Number) clpr ID
+- `dedup_compression_progress` (Number) Dedup Compression Progress
+- `dedup_compression_status` (String) Dedup Compression Status
+- `deduplication_compression_mode` (String) Deduplication Compression Mode
 - `emulation_type` (String) Emulation type
+- `format_or_shred_rate` (Number) Format Or Shred Rate
 - `free_capacity_in_mb` (Number) Free capacity in MB
-- `is_alua_enabled` (Boolean) It checks whether alua is enabled on volume
+- `is_alua_enabled` (Boolean) Checks whether alua is enabled on volume
+- `is_command_device` (Boolean) Checks whether it is Command Device
+- `is_dynamic_pool_volume` (Boolean) Checks whether it is a dynamic pool volume
 - `is_full_allocation_enabled` (Boolean) It checks whether full allocation is enabled on volume
+- `is_in_gad_pair` (Boolean) Checks whether it is in a Gad Pair
+- `is_journal_pool_volume` (Boolean) Checks whether it is a journal pool volume
+- `is_pool_volume` (Boolean) Checks whether it is a pool volume
+- `is_vvol` (Boolean) Checks whether it is a VVol
 - `label` (String) Label
 - `ldev_id` (Number) Ldev ID of lun
+- `logical_unit_id_hex_format` (String) Logical Unit Id in Hex Format
 - `mpblade_id` (Number) Mpblade ID
 - `naa_id` (String) NAA ID
+- `name` (String) Name
 - `num_ports` (Number) Number of ports available on volume
-- `paritygroup_id` (List of String) Parity group ID
+- `parity_group_id` (List of String) Parity group ID
+- `path_count` (Number) Path Count
 - `pool_id` (Number) Pool ID
+- `pool_name` (String) Pool Name
 - `ports` (Block List) (see [below for nested schema](#nestedblock--volumes--ports))
-- `resourcegroup_id` (Number) Resource group ID of volume
+- `provision_type` (String) Provision Type
+- `quorum_disk_id` (Number) Quorum Disk Id
+- `resource_group_id` (Number) Resource group ID of volume
+- `resource_id` (String) Resource Id
 - `ss_id` (String) SS ID
 - `status` (String) Status
 - `storage_serial_number` (Number) Serial number of storage
+- `stripe_size` (Number) Stripe Size
+- `total_capacity` (Number) Total capacity
 - `total_capacity_in_mb` (Number) Total capacity in MB
+- `type` (String) Type
+- `used_capacity` (Number) Used capacity
 - `used_capacity_in_mb` (Number) Used capacity in MB
+- `virtual_logical_unit_id` (Number) Virtual Logical Unit Id
+- `virtual_storage_device_id` (String) Virtual Storage Device Id
 
 <a id="nestedblock--volumes--ports"></a>
 ### Nested Schema for `volumes.ports`

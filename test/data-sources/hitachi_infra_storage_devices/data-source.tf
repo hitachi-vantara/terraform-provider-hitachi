@@ -1,5 +1,5 @@
 data "hitachi_infra_storage_devices" "storage_devices" {
-  #serial = 611039
+  serial = 611039
 }
 
 output "storage_devices" {

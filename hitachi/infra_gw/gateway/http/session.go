@@ -72,7 +72,7 @@ func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
 		return "", err
 	}
 
-	log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
+	// log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
 
 	type ResponseSession struct {
 		Path    string `json:"path"`

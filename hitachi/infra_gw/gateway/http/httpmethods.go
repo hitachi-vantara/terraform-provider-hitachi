@@ -230,6 +230,8 @@ func MakeFinalResponse(storageSetting model.InfraGwSettings, taskString *string)
 			return nil, err
 		}
 		response.Data.TaskId = basicResponse.TaskId
+		response.Data.ResourceId = basicResponse.ResourceId
+		response.Data.State = basicResponse.State
 
 		reString, err := json.Marshal(response)
 		if err != nil {

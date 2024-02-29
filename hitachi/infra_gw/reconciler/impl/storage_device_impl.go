@@ -133,7 +133,7 @@ func (psm *infraGwManager) FindUcpSystemBySerial(serial string) (*model.UcpSyste
 
 }
 
-func (psm *infraGwManager) FindUcpSystemByName(name string) (*model.UcpSystem, error) {
+func (psm *infraGwManager) FindUcpSystemByName(name string) (*bool, *model.UcpSystem, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -143,27 +143,28 @@ func (psm *infraGwManager) FindUcpSystemByName(name string) (*model.UcpSystem, e
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 	ucpSystems, err := provObj.GetUcpSystems()
 	if err != nil {
 		e2 := fmt.Errorf("failed to get Ucp Systems, error code: %v", err)
 		log.WriteDebug("TFError| error in GetUcpSystems call, err: %v", err)
-		return nil, e2
+		return nil, nil, e2
 	}
 
 	var result model.UcpSystem
+	var found = false
 	for _, ucp := range ucpSystems.Data {
 		if ucp.Name == name {
 			result.Path = ucpSystems.Path
 			result.Message = ucpSystems.Message
 			result.Data = ucp
-			return &result, nil
+			found = true
+			return &found, &result, nil
 		}
 	}
 
-	e2 := fmt.Errorf("UCP System with Name %s does not exist", name)
-	return nil, e2
+	return &found, nil, nil
 
 }
 
@@ -188,14 +189,25 @@ func (psm *infraGwManager) FindStorageSystemByNameAndSerial(name string, serialN
 
 	var result model.UcpSystem
 	for _, ucp := range ucpSystems.Data {
-		if ucp.Name == name && ucp.SerialNumber == serialNumber {
-			result.Path = ucpSystems.Path
-			result.Message = ucpSystems.Message
-			result.Data = ucp
-			return &result, nil
-		} else if ucp.Name != name && ucp.SerialNumber == serialNumber {
-			e2 := fmt.Errorf("storage with Serial number %s on-boarded to different system named %s", serialNumber, ucp.Name)
-			return nil, e2
+		// if ucp.Name == name && ucp.SerialNumber == serialNumber {
+		// 	result.Path = ucpSystems.Path
+		// 	result.Message = ucpSystems.Message
+		// 	result.Data = ucp
+		// 	return &result, nil
+		// } else if ucp.Name != name && ucp.SerialNumber == serialNumber {
+		// 	e2 := fmt.Errorf("storage with Serial number %s on-boarded to different system named %s", serialNumber, ucp.Name)
+		// 	return nil, e2
+		// }
+		if ucp.Name == name {
+			for _, v := range ucp.StorageDevices {
+				if v.SerialNumber == serialNumber {
+					result.Path = ucpSystems.Path
+					result.Message = ucpSystems.Message
+					result.Data = ucp
+					return &result, nil
+				}
+
+			}
 		}
 	}
 
@@ -222,9 +234,13 @@ func (psm *infraGwManager) GetOrCreateDefaultUcpSystem(reqBody *model.CreateStor
 	if reqBody.GatewayAddress == "" {
 		reqBody.GatewayAddress = objStorage.Address
 	}
-	ucp, err := psm.FindUcpSystemByName(model.DefaultSystemName)
-
+	found, ucp, err := psm.FindUcpSystemByName(model.DefaultSystemName)
 	if err != nil {
+		log.WriteDebug("TFError| error in FindUcpSystemByName call, err: %v", err)
+		return nil, err
+	}
+
+	if !(*found) {
 		// ucp system does not exist, create first
 
 		body := model.CreateUcpSystemParam{
@@ -269,7 +285,7 @@ func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput 
 			}
 			createInput.UcpSystem = reconcilerUcpSystem.Data.Name
 		} else {
-			existSystem, err := psm.FindUcpSystemByName(ucpSystem)
+			_, existSystem, err := psm.FindUcpSystemByName(ucpSystem)
 			if err != nil {
 				log.WriteDebug("TFError| error in FindUcpSystemByName call, err: %v", err)
 				return nil, err
@@ -295,6 +311,52 @@ func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput 
 
 	}
 }
+
+// func (psm *infraGwManager) ReconcileStorageDevice(storageId string, createInput *model.CreateStorageDeviceParam) (*model.StorageDevice, error) {
+// 	log := commonlog.GetLogger()
+// 	log.WriteEnter()
+// 	defer log.WriteExit()
+
+// 	ucpSystem := createInput.UcpSystem
+
+// 	if storageId == "" {
+// 		// The storage is not present in the ucp systems, we have to add the storage to a ucp system
+
+// 		if ucpSystem == "" {
+// 			// The user did not provide any ucp_system information, so we will create one and onboard the storage to that system
+// 			reconcilerUcpSystem, err := psm.GetOrCreateDefaultUcpSystem(createInput)
+// 			if err != nil {
+// 				log.WriteDebug("TFError| error in createUcpSystem call, err: %v", err)
+// 				return nil, err
+// 			}
+// 			createInput.UcpSystem = reconcilerUcpSystem.Data.Name
+// 		} else {
+// 			_, existSystem, err := psm.FindUcpSystemByName(ucpSystem)
+// 			if err != nil {
+// 				log.WriteDebug("TFError| error in FindUcpSystemByName call, err: %v", err)
+// 				return nil, err
+// 			}
+// 			createInput.UcpSystem = existSystem.Data.Name
+// 		}
+// 		reconcilerSd, err := psm.addStorageDevice(createInput)
+// 		if err != nil {
+// 			log.WriteDebug("TFError| error in addStorageDevice call, err: %v", err)
+// 			return nil, err
+// 		}
+
+// 		return reconcilerSd, nil
+
+// 	} else {
+// 		// The storage id is present, so this is an update
+// 		reconcilerSd, err := psm.updateStorageDevice(storageId, createInput)
+// 		if err != nil {
+// 			log.WriteDebug("TFError| error in updateStorageDevice call, err: %v", err)
+// 			return nil, err
+// 		}
+// 		return reconcilerSd, nil
+
+// 	}
+// }
 
 func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 	log := commonlog.GetLogger()

@@ -103,9 +103,9 @@ func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 		return err
 	}
 
-	if psm.setting.SubscriberId != nil {
-		return gatewayObj.DeleteMTStorageDevice(storageId)
-	}
+	// if psm.setting.SubscriberId != nil {
+	// 	return gatewayObj.DeleteMTStorageDevice(storageId)
+	// }
 
 	return gatewayObj.DeleteStorageDevice(storageId)
 }
