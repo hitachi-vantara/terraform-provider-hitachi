@@ -8,10 +8,12 @@ type InfraGwManager interface {
 
 	// Storage Device Management
 	GetStorageDevices() (*model.StorageDevices, error)
+	GetMTStorageDevices() (*model.MTStorageDevices, error)
 	GetStorageDevice(storageId string) (*model.StorageDevice, error)
+	GetMTStorageDevice(storageId string) (*model.MTStorageDevice, error)
 	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
+	AddMTStorageDevice(reqBody model.CreateMTStorageDeviceParam) (*string, error)
 	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
-	AddMTStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	DeleteStorageDevice(storageId string) error
 	DeleteMTStorageDevice(storageId string) error
 
