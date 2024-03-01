@@ -37,8 +37,8 @@ func GetLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
 	lunID := d.Get("ldev_id").(int)
 
 	// check if this is getting executed from "resource"
-	_, lunOk := d.GetOk("ldev_id")
-	if !lunOk {
+	// _, lunOk := d.GetOk("ldev_id")
+	if lunID <= 0 {
 		lunFromState := d.State().ID
 		log.WriteDebug("TFDebug| lunFromState from state: %s", lunFromState)
 		if lunFromState != "" {
@@ -237,7 +237,7 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 	createInput.CapacityInGB = uint64(size_gb.(int))
 
 	ldevId, _ := d.GetOk("ldev_id")
-	if ldevId.(int) >= 0 {
+	if ldevId.(int) > 0 {
 		lid := ldevId.(int)
 		createInput.LdevID = &lid
 	}
@@ -341,8 +341,8 @@ func CheckSchemaIfLunGet(d *schema.ResourceData) *int {
 		}
 	}
 
-	ldevId, ok := d.GetOk("ldev_id")
-	if ok {
+	ldevId, _ := d.GetOk("ldev_id")
+	if ldevId.(int) > 0 {
 		lid := ldevId.(int)
 		return &lid
 	}
@@ -361,7 +361,7 @@ func DeleteLun(d *schema.ResourceData) error {
 	log.WriteDebug("ldevID: %+v", ldevID)
 	lunID := 0
 	isLdevIdSetFromState := false
-	if ldevID.(int) <= 0 {
+	if ldevID.(int) < 0 {
 		lunFromState := d.State().ID
 		if lunFromState != "" {
 			lun, err := strconv.Atoi(lunFromState)
@@ -569,7 +569,7 @@ func getLdevIdFromSchema(d *schema.ResourceData) (*int, error) {
 	ldevID := d.Get("ldev_id")
 	ldevIDInt := ldevID.(int)
 	log.WriteDebug("spec input ldevID: %+v", ldevID)
-	if ldevIDInt <= 0 {
+	if ldevIDInt < 0 {
 		volume, ok := d.GetOk("volume")
 		if !ok {
 			return nil, fmt.Errorf("no info data in resource")
