@@ -62,11 +62,24 @@ func (psm *infraGwManager) AddStorageDevice(reqBody model.CreateStorageDevicePar
 		return nil, err
 	}
 
-	if psm.setting.PartnerId != nil {
-		return gatewayObj.AddMTStorageDevice(reqBody)
+	return gatewayObj.AddStorageDevice(reqBody)
+}
+
+// AddMTStorageDevice adds a storage device
+func (psm *infraGwManager) AddMTStorageDevice(reqBody model.CreateMTStorageDeviceParam) (msg *string, err error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
 	}
 
-	return gatewayObj.AddStorageDevice(reqBody)
+	return gatewayObj.AddMTStorageDevice(reqBody)
 }
 
 // UpdateStorageDevice  updates a storage device
