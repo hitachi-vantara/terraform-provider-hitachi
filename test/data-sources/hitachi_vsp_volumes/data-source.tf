@@ -1,6 +1,6 @@
 data "hitachi_vsp_volume" "volume" {
   serial  = 611039
-  ldev_id = 281
+  ldev_id = 2
 }
 
 output "volume" {
@@ -8,7 +8,7 @@ output "volume" {
 }
 
 data "hitachi_vsp_volume" "lun2" {
-  serial  = 40014
+  serial  = 40015
   ldev_id = 2
 }
 

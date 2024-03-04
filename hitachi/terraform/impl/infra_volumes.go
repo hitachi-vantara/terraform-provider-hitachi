@@ -341,6 +341,7 @@ func ConvertInfraVolumeToSchema(pg *terraformmodel.InfraVolumeInfo) *map[string]
 		"status":                         pg.Status,
 		"total_capacity":                 pg.TotalCapacity,
 		"used_capacity":                  pg.UsedCapacity,
+		"used_capacity_in_mb":            common.BytesToMegabytes(pg.UsedCapacity),
 		"virtual_storage_device_id":      pg.VirtualStorageDeviceId,
 		"stripe_size":                    pg.StripeSize,
 		"type":                           pg.Type,
@@ -360,6 +361,7 @@ func ConvertInfraVolumeToSchema(pg *terraformmodel.InfraVolumeInfo) *map[string]
 		"quorum_disk_id":                 pg.QuorumDiskId,
 		"is_in_gad_pair":                 pg.IsInGadPair,
 		"is_vvol":                        pg.IsVVol,
+		"total_capacity_in_mb":           common.BytesToMegabytes(pg.TotalCapacity),
 	}
 
 	return &sp
@@ -373,8 +375,9 @@ func ConvertPartnersInfraVolumeToSchema(pg *terraformmodel.MtInfraVolumeInfo) *m
 		"storage_id":            pg.StorageId,
 		"type":                  pg.Type,
 		"entitlement_status":    pg.EntitlementStatus,
-		"total_capacity_in_mb":  (pg.StorageVolumeInfo.TotalCapacity / 1024),
-		"used_capacity_in_mb":   (pg.StorageVolumeInfo.UsedCapacity / 1024),
+		"total_capacity":        pg.StorageVolumeInfo.TotalCapacity,
+		"total_capacity_in_mb":  common.BytesToMegabytes(pg.StorageVolumeInfo.TotalCapacity),
+		"used_capacity_in_mb":   common.BytesToMegabytes(pg.StorageVolumeInfo.UsedCapacity),
 		"ldev_id":               pg.StorageVolumeInfo.LdevId,
 		"pool_id":               pg.StorageVolumeInfo.PoolId,
 		"pool_name":             pg.StorageVolumeInfo.PoolName,
@@ -415,7 +418,7 @@ func CreateInfraVolumeRequestFromSchema(d *schema.ResourceData, setting *reconci
 	}
 
 	resourceGroupId := d.Get("resource_group_id").(int)
-	if resourceGroupId != -1 {
+	if resourceGroupId >= 0 {
 		createInput.ResourceGroupId = &resourceGroupId
 	}
 

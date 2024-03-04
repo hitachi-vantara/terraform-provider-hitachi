@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 
 	// "errors"
@@ -61,7 +62,7 @@ func GetVssbSettingsFromFile(vssbAddr string) (*vssbmodel.StorageDeviceSettings,
 	defer log.WriteExit()
 
 	filePath := utils.VSSB_SETTINGS_DIR + "/" + vssbAddr
-	file, err := ioutil.ReadFile(filePath)
+	file, err := os.ReadFile(filePath)
 	if err != nil {
 		log.WriteError(err)
 		return nil, err
@@ -194,9 +195,10 @@ func GetValidateStorageIDFromSerial(d *schema.ResourceDiff) (*string, error) {
 }
 
 func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{}) (*string, *string, error) {
-	if m != nil {
+	var providerLists *terraformmodel.AllStorageTypes
 
-		providerLists := m.(*terraformmodel.AllStorageTypes)
+	if m != nil {
+		providerLists = m.(*terraformmodel.AllStorageTypes)
 
 		if len(providerLists.InfraGwInfo) == 0 {
 			return nil, nil, nil
@@ -220,6 +222,9 @@ func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{
 	if storageId == "" {
 		storageId, err = GetStorageIdFromSerial(address, serial)
 		if err != nil {
+			if len(providerLists.VspStorageSystem) > 0 {
+				return nil, nil, nil
+			}
 			return nil, nil, err
 		}
 	}
@@ -267,4 +272,9 @@ func GetInfraGatewaySettings(d *schema.ResourceData, m interface{}) (*string, *r
 	}
 
 	return storage_id, &setting, nil
+}
+
+func BytesToMegabytes(bytes int64) int64 {
+	megabytes := bytes / 1024 / 1024
+	return megabytes
 }

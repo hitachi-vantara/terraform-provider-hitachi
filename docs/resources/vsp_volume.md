@@ -40,15 +40,15 @@ resource "hitachi_vsp_volume" "mylun" {
 ### Optional
 
 - `deduplication_compression_mode` (String) deduplicationCompressionMode of the volume to be created
-- `ldev_id` (Number) Ldev ID of lun (Required )
+- `ldev_id` (Number) Ldev ID of volume interface
 - `name` (String) Name number of volume to be created
 - `paritygroup_id` (String) Parity group ID in which volume is to be created
-- `pool_id` (Number) Pool ID in which volume is to be created
+- `pool_id` (Number) Pool ID in which volume is to be created (it's mandatory parameter for new volume creation)
 - `pool_name` (String) Pool Name in which volume is to be created
 - `resource_group_id` (Number) Resource group id which volume is to be created
-- `serial` (Number) Serial number of storage
-- `size_gb` (Number) Size of volume to be created in GB
-- `storage_id` (String) Unique ID of the storage device
+- `serial` (Number) Serial number of storage .(Mandatory for Direct connect provider)
+- `size_gb` (Number) Size of volume to be created in GB.(it's mandatory parameter for new volume creation)
+- `storage_id` (String) Unique ID of the storage device (Either serial or storage id required)
 - `subscriber_id` (String) Id of the subscriber which is attached to the volume
 - `system` (String) System name under volume to be created for infra gateway provider
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))

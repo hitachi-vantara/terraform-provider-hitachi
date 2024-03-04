@@ -432,13 +432,13 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	"storage_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Unique ID of the storage device",
+		Description: "Unique ID of the storage device (Either serial or storage id required)",
 	},
 
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of storage .(Mandatory for Direct connect provider)",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -450,13 +450,13 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Default:     -1,
-		Description: "Pool ID in which volume is to be created",
+		Description: "Pool ID in which volume is to be created (it's mandatory parameter for new volume creation)",
 	},
 	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Default:     -1,
-		Description: "Ldev ID of lun (Required )",
+		Description: "Ldev ID of volume interface",
 	},
 	"resource_group_id": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -484,7 +484,7 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	"size_gb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
-		Description: "Size of volume to be created in GB",
+		Description: "Size of volume to be created in GB.(it's mandatory parameter for new volume creation)",
 	},
 	//Remove dedup from this version
 
