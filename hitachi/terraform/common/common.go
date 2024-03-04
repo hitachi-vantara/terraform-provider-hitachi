@@ -278,3 +278,13 @@ func BytesToMegabytes(bytes int64) int64 {
 	megabytes := bytes / 1024 / 1024
 	return megabytes
 }
+
+
+func BytesToMegabytesFromUnit(bytes uint64) uint64 {
+	megabytes := bytes / 1024 / 1024
+	return megabytes
+}
+func MegaBytesToBytes(mb uint64) uint64 {
+	megabytes := mb * 1024 * 1024
+	return megabytes
+}

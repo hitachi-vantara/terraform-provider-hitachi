@@ -21,6 +21,8 @@ import (
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
+	common "terraform-provider-hitachi/hitachi/terraform/common"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/jinzhu/copier"
 )
@@ -440,7 +442,9 @@ func ConvertLunToSchema(logicalUnit *terraformmodel.LogicalUnit, serial int) *ma
 		"naa_id":               logicalUnit.NaaID,
 		"total_capacity_in_mb": logicalUnit.TotalCapacityInMB,
 		"free_capacity_in_mb":  logicalUnit.FreeCapacityInMB,
+		"total_capacity":       common.MegaBytesToBytes(logicalUnit.TotalCapacityInMB),
 		"used_capacity_in_mb":  logicalUnit.UsedCapacityInMB,
+		"used_capacity":        common.MegaBytesToBytes(logicalUnit.UsedCapacityInMB),
 	}
 
 	ports := []map[string]interface{}{}
