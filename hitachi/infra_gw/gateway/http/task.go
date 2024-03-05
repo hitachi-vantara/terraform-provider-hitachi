@@ -73,7 +73,7 @@ func WaitForTaskToComplete(storageSetting model.InfraGwSettings, taskResponse *m
 	defer log.WriteExit()
 
 	var FIRST_WAIT_TIME time.Duration = 1 // in sec
-	MAX_RETRY_COUNT := 6
+	MAX_RETRY_COUNT := 8
 
 	// if r.status_code != http.client.ACCEPTED {
 	// 	panic(errors.New("Exception")) //requests.HTTPError(r)
