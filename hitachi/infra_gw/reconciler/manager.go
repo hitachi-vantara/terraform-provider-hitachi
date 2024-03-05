@@ -7,6 +7,7 @@ import (
 type InfraGwManager interface {
 	// Storage Device Management
 	GetStorageDevices() (*model.StorageDevices, error)
+	GetMTStorageDevices() (*model.MTStorageDevices, error)
 	GetStorageDevice(storageId string) (*model.StorageDevice, error)
 	ReconcileStorageDevice(storageId string, createInput *model.CreateStorageDeviceParam) (*model.StorageDevice, error)
 	DeleteStorageDevice(storageId string) error

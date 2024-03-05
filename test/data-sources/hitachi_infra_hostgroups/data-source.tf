@@ -2,10 +2,10 @@ data "hitachi_infra_storage_devices" "storage_devices" {
   #storage_id = "storage-9a3f87a8c9dc213e8ebd02b63b97b9e8"
   serial = 611032
 }
-/*
+
 data "hitachi_infra_hostgroup" "host_group" {
-  serial = 611039
-  #storage_id = data.hitachi_infra_storage_devices.storage_devices.id
+  #serial = 611039
+  storage_id = data.hitachi_infra_storage_devices.storage_devices.id
   port_id = "CL8-B"
   hostgroup_number = 14
   #hostgroup_name = "PODB-ESXi-218-HBA1"

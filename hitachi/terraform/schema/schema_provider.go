@@ -27,6 +27,16 @@ var ProviderSchema = map[string]*schema.Schema{
 					Required:    true,
 					Description: "Password of the Hitachi UCP Advisor",
 				},
+				"partner_id": &schema.Schema{
+					Type:        schema.TypeString,
+					Optional:    true,
+					Description: "Partner Id of the Hitachi UCP Advisor",
+				},
+				"subscriber_id": &schema.Schema{
+					Type:        schema.TypeString,
+					Optional:    true,
+					Description: "Subscriber Id of the Hitachi UCP Advisor",
+				},
 			},
 		},
 		DefaultFunc: schema.EnvDefaultFunc("HITACHI_UCP_ADVISOR_PROVIDER", nil),

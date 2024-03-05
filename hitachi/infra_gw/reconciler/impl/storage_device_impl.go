@@ -13,11 +13,7 @@ func (psm *infraGwManager) GetStorageDevices() (*model.StorageDevices, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -28,17 +24,30 @@ func (psm *infraGwManager) GetStorageDevices() (*model.StorageDevices, error) {
 	return provObj.GetStorageDevices()
 }
 
+// GetMTStorageDevices gets storage devices information
+func (psm *infraGwManager) GetMTStorageDevices() (*model.MTStorageDevices, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return provObj.GetMTStorageDevices()
+}
+
 // GetStorageDevice gets storage device information
 func (psm *infraGwManager) GetStorageDevice(id string) (*model.StorageDevice, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {

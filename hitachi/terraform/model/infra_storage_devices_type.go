@@ -14,6 +14,14 @@ type InfraStorageDevices struct {
 	Data    []InfraStorageDeviceInfo `json:"data"`
 }
 
+type InfraMTStorageDevices struct {
+	Data []InfraMTStorageDevice
+}
+
+type InfraMTStorageDevice struct {
+	model.MTStorageDevice
+}
+
 type CreateInfraStorageDeviceParam struct {
 	model.CreateStorageDeviceParam
 }
