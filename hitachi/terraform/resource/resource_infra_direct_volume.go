@@ -301,7 +301,7 @@ func ValidateInfraVolumeDIff(d *schema.ResourceDiff, storageId string) error {
 		_, volOk = reconObj.GetVolumeByName(storageId, name.(string))
 	}
 
-	mandatoryIntFields := []string{"pool_id", "size_gb"}
+	mandatoryIntFields := []string{"pool_id"}
 	missingFields := []string{}
 
 	for _, field := range mandatoryIntFields {
@@ -311,6 +311,11 @@ func ValidateInfraVolumeDIff(d *schema.ResourceDiff, storageId string) error {
 		}
 	}
 
+	size, _ := d.GetOk("size_gb")
+
+	if size.(float64) <= 0 && !volOk {
+		missingFields = append(missingFields, "size_gb")
+	}
 	system, ok := d.GetOk("system")
 
 	if ok {

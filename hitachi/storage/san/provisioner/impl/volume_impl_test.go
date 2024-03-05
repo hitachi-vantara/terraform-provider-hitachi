@@ -80,7 +80,7 @@ func xTestCreateLunInDynamicPoolWithLDevId(t *testing.T) {
 	}
 
 	ldevId := 107
-	var sizeInGB uint = 2
+	var sizeInGB float64 = 2
 	var dynamicPool uint = 0
 	dataReductionMode := "compression"
 
@@ -106,7 +106,7 @@ func xTestCreateLunInDynamicPool(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	var sizeInGB uint = 2
+	var sizeInGB float64 = 2
 	var dynamicPool uint = 0
 	dataReductionMode := "compression"
 
@@ -133,7 +133,7 @@ func xTestCreateLunInParityGroupWithLDevId(t *testing.T) {
 	}
 
 	ldevId := 108
-	var sizeInGB uint = 2
+	var sizeInGB float64 = 2
 	parityGroupId := "1-1"
 	dataReductionMode := "compression"
 
@@ -159,7 +159,7 @@ func xTestCreateLunInParityGroup(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	var sizeInGB uint = 2
+	var sizeInGB float64 = 2
 	parityGroupId := "1-1"
 	dataReductionMode := "compression"
 
@@ -185,7 +185,7 @@ func xTestExpandLun(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	var sizeInGB uint64 = 2
+	var sizeInGB float64 = 2
 	ldevId := 221
 
 	newLdevId, err := psm.ExpandLun(ldevId, sizeInGB)

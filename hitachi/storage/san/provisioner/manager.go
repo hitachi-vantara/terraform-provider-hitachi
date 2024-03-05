@@ -10,11 +10,11 @@ type SanStorageManager interface {
 	// VOLUME
 	GetLun(ldevID int) (*sanmodel.LogicalUnit, error)
 	GetRangeOfLuns(startLdevID int, endLdevID int, IsUndefinedLdev bool) (*[]sanmodel.LogicalUnit, error)
-	CreateLunInDynamicPoolWithLDevId(ldevId int, sizeInGB uint, dynamicPool uint, dataReductionMode string) (*int, error)
-	CreateLunInParityGroupWithLDevId(ldevId int, sizeInGB uint, parityGroup string, dataReductionMode string) (*int, error)
-	CreateLunInDynamicPool(sizeInGB uint, dynamicPool uint, dataReductionMode string) (*int, error)
-	CreateLunInParityGroup(sizeInGB uint, parityGroup string, dataReductionMode string) (*int, error)
-	ExpandLun(ldevId int, newSize uint64) (*int, error)
+	CreateLunInDynamicPoolWithLDevId(ldevId int, sizeInGB float64, dynamicPool uint, dataReductionMode string) (*int, error)
+	CreateLunInParityGroupWithLDevId(ldevId int, sizeInGB float64, parityGroup string, dataReductionMode string) (*int, error)
+	CreateLunInDynamicPool(sizeInGB float64, dynamicPool uint, dataReductionMode string) (*int, error)
+	CreateLunInParityGroup(sizeInGB float64, parityGroup string, dataReductionMode string) (*int, error)
+	ExpandLun(ldevId int, newSize float64) (*int, error)
 	DeleteLun(ldevId int) error
 	UpdateLun(ldevId int, label *string, dataReductionMode *string) (*sanmodel.LogicalUnit, error)
 	// HOSTGROUP

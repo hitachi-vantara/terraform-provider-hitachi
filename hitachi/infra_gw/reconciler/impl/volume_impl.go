@@ -71,8 +71,12 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 
 	// Get GetVolumeByName
 	if createInput != nil {
-		_, ok := psm.GetVolumeByName(storageId, createInput.Name)
-		if !ok && volumeID == nil {
+		var volOk bool
+
+		if createInput.Name != "" {
+			_, volOk = psm.GetVolumeByName(storageId, createInput.Name)
+		}
+		if !volOk && volumeID == nil {
 			_, err := psm.CreateVolume(storageId, createInput)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateVolume call, err: %v", err)
@@ -86,7 +90,7 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 			}
 
 		}
-	} else if createInput == nil && volumeID != nil {
+	} else if volumeID != nil {
 		err := psm.DeleteVolume(storageId, *volumeID)
 		if err != nil {
 			log.WriteDebug("TFError| error in DeleteVolume call, err: %v", err)
@@ -236,6 +240,38 @@ func (psm *infraGwManager) GetVolumeByName(storageId string, volumeName string) 
 	status := false
 	for _, volume := range volumes.Data {
 		if volume.Name == volumeName {
+			status = true
+			ProvVolume = &volume
+			break
+		}
+	}
+	return ProvVolume, status
+
+}
+
+func (psm *infraGwManager) GetVolumeByLunID(storageId string, lunId int) (*model.VolumeInfo, bool) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	provSetting := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(provSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, false
+	}
+
+	volumes, err := provObj.GetVolumes(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetVolumes call, err: %v", err)
+		return nil, false
+	}
+
+	var ProvVolume *model.VolumeInfo
+	status := false
+	for _, volume := range volumes.Data {
+		if volume.LdevId == lunId {
 			status = true
 			ProvVolume = &volume
 			break

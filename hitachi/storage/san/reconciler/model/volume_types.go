@@ -43,13 +43,13 @@ type LunRequest struct {
 	Name              *string `json:"name,omitempty"`
 	PoolID            *int    `json:"poolId"`
 	ParityGroupID     *string `json:"parityGroupId,omitempty"`
-	CapacityInGB      uint64  `json:"capacityInGB"`
+	CapacityInGB      float64 `json:"capacityInGB"`
 	DataReductionMode *string `json:"dataReductionMode,omitempty"`
 }
 
 type UpdateLunRequest struct {
-	LdevID            *int    `json:"ldevId,omitempty"`
-	Name              *string `json:"name,omitempty"`
-	CapacityInGB      *uint64 `json:"capacityInGB"`
-	DataReductionMode *string `json:"dataReductionMode,omitempty"`
+	LdevID            *int     `json:"ldevId,omitempty"`
+	Name              *string  `json:"name,omitempty"`
+	CapacityInGB      *float64 `json:"capacityInGB"`
+	DataReductionMode *string  `json:"dataReductionMode,omitempty"`
 }

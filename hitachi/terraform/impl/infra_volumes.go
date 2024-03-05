@@ -431,7 +431,7 @@ func CreateInfraVolumeRequestFromSchema(d *schema.ResourceData, setting *reconci
 	capacity, ok := d.GetOk("size_gb")
 
 	if ok {
-		inString := common.GbToMbString(capacity.(int))
+		inString := common.GbToMbString(capacity.(float64))
 		createInput.Capacity = inString
 	}
 
