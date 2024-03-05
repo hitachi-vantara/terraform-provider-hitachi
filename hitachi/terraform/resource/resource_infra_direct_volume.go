@@ -41,9 +41,7 @@ func ResourceInfraStorageVolume() *schema.Resource {
 		Schema:        schemaimpl.ResourceInfraVolumeSchema,
 		CustomizeDiff: InfraVolumeDIffValidate,
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(5 * time.Minute),
-			Delete: schema.DefaultTimeout(5 * time.Minute),
-			Update: schema.DefaultTimeout(5 * time.Minute),
+			Default: schema.DefaultTimeout(5 * time.Minute),
 		},
 	}
 }
@@ -145,6 +143,9 @@ func resourceInfraStorageVolumeUpdate(ctx context.Context, d *schema.ResourceDat
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+
+	SyncVolumeOperation.Lock() //??
+	defer SyncVolumeOperation.Unlock()
 
 	log.WriteInfo("starting volume update")
 	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)

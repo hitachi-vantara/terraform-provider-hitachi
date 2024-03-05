@@ -30,10 +30,11 @@
 # }
 resource "hitachi_vsp_volume" "mylun" {
   serial  = 611039
-  size_gb = 0.3
+  size_gb = 0.9
   pool_id = 0
   # ldev_id = 2522
-  # name = "volumeTest11ffff"
+  name = "volumeTest11ffffppppf"
+  deduplication_compression_mode = "DISABLED"
    # system ="Logical-UCP-611"
   # subscriber_id = "46519299-c43c-4c6e-a680-81dce45a3fcb"
 }
