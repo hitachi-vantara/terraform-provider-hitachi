@@ -236,7 +236,7 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 
 	size_gb, _ := d.GetOk("size_gb")
 
-	createInput.CapacityInGB = uint64(size_gb.(int))
+	createInput.CapacityInGB = size_gb.(float64)
 
 	ldevId, _ := d.GetOk("ldev_id")
 	if ldevId.(int) > 0 {
@@ -534,8 +534,8 @@ func UpdateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.UpdateL
 
 	if d.HasChange("size_gb") {
 		old, new := d.GetChange("size_gb")
-		expandSize := new.(int) - old.(int)
-		size_gb := uint64(expandSize)
+		expandSize := new.(float64) - old.(float64)
+		size_gb := float64(expandSize)
 		updateInput.CapacityInGB = &size_gb
 	}
 

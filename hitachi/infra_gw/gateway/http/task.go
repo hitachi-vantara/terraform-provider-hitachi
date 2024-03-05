@@ -73,7 +73,7 @@ func WaitForTaskToComplete(storageSetting model.InfraGwSettings, taskResponse *m
 	defer log.WriteExit()
 
 	var FIRST_WAIT_TIME time.Duration = 1 // in sec
-	MAX_RETRY_COUNT := 6
+	MAX_RETRY_COUNT := 8
 
 	// if r.status_code != http.client.ACCEPTED {
 	// 	panic(errors.New("Exception")) //requests.HTTPError(r)
@@ -87,7 +87,7 @@ func WaitForTaskToComplete(storageSetting model.InfraGwSettings, taskResponse *m
 
 	for status != "Success" {
 		if retryCount > MAX_RETRY_COUNT {
-			err = fmt.Errorf("Exception: %s, Timeout Error! Operation was not completed.", status)
+			err = fmt.Errorf("exception: %s, Timeout Error! Operation was not completed.", status)
 			log.WriteError(err)
 			log.WriteDebug("TFError| error in MAX RETRY COUNT condition, err: %v", err)
 			return "", nil, err
@@ -107,10 +107,10 @@ func WaitForTaskToComplete(storageSetting model.InfraGwSettings, taskResponse *m
 			return taskResult.Data.Status, taskResult, nil
 		}
 		double_time := waitTime * 2
-		if double_time < 120 {
+		if double_time < 180 {
 			waitTime = double_time
 		} else {
-			waitTime = 120
+			waitTime = 180
 		}
 		retryCount += 1
 	}

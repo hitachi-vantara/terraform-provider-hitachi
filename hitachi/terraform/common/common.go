@@ -163,9 +163,9 @@ func ValidateSerialAndStorageId(serial, storageId string) error {
 	return nil
 }
 
-func GbToMbString(gb int) string {
+func GbToMbString(gb float64) string {
 	mb := gb * 1024
-	return fmt.Sprintf("%dMB", mb)
+	return fmt.Sprintf("%.fMB", mb)
 }
 
 func GetValidateStorageIDFromSerial(d *schema.ResourceDiff) (*string, error) {
@@ -278,7 +278,6 @@ func BytesToMegabytes(bytes int64) int64 {
 	megabytes := bytes / 1024 / 1024
 	return megabytes
 }
-
 
 func BytesToMegabytesFromUnit(bytes uint64) uint64 {
 	megabytes := bytes / 1024 / 1024

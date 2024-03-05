@@ -482,7 +482,7 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	},
 
 	"size_gb": &schema.Schema{
-		Type:        schema.TypeInt,
+		Type:        schema.TypeFloat,
 		Optional:    true,
 		Description: "Size of volume to be created in GB.(it's mandatory parameter for new volume creation)",
 	},
