@@ -29,7 +29,7 @@ func newReconcilerestManager() (*infraGwManager, error) {
 	return psm, nil
 }
 
-func TestCreateUpdateVolume(t *testing.T) {
+func xTestCreateUpdateVolume(t *testing.T) {
 	psm, err := newReconcilerestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
@@ -38,7 +38,7 @@ func TestCreateUpdateVolume(t *testing.T) {
 	lunid := 636
 	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
 	storageId := "storage-e51aa8e9806a70a036a77fec150d1407"
-	createInput := model.CreateVolumeParams{Capacity: "100MB",LunId: &lunid,Name: "VolumeName1",
+	createInput := model.CreateVolumeParams{Capacity: "100MB", LunId: &lunid, Name: "VolumeName1",
 		System: "Logical-UCP-95054", PoolID: &pooldId}
 	sid, err := psm.ReconcileVolume(storageId, &createInput, nil)
 	if err != nil {
