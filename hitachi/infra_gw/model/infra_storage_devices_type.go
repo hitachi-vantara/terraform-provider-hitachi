@@ -128,6 +128,7 @@ type MTStorageDevice struct {
 		SerialNumber string   `json:"serialNumber"`
 		UcpSystems   []string `json:"ucpSystems"`
 	} `json:"storage"`
+	Status       string `json:"status"`
 	PartnerId    string `json:"partnerId"`
 	SubscriberId string `json:"subscriberId"`
 	StorageId    string `json:"storageId"`

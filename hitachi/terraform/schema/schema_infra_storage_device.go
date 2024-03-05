@@ -413,6 +413,47 @@ var InfraStorageDeviceSchema = map[string]*schema.Schema{
 	},
 }
 
+var PartnerInfraStorageDeviceInfoSchema = map[string]*schema.Schema{
+	"storage_serial_number": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Serial number of storage",
+	},
+	"resource_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Resource Id",
+	},
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Storage Id",
+	},
+	"ucp_systems": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Description: "List of UCP Systems",
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
+	"status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Status of the storage device",
+	},
+	"partner_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "partner Id id  of the storage device",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the storage device",
+	},
+}
+
 var DataInfraStorageDevicesSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -427,6 +468,17 @@ var DataInfraStorageDevicesSchema = map[string]*schema.Schema{
 		Description: "This is storage devices output",
 		Elem: &schema.Resource{
 			Schema: InfraStorageDeviceSchema,
+		},
+	},
+
+	//output
+	"partner_storage_devices": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is partners storage device output",
+		Elem: &schema.Resource{
+			Schema: PartnerInfraStorageDeviceInfoSchema,
 		},
 	},
 }
