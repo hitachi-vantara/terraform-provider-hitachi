@@ -484,7 +484,7 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	"size_gb": &schema.Schema{
 		Type:        schema.TypeFloat,
 		Optional:    true,
-		Description: "Size of volume to be created in GB.(it's mandatory parameter for new volume creation)",
+		Description: "Size of volume to be created in GigaByte.(it's mandatory parameter for new volume creation)",
 	},
 	//Remove dedup from this version
 
@@ -496,7 +496,7 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	"deduplication_compression_mode": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "deduplicationCompressionMode of the volume to be created",
+		Description: "Whether to enable the capacity saving function (dedupe and compression) choose between compression, compression_deduplication and disable. Default is disabled",
 	},
 
 	// output

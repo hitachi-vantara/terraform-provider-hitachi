@@ -207,6 +207,9 @@ func resourceInfraStorageVolumeDelete(ctx context.Context, d *schema.ResourceDat
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	SyncVolumeOperation.Lock() //??
+	defer SyncVolumeOperation.Unlock()
+
 	log.WriteInfo("starting volume delete")
 	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 	if storage_id != nil {
@@ -242,9 +245,9 @@ func InfraVolumeDIffValidate(ctx context.Context, d *schema.ResourceDiff, m inte
 
 	storageId, infraError := common.GetValidateStorageIDFromSerial(d)
 
-	if sanError != nil && len(storageSettings.VspStorageSystem) > 0 {
+	if sanError != nil && len(storageSettings.InfraGwInfo) <= 0 {
 		return sanError
-	} else if infraError != nil && len(storageSettings.InfraGwInfo) > 0 {
+	} else if infraError != nil && len(storageSettings.VspStorageSystem) <= 0 {
 		return infraError
 	}
 

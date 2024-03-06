@@ -77,11 +77,12 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 			_, volOk = psm.GetVolumeByName(storageId, createInput.Name)
 		}
 		if !volOk && volumeID == nil {
-			_, err := psm.CreateVolume(storageId, createInput)
+			volInfo, err := psm.CreateVolume(storageId, createInput)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateVolume call, err: %v", err)
 				return nil, err
 			}
+			volumeID = volInfo
 		} else {
 			_, err := psm.UpdateVolume(storageId, volumeID, createInput)
 			if err != nil {
@@ -100,7 +101,7 @@ func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.
 
 	}
 
-	volumeInfo, _ := psm.GetVolumeByName(storageId, createInput.Name)
+	volumeInfo, _ := psm.GetVolumeByID(storageId, *volumeID)
 	return volumeInfo, nil
 }
 

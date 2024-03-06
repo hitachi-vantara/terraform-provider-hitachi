@@ -35,10 +35,10 @@ func xTestCreateUpdateVolume(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 	pooldId := 0
-	lunid := 636
+	// lunid := 636
 	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
-	storageId := "storage-e51aa8e9806a70a036a77fec150d1407"
-	createInput := model.CreateVolumeParams{Capacity: "100MB", LunId: &lunid, Name: "VolumeName1",
+	storageId := "storage-349a72cc2d6b6b131ac5f2c4d557c6d6"
+	createInput := model.CreateVolumeParams{Capacity: "100MB",
 		System: "Logical-UCP-95054", PoolID: &pooldId}
 	sid, err := psm.ReconcileVolume(storageId, &createInput, nil)
 	if err != nil {
