@@ -151,6 +151,7 @@ type MTStorageInfo struct {
 	SnapshotPairInfo  MTSnapshotPairInfo  `json:"snapshotPairInfo"`
 	HurPairInfo       MTHurPairInfo       `json:"hurPairInfo"`
 }
+
 type TFError struct {
 	Message string `json:"message"`
 }
@@ -160,4 +161,11 @@ type MTStorage struct {
 	Message string          `json:"message"`
 	Error   TFError         `json:"error"`
 	Data    []MTStorageInfo `json:"data"`
+}
+
+type MTPorts struct {
+	Path    string       `json:"path"`
+	Message string       `json:"message"`
+	Error   TFError      `json:"error"`
+	Data    []MTPortInfo `json:"data"`
 }

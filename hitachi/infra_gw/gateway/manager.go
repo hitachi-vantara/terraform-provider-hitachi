@@ -19,6 +19,7 @@ type InfraGwManager interface {
 
 	// Storage Port Management
 	GetStoragePorts(storageId string) (*model.StoragePorts, error)
+	GetStoragePortsByPartnerIdOrSubscriberId(id string) (*model.MTPorts, error)
 	GetParityGroups(storageId string) (*model.ParityGroups, error)
 
 	// Hostgroups Management
