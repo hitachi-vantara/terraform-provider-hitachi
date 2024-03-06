@@ -23,7 +23,7 @@ Refre to the below table for more information
 | subscriber_id                 | ""                         | -                            |
 | resource_group_id             | ""                         | -                            |
 | ldev_id                       | 2                          | -                            |
-| deduplication_compression_mode| ""                         | -                            |
+| deduplication_compression_mode| ""                         | ""                           |
 | pool_name                     | -                          | "PoolName"   **              |
 | paritygroup_id                | -                          | "parity_group_id" **         |
 

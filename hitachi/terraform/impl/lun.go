@@ -273,6 +273,12 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 		createInput.ParityGroupID = &paritygroup_id
 	}
 
+	data_reduction_mode, ok := d.GetOk("deduplication_compression_mode")
+	if ok {
+		label := data_reduction_mode.(string)
+		createInput.DataReductionMode = &label
+	}
+
 	log.WriteDebug("createInput: %+v", createInput)
 	return &createInput, nil
 }
@@ -445,6 +451,10 @@ func ConvertLunToSchema(logicalUnit *terraformmodel.LogicalUnit, serial int) *ma
 		"total_capacity":       common.MegaBytesToBytes(logicalUnit.TotalCapacityInMB),
 		"used_capacity_in_mb":  logicalUnit.UsedCapacityInMB,
 		"used_capacity":        common.MegaBytesToBytes(logicalUnit.UsedCapacityInMB),
+		"deduplication_compression_mode": logicalUnit.DataReductionMode,
+		"dedup_compression_progress": logicalUnit.DataReductionProgressRate,
+		"dedup_compression_status": logicalUnit.DataReductionStatus,
+		
 	}
 
 	ports := []map[string]interface{}{}
