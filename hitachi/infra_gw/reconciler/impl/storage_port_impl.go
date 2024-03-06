@@ -12,11 +12,7 @@ func (psm *infraGwManager) GetStoragePorts(id string) (*model.StoragePorts, erro
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -25,4 +21,21 @@ func (psm *infraGwManager) GetStoragePorts(id string) (*model.StoragePorts, erro
 	}
 
 	return provObj.GetStoragePorts(id)
+}
+
+// GetStoragePortsByPartnerIdOrSubscriberId gets ports information
+func (psm *infraGwManager) GetStoragePortsByPartnerIdOrSubscriberId(id string) (*model.MTPorts, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return provObj.GetStoragePortsByPartnerIdOrSubscriberId(id)
 }

@@ -14,11 +14,7 @@ func (psm *infraGwManager) GetIscsiTargets(id string, port string) (*model.Iscsi
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -34,11 +30,7 @@ func (psm *infraGwManager) GetIscsiTarget(storageId, port, iscsiName string) (*m
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -80,11 +72,7 @@ func (psm *infraGwManager) GetIscsiTargetById(id string, iscsiTargetId string) (
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -143,11 +131,7 @@ func (psm *infraGwManager) createIscsiTarget(storageId string, reqBody *model.Cr
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {
@@ -171,11 +155,7 @@ func (psm *infraGwManager) updateIscsiTarget(storageId, hostGroupId string, reqB
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {

@@ -12,11 +12,7 @@ func (psm *infraGwManager) GetIscsiTargets(id string, port string) (*model.Iscsi
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -33,11 +29,7 @@ func (psm *infraGwManager) GetIscsiTarget(id string, iscsiTargetId string) (*mod
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -54,11 +46,7 @@ func (psm *infraGwManager) CreateIscsiTarget(storageId string, reqBody model.Cre
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -75,11 +63,7 @@ func (psm *infraGwManager) UpdateIscsiTarget(storageId, hostGroupId string, reqB
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {

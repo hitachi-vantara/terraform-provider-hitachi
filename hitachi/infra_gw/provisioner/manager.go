@@ -10,10 +10,12 @@ type InfraGwManager interface {
 	GetStorageDevices() (*model.StorageDevices, error)
 	GetMTStorageDevices() (*model.MTStorageDevices, error)
 	GetStorageDevice(storageId string) (*model.StorageDevice, error)
-	GetStoragePorts(storageId string) (*model.StoragePorts, error)
 	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
 	DeleteStorageDevice(storageId string) error
+
+	GetStoragePorts(storageId string) (*model.StoragePorts, error)
+	GetStoragePortsByPartnerIdOrSubscriberId(id string) (*model.MTPorts, error)
 
 	//Parity Group Management
 	GetParityGroups(storageId string) (*model.ParityGroups, error)

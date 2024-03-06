@@ -12,11 +12,7 @@ func (psm *infraGwManager) GetPartnerAndSubscriberId(userName string) (*model.MT
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(objStorage)
 	if err != nil {

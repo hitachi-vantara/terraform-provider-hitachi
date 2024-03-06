@@ -12,11 +12,7 @@ func (psm *infraGwManager) GetHostGroups(storageId string, port string) (*model.
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -33,11 +29,7 @@ func (psm *infraGwManager) GetHostGroup(storageId string, hostGrId string) (*mod
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -54,11 +46,7 @@ func (psm *infraGwManager) CreateHostGroup(storageId string, reqBody model.Creat
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -75,11 +63,7 @@ func (psm *infraGwManager) UpdateHostGroup(storageId, hostGroupId string, reqBod
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {

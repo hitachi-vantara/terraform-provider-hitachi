@@ -113,6 +113,7 @@ func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+
 	gateSetting := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
