@@ -2,7 +2,6 @@ package terraform
 
 import (
 	"context"
-	"time"
 
 	// "time"
 
@@ -105,7 +104,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	sanList := []map[string]interface{}{}
 
 	// Uncomment following line if you want to debug Terraform, also update processId in launch.json file
-	time.Sleep(15 * time.Second)
+	// time.Sleep(15 * time.Second)
 
 	ssarray, err := impl.RegisterStorageSystem(d)
 	if err != nil {
