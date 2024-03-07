@@ -55,8 +55,8 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_iscsi_chap_user":  datasourceimpl.DataSourceStorageChapUser(),
 			"hitachi_vsp_iscsi_chap_users": datasourceimpl.DataSourceStorageChapUsers(),
 			//"hitachi_vsp_storage_ports":          datasourceimpl.DataSourceStoragePorts(),
-			"hitachi_vsp_dynamic_pools":          datasourceimpl.DataSourceStorageDynamicPools(),
-			"hitachi_vsp_parity_groups":          datasourceimpl.DataSourceStorageParityGroups(),
+			"hitachi_vsp_dynamic_pools": datasourceimpl.DataSourceStorageDynamicPools(),
+			//"hitachi_vsp_parity_groups":          datasourceimpl.DataSourceStorageParityGroups(),
 			"hitachi_vss_block_storage_pools":    datasourceimpl.DataSourceStoragePools(),
 			"hitachi_vss_block_volumes":          datasourceimpl.DataSourceVssbVolumes(),
 			"hitachi_vss_block_compute_nodes":    datasourceimpl.DataSourceVssbComputeNodes(),
@@ -68,7 +68,7 @@ func Provider() *schema.Provider {
 
 			//Infra data-resources
 			"hitachi_vsp_storage_ports":     datasourceimpl.DataSourceInfraStoragePorts(),
-			"hitachi_infra_parity_groups":   datasourceimpl.DataSourceInfraParityGroups(),
+			"hitachi_vsp_parity_groups":     datasourceimpl.DataSourceInfraParityGroups(),
 			"hitachi_infra_hostgroup":       datasourceimpl.DataSourceInfraHostGroup(),
 			"hitachi_infra_hostgroups":      datasourceimpl.DataSourceInfraHostGroups(),
 			"hitachi_infra_storage_devices": datasourceimpl.DataSourceInfraStorageDevices(),
