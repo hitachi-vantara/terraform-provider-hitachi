@@ -36,6 +36,7 @@ func (psm *infraGwManager) GetStoragePortsByPartnerIdOrSubscriberId(id string) (
 	headers := map[string]string{
 		"partnerId": *psm.setting.PartnerId,
 	}
+
 	if psm.setting.SubscriberId != nil {
 		headers["subscriberId"] = *psm.setting.SubscriberId
 	}
@@ -43,7 +44,7 @@ func (psm *infraGwManager) GetStoragePortsByPartnerIdOrSubscriberId(id string) (
 	var storagePorts model.MTPorts
 
 	apiSuf := fmt.Sprintf("/storage/%s/ports", id)
-	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &storagePorts)
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &storagePorts)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
