@@ -4,6 +4,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/infra_gw/gateway/impl"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
+	mc "terraform-provider-hitachi/hitachi/infra_gw/reconciler/message-catalog"
 )
 
 // GetVolumes gets volumes information
@@ -13,9 +14,12 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	defer log.WriteExit()
 
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_ALL_VOLUMES_BEGIN))
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_ALL_VOLUMES_FAILED))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -30,9 +34,12 @@ func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId int, toLd
 	defer log.WriteExit()
 
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -46,9 +53,12 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId
 	defer log.WriteExit()
 
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -61,7 +71,7 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId
 		toLdevId = &defaultId
 	}
 
-	return gatewayObj.GetVolumesByPartnerSubscriberID(id, *fromLdevId, *toLdevId)
+	return gatewayObj.GetVolumesDetailsByPartnerSubscriberID(id, *fromLdevId, *toLdevId)
 }
 
 // GetVolume by id gets volume information
@@ -71,6 +81,7 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*mo
 	defer log.WriteExit()
 
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), volumeId)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 
@@ -81,9 +92,12 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*mo
 
 	volumes, err := gatewayObj.GetVolumeByID(storageId, volumeId)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), volumeId)
+
 		log.WriteDebug("TFError| error in GetVolumeByID call, err: %v", err)
 		return nil, err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_END), volumeId)
 
 	return &volumes.Data, nil
 }
@@ -118,10 +132,13 @@ func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateV
 	defer log.WriteExit()
 
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_CREATE_VOLUME_BEGIN))
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		log.WriteInfo(mc.GetMessage(mc.ERR_GET_INFRA_CREATE_VOLUME_FAILED))
+
 		return nil, err
 	}
 
@@ -139,10 +156,13 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId string, reqBo
 	log.WriteEnter()
 	defer log.WriteExit()
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_UPDATE_VOLUME_BEGIN), storageId)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_UPDATE_VOLUME_FAILED), storageId)
+
 		return nil, err
 	}
 
@@ -155,9 +175,12 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 	log.WriteEnter()
 	defer log.WriteExit()
 	gateSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_DELETE_VOLUME_BEGIN), storageId)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_DELETE_VOLUME_FAILED), storageId)
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return err
 	}

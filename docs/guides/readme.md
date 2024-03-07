@@ -83,3 +83,21 @@ Run the following command to initialize the workspace and apply the sample confi
 ```shell
 $ terraform init && terraform apply
 ```
+
+
+## Additional Information about the terraform provider
+
+# Log Directory:
+
+```
+"/var/log/hitachi/terraform/"
+
+```
+
+Change the Log level to DEBUG, INFO, WARN, ERROR, Need to set the environment variable and set as per need by running below command in the command line before doing anything
+
+```
+export TF_LOG_LEVEL = "DEBUG"
+```
+
+Note : Change the Log level to INFO, WARN, ERROR as per need

@@ -4,6 +4,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
 	provisonerimpl "terraform-provider-hitachi/hitachi/infra_gw/provisioner/impl"
+	mc "terraform-provider-hitachi/hitachi/infra_gw/reconciler/message-catalog"
 )
 
 // GetVolumes gets volumes information
@@ -12,10 +13,14 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_ALL_VOLUMES_BEGIN))
+
 	provSetting := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_ALL_VOLUMES_FAILED))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -29,10 +34,13 @@ func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId *int, toL
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+
 		return nil, err
 	}
 	defualtId := 0
@@ -53,9 +61,11 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
-
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -111,17 +121,24 @@ func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateV
 	defer log.WriteExit()
 	provSetting := model.InfraGwSettings(psm.setting)
 
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_CREATE_VOLUME_BEGIN))
+
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		log.WriteInfo(mc.GetMessage(mc.ERR_GET_INFRA_CREATE_VOLUME_FAILED))
+
 		return nil, err
 	}
 
 	volumeID, err := provObj.CreateVolume(storageId, reqBody)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateVolume call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_CREATE_VOLUME_FAILED))
+
 		return nil, err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_CREATE_VOLUME_END))
 
 	return volumeID, nil
 
@@ -133,6 +150,8 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId *string, reqB
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_UPDATE_VOLUME_BEGIN), storageId)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
@@ -155,9 +174,12 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId *string, reqB
 
 	volumeID, err := provObj.UpdateVolume(storageId, *volumeId, &updateVolParams)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_UPDATE_VOLUME_FAILED), storageId)
+
 		log.WriteDebug("TFError| error in UpdateVolume call, err: %v", err)
 		return nil, err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_UPDATE_VOLUME_END), storageId)
 
 	return volumeID, nil
 
@@ -169,6 +191,7 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_DELETE_VOLUME_BEGIN), storageId)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
@@ -178,9 +201,12 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 
 	err = provObj.DeleteVolume(storageId, volumeId)
 	if err != nil {
+	log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_DELETE_VOLUME_FAILED), storageId)
+
 		log.WriteDebug("TFError| error in DeleteVolume call, err: %v", err)
 		return err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_DELETE_VOLUME_END), storageId)
 
 	return nil
 

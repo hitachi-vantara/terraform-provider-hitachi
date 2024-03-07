@@ -14,13 +14,13 @@ type TaskResponse struct {
 			Time              string `json:"time"`
 			RecommendedAction string `json:"recommendedAction"`
 		} `json:"events"`
+		StartTime            string `json:"startTime"`
+		EndTime              string `json:"endTime"`
+		AdditionalAttributes []struct {
+			Id   string `json:"id"`
+			Type string `json:"type"`
+		} `json:"additionalAttributes"`
 	} `json:"data"`
-	StartTime            string `json:"startTime"`
-	EndTime              string `json:"endTime"`
-	AdditionalAttributes []struct {
-		Id   string `json:"id"`
-		Type string `json:"type"`
-	} `json:"additionalAttributes"`
 }
 
 type Response struct {
@@ -34,9 +34,7 @@ type Response struct {
 }
 
 type BasicResponse struct {
-	
-		TaskId     string `json:"taskId"`
-		ResourceId string `json:"resourceId"`
-		State      string `json:"state"`
-
+	TaskId     string `json:"taskId"`
+	ResourceId string `json:"resourceId"`
+	State      string `json:"state"`
 }

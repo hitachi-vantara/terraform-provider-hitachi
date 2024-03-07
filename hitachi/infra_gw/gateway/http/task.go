@@ -155,5 +155,6 @@ func CheckResponseAndWaitForTask(storageSetting model.InfraGwSettings, resJSONSt
 		return task, fmt.Errorf(task.Data.Events[0].Description)
 	}
 
+
 	return task, nil
 }

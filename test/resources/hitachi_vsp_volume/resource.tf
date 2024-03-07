@@ -31,7 +31,7 @@
 
 
 resource "hitachi_vsp_volume" "mylun1" {
-  serial  = 611039
+  serial  = 40015
   size_gb = 0.3
   pool_id = 0
   # # ldev_id = 2522
