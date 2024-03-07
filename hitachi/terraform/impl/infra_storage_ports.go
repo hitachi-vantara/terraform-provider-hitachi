@@ -39,7 +39,7 @@ func GetInfraStoragePorts(d *schema.ResourceData) (*[]terraformmodel.InfraStorag
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_PORTS_BEGIN), setting.Address)
-
+	log.WriteInfo("setting.PartnerId : %v", *setting.PartnerId)
 	if setting.PartnerId == nil {
 		reconStoragePorts, err := reconObj.GetStoragePorts(*storageId)
 		if err != nil {
@@ -90,7 +90,7 @@ func GetInfraStoragePorts(d *schema.ResourceData) (*[]terraformmodel.InfraStorag
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_VOLUMES_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_PORTS_END), setting.Address)
 	return nil, &terraformMtResponse.Data, nil
 }
 
@@ -114,16 +114,20 @@ func ConvertInfraStoragePortToSchema(storagePort *terraformmodel.InfraStoragePor
 
 func ConvertInfraMTStoragePortToSchema(storagePort *terraformmodel.InfraMTStoragePortInfo) *map[string]interface{} {
 	sp := map[string]interface{}{
-		"port_id":             storagePort.PortId,
-		"port_type":           storagePort.PortType,
-		"speed":               storagePort.Speed,
-		"resource_group_id":   storagePort.ResourceGroupId,
-		"wwn":                 storagePort.Wwn,
-		"attribute":           storagePort.Attribute,
-		"connection_type":     storagePort.ConnectionType,
-		"fabric_on":           storagePort.FabricOn,
-		"mode":                storagePort.Mode,
-		"is_security_enabled": storagePort.IsSecurityEnabled,
+		"resource_id":         storagePort.ResourceId,
+		"type":                storagePort.Type,
+		"storage_id":          storagePort.StorageId,
+		"entitlement_status":  storagePort.EntitlementStatus,
+		"port_id":             storagePort.PortInfo.PortId,
+		"port_type":           storagePort.PortInfo.PortType,
+		"speed":               storagePort.PortInfo.Speed,
+		"resource_group_id":   storagePort.PortInfo.ResourceGroupId,
+		"wwn":                 storagePort.PortInfo.Wwn,
+		"attribute":           storagePort.PortInfo.Attribute,
+		"connection_type":     storagePort.PortInfo.ConnectionType,
+		"fabric_on":           storagePort.PortInfo.FabricOn,
+		"mode":                storagePort.PortInfo.Mode,
+		"is_security_enabled": storagePort.PortInfo.IsSecurityEnabled,
 	}
 
 	return &sp

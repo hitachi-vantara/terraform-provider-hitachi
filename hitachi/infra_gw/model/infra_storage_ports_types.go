@@ -121,19 +121,6 @@ type MTStoragePoolInfo struct {
 	IsDeduplicationEnabled        bool       `json:"isDeduplicationEnabled"`
 }
 
-type MTPortInfo struct {
-	PortType          string `json:"portType"`
-	PortId            string `json:"portId"`
-	Speed             string `json:"speed"`
-	ResourceGroupId   int    `json:"resourceGroupId"`
-	IsSecurityEnabled bool   `json:"isSecurityEnabled"`
-	Wwn               string `json:"wwn"`
-	Attribute         string `json:"attribute"`
-	ConnectionType    string `json:"connectionType"`
-	FabricOn          bool   `json:"fabricOn"`
-	Mode              string `json:"mode"`
-}
-
 type MTStorageInfo struct {
 	ResourceId        string              `json:"resourceId"`
 	Type              string              `json:"type"`
@@ -163,9 +150,29 @@ type MTStorage struct {
 	Data    []MTStorageInfo `json:"data"`
 }
 
+type MTPort struct {
+	PortType          string `json:"portType"`
+	PortId            string `json:"portId"`
+	Speed             string `json:"speed"`
+	ResourceGroupId   int    `json:"resourceGroupId"`
+	IsSecurityEnabled bool   `json:"isSecurityEnabled"`
+	Wwn               string `json:"wwn"`
+	Attribute         string `json:"attribute"`
+	ConnectionType    string `json:"connectionType"`
+	FabricOn          bool   `json:"fabricOn"`
+	Mode              string `json:"mode"`
+}
+
+type MTPortInfo struct {
+	ResourceId        string `json:"resourceId"`
+	Type              string `json:"type"`
+	StorageId         string `json:"storageId"`
+	EntitlementStatus string `json:"entitlementStatus"`
+	PortInfo          MTPort `json:"portInfo"`
+}
+
 type MTPorts struct {
 	Path    string       `json:"path"`
 	Message string       `json:"message"`
-	Error   TFError      `json:"error"`
 	Data    []MTPortInfo `json:"data"`
 }
