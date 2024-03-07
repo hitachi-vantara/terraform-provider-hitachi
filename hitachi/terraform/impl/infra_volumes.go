@@ -103,13 +103,15 @@ func GetInfraVolumes(d *schema.ResourceData) (*[]terraformmodel.InfraVolumeInfo,
 
 	startLdevID := d.Get("start_ldev_id").(int)
 
-	if startLdevID < 0 {
-		return nil, nil, fmt.Errorf("start_ldev_id must be greater than or equal to 0")
+	if startLdevID <= 0 {
+		startLdevID = 0
+		// return nil, nil, fmt.Errorf("start_ldev_id must be greater than or equal to 0")
 	}
 
 	endLdevID := d.Get("end_ldev_id").(int)
-	if endLdevID < 0 {
-		return nil, nil, fmt.Errorf("end_ldev_id must be greater than or equal to 0")
+	if endLdevID <= 0 {
+		endLdevID = 65000
+		// return nil, nil, fmt.Errorf("end_ldev_id must be greater than or equal to 0")
 	}
 
 	if endLdevID < startLdevID {

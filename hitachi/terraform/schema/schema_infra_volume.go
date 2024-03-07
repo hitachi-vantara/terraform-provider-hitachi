@@ -386,12 +386,12 @@ var DataInfraVolumesSchema = map[string]*schema.Schema{
 	},
 	"start_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
+		Optional:    true,
 		Description: "Start ldev ID of lun",
 	},
 	"end_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
+		Optional:    true,
 		Description: "End ldev ID of lun",
 	},
 	"undefined_ldev": &schema.Schema{
