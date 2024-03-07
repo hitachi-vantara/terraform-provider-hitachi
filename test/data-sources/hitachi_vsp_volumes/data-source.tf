@@ -1,8 +1,10 @@
 data "hitachi_vsp_volume" "volume" {
   serial  = 611039
-  ldev_id = 1995
+  ldev_id = 1115
 
 }
+
+
 
 output "volume" {
   value = data.hitachi_vsp_volume.volume

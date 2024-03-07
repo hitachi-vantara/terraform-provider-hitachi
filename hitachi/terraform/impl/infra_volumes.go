@@ -64,7 +64,12 @@ func CreateInfraVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo,
 				log.WriteDebug("TFError| error in Create Volume, err: %v", err)
 				return nil, err
 			}
-			terraformModelVol := terraformmodel.InfraVolumeInfo{VolumeInfo: *volData}
+			terraformModelVol := terraformmodel.InfraVolumeInfo{}
+			err = copier.Copy(&terraformModelVol, volData)
+			if err != nil {
+				log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+				return nil, err
+			}
 			return &terraformModelVol, nil
 		}
 	}
@@ -74,8 +79,12 @@ func CreateInfraVolume(d *schema.ResourceData) (*terraformmodel.InfraVolumeInfo,
 		log.WriteDebug("TFError| error in Create Volume, err: %v", err)
 		return nil, err
 	}
-
-	terraformModelVol := terraformmodel.InfraVolumeInfo{VolumeInfo: *volData}
+	terraformModelVol := terraformmodel.InfraVolumeInfo{}
+	err = copier.Copy(&terraformModelVol, volData)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
 
 	return &terraformModelVol, nil
 }

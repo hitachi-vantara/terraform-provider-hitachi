@@ -247,5 +247,9 @@ func MakeFinalResponse(storageSetting model.InfraGwSettings, taskString *string)
 		return nil, err
 	}
 
+	if response.Data.ResourceId == "" {
+		return nil, fmt.Errorf("ResourceId not found , Please contact your system administrator")
+	}
+
 	return &response.Data.ResourceId, nil
 }
