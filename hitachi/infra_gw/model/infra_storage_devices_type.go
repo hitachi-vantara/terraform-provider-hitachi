@@ -127,14 +127,16 @@ type MTStorageDevice struct {
 		ResourceId   string   `json:"resourceId"`
 		SerialNumber string   `json:"serialNumber"`
 		UcpSystems   []string `json:"ucpSystems"`
-	} `json:"storage"`
-	Status       string `json:"status"`
-	PartnerId    string `json:"partnerId"`
-	SubscriberId string `json:"subscriberId"`
-	StorageId    string `json:"storageId"`
+	} `json:"storage,omitempty"`
+	Status    string `json:"status"`
+	PartnerId string `json:"partnerId"`
+	//SubscriberId string `json:"subscriberId"`
+	StorageId string `json:"storageId"`
 }
 
-type MTStorageDevices []MTStorageDevice
+type MTStorageDevices struct {
+	Storage []MTStorageDevice `json:"storage"`
+}
 
 type CreateMTStorageDeviceParam struct {
 	ResourceId string `json:"resourceId"`

@@ -24,7 +24,7 @@ func (psm *infraGwManager) GetStorageDevices() (*model.StorageDevices, error) {
 }
 
 // GetMTStorageDevices gets storage devices information
-func (psm *infraGwManager) GetMTStorageDevices() (*model.MTStorageDevices, error) {
+func (psm *infraGwManager) GetMTStorageDevices() (*[]model.MTStorageDevice, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -108,7 +108,7 @@ func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.P
 	return gatewayObj.UpdateStorageDevice(storageId, reqBody)
 }
 
-// DeleteStorageDevice deletes a storage device
+// DeleteStorageDevice deletes a storage device from ucp inventory
 func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -122,9 +122,22 @@ func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 		return err
 	}
 
-	// if psm.setting.SubscriberId != nil {
-	// 	return gatewayObj.DeleteMTStorageDevice(storageId)
-	// }
-
 	return gatewayObj.DeleteStorageDevice(storageId)
+}
+
+// DeleteStorageDeviceFromUcp deletes a storage device from a ucp system
+func (psm *infraGwManager) DeleteStorageDeviceFromUcp(ucpId, storageId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	gateSetting := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return err
+	}
+
+	return gatewayObj.DeleteStorageDeviceFromUcp(ucpId, storageId)
 }

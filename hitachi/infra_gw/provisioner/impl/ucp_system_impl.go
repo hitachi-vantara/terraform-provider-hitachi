@@ -23,7 +23,7 @@ func (psm *infraGwManager) GetUcpSystems() (*model.UcpSystems, error) {
 	return gatewayObj.GetUcpSystems()
 }
 
-// GetUcpSystems gets all UCP Systems information
+// GetUcpSystems gets a UCP Systems information by ucpId
 func (psm *infraGwManager) GetUcpSystemById(id string) (*model.UcpSystem, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()

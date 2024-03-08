@@ -414,11 +414,13 @@ var InfraStorageDeviceSchema = map[string]*schema.Schema{
 }
 
 var PartnerInfraStorageDeviceInfoSchema = map[string]*schema.Schema{
+
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
 		Description: "Serial number of storage",
 	},
+
 	"resource_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,

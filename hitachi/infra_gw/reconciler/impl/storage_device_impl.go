@@ -25,7 +25,7 @@ func (psm *infraGwManager) GetStorageDevices() (*model.StorageDevices, error) {
 }
 
 // GetMTStorageDevices gets storage devices information
-func (psm *infraGwManager) GetMTStorageDevices() (*model.MTStorageDevices, error) {
+func (psm *infraGwManager) GetMTStorageDevices() (*[]model.MTStorageDevice, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
