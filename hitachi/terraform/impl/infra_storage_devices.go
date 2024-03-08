@@ -71,7 +71,7 @@ func GetInfraStorageDevices(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 	}
 
 	terraformMtResponse := terraformmodel.InfraMTStorageDevices{}
-	err = copier.Copy(&terraformMtResponse, mtResponse)
+	err = copier.Copy(&terraformMtResponse.Data, mtResponse)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, nil, err
@@ -354,8 +354,9 @@ func CreateInfraStorageDeviceRequestFromSchema(d *schema.ResourceData) (*terrafo
 }
 
 func ConvertPartnersInfraStorageDeviceToSchema(pg *terraformmodel.InfraMTStorageDevice) *map[string]interface{} {
+	setialInt, _ := strconv.Atoi(pg.Storage.SerialNumber)
 	sp := map[string]interface{}{
-		"storage_serial_number": pg.Storage.SerialNumber,
+		"storage_serial_number": setialInt,
 		"resource_id":           pg.Storage.ResourceId,
 		"ucp_systems":           pg.Storage.UcpSystems,
 		"storage_id":            pg.StorageId,
@@ -365,10 +366,11 @@ func ConvertPartnersInfraStorageDeviceToSchema(pg *terraformmodel.InfraMTStorage
 	if pg.PartnerId != "" {
 		sp["partner_id"] = pg.PartnerId
 	}
-
-	if pg.SubscriberId != "" {
-		sp["subscriber_id"] = pg.SubscriberId
-	}
+	/*
+		if pg.SubscriberId != "" {
+			sp["subscriber_id"] = pg.SubscriberId
+		}
+	*/
 	return &sp
 }
 

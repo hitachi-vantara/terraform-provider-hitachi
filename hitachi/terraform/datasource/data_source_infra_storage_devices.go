@@ -62,37 +62,46 @@ func DataSourceInfraStorageDevicesRead(ctx context.Context, d *schema.ResourceDa
 				log.WriteDebug("it: %+v\n", *eachItem)
 				list = append(list, *eachItem)
 			}
+			if err := d.Set("storage_devices", list); err != nil {
+				return diag.FromErr(err)
+			}
 		} else {
 			for _, item := range mtResponse.Data {
 				eachItem := impl.ConvertPartnersInfraStorageDeviceToSchema(&item)
 				log.WriteDebug("it: %+v\n", *eachItem)
 				list = append(list, *eachItem)
 			}
-
+			if err := d.Set("partner_storage_devices", list); err != nil {
+				return diag.FromErr(err)
+			}
 		}
+
+		log.WriteDebug("storageDevices: %+v\n", response)
+		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+
 	} else {
 		response, err = impl.GetInfraStorageDevice(d, serial)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
-
-	if err := d.Set("storage_devices", list); err != nil {
-		return diag.FromErr(err)
-	}
-
-	log.WriteDebug("storageDevices: %+v\n", response)
-	if serial == "" {
-		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-	} else {
-		for _, item := range *response {
-			element := &item
-			d.SetId(element.ResourceId)
-			break
+	/*
+		if err := d.Set("storage_devices", list); err != nil {
+			return diag.FromErr(err)
 		}
-	}
-	log.WriteInfo("storage devices read successfully")
 
+		log.WriteDebug("storageDevices: %+v\n", response)
+		if serial == "" {
+			d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+		} else {
+			for _, item := range *response {
+				element := &item
+				d.SetId(element.ResourceId)
+				break
+			}
+		}
+		log.WriteInfo("storage devices read successfully")
+	*/
 	return nil
 
 }

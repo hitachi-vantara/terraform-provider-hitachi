@@ -26,7 +26,7 @@ func (psm *infraGwManager) GetStorageDevices() (*model.StorageDevices, error) {
 }
 
 // GetMTStorageDevices gets storage devices information
-func (psm *infraGwManager) GetMTStorageDevices() (*model.MTStorageDevices, error) {
+func (psm *infraGwManager) GetMTStorageDevices() (*[]model.MTStorageDevice, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -37,7 +37,7 @@ func (psm *infraGwManager) GetMTStorageDevices() (*model.MTStorageDevices, error
 		"partnerId": *psm.setting.PartnerId,
 	}
 
-	var storageDevices model.MTStorageDevices
+	var storageDevices []model.MTStorageDevice
 
 	apiSuf := "/storage"
 	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &storageDevices)
@@ -46,6 +46,7 @@ func (psm *infraGwManager) GetMTStorageDevices() (*model.MTStorageDevices, error
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
+	log.WriteDebug("MT Storage Devices %v", storageDevices)
 	return &storageDevices, nil
 }
 
@@ -156,13 +157,29 @@ func (psm *infraGwManager) UpdateStorageDevice(storageId string, reqBody model.P
 	return resourceId, nil
 }
 
-// DeleteStorageDevice deletes a storage device from a ucp system
+// DeleteStorageDevice deletes a storage device from a ucp inventory
 func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	apiSuf := fmt.Sprintf("/storage/devices/%s", storageId)
+	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return err
+	}
+	return nil
+}
+
+// DeleteStorageDeviceFromUcp deletes a storage device from a ucp system
+func (psm *infraGwManager) DeleteStorageDeviceFromUcp(id, storageId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	apiSuf := fmt.Sprintf("/storage/%s/device/%s", id, storageId)
 	_, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {
 		log.WriteError(err)
