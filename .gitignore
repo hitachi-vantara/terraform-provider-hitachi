@@ -46,3 +46,6 @@ tfplugindocs
 #version.txt file
 version.txt
 hitachi-terraform.log
+
+rpmbuild
+terraform-provider-hitachi

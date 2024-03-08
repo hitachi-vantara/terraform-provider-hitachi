@@ -78,6 +78,11 @@ Required:
 - `password` (String) Password of the Hitachi UCP Advisor
 - `username` (String) Username of the Hitachi UCP Advisor
 
+Optional:
+
+- `partner_id` (String) Partner Id of the Hitachi UCP Advisor
+- `subscriber_id` (String) Subscriber Id of the Hitachi UCP Advisor
+
 
 <a id="nestedblock--hitachi_vss_block_provider"></a>
 ### Nested Schema for `hitachi_vss_block_provider`
