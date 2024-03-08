@@ -196,22 +196,23 @@ func DeleteInfraStorageDevice(d *schema.ResourceData) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	serial := common.GetSerialString(d)
-	storageId := d.Get("storage_id").(string)
-
+	/*
+		serial := common.GetSerialString(d)
+		storageId := d.Get("id").(string)
+	*/
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return err
 	}
-
-	if storageId == "" {
-		storageId, err = common.GetStorageIdFromSerial(address, serial)
-		if err != nil {
-			return err
+	/*
+		if storageId == "" {
+			storageId, err = common.GetStorageIdFromSerial(address, serial)
+			if err != nil {
+				return err
+			}
+			d.Set("storage_id", storageId)
 		}
-		d.Set("storage_id", storageId)
-	}
-
+	*/
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
 		return err
@@ -225,7 +226,7 @@ func DeleteInfraStorageDevice(d *schema.ResourceData) error {
 		return err
 	}
 
-	//storageId = d.State().ID
+	storageId := d.State().ID
 
 	err = reconObj.DeleteStorageDevice(storageId)
 	if err != nil {
