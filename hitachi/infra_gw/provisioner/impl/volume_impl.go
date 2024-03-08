@@ -47,31 +47,31 @@ func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId int, toLd
 	return gatewayObj.GetVolumesFromLdevIds(id, fromLdevId, toLdevId)
 }
 
-func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId *int, toLdevId *int) (*model.MTVolumes, error) {
+func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(storageId string, fromLdevId *int, toLdevId *int) (*model.MTVolumes, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	gateSetting := model.InfraGwSettings(psm.setting)
-	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), storageId)
 
 	gatewayObj, err := gatewayimpl.NewEx(gateSetting)
 	if err != nil {
-		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), storageId)
 
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
-
-	defaultId := 0
 	if fromLdevId == nil {
-		fromLdevId = &defaultId
-	}
-	if toLdevId == nil {
-		toLdevId = &defaultId
+		temp := 0
+		fromLdevId = &temp
 	}
 
-	return gatewayObj.GetVolumesDetailsByPartnerSubscriberID(id, *fromLdevId, *toLdevId)
+	if toLdevId == nil {
+		temp := 65000
+		toLdevId = &temp
+	}
+	return gatewayObj.GetVolumesDetailsByPartnerSubscriberID(storageId, *fromLdevId, *toLdevId)
 }
 
 // GetVolume by id gets volume information

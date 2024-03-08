@@ -31,10 +31,15 @@ type RegisterPartnerReq struct {
 }
 
 type Subscriber struct {
-	SubscriberId string `json:"subscriberId"`
-	PartnerID    string `json:"partnerId"`
-	Type         string `json:"type"`
-	Time         int64  `json:"time"`
+	SubscriberId       string  `json:"subscriberId"`
+	PartnerID          string  `json:"partnerId"`
+	Type               string  `json:"type"`
+	Time               int64   `json:"time"`
+	Name               string  `json:"name"`
+	SoftLimit          string  `json:"softLimit"`
+	HardLimit          string  `json:"hardLimit"`
+	QuotaLimit         string  `json:"quotaLimit"`
+	UsedQuotaInPercent float64 `json:"usedQuotaInPercent"`
 }
 
 type Subscribers struct {
@@ -54,4 +59,11 @@ type SubscriberDetails struct {
 type MTDetails struct {
 	PartnerId    *string `json:"partnerId"`
 	SubscriberId *string `json:"subscriberId"`
+}
+
+type UpdateSubscriberReq struct {
+	Name       string `json:"name"`
+	SoftLimit  string `json:"softLimit"`
+	HardLimit  string `json:"hardLimit"`
+	QuotaLimit string `json:"quotaLimit"`
 }

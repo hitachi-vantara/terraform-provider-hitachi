@@ -14,10 +14,10 @@ func newReconcilerestManager() (*infraGwManager, error) {
 	partnerId := "a8d1f065-a9e7-42cf-b565-a67466fec549"
 
 	setting := model.InfraGwSettings{
-		Username: "apiadmin",
-		Password: "Passw0rd!",
-		Address:  "172.25.22.81",
-		V3API:    false,
+		Username:     "apiadmin",
+		Password:     "Passw0rd!",
+		Address:      "172.25.22.81",
+		V3API:        false,
 		PartnerId:    &partnerId,
 		SubscriberId: &subscrierId,
 	}
@@ -41,23 +41,6 @@ func TestCreateUpdateVolume(t *testing.T) {
 	createInput := model.CreateVolumeParams{Capacity: "100MB",
 		System: "Logical-UCP-95054", PoolID: &pooldId}
 	sid, err := psm.ReconcileVolume(storageId, &createInput, nil)
-	if err != nil {
-		t.Errorf("Unexpected error in GetPartnerIdWithStatus %v", err)
-		return
-	}
-	t.Logf("Response: %v", sid)
-}
-
-func TestGetPartnetSubscribervolumeVolume(t *testing.T) {
-	psm, err := newReconcilerestManager()
-	if err != nil {
-		t.Fatalf("Unexpected error %v", err)
-	}
-
-	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
-	storageId := "storage-349a72cc2d6b6b131ac5f2c4d557c6d6"
-
-	sid, err := psm.GetVolumesByPartnerSubscriberID(storageId, 0, 10)
 	if err != nil {
 		t.Errorf("Unexpected error in GetPartnerIdWithStatus %v", err)
 		return

@@ -194,14 +194,19 @@ func GetValidateStorageIDFromSerial(d *schema.ResourceDiff) (*string, error) {
 	return &storageId, nil
 }
 
-func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{}) (*string, *string, error) {
+func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{}) (*string, *int, *string, error) {
 	var providerLists *terraformmodel.AllStorageTypes
 
+	// Returns:
+	// - storageID: The validated storage ID
+	// - serialNumber: The validated storage serial number
+	// - address: Address of the UAI gateway
+	// - err: An error, if any, encountered during the process
 	if m != nil {
 		providerLists = m.(*terraformmodel.AllStorageTypes)
 
 		if len(providerLists.InfraGwInfo) == 0 {
-			return nil, nil, nil
+			return nil, nil, nil, nil
 		}
 	}
 
@@ -210,56 +215,60 @@ func GetValidateStorageIDFromSerialResource(d *schema.ResourceData, m interface{
 
 	err := ValidateSerialAndStorageId(serial, storageId)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// var storage_serial_number int
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	if storageId == "" {
 		storageId, err = GetStorageIdFromSerial(address, serial)
 		if err != nil {
 			if len(providerLists.VspStorageSystem) > 0 {
-				return nil, nil, nil
+				return nil, nil, nil, nil
 			}
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 	}
-
-	// if serial == "" {
-	// 	serial, err = GetSerialFromStorageId(address, storageId)
-	// 	if err != nil {
-	// 		return nil, nil, err
-	// 	}
-	// 	storage_serial_number, err = strconv.Atoi(serial)
-	// 	if err != nil {
-	// 		return nil, nil, err
-	// 	}
-	// } else {
-	// 	storage_serial_number, err = strconv.Atoi(serial)
-	// 	if err != nil {
-	// 		return nil, nil, err
-	// 	}
-	// }
+	var storage_serial_number int
+	if serial == "" {
+		serial, err = GetSerialFromStorageId(address, storageId)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+	} else {
+		storage_serial_number, err = strconv.Atoi(serial)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+	}
 	// d.Set("serial", storage_serial_number)
 
-	return &storageId, &address, nil
+	return &storageId, &storage_serial_number, &address, nil
 }
 
-func GetInfraGatewaySettings(d *schema.ResourceData, m interface{}) (*string, *reconcilermodel.InfraGwSettings, error) {
+func GetInfraGatewaySettings(d *schema.ResourceData, m interface{}) (*string, *int, *reconcilermodel.InfraGwSettings, error) {
 
-	storage_id, address, err := GetValidateStorageIDFromSerialResource(d, m)
-
+	storage_id, serial, address, err := GetValidateStorageIDFromSerialResource(d, m)
+		// Returns:
+	// - storageID: The validated storage ID
+	// - serialNumber: The validated storage serial number
+	// - GatewaySettings: Setting of the UAI gateway
+	// - err: An error, if any, encountered during the process
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	storageSetting, err := cache.GetInfraSettingsFromCache(*address)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	setting := reconcilermodel.InfraGwSettings(*storageSetting)
 
@@ -271,7 +280,7 @@ func GetInfraGatewaySettings(d *schema.ResourceData, m interface{}) (*string, *r
 		}
 	}
 
-	return storage_id, &setting, nil
+	return storage_id, serial, &setting, nil
 }
 
 func BytesToMegabytes(bytes int64) int64 {

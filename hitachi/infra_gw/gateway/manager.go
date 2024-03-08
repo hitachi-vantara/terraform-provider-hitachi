@@ -65,4 +65,5 @@ type InfraGwManager interface {
 	RegisterSubscriber(reqBody *model.RegisterSubscriberReq) (*string, error)
 	RegisterPartner(reqBody *model.RegisterPartnerReq) (*string, error)
 	UnRegisterSubscriber(subscriberId string) (*string, error)
+	UpdateSubscriber(subscriberId string, partnerId string, reqBody *model.UpdateSubscriberReq) (*string, error)
 }

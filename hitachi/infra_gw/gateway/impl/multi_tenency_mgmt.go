@@ -168,3 +168,22 @@ func (psm *infraGwManager) UnRegisterSubscriber(subscriberId string) (*string, e
 	}
 	return resp, nil
 }
+
+// UnRegisterSubscriber removes a subscriber from the subscription
+func (psm *infraGwManager) UpdateSubscriber(subscriberId string, partnerId string, reqBody *model.UpdateSubscriberReq) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	apiSuf := fmt.Sprintf("/partner/%s/subscriber/%s", partnerId, subscriberId)
+
+	resp, err := httpmethod.PatchCall(psm.setting, apiSuf, &reqBody, nil)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return resp, nil
+}

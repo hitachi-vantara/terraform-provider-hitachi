@@ -54,7 +54,7 @@ func resourceInfraStorageVolumeCreate(ctx context.Context, d *schema.ResourceDat
 	SyncVolumeOperation.Lock() //??
 	defer SyncVolumeOperation.Unlock()
 
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
+	storage_id, _, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 
 	if storage_id != nil {
 		volumeInfo, err := impl.CreateInfraVolume(d)
@@ -63,7 +63,7 @@ func resourceInfraStorageVolumeCreate(ctx context.Context, d *schema.ResourceDat
 			return diag.FromErr(err)
 		}
 
-		volume := impl.ConvertInfraVolumeToSchema(volumeInfo)
+		volume := impl.ConvertPartnersInfraVolumeToSchema(volumeInfo)
 		log.WriteDebug("Volume: %+v\n", *volume)
 		volList := []map[string]interface{}{
 			*volume,
@@ -111,7 +111,7 @@ func resourceInfraStorageVolumeRead(ctx context.Context, d *schema.ResourceData,
 	defer log.WriteExit()
 
 	// fetch all volumes
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
+	_, storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 	if storage_id != nil {
 
 		volume, err := impl.GetInfraSingleVolume(d)
@@ -119,7 +119,7 @@ func resourceInfraStorageVolumeRead(ctx context.Context, d *schema.ResourceData,
 			return diag.FromErr(err)
 		}
 
-		volumeSchma := impl.ConvertInfraVolumeToSchema(volume)
+		volumeSchma := impl.ConvertPartnersInfraVolumeToSchema(volume)
 		log.WriteDebug("lun: %+v\n", *volumeSchma)
 
 		volList := []map[string]interface{}{
@@ -148,7 +148,7 @@ func resourceInfraStorageVolumeUpdate(ctx context.Context, d *schema.ResourceDat
 	defer SyncVolumeOperation.Unlock()
 
 	log.WriteInfo("starting volume update")
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
+	storage_id, _, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 
 	if storage_id != nil {
 		volumeInfo, err := impl.UpdateInfraVolume(d)
@@ -156,7 +156,7 @@ func resourceInfraStorageVolumeUpdate(ctx context.Context, d *schema.ResourceDat
 			return diag.FromErr(err)
 		}
 
-		volume := impl.ConvertInfraVolumeToSchema(volumeInfo)
+		volume := impl.ConvertPartnersInfraVolumeToSchema(volumeInfo)
 		log.WriteDebug("volume: %+v\n", *volume)
 		volList := []map[string]interface{}{
 			*volume,
@@ -211,7 +211,7 @@ func resourceInfraStorageVolumeDelete(ctx context.Context, d *schema.ResourceDat
 	defer SyncVolumeOperation.Unlock()
 
 	log.WriteInfo("starting volume delete")
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
+	storage_id, _, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 	if storage_id != nil {
 		err := impl.DeleteInfraVolume(d)
 		if err != nil {

@@ -265,6 +265,21 @@ var InfraVolumeInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "Total capacity in MB",
 	},
+	"partner_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "partner Id id  of the volume",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the volume",
+	},
+	"entitlement_status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the volume",
+	},
 }
 
 var PartnerInfraVolumeInfoSchema = map[string]*schema.Schema{
@@ -488,11 +503,11 @@ var ResourceInfraVolumeSchema = map[string]*schema.Schema{
 	},
 	//Remove dedup from this version
 
-	"system": &schema.Schema{
-		Type:        schema.TypeString,
-		Optional:    true,
-		Description: "System name under volume to be created for infra gateway provider",
-	},
+	// "system": &schema.Schema{
+	// 	Type:        schema.TypeString,
+	// 	Optional:    true,
+	// 	Description: "System name under volume to be created for infra gateway provider",
+	// },
 	"deduplication_compression_mode": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,

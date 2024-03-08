@@ -128,7 +128,6 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(storageId string, fro
 	return &response, nil
 }
 
-
 // Get GetVolumesDetailsByPartnerSubscriberID
 func (psm *infraGwManager) GetVolumesDetailsByPartnerSubscriberID(storageId string, fromLdevId int, toLdevId int) (*model.MTVolumes, error) {
 	log := commonlog.GetLogger()
@@ -146,7 +145,7 @@ func (psm *infraGwManager) GetVolumesDetailsByPartnerSubscriberID(storageId stri
 		headers["subscriberId"] = *psm.setting.SubscriberId
 	}
 
-	apiSuf := fmt.Sprintf("/storage/%s/volume/details?fromLdevId=%v&toLdevId=%v", storageId, fromLdevId, toLdevId)
+	apiSuf := fmt.Sprintf("/storage/%s/volumes/details?fromLdevId=%v&toLdevId=%v", storageId, fromLdevId, toLdevId)
 
 	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &response)
 	if err != nil {
