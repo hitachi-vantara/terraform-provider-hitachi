@@ -21,7 +21,7 @@ func GetInfraStoragePorts(d *schema.ResourceData) (*[]terraformmodel.InfraStorag
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	storageId, setting, err := common.GetInfraGatewaySettings(d, nil)
+	storageId, _, setting, err := common.GetInfraGatewaySettings(d, nil)
 
 	if err != nil {
 		log.WriteDebug("TFError| error in GetInfraGatewaySettings, err: %v", err)

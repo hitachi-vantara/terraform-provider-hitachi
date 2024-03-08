@@ -29,7 +29,7 @@ func dataSourceInfraStoragePortsRead(ctx context.Context, d *schema.ResourceData
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
+	storage_id, _, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 
 	// fetch all storage ports
 	port_id := d.Get("port_id").(string)

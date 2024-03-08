@@ -31,7 +31,7 @@ func dataSourceInfraParityGroupsRead(ctx context.Context, d *schema.ResourceData
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	storage_id, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
+	storage_id,_, _, _ := common.GetValidateStorageIDFromSerialResource(d, m)
 	// fetch all storage ports
 
 	if storage_id != nil {
