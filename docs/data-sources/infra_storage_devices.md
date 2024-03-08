@@ -32,7 +32,22 @@ output "storage_devices" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `partner_storage_devices` (Block List) This is partners storage device output (see [below for nested schema](#nestedblock--partner_storage_devices))
 - `storage_devices` (Block List) This is storage devices output (see [below for nested schema](#nestedblock--storage_devices))
+
+<a id="nestedblock--partner_storage_devices"></a>
+### Nested Schema for `partner_storage_devices`
+
+Read-Only:
+
+- `partner_id` (String) partner Id id  of the storage device
+- `resource_id` (String) Resource Id
+- `status` (String) Status of the storage device
+- `storage_id` (String) Storage Id
+- `storage_serial_number` (Number) Serial number of storage
+- `subscriber_id` (String) subscriber Id id  of the storage device
+- `ucp_systems` (List of String) List of UCP Systems
+
 
 <a id="nestedblock--storage_devices"></a>
 ### Nested Schema for `storage_devices`

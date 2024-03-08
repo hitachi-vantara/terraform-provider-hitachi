@@ -85,7 +85,7 @@ $ terraform init && terraform apply
 ```
 
 
-## Additional Information about the terraform provider
+## Additional Information about the terraform provider 
 
 # Log Directory:
 
