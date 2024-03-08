@@ -76,11 +76,6 @@ func DataSourceInfraStorageDevicesRead(ctx context.Context, d *schema.ResourceDa
 			return diag.FromErr(err)
 		}
 	}
-	for _, item := range *response {
-		eachItem := impl.ConvertInfraStorageDeviceToSchema(&item)
-		log.WriteDebug("it: %+v\n", *eachItem)
-		list = append(list, *eachItem)
-	}
 
 	if err := d.Set("storage_devices", list); err != nil {
 		return diag.FromErr(err)

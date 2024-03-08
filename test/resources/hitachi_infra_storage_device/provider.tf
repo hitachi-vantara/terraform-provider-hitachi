@@ -10,7 +10,7 @@ terraform {
 provider "hitachi" {
   hitachi_infrastructure_gateway_provider {
     address = "172.25.22.81"
-    username      = "apiadmin"
+    username      = "ucpadmin"
     password      = "Passw0rd!"
   }
 
