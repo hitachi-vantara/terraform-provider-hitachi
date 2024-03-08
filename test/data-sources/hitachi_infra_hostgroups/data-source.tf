@@ -14,7 +14,7 @@ data "hitachi_infra_hostgroup" "host_group" {
 output "host_group" {
   value = data.hitachi_infra_hostgroup.host_group
 }
-*/
+
 
 
 data "hitachi_infra_hostgroups" "host_groups" {
