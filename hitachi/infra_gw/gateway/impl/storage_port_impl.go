@@ -25,6 +25,34 @@ func (psm *infraGwManager) GetStoragePorts(id string) (*model.StoragePorts, erro
 	return &storagePorts, nil
 }
 
+// GetStoragePortsByPartnerIdOrSubscriberId  gets all StoragePorts by subscriberId/PartnerId.
+func (psm *infraGwManager) GetStoragePortsByPartnerIdOrSubscriberId(id string) (*model.MTPorts, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+
+	if psm.setting.SubscriberId != nil {
+		headers["subscriberId"] = *psm.setting.SubscriberId
+	}
+
+	var storagePorts model.MTPorts
+
+	apiSuf := fmt.Sprintf("/storage/%s/ports", id)
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &storagePorts)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return &storagePorts, nil
+}
+
 /*
 
 // GetStoragePorts gets port information for a specific port of vssb storage

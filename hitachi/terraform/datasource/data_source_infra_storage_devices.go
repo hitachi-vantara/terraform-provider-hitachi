@@ -47,24 +47,34 @@ func DataSourceInfraStorageDevicesRead(ctx context.Context, d *schema.ResourceDa
 	// fetch all storage devices
 
 	var response *[]terraform.InfraStorageDeviceInfo
+	var mtResponse *terraform.InfraMTStorageDevices
 	var err error
 	list := []map[string]interface{}{}
 
 	if serial == "" {
-		response, err = impl.GetInfraStorageDevices(d)
+		response, mtResponse, err = impl.GetInfraStorageDevices(d)
 		if err != nil {
 			return diag.FromErr(err)
+		}
+		if mtResponse == nil {
+			for _, item := range *response {
+				eachItem := impl.ConvertInfraStorageDeviceToSchema(&item)
+				log.WriteDebug("it: %+v\n", *eachItem)
+				list = append(list, *eachItem)
+			}
+		} else {
+			for _, item := range mtResponse.Data {
+				eachItem := impl.ConvertPartnersInfraStorageDeviceToSchema(&item)
+				log.WriteDebug("it: %+v\n", *eachItem)
+				list = append(list, *eachItem)
+			}
+
 		}
 	} else {
 		response, err = impl.GetInfraStorageDevice(d, serial)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-	}
-	for _, item := range *response {
-		eachItem := impl.ConvertInfraStorageDeviceToSchema(&item)
-		log.WriteDebug("it: %+v\n", *eachItem)
-		list = append(list, *eachItem)
 	}
 
 	if err := d.Set("storage_devices", list); err != nil {

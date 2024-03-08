@@ -58,3 +58,34 @@ type PatcheHostGroupParam struct {
 	HostMode        string `json:"hostMode,omitempty"`
 	HostModeOptions []int  `json:"hostModeOptions,omitempty"`
 }
+
+type MTHostGroupInfo struct {
+	ResourceId        string `json:"resourceId"`
+	Type              string `json:"type"`
+	StorageId         string `json:"storageId"`
+	DeviceId          string `json:"deviceId"`
+	EntitlementStatus string `json:"entitlementStatus"`
+	PartnerId         string `json:"partnerId"`
+	SubscriberId      string `json:"subscriberId"`
+
+	HostGroupInfo struct {
+		HostGroupName   string `json:"hostGroupName"`
+		HostGroupId     int    `json:"hostGroupId"`
+		ResourceGroupId int    `json:"resourceGroupId"`
+		Port            string `json:"port"`
+		HostMode        string `json:"hostMode"`
+	} `json:"hostGroupInfo"`
+}
+
+type MTHostGroups struct {
+	Path    string            `json:"path"`
+	Message string            `json:"message"`
+	Error   TFError           `json:"error"`
+	Data    []MTHostGroupInfo `json:"data"`
+}
+
+type AddVolumesToHostGroupParam struct {
+	LdevIds []int `json:"ldevIds"`
+}
+
+type DeleteVolumesToHostGroupParam AddVolumesToHostGroupParam

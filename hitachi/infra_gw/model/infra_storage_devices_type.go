@@ -97,14 +97,13 @@ type StorageDevice struct {
 }
 
 type CreateStorageDeviceParam struct {
-	SerialNumber      string   `json:"serialNumber,omitempty"`
-	ManagementAddress string   `json:"managementAddress,omitempty"`
-	Username          string   `json:"username,omitempty"`
-	Password          string   `json:"password,omitempty"`
-	OutOfBand         bool     `json:"outOfBand,omitempty"`
-	GatewayAddress    string   `json:"gatewayAddress,omitempty"`
-	UcpSystem         string   `json:"ucpSystem,omitempty"`
-
+	SerialNumber      string `json:"serialNumber,omitempty"`
+	ManagementAddress string `json:"managementAddress,omitempty"`
+	Username          string `json:"username,omitempty"`
+	Password          string `json:"password,omitempty"`
+	OutOfBand         bool   `json:"outOfBand,omitempty"`
+	GatewayAddress    string `json:"gatewayAddress,omitempty"`
+	UcpSystem         string `json:"ucpSystem,omitempty"`
 }
 
 type PatchStorageDeviceParam struct {
@@ -122,3 +121,22 @@ const (
 	DefaultSystemName         = "terraform-ucp-system"
 	DefaultSystemSerialNumber = "Logical-UCP-95054"
 )
+
+type MTStorageDevice struct {
+	Storage struct {
+		ResourceId   string   `json:"resourceId"`
+		SerialNumber string   `json:"serialNumber"`
+		UcpSystems   []string `json:"ucpSystems"`
+	} `json:"storage"`
+	Status       string `json:"status"`
+	PartnerId    string `json:"partnerId"`
+	SubscriberId string `json:"subscriberId"`
+	StorageId    string `json:"storageId"`
+}
+
+type MTStorageDevices []MTStorageDevice
+
+type CreateMTStorageDeviceParam struct {
+	ResourceId string `json:"resourceId"`
+	PartnerId  string `json:"partnerId"`
+}

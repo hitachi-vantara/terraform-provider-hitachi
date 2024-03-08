@@ -26,3 +26,20 @@ func (psm *infraGwManager) GetStoragePorts(id string) (*model.StoragePorts, erro
 
 	return gatewayObj.GetStoragePorts(id)
 }
+
+// GetStoragePortsByPartnerIdOrSubscriberId  gets all StoragePorts by subscriberId/PartnerId.
+func (psm *infraGwManager) GetStoragePortsByPartnerIdOrSubscriberId(id string) (*model.MTPorts, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return gatewayObj.GetStoragePortsByPartnerIdOrSubscriberId(id)
+}

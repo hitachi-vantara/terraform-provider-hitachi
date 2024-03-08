@@ -12,11 +12,7 @@ func (psm *infraGwManager) GetUcpSystems() (*model.UcpSystems, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -33,11 +29,7 @@ func (psm *infraGwManager) GetUcpSystemById(id string) (*model.UcpSystem, error)
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
@@ -53,11 +45,7 @@ func (psm *infraGwManager) CreateUcpSystem(reqBody model.CreateUcpSystemParam) (
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	objStorage := model.InfraGwSettings{
-		Username: psm.setting.Username,
-		Password: psm.setting.Password,
-		Address:  psm.setting.Address,
-	}
+	objStorage := model.InfraGwSettings(psm.setting)
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {

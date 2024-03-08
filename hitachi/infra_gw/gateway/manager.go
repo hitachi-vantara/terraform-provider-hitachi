@@ -8,23 +8,33 @@ type InfraGwManager interface {
 
 	// Storage Device Management
 	GetStorageDevices() (*model.StorageDevices, error)
+	GetMTStorageDevices() (*model.MTStorageDevices, error)
 	GetStorageDevice(storageId string) (*model.StorageDevice, error)
+	GetMTStorageDevice(storageId string) (*model.MTStorageDevice, error)
 	AddStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
+	AddMTStorageDevice(reqBody model.CreateMTStorageDeviceParam) (*string, error)
 	UpdateStorageDevice(storageId string, reqBody model.PatchStorageDeviceParam) (*string, error)
-	AddMTStorageDevice(reqBody model.CreateStorageDeviceParam) (*string, error)
 	DeleteStorageDevice(storageId string) error
 	DeleteMTStorageDevice(storageId string) error
 
 	// Storage Port Management
 	GetStoragePorts(storageId string) (*model.StoragePorts, error)
+	GetStoragePortsByPartnerIdOrSubscriberId(id string) (*model.MTPorts, error)
 	GetParityGroups(storageId string) (*model.ParityGroups, error)
 
 	// Hostgroups Management
 	GetHostGroups(storageId string, port string) (*model.HostGroups, error)
+	GetHostGroupsByPartnerIdOrSubscriberID(storageId string) (*model.MTHostGroups, error)
 	GetHostGroup(storageId, hostGroupId string) (*model.HostGroup, error)
 	CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
+	CreateMTHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
 	UpdateHostGroup(storageId, hostGroupId string, reqBody model.PatcheHostGroupParam) (*string, error)
-	UpdateHostMode(storageId, iscsiTargetId string, reqBody model.UpdateHostModeParam) (*string, error)
+	AddVolumesToHostGroup(storageId, hostGroupId string, reqBody model.AddVolumesToHostGroupParam) (*string, error)
+	AddVolumesToHostGroupToSubscriber(storageId, hostGroupId string, reqBody model.AddVolumesToHostGroupParam) (*string, error)
+	DeleteVolumesFromHostGroup(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) error
+	DeleteVolumesFromHostGroupFromSubscriber(storageId, hostGroupId string, reqBody model.DeleteVolumesToHostGroupParam) error
+	DeleteHostGroup(storageId, hostGroupId string) error
+	DeleteMTHostGroup(storageId, hostGroupId string) error
 
 	// Storage Pool Management
 	GetStoragePools(storageId string) (*model.StoragePools, error)
@@ -34,6 +44,7 @@ type InfraGwManager interface {
 	GetIscsiTargets(storageId string, port string) (*model.IscsiTargets, error)
 	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)
+	UpdateHostMode(storageId, iscsiTargetId string, reqBody model.UpdateHostModeParam) (*string, error)
 
 	//Volume management
 	GetVolumes(storageId string) (*model.Volumes, error)
