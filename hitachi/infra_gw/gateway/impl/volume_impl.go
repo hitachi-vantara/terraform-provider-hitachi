@@ -128,6 +128,35 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(storageId string, fro
 	return &response, nil
 }
 
+// Get GetVolumesDetailsByPartnerSubscriberID
+func (psm *infraGwManager) GetVolumesDetailsByPartnerSubscriberID(storageId string, fromLdevId int, toLdevId int) (*model.MTVolumes, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var response model.MTVolumes
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+	if psm.setting.SubscriberId != nil {
+		headers["subscriberId"] = *psm.setting.SubscriberId
+	}
+
+	apiSuf := fmt.Sprintf("/storage/%s/volumes/details?fromLdevId=%v&toLdevId=%v", storageId, fromLdevId, toLdevId)
+
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &response)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return &response, nil
+}
+
 func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateVolumeParams) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()

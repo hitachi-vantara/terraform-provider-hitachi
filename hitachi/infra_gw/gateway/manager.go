@@ -55,6 +55,7 @@ type InfraGwManager interface {
 	DeleteVolume(storageId string, volumeID string) error
 	DeleteMTVolume(storageId string, volumeID string) error
 	GetVolumesByPartnerSubscriberID(storageId string, fromLdevId int, toLdevId int) (*model.MTVolumes, error)
+	GetVolumesDetailsByPartnerSubscriberID(storageId string, fromLdevId int, toLdevId int) (*model.MTVolumes, error)
 	GetVolumesFromLdevIds(id string, fromLdevId int, toLdevId int) (*model.Volumes, error)
 
 	//UCP System Management
@@ -75,4 +76,5 @@ type InfraGwManager interface {
 	RegisterSubscriber(reqBody *model.RegisterSubscriberReq) (*string, error)
 	RegisterPartner(reqBody *model.RegisterPartnerReq) (*string, error)
 	UnRegisterSubscriber(subscriberId string) (*string, error)
+	UpdateSubscriber(subscriberId string, partnerId string, reqBody *model.UpdateSubscriberReq) (*string, error)
 }

@@ -148,6 +148,17 @@ func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*strin
 		}
 		log.WriteInfo("Created one subscriber %s with partner ID %s", partnerId, partnerId)
 		return &partnerId, err
+	} else if subs.QuotaLimit <= "0" {
+		reqData := model.UpdateSubscriberReq{
+			QuotaLimit: "9999999999",
+		}
+
+		_, err := gatewayObj.UpdateSubscriber(partnerId, subs.SubscriberId, &reqData)
+
+		if err != nil {
+			log.WriteDebug("TFError| error in RegisterSubscriber gateway call, err: %v", err)
+			return nil, err
+		}
 	}
 
 	return &subs.SubscriberId, nil

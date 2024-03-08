@@ -102,12 +102,14 @@ func GetRangeOfLuns(d *schema.ResourceData) (*[]terraformmodel.LogicalUnit, erro
 
 	startLdevID := d.Get("start_ldev_id").(int)
 	if startLdevID < 0 {
-		return nil, fmt.Errorf("start_ldev_id must be greater than or equal to 0")
+		startLdevID = 0
+		// return nil, fmt.Errorf("start_ldev_id must be greater than or equal to 0")
 	}
 
 	endLdevID := d.Get("end_ldev_id").(int)
-	if endLdevID < 0 {
-		return nil, fmt.Errorf("end_ldev_id must be greater than or equal to 0")
+	if endLdevID <= 0 {
+		endLdevID = 65000
+		// return nil, fmt.Errorf("end_ldev_id must be greater than or equal to 0")
 	}
 
 	if endLdevID < startLdevID {
@@ -444,17 +446,16 @@ func ConvertLunToSchema(logicalUnit *terraformmodel.LogicalUnit, serial int) *ma
 		"is_full_allocation_enabled": logicalUnit.IsFullAllocationEnabled,
 		"resource_group_id":          logicalUnit.ResourceGroupID,
 		//"data_reduction_mode":        logicalUnit.DataReductionMode,
-		"is_alua_enabled":      logicalUnit.IsAluaEnabled,
-		"naa_id":               logicalUnit.NaaID,
-		"total_capacity_in_mb": logicalUnit.TotalCapacityInMB,
-		"free_capacity_in_mb":  logicalUnit.FreeCapacityInMB,
-		"total_capacity":       common.MegaBytesToBytes(logicalUnit.TotalCapacityInMB),
-		"used_capacity_in_mb":  logicalUnit.UsedCapacityInMB,
-		"used_capacity":        common.MegaBytesToBytes(logicalUnit.UsedCapacityInMB),
+		"is_alua_enabled":                logicalUnit.IsAluaEnabled,
+		"naa_id":                         logicalUnit.NaaID,
+		"total_capacity_in_mb":           logicalUnit.TotalCapacityInMB,
+		"free_capacity_in_mb":            logicalUnit.FreeCapacityInMB,
+		"total_capacity":                 common.MegaBytesToBytes(logicalUnit.TotalCapacityInMB),
+		"used_capacity_in_mb":            logicalUnit.UsedCapacityInMB,
+		"used_capacity":                  common.MegaBytesToBytes(logicalUnit.UsedCapacityInMB),
 		"deduplication_compression_mode": logicalUnit.DataReductionMode,
-		"dedup_compression_progress": logicalUnit.DataReductionProgressRate,
-		"dedup_compression_status": logicalUnit.DataReductionStatus,
-		
+		"dedup_compression_progress":     logicalUnit.DataReductionProgressRate,
+		"dedup_compression_status":       logicalUnit.DataReductionStatus,
 	}
 
 	ports := []map[string]interface{}{}

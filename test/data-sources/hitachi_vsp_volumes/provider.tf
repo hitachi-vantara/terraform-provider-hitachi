@@ -23,10 +23,17 @@ provider "hitachi" {
   #   username      = "maintenance"
   #   password      ="raid-maintenance"
   # }
+  #   hitachi_infrastructure_gateway_provider {
+  #   address = "172.25.58.50"
+  #   username      = "ucpadmin"
+  #   password      = "overrunsurveysroutewarnssent"
+  # }
     hitachi_infrastructure_gateway_provider {
     address = "172.25.22.81"
-    username      = "apiadmin"
+    username      = "ucpadmin"
     password      = "Passw0rd!"
   }
+
+
 
 }

@@ -73,7 +73,7 @@ func WaitForTaskToComplete(storageSetting model.InfraGwSettings, taskResponse *m
 	defer log.WriteExit()
 
 	var FIRST_WAIT_TIME time.Duration = 1 // in sec
-	MAX_RETRY_COUNT := 8
+	MAX_RETRY_COUNT := 10
 
 	// if r.status_code != http.client.ACCEPTED {
 	// 	panic(errors.New("Exception")) //requests.HTTPError(r)
@@ -107,10 +107,10 @@ func WaitForTaskToComplete(storageSetting model.InfraGwSettings, taskResponse *m
 			return taskResult.Data.Status, taskResult, nil
 		}
 		double_time := waitTime * 2
-		if double_time < 180 {
+		if double_time < 60 {
 			waitTime = double_time
 		} else {
-			waitTime = 180
+			waitTime = 60
 		}
 		retryCount += 1
 	}

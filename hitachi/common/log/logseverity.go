@@ -1,5 +1,7 @@
 package common
 
+
+
 type LogSeverity string
 
 const (

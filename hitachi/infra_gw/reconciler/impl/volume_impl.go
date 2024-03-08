@@ -4,6 +4,9 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
 	provisonerimpl "terraform-provider-hitachi/hitachi/infra_gw/provisioner/impl"
+	mc "terraform-provider-hitachi/hitachi/infra_gw/reconciler/message-catalog"
+
+	"github.com/jinzhu/copier"
 )
 
 // GetVolumes gets volumes information
@@ -12,10 +15,14 @@ func (psm *infraGwManager) GetVolumes(id string) (*model.Volumes, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_ALL_VOLUMES_BEGIN))
+
 	provSetting := model.InfraGwSettings(psm.setting)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_ALL_VOLUMES_FAILED))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -29,10 +36,13 @@ func (psm *infraGwManager) GetVolumesFromLdevIds(id string, fromLdevId *int, toL
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+
 		return nil, err
 	}
 	defualtId := 0
@@ -53,9 +63,11 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
-
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_GET_VOLUME_BEGIN), id)
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_GET_VOLUME_FAILED), id)
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
@@ -64,7 +76,7 @@ func (psm *infraGwManager) GetVolumesByPartnerSubscriberID(id string, fromLdevId
 }
 
 // ReconcileVolume will reconcile and call Create/Update/delete Volume
-func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.CreateVolumeParams, volumeID *string) (*model.VolumeInfo, error) {
+func (psm *infraGwManager) ReconcileVolume(storageId string, createInput *model.CreateVolumeParams, volumeID *string) (*model.MTVolumeDetailInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -111,17 +123,24 @@ func (psm *infraGwManager) CreateVolume(storageId string, reqBody *model.CreateV
 	defer log.WriteExit()
 	provSetting := model.InfraGwSettings(psm.setting)
 
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_CREATE_VOLUME_BEGIN))
+
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		log.WriteInfo(mc.GetMessage(mc.ERR_GET_INFRA_CREATE_VOLUME_FAILED))
+
 		return nil, err
 	}
 
 	volumeID, err := provObj.CreateVolume(storageId, reqBody)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateVolume call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_CREATE_VOLUME_FAILED))
+
 		return nil, err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_CREATE_VOLUME_END))
 
 	return volumeID, nil
 
@@ -133,6 +152,8 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId *string, reqB
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_UPDATE_VOLUME_BEGIN), storageId)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
@@ -155,9 +176,12 @@ func (psm *infraGwManager) UpdateVolume(storageId string, volumeId *string, reqB
 
 	volumeID, err := provObj.UpdateVolume(storageId, *volumeId, &updateVolParams)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_UPDATE_VOLUME_FAILED), storageId)
+
 		log.WriteDebug("TFError| error in UpdateVolume call, err: %v", err)
 		return nil, err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_UPDATE_VOLUME_END), storageId)
 
 	return volumeID, nil
 
@@ -169,6 +193,7 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 	defer log.WriteExit()
 
 	provSetting := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_DELETE_VOLUME_BEGIN), storageId)
 
 	provObj, err := provisonerimpl.NewEx(provSetting)
 	if err != nil {
@@ -178,9 +203,12 @@ func (psm *infraGwManager) DeleteVolume(storageId string, volumeId string) error
 
 	err = provObj.DeleteVolume(storageId, volumeId)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_DELETE_VOLUME_FAILED), storageId)
+
 		log.WriteDebug("TFError| error in DeleteVolume call, err: %v", err)
 		return err
 	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_DELETE_VOLUME_END), storageId)
 
 	return nil
 
@@ -282,7 +310,7 @@ func (psm *infraGwManager) GetVolumeByLunID(storageId string, lunId int) (*model
 
 }
 
-func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*model.VolumeInfo, error) {
+func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*model.MTVolumeDetailInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -295,17 +323,39 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*mo
 		return nil, err
 	}
 
-	volumesInfo, err := provObj.GetVolumeByID(storageId, volumeId)
-	if err != nil {
-		log.WriteDebug("TFError| error in GetVolumes call, err: %v", err)
-		return nil, err
+	var volumeInfo *model.MTVolumeDetailInfo
+
+	if provSetting.PartnerId == nil {
+		provVolumesInfo, err := provObj.GetVolumeByID(storageId, volumeId)
+		if err != nil {
+			log.WriteDebug("TFError| error in GetVolumes call, err: %v", err)
+			return nil, err
+		}
+
+		err = copier.Copy(&volumeInfo, provVolumesInfo)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil, err
+		}
+
+	} else {
+		MtVolInfo, err := provObj.GetVolumesByPartnerSubscriberID(storageId, nil, nil)
+		if err != nil {
+			log.WriteDebug("TFError| error in GetVolumes call, err: %v", err)
+			return nil, err
+		}
+		for _, vol := range MtVolInfo.Data {
+			if vol.ResourceId == volumeId {
+				return &vol, nil
+			}
+		}
 	}
 
-	return volumesInfo, nil
+	return volumeInfo, nil
 
 }
 
-func (psm *infraGwManager) GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeInfo, error) {
+func (psm *infraGwManager) GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeDetailInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -319,14 +369,14 @@ func (psm *infraGwManager) GetVolumeByLDevId(storageId string, ldevId int) (*mod
 	}
 
 	if psm.setting.PartnerId != nil {
-		mtVolumes, err := psm.GetVolumesByPartnerSubscriberID(storageId, 0, 0)
+		mtVolumes, err := provObj.GetVolumesByPartnerSubscriberID(storageId, nil, nil)
 		if err != nil {
 			log.WriteDebug("TFError| error in GetVolumesByPartnerSubscriberID call, err: %v", err)
 			return nil, nil, err
 		}
 
 		for _, mtVolume := range mtVolumes.Data {
-			if mtVolume.StorageVolumeInfo.LdevId == ldevId {
+			if mtVolume.LdevId == ldevId {
 				return nil, &mtVolume, nil
 			}
 		}

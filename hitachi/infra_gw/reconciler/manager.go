@@ -39,11 +39,11 @@ type InfraGwManager interface {
 	GetVolumes(storageId string) (*model.Volumes, error)
 	GetVolumeByName(storageId string, volumeName string) (*model.VolumeInfo, bool)
 	DeleteVolume(storageId string, volumeName string) error
-	GetVolumeByID(storageId string, volumeId string) (*model.VolumeInfo, error)
-	ReconcileVolume(storageId string, createInput *model.CreateVolumeParams, volumeID *string) (*model.VolumeInfo, error)
+	GetVolumeByID(storageId string, volumeId string) (*model.MTVolumeDetailInfo, error)
+	ReconcileVolume(storageId string, createInput *model.CreateVolumeParams, volumeID *string) (*model.MTVolumeDetailInfo, error)
 	GetVolumesFromLdevIds(id string, fromLdevId *int, toLdevId *int) (*model.Volumes, error)
 	GetVolumesByPartnerSubscriberID(id string, fromLdevId int, toLdevId int) (*model.MTVolumes, error)
-	GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeInfo, error)
+	GetVolumeByLDevId(storageId string, ldevId int) (*model.VolumeInfo, *model.MTVolumeDetailInfo, error)
 
 	// UCP System Management
 	GetUcpSystems() (*model.UcpSystems, error)
