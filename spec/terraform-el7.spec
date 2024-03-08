@@ -205,7 +205,6 @@ done
 
 #list all files and store in a temporary file 
 for file in %{terraform}/examples/*/*/*.tf; do
-  echo "$file" 
     echo "$file" >> %{mytffiles}
 done
 
