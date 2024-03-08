@@ -107,6 +107,7 @@ Read-Only:
 - `dedup_compression_status` (String) Dedup Compression Status
 - `deduplication_compression_mode` (String) Deduplication Compression Mode
 - `emulation_type` (String) Emulation type
+- `entitlement_status` (String) subscriber Id id  of the volume
 - `format_or_shred_rate` (Number) Format Or Shred Rate
 - `free_capacity_in_mb` (Number) Free capacity in MB
 - `is_alua_enabled` (Boolean) Checks whether alua is enabled on volume
@@ -125,6 +126,7 @@ Read-Only:
 - `name` (String) Name
 - `num_ports` (Number) Number of ports available on volume
 - `parity_group_id` (List of String) Parity group ID
+- `partner_id` (String) partner Id id  of the volume
 - `path_count` (Number) Path Count
 - `pool_id` (Number) Pool ID
 - `pool_name` (String) Pool Name
@@ -137,6 +139,7 @@ Read-Only:
 - `status` (String) Status
 - `storage_serial_number` (Number) Serial number of storage
 - `stripe_size` (Number) Stripe Size
+- `subscriber_id` (String) subscriber Id id  of the volume
 - `total_capacity` (Number) Total capacity
 - `total_capacity_in_mb` (Number) Total capacity in MB
 - `type` (String) Type

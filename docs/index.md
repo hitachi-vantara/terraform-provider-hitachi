@@ -14,7 +14,7 @@ description: |-
 
 ```terraform
 /*
-** Terraform Configuration for Hitachi Provider and VSS Block / SAN Storage System
+** Terraform Configuration for Hitachi Provider and VSS Block / SAN Storage System / hitachi_infrastructure_gateway_provider
 **
 ** This Terraform configuration defines the required provider blocks for interacting with Hitachi
 ** resources, specifically for VSS block and SAN storage system.
@@ -51,6 +51,12 @@ provider "hitachi" {
     username      = "username"
     password      = "password"
   }
+ hitachi_infrastructure_gateway_provider {
+    address = "10.12.13.14"
+    username      = var.hitachi_gateway_user
+    password      = var.hitachi_gateway_password
+  }
+
 }
 ```
 
