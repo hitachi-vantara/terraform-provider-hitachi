@@ -58,6 +58,23 @@ func (psm *infraGwManager) GetStorageDevice(id string) (*model.StorageDevice, er
 	return provObj.GetStorageDevice(id)
 }
 
+// GetMTStorageDevice gets storage device information
+func (psm *infraGwManager) GetMTStorageDevice(id string) (*model.MTStorageDevice, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return provObj.GetMTStorageDevice(id)
+}
+
 func (psm *infraGwManager) addStorageDevice(createInput *model.CreateStorageDeviceParam) (*model.StorageDevice, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()

@@ -449,11 +449,13 @@ var PartnerInfraStorageDeviceInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "partner Id id  of the storage device",
 	},
-	"subscriber_id": &schema.Schema{
-		Type:        schema.TypeString,
-		Computed:    true,
-		Description: "subscriber Id id  of the storage device",
-	},
+	/*
+		"subscriber_id": &schema.Schema{
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "subscriber Id id  of the storage device",
+		},
+	*/
 }
 
 var DataInfraStorageDevicesSchema = map[string]*schema.Schema{

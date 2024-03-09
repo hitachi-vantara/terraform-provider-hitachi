@@ -57,6 +57,23 @@ func (psm *infraGwManager) GetStorageDevice(storageId string) (*model.StorageDev
 	return gatewayObj.GetStorageDevice(storageId)
 }
 
+// GetMTStorageDevice gets storage device information
+func (psm *infraGwManager) GetMTStorageDevice(storageId string) (*model.MTStorageDevice, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return gatewayObj.GetMTStorageDevice(storageId)
+}
+
 // AddStorageDevice adds a storage device
 func (psm *infraGwManager) AddStorageDevice(reqBody model.CreateStorageDeviceParam) (msg *string, err error) {
 	log := commonlog.GetLogger()
