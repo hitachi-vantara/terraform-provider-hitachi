@@ -58,9 +58,6 @@ func GetInfraStorageDevices(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 		}
 		log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_END), storageSetting.Address)
 
-		log.WriteDebug("all: %+v\n", terraformResponse)
-		log.WriteDebug("data: %+v\n", terraformResponse.Data)
-
 		return &terraformResponse.Data, nil, nil
 	}
 	mtResponse, err := reconObj.GetMTStorageDevices()
@@ -82,51 +79,71 @@ func GetInfraStorageDevices(d *schema.ResourceData) (*[]terraformmodel.InfraStor
 
 }
 
-func GetInfraStorageDevice(d *schema.ResourceData, serial string) (*[]terraformmodel.InfraStorageDeviceInfo, error) {
+func GetInfraStorageDevice(d *schema.ResourceData, serial string) (*[]terraformmodel.InfraStorageDeviceInfo, *terraformmodel.InfraMTStorageDevice, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	id, err := common.GetStorageIdFromSerial(address, serial)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	d.Set("storage_id", id)
 
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	reconObj, err := reconimpl.NewEx(*storageSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_BEGIN), storageSetting.Address)
-	reconResponse, err := reconObj.GetStorageDevice(id)
+	if storageSetting.PartnerId == nil {
+		reconResponse, err := reconObj.GetStorageDevice(id)
+		if err != nil {
+			log.WriteDebug("TFError| error getting GetInfraGwStorageDevice, err: %v", err)
+			log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_STORAGE_DEVICES_FAILED), storageSetting.Address)
+			return nil, nil, err
+		}
+
+		// Converting reconciler to terraform
+		terraformResponse := terraformmodel.InfraStorageDevices{}
+		err = copier.Copy(&terraformResponse, reconResponse)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil, nil, err
+		}
+		log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_END), storageSetting.Address)
+
+		return &terraformResponse.Data, nil, nil
+	}
+
+	mtResponse, err := reconObj.GetMTStorageDevice(id)
 	if err != nil {
-		log.WriteDebug("TFError| error getting GetInfraGwStorageDevice, err: %v", err)
+		log.WriteDebug("TFError| error getting GetMTStorageDevices, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_STORAGE_DEVICES_FAILED), storageSetting.Address)
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Converting reconciler to terraform
-	terraformResponse := terraformmodel.InfraStorageDevices{}
-	err = copier.Copy(&terraformResponse, reconResponse)
+	terraformResponse := terraformmodel.InfraMTStorageDevice{}
+	err = copier.Copy(&terraformResponse, mtResponse)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_END), storageSetting.Address)
 
-	return &terraformResponse.Data, nil
+	return nil, &terraformResponse, nil
 }
 
 func CreateInfraStorageDevice(d *schema.ResourceData) (*[]terraformmodel.InfraStorageDeviceInfo, error) {
@@ -361,6 +378,10 @@ func ConvertPartnersInfraStorageDeviceToSchema(pg *terraformmodel.InfraMTStorage
 		"ucp_systems":           pg.Storage.UcpSystems,
 		"storage_id":            pg.StorageId,
 		"status":                pg.Status,
+	}
+
+	if pg.StorageId == "" {
+		sp["storage_id"] = pg.Storage.ResourceId
 	}
 
 	if pg.PartnerId != "" {

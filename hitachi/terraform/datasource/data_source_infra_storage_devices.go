@@ -47,11 +47,12 @@ func DataSourceInfraStorageDevicesRead(ctx context.Context, d *schema.ResourceDa
 	// fetch all storage devices
 
 	var response *[]terraform.InfraStorageDeviceInfo
-	var mtResponse *terraform.InfraMTStorageDevices
+
 	var err error
 	list := []map[string]interface{}{}
 
 	if serial == "" {
+		var mtResponse *terraform.InfraMTStorageDevices
 		response, mtResponse, err = impl.GetInfraStorageDevices(d)
 		if err != nil {
 			return diag.FromErr(err)
@@ -80,28 +81,35 @@ func DataSourceInfraStorageDevicesRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
 	} else {
-		response, err = impl.GetInfraStorageDevice(d, serial)
+		var mtResponse *terraform.InfraMTStorageDevice
+		response, mtResponse, err = impl.GetInfraStorageDevice(d, serial)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-	}
-	/*
-		if err := d.Set("storage_devices", list); err != nil {
-			return diag.FromErr(err)
-		}
-
-		log.WriteDebug("storageDevices: %+v\n", response)
-		if serial == "" {
-			d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-		} else {
+		if mtResponse == nil {
+			for _, item := range *response {
+				eachItem := impl.ConvertInfraStorageDeviceToSchema(&item)
+				log.WriteDebug("it: %+v\n", *eachItem)
+				list = append(list, *eachItem)
+			}
+			if err := d.Set("storage_devices", list); err != nil {
+				return diag.FromErr(err)
+			}
 			for _, item := range *response {
 				element := &item
 				d.SetId(element.ResourceId)
 				break
 			}
+		} else {
+			eachItem := impl.ConvertPartnersInfraStorageDeviceToSchema(mtResponse)
+			list = append(list, *eachItem)
+			if err := d.Set("partner_storage_devices", list); err != nil {
+				return diag.FromErr(err)
+			}
+			d.SetId(mtResponse.Storage.ResourceId)
 		}
-		log.WriteInfo("storage devices read successfully")
-	*/
+	}
+
 	return nil
 
 }
