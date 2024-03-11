@@ -37,10 +37,10 @@ provider "hitachi" {
   #   password      ="raid-maintenance"
   # }
   
-san_storage_system {
-   serial        = 611039
-   management_ip = "172.25.44.107"
-   username      = "maintenance"
-   password      = "raid-maintenance"
-}
+# san_storage_system {
+#    serial        = 611039
+#    management_ip = "172.25.44.107"
+#    username      = "maintenance"
+#    password      = "raid-maintenance"
+# }
 }
