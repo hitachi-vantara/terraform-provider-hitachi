@@ -35,11 +35,11 @@ type Subscriber struct {
 	PartnerID          string  `json:"partnerId"`
 	Type               string  `json:"type"`
 	Time               int64   `json:"time"`
-	Name               string  `json:"name"`
-	SoftLimit          string  `json:"softLimit"`
-	HardLimit          string  `json:"hardLimit"`
-	QuotaLimit         string  `json:"quotaLimit"`
-	UsedQuotaInPercent float64 `json:"usedQuotaInPercent"`
+	Name               string  `json:"name,omitempty"`
+	SoftLimit          string  `json:"softLimit,omitempty"`
+	HardLimit          string  `json:"hardLimit,omitempty"`
+	QuotaLimit         string  `json:"quotaLimit,omitempty"`
+	UsedQuotaInPercent float64 `json:"usedQuotaInPercent,omitempty"`
 }
 
 type Subscribers struct {
@@ -62,8 +62,8 @@ type MTDetails struct {
 }
 
 type UpdateSubscriberReq struct {
-	Name       string `json:"name"`
-	SoftLimit  string `json:"softLimit"`
-	HardLimit  string `json:"hardLimit"`
-	QuotaLimit string `json:"quotaLimit"`
+	Name       string `json:"name,omitempty"`
+	SoftLimit  string `json:"softLimit,omitempty"`
+	HardLimit  string `json:"hardLimit,omitempty"`
+	QuotaLimit string `json:"quotaLimit,omitempty"`
 }

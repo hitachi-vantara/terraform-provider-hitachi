@@ -30,11 +30,59 @@ func (psm *infraGwManager) GetIscsiTargets(id string, port string) (*model.Iscsi
 	return &iscsiTargets, nil
 }
 
+// GetMTIscsiTargets gets IscsiTargets information
+func (psm *infraGwManager) GetMTIscsiTargets(id string) (*model.IscsiTargets, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var iscsiTargets model.IscsiTargets
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+	if psm.setting.SubscriberId != nil {
+		headers["subscriberId"] = *psm.setting.SubscriberId
+	}
+
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets/details", id)
+
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &iscsiTargets)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return &iscsiTargets, nil
+}
+
 // GetIscsiTarget gets IscsiTarget information
 func (psm *infraGwManager) GetIscsiTarget(id string, iscsiTargetId string) (*model.IscsiTarget, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+
+	var iscsiTarget model.IscsiTarget
+
+	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s", id, iscsiTargetId)
+
+	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &iscsiTarget)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return &iscsiTarget, nil
+}
+
+// GetIscsiTarget gets IscsiTarget information
+func (psm *infraGwManager) GetMTIscsiTarget(id string, iscsiTargetId string) (*model.IscsiTarget, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
 
 	var iscsiTarget model.IscsiTarget
 
@@ -58,6 +106,28 @@ func (psm *infraGwManager) CreateIscsiTarget(storageId string, reqBody model.Cre
 	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets", storageId)
 
 	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, nil)
+	if err != nil {
+		log.WriteDebug("TFError| error in CreateIscsiTarget - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
+func (psm *infraGwManager) CreateMTIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId":    *psm.setting.PartnerId,
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets", storageId)
+
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, &headers)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err

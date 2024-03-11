@@ -36,9 +36,14 @@ type IscsiTargetInfo struct {
 		IsMutualAuth       bool   `json:"isMutualAuth"`
 		AuthenticationMode string `json:"authenticationMode"`
 	} `json:"authParam"`
-	ChapUsers []string `json:"chapUsers"`
-	ISCSIName string   `json:"iSCSIName"`
-	ISCSIId   int      `json:"iSCSIId"`
+	ChapUsers         []string `json:"chapUsers"`
+	ISCSIName         string   `json:"iSCSIName"`
+	ISCSIId           int      `json:"iSCSIId"`
+	SubscriberId      string   `json:"subscriberId"`
+	PartnerId         string   `json:"partnerId"`
+	StorageId         string   `json:"storageId"`
+	Time              int64    `json:"time"`
+	EntitlementStatus string   `json:"entitlementStatus"`
 }
 
 type IscsiTargets struct {
