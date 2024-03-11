@@ -8,10 +8,9 @@ terraform {
 }
 
 provider "hitachi" {
-  hitachi_infrastructure_gateway_provider {
-    address = "172.25.22.61"
-    username      = var.hitachi_storage_user
-    password      = var.hitachi_storage_password
+ hitachi_infrastructure_gateway_provider {
+    address = "172.25.58.50"
+    username      = "ucpadmin"
+    password      = "overrunsurveysroutewarnssent"
   }
-
 }

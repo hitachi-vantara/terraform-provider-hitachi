@@ -20,8 +20,11 @@ type Partners struct {
 type RegisterSubscriberReq struct {
 	Name         string `json:"name"`
 	PartnerID    string `json:"partnerId"`
-	SubscriberID string `json:"subscriberId"`
-	Description  string `json:"description"`
+	SubscriberID string `json:"subscriberId,omitempty"`
+	Description  string `json:"description,omitempty"`
+	SoftLimit    string `json:"softLimit,omitempty"`
+	HardLimit    string `json:"hardLimit,omitempty"`
+	QuotaLimit   string `json:"quotaLimit,omitempty"`
 }
 
 type RegisterPartnerReq struct {
