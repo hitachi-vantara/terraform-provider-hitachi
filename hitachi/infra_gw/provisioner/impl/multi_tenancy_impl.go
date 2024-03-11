@@ -139,6 +139,9 @@ func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*strin
 			Name:         model.DefaultSubscriberName,
 			PartnerID:    partnerId,
 			SubscriberID: partnerId,
+			QuotaLimit:   "9999999999",
+			HardLimit:    "90",
+			SoftLimit:    "80",
 		}
 		_, err := gatewayObj.RegisterSubscriber(reqData)
 

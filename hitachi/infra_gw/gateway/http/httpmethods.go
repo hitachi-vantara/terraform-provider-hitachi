@@ -99,11 +99,11 @@ func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody inter
 		log.WriteDebug("TFError| error in PostCallAsync call, err: %v", err)
 		return nil, err
 	}
-
-	if storageSetting.V3API {
-		log.WriteDebug("TFError| returned string for POST V3 call %v", err)
-		return taskString, err
-	}
+	// Commented as getting some issue while creating volume and resources  Please discuss with Rabi once
+	// if storageSetting.V3API {
+	// 	log.WriteDebug("TFError| returned string for POST V3 call %v", err)
+	// 	return taskString, err
+	// }
 
 	return MakeFinalResponse(storageSetting, taskString)
 }
