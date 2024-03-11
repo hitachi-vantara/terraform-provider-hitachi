@@ -94,6 +94,20 @@ func (psm *infraGwManager) addStorageDevice(createInput *model.CreateStorageDevi
 	}
 	log.WriteDebug("Return value of AddStorageDevice : %s", *storageId)
 
+	if psm.setting.PartnerId != nil {
+
+		reqBody := model.CreateMTStorageDeviceParam{
+			ResourceId: *storageId,
+			PartnerId:  *psm.setting.PartnerId,
+		}
+		id, err := provObj.AddMTStorageDevice(reqBody)
+		if err != nil {
+			log.WriteDebug("TFError| error in AddStorageDevice call, err: %v", err)
+			return nil, err
+		}
+		log.WriteDebug("Return value of AddStorageDevice : %s", *id)
+	}
+
 	return psm.GetStorageDevice(*storageId)
 }
 
@@ -397,10 +411,29 @@ func (psm *infraGwManager) DeleteStorageDevice(storageId string) error {
 		return err
 	}
 
+	sd, err := psm.GetStorageDevice(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetStorageDevice call, err: %v", err)
+		return err
+	}
+
+	if len(sd.Data.UcpSystems) > 0 {
+		// The storage is part of a UCP system, first remove it from the ucp system
+		ucpId := sd.Data.UcpSystems[0]
+		err = provObj.DeleteStorageDeviceFromUcp(ucpId, storageId)
+		if err != nil {
+			log.WriteDebug("TFError| error in DeleteStorageDeviceFromUcp call, err: %v", err)
+			return err
+		}
+
+	}
+
+	// Now remove the storage from UCP inventory
 	err = provObj.DeleteStorageDevice(storageId)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteVolume call, err: %v", err)
 		return err
 	}
+
 	return nil
 }
