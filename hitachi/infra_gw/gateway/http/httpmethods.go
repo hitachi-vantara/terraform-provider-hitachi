@@ -234,6 +234,9 @@ func MakeFinalResponse(storageSetting model.InfraGwSettings, taskString *string)
 			log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 			return nil, err
 		}
+		if basicResponse.TaskId == "" {
+			return taskString, nil
+		}
 		response.Data.TaskId = basicResponse.TaskId
 		response.Data.ResourceId = basicResponse.ResourceId
 		response.Data.State = basicResponse.State
