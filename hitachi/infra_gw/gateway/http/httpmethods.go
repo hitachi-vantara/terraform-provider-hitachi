@@ -100,6 +100,11 @@ func PostCall(storageSetting model.InfraGwSettings, apiSuf string, reqBody inter
 		return nil, err
 	}
 
+	if storageSetting.V3API {
+		log.WriteDebug("TFError| returned string for POST V3 call %v", err)
+		return taskString, err
+	}
+
 	return MakeFinalResponse(storageSetting, taskString)
 }
 
