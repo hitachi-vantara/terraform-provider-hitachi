@@ -6,7 +6,9 @@ import (
 	// "context"
 	// "fmt"
 	// "io/ioutil"
+	"fmt"
 	"strconv"
+
 	// "time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -58,13 +60,16 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 	infra_gw_list := []*terraformmodel.InfraGwSettings{}
 	ss_ingra_gw_items := d.Get("hitachi_infrastructure_gateway_provider").([]interface{})
 
-	if len(ss_ingra_gw_items) > 0 {
+	if len(ss_ingra_gw_items) == 1 {
 
 		infra_gw_list, err = GetInfraGwSystem(ss_ingra_gw_items)
 		if err != nil {
 			log.WriteDebug("TFError| error in GetVssbStorageSystem, err: %v", err)
 			return nil, err
 		}
+	} else if len(ss_ingra_gw_items) > 1 {
+		err := fmt.Errorf("multiple gateway provider's are not allowed")
+		return nil, err
 	}
 
 	allStorageTypes := terraformmodel.AllStorageTypes{}
