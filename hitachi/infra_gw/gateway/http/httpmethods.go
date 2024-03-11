@@ -260,8 +260,6 @@ func MakeFinalResponse(storageSetting model.InfraGwSettings, taskString *string)
 				response.Data.ResourceId = attr.Id
 			}
 		}
-
-		return nil, fmt.Errorf("ResourceId not found , Please contact your system administrator")
 	}
 
 	return &response.Data.ResourceId, nil
