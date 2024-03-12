@@ -140,7 +140,7 @@ func (psm *infraGwManager) createIscsiTarget(storageId string, reqBody *model.Cr
 
 	id, err := provObj.CreateIscsiTarget(storageId, *reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in CreateHostGroup call, err: %v", err)
+		log.WriteDebug("TFError| error in CreateIscsiTarget call, err: %v", err)
 		return nil, err
 	}
 
