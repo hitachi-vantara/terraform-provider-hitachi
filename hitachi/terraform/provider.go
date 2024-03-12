@@ -29,8 +29,8 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 
 			// "hitachi_vsp_volume":                resourceimpl.ResourceStorageLun(),
-			"hitachi_vsp_hostgroup":             resourceimpl.ResourceStorageHostGroup(),
-			"hitachi_vsp_iscsi_target":          resourceimpl.ResourceStorageIscsiTarget(),
+			"hitachi_vsp_hostgroup": resourceimpl.ResourceStorageHostGroup(),
+			// "hitachi_vsp_iscsi_target":          resourceimpl.ResourceStorageIscsiTarget(),
 			"hitachi_vsp_iscsi_chap_user":       resourceimpl.ResourceStorageIscsiChapUser(),
 			"hitachi_vss_block_compute_node":    resourceimpl.ResourceVssbStorageComputeNode(),
 			"hitachi_vss_block_volume":          resourceimpl.ResourceVssbStorageCreateVolume(),
@@ -41,7 +41,7 @@ func Provider() *schema.Provider {
 
 			"hitachi_infra_hostgroup":      resourceimpl.ResourceInfraHostGroup(),
 			"hitachi_infra_storage_device": resourceimpl.ResourceInfraStorageDevice(),
-			"hitachi_infra_iscsi_target":   resourceimpl.ResourceInfraIscsiTarget(),
+			"hitachi_vsp_iscsi_target":     resourceimpl.ResourceInfraIscsiTarget(),
 			"hitachi_vsp_volume":           resourceimpl.ResourceInfraStorageVolume(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{

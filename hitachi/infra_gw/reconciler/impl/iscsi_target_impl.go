@@ -61,8 +61,7 @@ func (psm *infraGwManager) GetIscsiTarget(storageId, port, iscsiName string) (*m
 	if success {
 		return &result, nil, true
 	} else {
-		err := fmt.Errorf("port %s and hostgroup name %s not found", port, iscsiName)
-		return nil, err, false
+		return nil, nil, false
 	}
 }
 
@@ -94,13 +93,13 @@ func (psm *infraGwManager) ReconcileIscsiTarget(storageId string, createInput *m
 	if createInput.IscsiName == "" {
 		// Hostgroup name not given so throw err
 		err := fmt.Errorf("%s", "iscsi_target_alias Name empty")
-		return reconcilerIscsiTarget, err
+		return nil, err
 	}
 
 	// Get Hostgroup
 	iscsiTarget, err, success := psm.GetIscsiTarget(storageId, createInput.Port, createInput.IscsiName)
 	if err != nil {
-		log.WriteDebug("TFError| error in GetHostGroup provisioner call, err: %v", err)
+		log.WriteDebug("TFError| error in GetIscsiTarget provisioner call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_ISCSI_TARGET_FAILED), storageId, createInput.Port, createInput.IscsiName)
 		return nil, err
 	}

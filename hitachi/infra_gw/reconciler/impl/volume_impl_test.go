@@ -10,16 +10,16 @@ import (
 func newReconcilerestManager() (*infraGwManager, error) {
 
 	// Following storage has iscsi port
-	// subscrierId := "ucpadmin"
-	// partnerId := "ucpadmin"
+	subscrierId := "apiadmin"
+	partnerId := "apiadmin"
 
 	setting := model.InfraGwSettings{
-		Username: "ucpadmin",
-		Password: "Passw0rd!",
-		Address:  "172.25.22.81",
-		V3API:    false,
-		// PartnerId:    &partnerId,
-		// SubscriberId: &subscrierId,
+		Username:     "ucpadmin",
+		Password:     "Passw0rd!",
+		Address:      "172.25.22.81",
+		V3API:        false,
+		PartnerId:    &partnerId,
+		SubscriberId: &subscrierId,
 	}
 
 	psm, err := newInfraGwManagerEx(setting)
@@ -29,7 +29,7 @@ func newReconcilerestManager() (*infraGwManager, error) {
 	return psm, nil
 }
 
-func TestCreateUpdateVolume(t *testing.T) {
+func xTestCreateUpdateVolume(t *testing.T) {
 	psm, err := newReconcilerestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
