@@ -4,6 +4,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/infra_gw/gateway/impl"
 	model "terraform-provider-hitachi/hitachi/infra_gw/model"
+	mc "terraform-provider-hitachi/hitachi/infra_gw/provisioner/message-catalog"
 )
 
 // GetIscsiTargets gets IscsiTargets information
@@ -13,11 +14,18 @@ func (psm *infraGwManager) GetIscsiTargets(id string, port string) (*model.Iscsi
 	defer log.WriteExit()
 
 	objStorage := model.InfraGwSettings(psm.setting)
-
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_ISCSI_TARGETS_BEGIN))
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.INFO_GET_INFRA_ISCSI_TARGETS_END))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
+
+	}
+
+	if psm.setting.PartnerId != nil {
+		return gatewayObj.GetMTIscsiTargets(id)
 	}
 
 	return gatewayObj.GetIscsiTargets(id, port)
@@ -31,10 +39,18 @@ func (psm *infraGwManager) GetIscsiTarget(id string, iscsiTargetId string) (*mod
 
 	objStorage := model.InfraGwSettings(psm.setting)
 
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_INFRA_ISCSI_TARGET_BEGIN))
+
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_ISCSI_TARGET_FAILED))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
+	}
+
+	if psm.setting.PartnerId != nil {
+		return gatewayObj.GetMTIscsiTarget(id, iscsiTargetId)
 	}
 
 	return gatewayObj.GetIscsiTarget(id, iscsiTargetId)
@@ -47,11 +63,18 @@ func (psm *infraGwManager) CreateIscsiTarget(storageId string, reqBody model.Cre
 	defer log.WriteExit()
 
 	objStorage := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_INFRA_ISCSI_TARGET_BEGIN))
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_CREATE_INFRA_ISCSI_TARGET_FAILED))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
+	}
+
+	if psm.setting.PartnerId != nil {
+		return gatewayObj.CreateMTIscsiTarget(storageId, reqBody)
 	}
 
 	return gatewayObj.CreateIscsiTarget(storageId, reqBody)
@@ -64,9 +87,12 @@ func (psm *infraGwManager) UpdateIscsiTarget(storageId, hostGroupId string, reqB
 	defer log.WriteExit()
 
 	objStorage := model.InfraGwSettings(psm.setting)
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_INFRA_ISCSI_TARGET_BEGIN))
 
 	gatewayObj, err := gatewayimpl.NewEx(objStorage)
 	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_INFRA_ISCSI_TARGET_FAILED))
+
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
