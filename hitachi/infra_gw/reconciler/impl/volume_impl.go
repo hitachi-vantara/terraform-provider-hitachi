@@ -323,7 +323,7 @@ func (psm *infraGwManager) GetVolumeByID(storageId string, volumeId string) (*mo
 		return nil, err
 	}
 
-	var volumeInfo *model.MTVolumeDetailInfo
+	volumeInfo := &model.MTVolumeDetailInfo{}
 
 	if provSetting.PartnerId == nil {
 		provVolumesInfo, err := provObj.GetVolumeByID(storageId, volumeId)
