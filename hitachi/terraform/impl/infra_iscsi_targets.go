@@ -294,55 +294,14 @@ func CreateInfraIscsiTarget(d *schema.ResourceData) (*[]terraformmodel.InfraIscs
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	serial := common.GetSerialString(d)
-	storageId := d.Get("storage_id").(string)
+	storageId, serial, setting, err := common.GetInfraGatewaySettings(d, nil)
+	storage_serial_number = *serial
 
-	err := common.ValidateSerialAndStorageId(serial, storageId)
 	if err != nil {
+		log.WriteDebug("TFError| error in GetInfraGatewaySettings , err: %v", err)
 		return nil, err
 	}
-
-	address, err := cache.GetCurrentAddress()
-	if err != nil {
-		return nil, err
-	}
-
-	if storageId == "" {
-		storageId, err = common.GetStorageIdFromSerial(address, serial)
-		if err != nil {
-			return nil, err
-		}
-		d.Set("storage_id", storageId)
-	}
-
-	if serial == "" {
-		serial, err = common.GetSerialFromStorageId(address, storageId)
-		if err != nil {
-			return nil, err
-		}
-		storage_serial_number, err = strconv.Atoi(serial)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		storage_serial_number, err = strconv.Atoi(serial)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	storageSetting, err := cache.GetInfraSettingsFromCache(address)
-	if err != nil {
-		return nil, err
-	}
-
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
-
-	reconObj, err := reconimpl.NewEx(setting)
+	reconObj, err := reconimpl.NewEx(*setting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
 		return nil, err
@@ -361,7 +320,7 @@ func CreateInfraIscsiTarget(d *schema.ResourceData) (*[]terraformmodel.InfraIscs
 		return nil, err
 	}
 
-	hg, err := reconObj.ReconcileIscsiTarget(storageId, &reconcilerCreateIscsiTargetRequest)
+	targets, err := reconObj.ReconcileIscsiTarget(*storageId, &reconcilerCreateIscsiTargetRequest)
 
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_INFRA_ISCSI_TARGET_FAILED), createInput.Port, createInput.IscsiName)
@@ -370,7 +329,7 @@ func CreateInfraIscsiTarget(d *schema.ResourceData) (*[]terraformmodel.InfraIscs
 	}
 
 	terraformModelHostGroup := terraformmodel.InfraIscsiTargets{}
-	err = copier.Copy(&terraformModelHostGroup, hg)
+	err = copier.Copy(&terraformModelHostGroup, targets)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
@@ -519,6 +478,9 @@ func ConvertInfraIscsiTargetToSchema(pg *terraformmodel.InfraIscsiTargetInfo) *m
 		"chap_users":            pg.ChapUsers,
 		"iscsi_name":            pg.ISCSIName,
 		"iscsi_id":              pg.ISCSIId,
+		"subscriber_id": pg.SubscriberId,
+		"partner_id": pg.PartnerId,
+		"entitlement_status": pg.EntitlementStatus,
 	}
 
 	hostMode := []map[string]interface{}{}
