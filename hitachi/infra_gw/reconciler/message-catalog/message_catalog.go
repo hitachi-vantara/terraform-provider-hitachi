@@ -32,6 +32,18 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_INFRA_ISCSI_TARGET_FAILED: "Failed to read iscsi target information for storage id : %s port id : %s iscsi name %s.",
 	INFO_GET_INFRA_ISCSI_TARGET_END:   "Successfully read iscsi target information for storage id : %s port id : %s iscsi name %s.",
 
+	INFO_CREATE_INFRA_ISCSI_TARGET_BEGIN: "Creating iscsi target information in the storage system : %s.",
+	ERR_CREATE_INFRA_ISCSI_TARGET_FAILED: "Failed to create iscsi target information in the storage system : %s.",
+	INFO_CREATE_INFRA_ISCSI_TARGET_END:   "Successfully created iscsi target information in the storage system : %s.",
+
+	INFO_UPDATE_INFRA_ISCSI_TARGET_BEGIN: "Updating iscsi target information in the storage system : %s and id : %s",
+	ERR_UPDATE_INFRA_ISCSI_TARGET_FAILED: "Failed to update iscsi target information in the storage system : %s and id : %s",
+	INFO_UPDATE_INFRA_ISCSI_TARGET_END:   "Successfully updated iscsi target information in the storage system : %s and id : %s",
+
+	INFO_DELETE_INFRA_ISCSI_TARGET_BEGIN: "Deleting the iscsi target information in the storage system : %s and id : %s",
+	ERR_DELETE_INFRA_ISCSI_TARGET_FAILED: "Failed to delete iscsi target information in the storage system : %s and id : %s",
+	INFO_DELETE_INFRA_ISCSI_TARGET_END:   "Successfully deleted iscsi target information in the storage system : %s and id : %s",
+
 	// Volume Managements
 
 	INFO_GET_INFRA_GET_ALL_VOLUMES_BEGIN: "Reading volumes information for storage system : %s.",

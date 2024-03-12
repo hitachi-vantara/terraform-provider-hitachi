@@ -31,9 +31,9 @@
 
 
 resource "hitachi_vsp_volume" "mylun1" {
-  serial  = 40014
+  serial  = 611039
   size_gb = 0.5
-  pool_id = 1
+  pool_id = 0
   # # ldev_id = 2522
   # name = "testVolume1"
   # deduplication_compression_mode = "DISABLED"

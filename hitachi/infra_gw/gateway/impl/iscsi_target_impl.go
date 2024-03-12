@@ -84,11 +84,16 @@ func (psm *infraGwManager) GetMTIscsiTarget(id string, iscsiTargetId string) (*m
 
 	psm.setting.V3API = true
 
+	headers := map[string]string{
+		"partnerId":    *psm.setting.PartnerId,
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+
 	var iscsiTarget model.IscsiTarget
 
-	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s", id, iscsiTargetId)
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets/%s", id, iscsiTargetId)
 
-	err := httpmethod.GetCall(psm.setting, apiSuf, nil, &iscsiTarget)
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &iscsiTarget)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
@@ -153,6 +158,27 @@ func (psm *infraGwManager) AddVolumesToIscsiTarget(storageId, iscsiTargetId stri
 	return resourceId, nil
 }
 
+// AddVolumesToMTIscsiTarget .
+func (psm *infraGwManager) AddVolumesToMTIscsiTarget(storageId, iscsiTargetId string, reqBody model.AddVolumesToIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets/%s/volumes", storageId, iscsiTargetId)
+
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, &headers)
+	if err != nil {
+		log.WriteDebug("TFError| error in AddVolumesToMTIscsiTarget - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
 // RemoveVolumesFromIscsiTarget .
 func (psm *infraGwManager) RemoveVolumesFromIscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveVolumesFromIscsiTargetParam) (*string, error) {
 	log := commonlog.GetLogger()
@@ -164,6 +190,29 @@ func (psm *infraGwManager) RemoveVolumesFromIscsiTarget(storageId, iscsiTargetId
 	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in RemoveVolumesFromIscsiTarget - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
+// RemoveVolumesFromMTscsiTarget
+func (psm *infraGwManager) RemoveVolumesFromMTscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveVolumesFromIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets/%s/volumes", storageId, iscsiTargetId)
+
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, &headers)
+	if err != nil {
+		log.WriteDebug("TFError| error in RemoveVolumesFromMTscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 
@@ -187,6 +236,29 @@ func (psm *infraGwManager) AddIqnInitiatorsToIscsiTarget(storageId, iscsiTargetI
 	return resourceId, nil
 }
 
+// AddIqnInitiatorsToIscsiTarget .
+func (psm *infraGwManager) AddIqnInitiatorsToIscsiMTTarget(storageId, iscsiTargetId string, reqBody model.AddIqnInitiatorsToIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets/%s/iqns", storageId, iscsiTargetId)
+
+	resourceId, err := httpmethod.PostCall(psm.setting, apiSuf, reqBody, &headers)
+	if err != nil {
+		log.WriteDebug("TFError| error in AddIqnInitiatorsToIscsiMTTarget - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
 // RemoveIqnInitiatorsFromIscsiTarget .
 func (psm *infraGwManager) RemoveIqnInitiatorsFromIscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveIqnInitiatorsFromIscsiTargetParam) (*string, error) {
 	log := commonlog.GetLogger()
@@ -198,6 +270,29 @@ func (psm *infraGwManager) RemoveIqnInitiatorsFromIscsiTarget(storageId, iscsiTa
 	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in RemoveIqnInitiatorsFromIscsiTarget - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
+// RemoveIqnInitiatorsFromIscsiMTTarget .
+func (psm *infraGwManager) RemoveIqnInitiatorsFromIscsiMTTarget(storageId, iscsiTargetId string, reqBody model.RemoveIqnInitiatorsFromIscsiTargetParam) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+
+	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s/volumes", storageId, iscsiTargetId)
+
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, reqBody, &headers)
+	if err != nil {
+		log.WriteDebug("TFError| error in RemoveIqnInitiatorsFromIscsiMTTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 
@@ -283,6 +378,29 @@ func (psm *infraGwManager) DeleteIscsiTarget(storageId, iscsiTargetId string) (*
 	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, nil)
 	if err != nil {
 		log.WriteDebug("TFError| error in DeleteIscsiTarget - %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return resourceId, nil
+}
+
+// DeleteMTIscsiTarget
+func (psm *infraGwManager) DeleteMTIscsiTarget(storageId, iscsiTargetId string) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+
+	apiSuf := fmt.Sprintf("/storage/devices/%s/iscsiTargets/%s", storageId, iscsiTargetId)
+
+	resourceId, err := httpmethod.DeleteCall(psm.setting, apiSuf, nil, &headers)
+	if err != nil {
+		log.WriteDebug("TFError| error in DeleteMTIscsiTarget - %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 

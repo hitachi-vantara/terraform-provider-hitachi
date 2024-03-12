@@ -47,6 +47,21 @@ type InfraGwManager interface {
 	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)
 	UpdateHostMode(storageId, iscsiTargetId string, reqBody model.UpdateHostModeParam) (*string, error)
+	GetMTIscsiTargets(id string) (*model.IscsiTargets, error)
+	GetMTIscsiTarget(id string, iscsiTargetId string) (*model.IscsiTarget, error)
+	CreateMTIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)
+	AddVolumesToMTIscsiTarget(storageId, iscsiTargetId string, reqBody model.AddVolumesToIscsiTargetParam) (*string, error)
+	RemoveVolumesFromMTscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveVolumesFromIscsiTargetParam) (*string, error)
+	AddIqnInitiatorsToIscsiMTTarget(storageId, iscsiTargetId string, reqBody model.AddIqnInitiatorsToIscsiTargetParam) (*string, error)
+	RemoveIqnInitiatorsFromIscsiMTTarget(storageId, iscsiTargetId string, reqBody model.RemoveIqnInitiatorsFromIscsiTargetParam) (*string, error)
+	DeleteMTIscsiTarget(storageId, iscsiTargetId string) (*string, error)
+	DeleteIscsiTarget(storageId, iscsiTargetId string) (*string, error)
+	UpdateTargetIqnInIscsiTarget(storageId, iscsiTargetId string, reqBody model.UpdateTargetIqnInIscsiTargetParam) (*string, error)
+	RemoveIqnInitiatorsFromIscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveIqnInitiatorsFromIscsiTargetParam) (*string, error)
+	AddVolumesToIscsiTarget(storageId, iscsiTargetId string, reqBody model.AddVolumesToIscsiTargetParam) (*string, error)
+	RemoveVolumesFromIscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveVolumesFromIscsiTargetParam) (*string, error)
+	AddIqnInitiatorsToIscsiTarget(storageId, iscsiTargetId string, reqBody model.AddIqnInitiatorsToIscsiTargetParam) (*string, error)
+	
 
 	//Volume management
 	GetVolumes(storageId string) (*model.Volumes, error)

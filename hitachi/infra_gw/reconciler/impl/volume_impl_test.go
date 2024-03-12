@@ -10,16 +10,16 @@ import (
 func newReconcilerestManager() (*infraGwManager, error) {
 
 	// Following storage has iscsi port
-	subscrierId := "a8d1f065-a9e7-42cf-b565-a67466fec549"
-	partnerId := "a8d1f065-a9e7-42cf-b565-a67466fec549"
+	// subscrierId := "ucpadmin"
+	// partnerId := "ucpadmin"
 
 	setting := model.InfraGwSettings{
-		Username:     "apiadmin",
-		Password:     "Passw0rd!",
-		Address:      "172.25.22.81",
-		V3API:        false,
-		PartnerId:    &partnerId,
-		SubscriberId: &subscrierId,
+		Username: "ucpadmin",
+		Password: "Passw0rd!",
+		Address:  "172.25.22.81",
+		V3API:    false,
+		// PartnerId:    &partnerId,
+		// SubscriberId: &subscrierId,
 	}
 
 	psm, err := newInfraGwManagerEx(setting)
@@ -37,7 +37,7 @@ func TestCreateUpdateVolume(t *testing.T) {
 	pooldId := 0
 	// lunid := 636
 	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
-	storageId := "storage-e51aa8e9806a70a036a77fec150d1407"
+	storageId := "storage-349a72cc2d6b6b131ac5f2c4d557c6d6"
 	createInput := model.CreateVolumeParams{Capacity: "100MB",
 		System: "Logical-UCP-95054", PoolID: &pooldId}
 	sid, err := psm.ReconcileVolume(storageId, &createInput, nil)
@@ -63,4 +63,21 @@ func xTestGetVolumeByLdevId(t *testing.T) {
 		return
 	}
 	t.Logf("Response: %v %v", pvol, mvol)
+}
+
+func xTestGetVolumeByID(t *testing.T) {
+	psm, err := newReconcilerestManager()
+	if err != nil {
+		t.Fatalf("Unexpected error %v", err)
+	}
+
+	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
+	storageId := "storage-349a72cc2d6b6b131ac5f2c4d557c6d6"
+	volId := "storagevolume-91a060e705ade94cedf4c149c20d7d6a"
+	pvol, err := psm.GetVolumeByID(storageId, volId)
+	if err != nil {
+		t.Errorf("Unexpected error in GetPartnerIdWithStatus %v", err)
+		return
+	}
+	t.Logf("Response: %v", pvol)
 }
