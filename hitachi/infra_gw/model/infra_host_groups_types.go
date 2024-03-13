@@ -84,6 +84,39 @@ type MTHostGroups struct {
 	Data    []MTHostGroupInfo `json:"data"`
 }
 
+type MTHostGroupDetailsInfo struct {
+	ResourceId      string `json:"resourceId"`
+	HostGroupName   string `json:"hostGroupName"`
+	HostGroupId     int    `json:"hostGroupId"`
+	ResourceGroupId int    `json:"resourceGroupId"`
+	Port            string `json:"port"`
+	LunPaths        []struct {
+		LunId  int `json:"lunId"`
+		LdevId int `json:"ldevId"`
+	} `json:"lunPaths"`
+	HostMode string `json:"hostMode"`
+	Wwns     []struct {
+		Id   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"wwns"`
+	HostModeOptions []struct {
+		HostModeOption       string `json:"hostModeOption"`
+		HostModeOptionNumber int    `json:"hostModeOptionNumber"`
+	} `json:"hostModeOptions"`
+	SubscriberId      string `json:"subscriberId"`
+	PartnerId         string `json:"partnerId"`
+	EntitlementStatus string `json:"entitlementStatus"`
+	StorageId         string `json:"storageId"`
+	Time              int64  `json:"time"`
+}
+
+type MTHostGroupsDetails struct {
+	Path    string                   `json:"path"`
+	Message string                   `json:"message"`
+	Error   TFError                  `json:"error"`
+	Data    []MTHostGroupDetailsInfo `json:"data"`
+}
+
 type AddVolumesToHostGroupParam struct {
 	LdevIds []int `json:"ldevIds"`
 }
