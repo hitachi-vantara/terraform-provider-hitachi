@@ -14,8 +14,14 @@
 #
 
 data "hitachi_vsp_volume" "volume" {
+
+  // Mandatory parameters for both the provider
   serial  = 12345
   ldev_id = 281
+
+  // Optional parameters for the hitachi_infrastructure_gateway_provider
+
+  subscriber_id = ""
 }
 
 output "volume" {
@@ -33,10 +39,19 @@ output "volume" {
 #
 
 data "hitachi_vsp_volumes" "volume1" {
+  
+  // Mandatory parameters for both the providers
   serial         = 12345
+
+  // optional parameters for both the providers
   start_ldev_id  = 280
   end_ldev_id    = 285
   undefined_ldev = false
+
+// Optional parameters for the hitachi_infrastructure_gateway_provider
+
+  subscriber_id = ""
+
 }
 
 output "volume1" {

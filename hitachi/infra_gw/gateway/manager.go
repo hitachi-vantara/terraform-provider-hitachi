@@ -43,6 +43,7 @@ type InfraGwManager interface {
 	GetStoragePool(storageId, poolId string) (*model.StoragePool, error)
 
 	// Iscsi Management
+	GetMTIscsiTargetWithDetails(id string, iscsiTargetId string) (*model.IscsiTargets, error)
 	GetIscsiTargets(storageId string, port string) (*model.IscsiTargets, error)
 	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)
@@ -61,7 +62,6 @@ type InfraGwManager interface {
 	AddVolumesToIscsiTarget(storageId, iscsiTargetId string, reqBody model.AddVolumesToIscsiTargetParam) (*string, error)
 	RemoveVolumesFromIscsiTarget(storageId, iscsiTargetId string, reqBody model.RemoveVolumesFromIscsiTargetParam) (*string, error)
 	AddIqnInitiatorsToIscsiTarget(storageId, iscsiTargetId string, reqBody model.AddIqnInitiatorsToIscsiTargetParam) (*string, error)
-	
 
 	//Volume management
 	GetVolumes(storageId string) (*model.Volumes, error)
@@ -94,4 +94,10 @@ type InfraGwManager interface {
 	RegisterPartner(reqBody *model.RegisterPartnerReq) (*string, error)
 	UnRegisterSubscriber(subscriberId string) (*string, error)
 	UpdateSubscriber(subscriberId string, partnerId string, reqBody *model.UpdateSubscriberReq) (*string, error)
+
+	//Tag untag storage resource
+
+	GetStorageResource(storageId, resourceType, resourceId string) (*model.StorageResourceResponse, error)
+	AddStorageResource(storageId string, reqData *model.AddStorageResourceRequest) (*string, error)
+	RemoveStorageResource(storageId, resourceId, subscriberId, Type string) (*string, error)
 }

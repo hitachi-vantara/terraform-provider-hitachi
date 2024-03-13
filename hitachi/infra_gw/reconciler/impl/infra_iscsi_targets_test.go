@@ -14,8 +14,8 @@ func TestCreateUpdateISCSITarget(t *testing.T) {
 	// {"name":"VolumeTest1111121","poolId":4,"parityGroupId":"1-3","capacity":"1GB","ucpSystem":"UCP-SYS1"}
 	storageId := "storage-349a72cc2d6b6b131ac5f2c4d557c6d6"
 	createInput := model.CreateIscsiTargetParam{
-		IscsiName: "NewTargetName1",
-		Port:      "CL2-C",
+		IscsiName: "NewTargetName12",
+		Port:      "CL1-C",
 		HostMode:  "VMWARE",
 		UcpSystem: "Logical-UCP-95054",
 	}

@@ -10,9 +10,9 @@
 //
 
 /* 
-Refre to the below table for more information
+Refer to the below table for more information
 
-| Property                      | Gateway Provider           | VSP Direct Connect Provider  |
+| Property                      | UAI Gateway Provider           | VSP Direct Connect Provider  |
 |-------------------------------|----------------------------|------------------------------|
 | serial                        | 12345 **                   | 12345 *                      |
 | storage_id                    | ""   **                    | -                            |
@@ -30,9 +30,10 @@ Refre to the below table for more information
 
 
 - Not supported
-** Either or one of the parameter required(Optinal Mandotary)
+** Either or one of the parameter required(optional Mandotary)
 * Required parameters
 
+Note : Not marked are optional parameters
 
 User can comment and uncomments based on requirements
 */

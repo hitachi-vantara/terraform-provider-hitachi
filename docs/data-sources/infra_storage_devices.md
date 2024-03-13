@@ -45,7 +45,6 @@ Read-Only:
 - `status` (String) Status of the storage device
 - `storage_id` (String) Storage Id
 - `storage_serial_number` (Number) Serial number of storage
-- `subscriber_id` (String) subscriber Id id  of the storage device
 - `ucp_systems` (List of String) List of UCP Systems
 
 

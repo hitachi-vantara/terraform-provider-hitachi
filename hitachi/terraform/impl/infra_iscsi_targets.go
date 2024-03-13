@@ -460,6 +460,8 @@ func CreateInfraIscsiTargetRequestFromSchema(d *schema.ResourceData) (*terraform
 	if ok {
 		us := ucpSystem.(string)
 		createInput.UcpSystem = us
+	}else {
+		createInput.UcpSystem = model.DefaultSystemSerialNumber
 	}
 
 	log.WriteDebug("createInput: %+v", createInput)

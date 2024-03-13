@@ -377,15 +377,6 @@ var DataInfraVolumeSchema = map[string]*schema.Schema{
 			Schema: InfraVolumeInfoSchema,
 		},
 	},
-	"subscriber_volume": &schema.Schema{
-		Type:        schema.TypeList,
-		Computed:    true,
-		Optional:    true,
-		Description: "This is subscriber's volume output",
-		Elem: &schema.Resource{
-			Schema: PartnerInfraVolumeInfoSchema,
-		},
-	},
 }
 
 var DataInfraVolumesSchema = map[string]*schema.Schema{
@@ -427,17 +418,6 @@ var DataInfraVolumesSchema = map[string]*schema.Schema{
 		Description: "This is volumes output",
 		Elem: &schema.Resource{
 			Schema: InfraVolumeInfoSchema,
-		},
-	},
-
-	//output
-	"partner_volumes": &schema.Schema{
-		Type:        schema.TypeList,
-		Computed:    true,
-		Optional:    true,
-		Description: "This is partners volumes output",
-		Elem: &schema.Resource{
-			Schema: PartnerInfraVolumeInfoSchema,
 		},
 	},
 }
