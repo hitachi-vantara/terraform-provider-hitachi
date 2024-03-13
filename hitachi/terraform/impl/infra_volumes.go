@@ -402,6 +402,7 @@ func ConvertPartnersInfraVolumeToSchema(pg *terraformmodel.MtInfraVolumeInfo) *m
 		"partner_id":                     pg.PartnerId,
 		"subscriber_id":                  pg.SubscriberId,
 		"entitlement_status":             pg.EntitlementStatus,
+		"free_capacity_in_mb":            common.BytesToMegabytes(pg.TotalCapacity - pg.UsedCapacity),
 	}
 
 	return &sp

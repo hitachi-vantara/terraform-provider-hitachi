@@ -51,7 +51,21 @@ func (psm *infraGwManager) GetIscsiTarget(id string, iscsiTargetId string) (*mod
 	}
 
 	if psm.setting.PartnerId != nil {
-		return gatewayObj.GetMTIscsiTarget(id, iscsiTargetId)
+		targetsWithDetails, err := gatewayObj.GetMTIscsiTargetWithDetails(id, iscsiTargetId)
+		if err != nil {
+			log.WriteError(mc.GetMessage(mc.ERR_GET_INFRA_ISCSI_TARGET_FAILED))
+
+			log.WriteDebug("TFError| error in GetMTIscsiTargetWithDetails call, err: %v", err)
+			return nil, err
+		}
+		for _, target := range targetsWithDetails.Data {
+			if target.ResourceId == iscsiTargetId {
+				info := model.IscsiTarget{}
+				info.Data = target
+				return &info, nil
+			}
+
+		}
 	}
 
 	return gatewayObj.GetIscsiTarget(id, iscsiTargetId)

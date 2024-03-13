@@ -28,27 +28,7 @@ description: |-
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `subscriber_volume` (Block List) This is subscriber's volume output (see [below for nested schema](#nestedblock--subscriber_volume))
 - `volume` (Block List) This is volume output (see [below for nested schema](#nestedblock--volume))
-
-<a id="nestedblock--subscriber_volume"></a>
-### Nested Schema for `subscriber_volume`
-
-Read-Only:
-
-- `entitlement_status` (String) Entitlement Status of the volume
-- `ldev_id` (Number) ldev id of the volume
-- `partner_id` (String) partner Id id  of the volume
-- `pool_id` (Number) Pool Id of the volume
-- `pool_name` (String) Pool name of the volume
-- `resource_id` (String) Resource Id
-- `storage_id` (String) Storage Id
-- `storage_serial_number` (Number) Serial number of storage
-- `subscriber_id` (String) subscriber Id id  of the volume
-- `total_capacity_in_mb` (Number) Total capacity in MB
-- `type` (String) Type of resource
-- `used_capacity_in_mb` (Number) Used capacity in MB
-
 
 <a id="nestedblock--volume"></a>
 ### Nested Schema for `volume`

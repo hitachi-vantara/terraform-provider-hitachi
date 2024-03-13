@@ -43,6 +43,7 @@ type InfraGwManager interface {
 	GetStoragePool(storageId, poolId string) (*model.StoragePool, error)
 
 	// Iscsi Management
+	GetMTIscsiTargetWithDetails(id string, iscsiTargetId string) (*model.IscsiTargets, error)
 	GetIscsiTargets(storageId string, port string) (*model.IscsiTargets, error)
 	GetIscsiTarget(storageId string, iscsiTargetId string) (*model.IscsiTarget, error)
 	CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error)

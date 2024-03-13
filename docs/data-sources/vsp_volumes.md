@@ -29,8 +29,14 @@ description: |-
 #
 
 data "hitachi_vsp_volume" "volume" {
+
+  // Mandatory parameters for both the provider
   serial  = 12345
   ldev_id = 281
+
+  // Optional parameters for the hitachi_infrastructure_gateway_provider
+
+  subscriber_id = ""
 }
 
 output "volume" {
@@ -48,10 +54,19 @@ output "volume" {
 #
 
 data "hitachi_vsp_volumes" "volume1" {
+  
+  // Mandatory parameters for both the providers
   serial         = 12345
+
+  // optional parameters for both the providers
   start_ldev_id  = 280
   end_ldev_id    = 285
   undefined_ldev = false
+
+// Optional parameters for the hitachi_infrastructure_gateway_provider
+
+  subscriber_id = ""
+
 }
 
 output "volume1" {
@@ -74,27 +89,7 @@ output "volume1" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `partner_volumes` (Block List) This is partners volumes output (see [below for nested schema](#nestedblock--partner_volumes))
 - `volumes` (Block List) This is volumes output (see [below for nested schema](#nestedblock--volumes))
-
-<a id="nestedblock--partner_volumes"></a>
-### Nested Schema for `partner_volumes`
-
-Read-Only:
-
-- `entitlement_status` (String) Entitlement Status of the volume
-- `ldev_id` (Number) ldev id of the volume
-- `partner_id` (String) partner Id id  of the volume
-- `pool_id` (Number) Pool Id of the volume
-- `pool_name` (String) Pool name of the volume
-- `resource_id` (String) Resource Id
-- `storage_id` (String) Storage Id
-- `storage_serial_number` (Number) Serial number of storage
-- `subscriber_id` (String) subscriber Id id  of the volume
-- `total_capacity_in_mb` (Number) Total capacity in MB
-- `type` (String) Type of resource
-- `used_capacity_in_mb` (Number) Used capacity in MB
-
 
 <a id="nestedblock--volumes"></a>
 ### Nested Schema for `volumes`

@@ -5,6 +5,9 @@ const (
 	StorageAdminRole      = "UcpAdvisorStorageAdmin"
 	DefaultSubscriberName = "TerraformSubscriber"
 	DefaultPartnerName    = "TerraformPartner"
+	MaxSoftLimit = "99"
+	MaxHardLimit = "100"
+	QuotaLimit = "9999999999999999999999"
 )
 
 type Partner struct {

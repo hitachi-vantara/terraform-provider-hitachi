@@ -102,6 +102,32 @@ func (psm *infraGwManager) GetMTIscsiTarget(id string, iscsiTargetId string) (*m
 	return &iscsiTarget, nil
 }
 
+// GetIscsiTarget gets IscsiTarget information
+func (psm *infraGwManager) GetMTIscsiTargetWithDetails(id string, iscsiTargetId string) (*model.IscsiTargets, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId":    *psm.setting.PartnerId,
+		"subscriberId": *psm.setting.SubscriberId,
+	}
+
+	var iscsiTarget model.IscsiTargets
+
+	apiSuf := fmt.Sprintf("/storage/%s/iscsiTargets/details", id)
+
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &iscsiTarget)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+	return &iscsiTarget, nil
+}
+
 // CreateIscsiTarget .
 func (psm *infraGwManager) CreateIscsiTarget(storageId string, reqBody model.CreateIscsiTargetParam) (*string, error) {
 	log := commonlog.GetLogger()

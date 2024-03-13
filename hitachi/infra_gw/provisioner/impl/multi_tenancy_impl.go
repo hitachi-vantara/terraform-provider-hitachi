@@ -153,9 +153,9 @@ func (psm *infraGwManager) GetOrCreateRandomSubscriber(partnerId string) (*strin
 		return &partnerId, err
 	} else if subs.QuotaLimit <= "0" {
 		reqData := model.UpdateSubscriberReq{
-			QuotaLimit: "9999999999",
-			HardLimit:  "90",
-			SoftLimit:  "80",
+			QuotaLimit: model.QuotaLimit,
+			HardLimit:  model.MaxHardLimit,
+			SoftLimit:  model.MaxSoftLimit,
 		}
 
 		_, err := gatewayObj.UpdateSubscriber(partnerId, subs.SubscriberId, &reqData)
