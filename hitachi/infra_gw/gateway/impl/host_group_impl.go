@@ -256,3 +256,32 @@ func (psm *infraGwManager) DeleteMTHostGroup(storageId, hostGroupId string) erro
 
 	return nil
 }
+
+// Get GetHostGroupsDetailsByPartnerIdOrSubscriberID
+func (psm *infraGwManager) GetHostGroupsDetailsByPartnerIdOrSubscriberID(storageId string) (*model.MTHostGroups, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var response model.MTHostGroups
+
+	psm.setting.V3API = true
+
+	headers := map[string]string{
+		"partnerId": *psm.setting.PartnerId,
+	}
+	if psm.setting.SubscriberId != nil {
+		headers["subscriberId"] = *psm.setting.SubscriberId
+	}
+
+	apiSuf := fmt.Sprintf("/storage/devices/%s/hostGroups/details", storageId)
+
+	err := httpmethod.GetCall(psm.setting, apiSuf, &headers, &response)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return &response, nil
+}
