@@ -213,23 +213,11 @@ func DeleteInfraStorageDevice(d *schema.ResourceData) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	/*
-		serial := common.GetSerialString(d)
-		storageId := d.Get("id").(string)
-	*/
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
 		return err
 	}
-	/*
-		if storageId == "" {
-			storageId, err = common.GetStorageIdFromSerial(address, serial)
-			if err != nil {
-				return err
-			}
-			d.Set("storage_id", storageId)
-		}
-	*/
+
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
 		return err

@@ -27,6 +27,8 @@ type InfraGwManager interface {
 	GetHostGroup(storageId, port, hostGroupName string) (*model.HostGroup, error, bool)
 	GetHostGroupById(storageId string, hostGrId string) (*model.HostGroup, error)
 	ReconcileHostGroup(storageId string, createInput *model.CreateHostGroupParam) (*model.HostGroup, error)
+	DeleteHostGroup(storageId, hostGroupId string) error
+	DeleteMTHostGroup(storageId, hostGroupId string) error
 
 	// Storage pool management
 	GetStoragePools(storageId string) (*model.StoragePools, error)

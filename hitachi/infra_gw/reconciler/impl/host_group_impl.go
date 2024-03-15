@@ -142,7 +142,7 @@ func (psm *infraGwManager) ReconcileHostGroup(storageId string, createInput *mod
 	return reconcilerHg, nil
 }
 
-// CreateHostGroup .
+// createHostGroup .
 func (psm *infraGwManager) createHostGroup(storageId string, reqBody *model.CreateHostGroupParam) (*model.HostGroup, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -156,10 +156,19 @@ func (psm *infraGwManager) createHostGroup(storageId string, reqBody *model.Crea
 		return nil, err
 	}
 
-	id, err := provObj.CreateHostGroup(storageId, *reqBody)
-	if err != nil {
-		log.WriteDebug("TFError| error in CreateHostGroup call, err: %v", err)
-		return nil, err
+	var id *string
+	if psm.setting.PartnerId != nil {
+		id, err = provObj.CreateMTHostGroup(storageId, *reqBody)
+		if err != nil {
+			log.WriteDebug("TFError| error in CreateHostGroup call, err: %v", err)
+			return nil, err
+		}
+	} else {
+		id, err = provObj.CreateHostGroup(storageId, *reqBody)
+		if err != nil {
+			log.WriteDebug("TFError| error in CreateHostGroup call, err: %v", err)
+			return nil, err
+		}
 	}
 
 	return psm.GetHostGroupById(storageId, *id)
@@ -187,4 +196,38 @@ func (psm *infraGwManager) updateHostGroup(storageId, hostGroupId string, reqBod
 	}
 
 	return psm.GetHostGroupById(storageId, hostGroupId)
+}
+
+// DeleteHostGroup
+func (psm *infraGwManager) DeleteHostGroup(id, hostGrId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return err
+	}
+
+	return provObj.DeleteHostGroup(id, hostGrId)
+}
+
+// DeleteMTHostGroup
+func (psm *infraGwManager) DeleteMTHostGroup(id, hostGrId string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return err
+	}
+
+	return provObj.DeleteMTHostGroup(id, hostGrId)
 }

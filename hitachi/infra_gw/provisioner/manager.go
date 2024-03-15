@@ -29,7 +29,10 @@ type InfraGwManager interface {
 	GetHostGroupsByPartnerIdOrSubscriberID(storageId string) (*model.MTHostGroups, error)
 	GetHostGroup(storageId string, hostGrId string) (*model.HostGroup, error)
 	CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
+	CreateMTHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
 	UpdateHostGroup(storageId, hostGroupId string, reqBody model.CreateHostGroupParam) (*string, error)
+	DeleteHostGroup(storageId, hostGroupId string) error
+	DeleteMTHostGroup(storageId, hostGroupId string) error
 
 	//Storage Pool Management
 	GetStoragePools(storageId string) (*model.StoragePools, error)
