@@ -23,6 +23,23 @@ func (psm *infraGwManager) GetHostGroups(storageId string, port string) (*model.
 	return gatewayObj.GetHostGroups(storageId, port)
 }
 
+// GetHostGroupsByPartnerIdOrSubscriberID gets host groups information
+func (psm *infraGwManager) GetHostGroupsByPartnerIdOrSubscriberID(storageId string) (*model.MTHostGroups, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return gatewayObj.GetHostGroupsByPartnerIdOrSubscriberID(storageId)
+}
+
 // GetHostGroup gets host group information
 func (psm *infraGwManager) GetHostGroup(storageId string, hostGrId string) (*model.HostGroup, error) {
 	log := commonlog.GetLogger()

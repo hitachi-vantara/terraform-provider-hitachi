@@ -80,7 +80,6 @@ type MTHostGroupInfo struct {
 type MTHostGroups struct {
 	Path    string            `json:"path"`
 	Message string            `json:"message"`
-	Error   TFError           `json:"error"`
 	Data    []MTHostGroupInfo `json:"data"`
 }
 
@@ -113,7 +112,6 @@ type MTHostGroupDetailsInfo struct {
 type MTHostGroupsDetails struct {
 	Path    string                   `json:"path"`
 	Message string                   `json:"message"`
-	Error   TFError                  `json:"error"`
 	Data    []MTHostGroupDetailsInfo `json:"data"`
 }
 
