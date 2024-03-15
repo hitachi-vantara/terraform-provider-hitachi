@@ -25,6 +25,23 @@ func (psm *infraGwManager) GetHostGroups(id string, port string) (*model.HostGro
 	return provObj.GetHostGroups(id, port)
 }
 
+// GetHostGroups gets host groups information
+func (psm *infraGwManager) GetHostGroupsByPartnerIdOrSubscriberID(id string) (*model.MTHostGroups, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := model.InfraGwSettings(psm.setting)
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	return provObj.GetHostGroupsByPartnerIdOrSubscriberID(id)
+}
+
 func (psm *infraGwManager) GetHostGroup(storageId, port, hostGroupName string) (*model.HostGroup, error, bool) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()

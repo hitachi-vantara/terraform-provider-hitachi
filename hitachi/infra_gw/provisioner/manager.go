@@ -26,6 +26,7 @@ type InfraGwManager interface {
 
 	// Host group Management
 	GetHostGroups(storageId string, port string) (*model.HostGroups, error)
+	GetHostGroupsByPartnerIdOrSubscriberID(storageId string) (*model.MTHostGroups, error)
 	GetHostGroup(storageId string, hostGrId string) (*model.HostGroup, error)
 	CreateHostGroup(storageId string, reqBody model.CreateHostGroupParam) (*string, error)
 	UpdateHostGroup(storageId, hostGroupId string, reqBody model.CreateHostGroupParam) (*string, error)

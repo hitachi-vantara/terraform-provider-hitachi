@@ -100,6 +100,75 @@ var InfraHostGroupInfoSchema = map[string]*schema.Schema{
 	},
 }
 
+var PartnerInfraHostGroupInfoSchema = map[string]*schema.Schema{
+
+	"storage_serial_number": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Serial number of storage",
+	},
+	"resource_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Resource Id",
+	},
+	"type": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Resource Type",
+	},
+	"storage_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Storage Id",
+	},
+	"device_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Device Id",
+	},
+	"entitlement_status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Entitlement Status of the device",
+	},
+	"partner_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "partner Id id  of the storage device",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the storage device",
+	},
+	"hostgroup_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Name of the hostGroup",
+	},
+	"host_group_number": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Unique ID of the hostGroup",
+	},
+	"resource_group_id": &schema.Schema{
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Description: "Unique ID of the hostGroup",
+	},
+	"port_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "Port name",
+	},
+	"host_mode": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "The Host Mode to create the group",
+	},
+}
+
 var DataInfraHostGroupSchema = map[string]*schema.Schema{
 
 	"storage_id": &schema.Schema{
@@ -181,6 +250,17 @@ var DataInfraHostGroupsSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Elem: &schema.Resource{
 			Schema: InfraHostGroupInfoSchema,
+		},
+	},
+
+	//output
+	"partner_hostgroups": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is partners hostgroups output",
+		Elem: &schema.Resource{
+			Schema: PartnerInfraHostGroupInfoSchema,
 		},
 	},
 }

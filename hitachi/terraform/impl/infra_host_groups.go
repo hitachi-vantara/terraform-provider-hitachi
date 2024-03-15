@@ -62,7 +62,7 @@ var InfraHostModeRestToUserConversion = map[string]string{
 	"WIN_EXTENSION":    "Windows Extension",
 }
 
-func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, error) {
+func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, *[]terraformmodel.InfraMTHostGroupInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -72,18 +72,18 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 
 	err := common.ValidateSerialAndStorageId(serial, storageId)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if storageId == "" {
 		storageId, err = common.GetStorageIdFromSerial(address, serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		d.Set("storage_id", storageId)
 	}
@@ -91,16 +91,16 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 	if serial == "" {
 		serial, err = common.GetSerialFromStorageId(address, storageId)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		storage_serial_number, err = strconv.Atoi(serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	} else {
 		storage_serial_number, err = strconv.Atoi(serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 	d.Set("serial", storage_serial_number)
@@ -115,83 +115,96 @@ func GetInfraHostGroups(d *schema.ResourceData) (*[]terraformmodel.InfraHostGrou
 
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
-
-	reconObj, err := reconimpl.NewEx(setting)
+	reconObj, err := reconimpl.NewEx(*storageSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_BEGIN), setting.Address)
-	reconResponse, err := reconObj.GetHostGroups(storageId, port)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_BEGIN), storageSetting.Address)
+	if storageSetting.PartnerId == nil {
+		reconResponse, err := reconObj.GetHostGroups(storageId, port)
+		if err != nil {
+			log.WriteDebug("TFError| error getting GetInfraHostGroups, err: %v", err)
+			log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_HOST_GROUPS_FAILED), storageSetting.Address)
+			return nil, nil, err
+		}
+
+		var result model.HostGroup
+		if hostgroup_name != "" {
+			found := false
+			for _, hg := range reconResponse.Data {
+				if hg.HostGroupName == hostgroup_name {
+					result.Path = reconResponse.Path
+					result.Message = reconResponse.Message
+					result.Data = hg
+					found = true
+					break
+				}
+			}
+			if !found {
+				err = fmt.Errorf("hostgroup name  %s not found", hostgroup_name)
+				log.WriteDebug("Hostgroup name  %s not found", hostgroup_name)
+				return nil, nil, err
+			}
+		}
+		if hostgroup_id != -1 {
+			found := false
+			for _, hg := range reconResponse.Data {
+				if hg.HostGroupId == hostgroup_id {
+					result.Path = reconResponse.Path
+					result.Message = reconResponse.Message
+					result.Data = hg
+					found = true
+					break
+				}
+			}
+			if !found {
+				err = fmt.Errorf("hostgroup number  %d not found", hostgroup_id)
+				log.WriteDebug("Hostgroup number  %d not found", hostgroup_id)
+				return nil, nil, err
+			}
+		}
+		// Converting reconciler to terraform
+		terraformResponse := terraformmodel.InfraHostGroups{}
+
+		if hostgroup_name != "" || hostgroup_id != -1 {
+			err = copier.Copy(&terraformResponse, &result)
+		} else {
+			err = copier.Copy(&terraformResponse, reconResponse)
+		}
+
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil, nil, err
+		}
+		log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), storageSetting.Address)
+
+		return &terraformResponse.Data, nil, nil
+	}
+
+	mtResponse, err := reconObj.GetMTStorageDevices()
 	if err != nil {
-		log.WriteDebug("TFError| error getting GetInfraHostGroups, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_HOST_GROUPS_FAILED), setting.Address)
-		return nil, err
+		log.WriteDebug("TFError| error getting GetMTStorageDevices, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_STORAGE_DEVICES_FAILED), storageSetting.Address)
+		return nil, nil, err
 	}
 
-	var result model.HostGroup
-	if hostgroup_name != "" {
-		found := false
-		for _, hg := range reconResponse.Data {
-			if hg.HostGroupName == hostgroup_name {
-				result.Path = reconResponse.Path
-				result.Message = reconResponse.Message
-				result.Data = hg
-				found = true
-				break
-			}
-		}
-		if !found {
-			err = fmt.Errorf("hostgroup name  %s not found", hostgroup_name)
-			log.WriteDebug("Hostgroup name  %s not found", hostgroup_name)
-			return nil, err
-		}
-	}
-	if hostgroup_id != -1 {
-		found := false
-		for _, hg := range reconResponse.Data {
-			if hg.HostGroupId == hostgroup_id {
-				result.Path = reconResponse.Path
-				result.Message = reconResponse.Message
-				result.Data = hg
-				found = true
-				break
-			}
-		}
-		if !found {
-			err = fmt.Errorf("hostgroup number  %d not found", hostgroup_id)
-			log.WriteDebug("Hostgroup number  %d not found", hostgroup_id)
-			return nil, err
-		}
-	}
-	// Converting reconciler to terraform
-	terraformResponse := terraformmodel.InfraHostGroups{}
-
-	if hostgroup_name != "" || hostgroup_id != -1 {
-		err = copier.Copy(&terraformResponse, &result)
-	} else {
-		err = copier.Copy(&terraformResponse, reconResponse)
-	}
-
+	terraformMtResponse := terraformmodel.InfraMTHostGroups{}
+	err = copier.Copy(&terraformMtResponse.Data, mtResponse)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_STORAGE_DEVICES_END), storageSetting.Address)
 
-	return &terraformResponse.Data, nil
+	return nil, &terraformMtResponse.Data, nil
 }
 
-func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, error) {
+func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, *[]terraformmodel.InfraMTHostGroupInfo, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -201,29 +214,18 @@ func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.Infr
 
 	err := common.ValidateSerialAndStorageId(serial, storageId)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	/*
-		if serial == "" && storageId == "" {
-			err := errors.New("both serial and storage_id can't be empty. Please specify one")
-			return nil, err
-		}
-
-		if serial != "" && storageId != "" {
-			err := errors.New("both serial and storage_id are not allowed. Either serial or storage_id can be specified")
-			return nil, err
-		}
-	*/
 	address, err := cache.GetCurrentAddress()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if storageId == "" {
 		storageId, err = common.GetStorageIdFromSerial(address, serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		d.Set("storage_id", storageId)
 	}
@@ -231,34 +233,29 @@ func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.Infr
 	if serial == "" {
 		serial, err = common.GetSerialFromStorageId(address, storageId)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		storage_serial_number, err = strconv.Atoi(serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	} else {
 		storage_serial_number, err = strconv.Atoi(serial)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
 	storageSetting, err := cache.GetInfraSettingsFromCache(address)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	reconObj, err := reconimpl.NewEx(*storageSetting)
 
-	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	portIdsMap := map[string]string{}
@@ -275,38 +272,57 @@ func GetInfraHostGroupsByPortIds(d *schema.ResourceData) (*[]terraformmodel.Infr
 
 	log.WriteDebug("TFDebug| port group filter will be apply %v size %v", portIdsMap, len(portIdsMap))
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_BEGIN), setting.Address)
-	reconResponse, err := reconObj.GetHostGroups(storageId, "")
-	if err != nil {
-		log.WriteDebug("TFError| error getting GetInfraHostGroupsByPortIds, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_PARITY_GROUPS_FAILED), setting.Address)
-		return nil, err
-	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_BEGIN), storageSetting.Address)
 
-	var result model.HostGroups
-	if len(portIdsMap) > 0 {
-		result.Path = reconResponse.Path
-		result.Message = reconResponse.Message
-		for _, p := range reconResponse.Data {
-			_, ok := portIdsMap[p.Port]
-			if ok {
-				result.Data = append(result.Data, p)
+	if storageSetting.PartnerId == nil {
+		reconResponse, err := reconObj.GetHostGroups(storageId, "")
+		if err != nil {
+			log.WriteDebug("TFError| error getting GetInfraHostGroupsByPortIds, err: %v", err)
+			log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_PARITY_GROUPS_FAILED), storageSetting.Address)
+			return nil, nil, err
+		}
+
+		var result model.HostGroups
+		if len(portIdsMap) > 0 {
+			result.Path = reconResponse.Path
+			result.Message = reconResponse.Message
+			for _, p := range reconResponse.Data {
+				_, ok := portIdsMap[p.Port]
+				if ok {
+					result.Data = append(result.Data, p)
+				}
 			}
 		}
+		terraformResponse := terraformmodel.InfraHostGroups{}
+		if len(portIdsMap) > 0 {
+			err = copier.Copy(&terraformResponse, &result)
+		} else {
+			err = copier.Copy(&terraformResponse, reconResponse)
+		}
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return nil, nil, err
+		}
+		log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), storageSetting.Address)
+
+		return &terraformResponse.Data, nil, nil
 	}
-	terraformResponse := terraformmodel.InfraHostGroups{}
-	if len(portIdsMap) > 0 {
-		err = copier.Copy(&terraformResponse, &result)
-	} else {
-		err = copier.Copy(&terraformResponse, reconResponse)
+	mtResponse, err := reconObj.GetHostGroupsByPartnerIdOrSubscriberID(storageId)
+	if err != nil {
+		log.WriteDebug("TFError| error getting GetMTStorageDevices, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_INFRA_GET_HOST_GROUPS_FAILED), storageSetting.Address)
+		return nil, nil, err
 	}
+
+	terraformMtResponse := terraformmodel.InfraMTHostGroups{}
+	err = copier.Copy(&terraformMtResponse.Data, mtResponse)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), setting.Address)
+	log.WriteInfo(mc.GetMessage(mc.INFO_INFRA_GET_HOST_GROUPS_END), storageSetting.Address)
 
-	return &terraformResponse.Data, nil
+	return nil, &terraformMtResponse.Data, nil
 }
 
 func CreateInfraHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGroupInfo, error) {
@@ -356,13 +372,7 @@ func CreateInfraHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGr
 		return nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
-
-	reconObj, err := reconimpl.NewEx(setting)
+	reconObj, err := reconimpl.NewEx(*storageSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
 		return nil, err
@@ -489,6 +499,28 @@ func CreateInfraHostGroupRequestFromSchema(d *schema.ResourceData) (*terraformmo
 	return &createInput, nil
 }
 
+func ConvertInfraMTHostGroupToSchema(pg *terraformmodel.InfraMTHostGroupInfo) *map[string]interface{} {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	sp := map[string]interface{}{
+		"storage_serial_number": storage_serial_number,
+		"resource_id":           pg.ResourceId,
+		"type":                  pg.Type,
+		"storage_id":            pg.StorageId,
+		"device_id":             pg.DeviceId,
+		"entitlement_status":    pg.EntitlementStatus,
+		"partner_id":            pg.PartnerId,
+		"subscriber_id":         pg.SubscriberId,
+		"hostgroup_name":        pg.HostGroupInfo.HostGroupName,
+		"host_group_number":     pg.HostGroupInfo.HostGroupId,
+		"resource_group_id":     pg.HostGroupInfo.ResourceGroupId,
+		"port_id":               pg.HostGroupInfo.Port,
+		"host_mode":             InfraHostModeRestToUserConversion[pg.HostGroupInfo.HostMode],
+	}
+	return &sp
+}
 func ConvertInfraHostGroupToSchema(pg *terraformmodel.InfraHostGroupInfo) *map[string]interface{} {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
