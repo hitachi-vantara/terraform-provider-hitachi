@@ -168,6 +168,8 @@ type MTPortInfo struct {
 	Type              string `json:"type"`
 	StorageId         string `json:"storageId"`
 	EntitlementStatus string `json:"entitlementStatus"`
+	PartnerId         string `json:"partnerId"`
+	SubscriberId      string `json:"subscriberId"`
 	PortInfo          MTPort `json:"portInfo"`
 }
 
