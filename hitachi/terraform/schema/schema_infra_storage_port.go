@@ -133,18 +133,16 @@ var PartnerInfraStoragePortInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "Whether Security is enabled on the port",
 	},
-	/*
-		"partner_id": &schema.Schema{
-			Type:        schema.TypeString,
-			Computed:    true,
-			Description: "partner Id id  of the storage device",
-		},
-		"subscriber_id": &schema.Schema{
-			Type:        schema.TypeString,
-			Computed:    true,
-			Description: "subscriber Id id  of the storage device",
-		},
-	*/
+	"partner_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "partner Id id  of the storage device",
+	},
+	"subscriber_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "subscriber Id id  of the storage device",
+	},
 }
 
 var DataInfraStoragePortsSchema = map[string]*schema.Schema{

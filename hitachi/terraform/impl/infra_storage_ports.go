@@ -128,6 +128,8 @@ func ConvertInfraMTStoragePortToSchema(storagePort *terraformmodel.InfraMTStorag
 		"fabric_on":           storagePort.PortInfo.FabricOn,
 		"mode":                storagePort.PortInfo.Mode,
 		"is_security_enabled": storagePort.PortInfo.IsSecurityEnabled,
+		"partner_id":          storagePort.PartnerId,
+		"subscriber_id":       storagePort.SubscriberId,
 	}
 
 	return &sp
