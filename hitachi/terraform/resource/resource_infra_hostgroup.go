@@ -124,7 +124,7 @@ func resourceInfraHostGroupDelete(ctx context.Context, d *schema.ResourceData, m
 
 	log.WriteInfo("starting Infra Hostgroup delete")
 
-	err := impl.DeleteHostGroup(d)
+	err := impl.DeleteInfraHostGroup(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}

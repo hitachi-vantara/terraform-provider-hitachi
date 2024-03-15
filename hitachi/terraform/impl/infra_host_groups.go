@@ -616,11 +616,7 @@ func UpdateInfraHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGr
 		return nil, err
 	}
 
-	setting := model.InfraGwSettings{
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		Address:  storageSetting.Address,
-	}
+	setting := model.InfraGwSettings(*storageSetting)
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
@@ -658,4 +654,46 @@ func UpdateInfraHostGroup(d *schema.ResourceData) (*[]terraformmodel.InfraHostGr
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_END), terraformModelHostGroup.Data[0].Port, terraformModelHostGroup.Data[0].HostGroupName)
 	return &terraformModelHostGroup.Data, nil
+}
+
+func DeleteInfraHostGroup(d *schema.ResourceData) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	address, err := cache.GetCurrentAddress()
+	if err != nil {
+		return err
+	}
+
+	storageSetting, err := cache.GetInfraSettingsFromCache(address)
+	if err != nil {
+		return err
+	}
+
+	setting := model.InfraGwSettings(*storageSetting)
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
+		return err
+	}
+	storageId := d.Get("storage_id").(string)
+	hgId := d.State().ID
+
+	if storageSetting.PartnerId != nil {
+		// Untag the Hostgroup from Subscriber first
+		err = reconObj.DeleteMTHostGroup(storageId, hgId)
+		if err != nil {
+			log.WriteDebug("TFError| error in DeleteStorageDevice, err: %v", err)
+			return err
+		}
+	}
+
+	err = reconObj.DeleteHostGroup(storageId, hgId)
+	if err != nil {
+		log.WriteDebug("TFError| error in DeleteStorageDevice, err: %v", err)
+		return err
+	}
+	return nil
 }
