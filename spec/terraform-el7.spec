@@ -1,6 +1,6 @@
 name:          HV_Storage_Terraform
 Version:       02.5.0
-Release:       284
+Release:       %{_BUILD_NUMBER}
 #Release:      1%{?dist}
 Summary:       Hitachi Vantara storage plugin provider for terraform
 Vendor:        Hitachi Vantara
