@@ -56,7 +56,7 @@ RPMARGS="--target=x86_64  -bb"
 
 echo; echo "Starting rpm build for ${BUILD_MODE} version..."
 cd ${RPMBUILD_DIR}
-rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" -v SPECS/terraform-el7.spec
+rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER $1" -v SPECS/terraform-el7.spec
 rm ~/.rpmmacros || true
 
 cd ${TERRAFORM_DIR}
