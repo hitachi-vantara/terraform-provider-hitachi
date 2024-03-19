@@ -1,4 +1,5 @@
-# Terraform Provider Hitachi
+# Terraform Provider Hitachi 
+current release version: 2.5
 
 ## Build RPM package
 You must be a superuser to build the package.
