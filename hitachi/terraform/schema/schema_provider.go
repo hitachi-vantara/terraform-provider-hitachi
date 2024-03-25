@@ -5,7 +5,7 @@ import (
 )
 
 var ProviderSchema = map[string]*schema.Schema{
-	
+
 	"hitachi_vss_block_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
@@ -15,17 +15,17 @@ var ProviderSchema = map[string]*schema.Schema{
 				"vss_block_address": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+					Description: "Host name or the IP address (IPv4) of Virtual Storage Software block.",
 				},
 				"username": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Username of the REST API server on Virtual Storage Software block",
+					Description: "Username of the Virtual Storage Software block",
 				},
 				"password": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Password of the REST API server on Virtual Storage Software block",
+					Description: "Password of the Virtual Storage Software block",
 				},
 			},
 		},
@@ -40,7 +40,7 @@ var ProviderSchema = map[string]*schema.Schema{
 				"serial": &schema.Schema{
 					Type:        schema.TypeInt,
 					Required:    true,
-					Description: "The serial number of the VSP storage server.",
+					Description: "Serial number storage",
 				},
 				"management_ip": &schema.Schema{ // svp_ip for VSP-5000 or controller0 for other models
 					Type:        schema.TypeString,

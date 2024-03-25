@@ -22,6 +22,7 @@ var VssbComputePortInfoSchema = map[string]*schema.Schema{
 	"target_chap_users": &schema.Schema{
 		Type:     schema.TypeList,
 		Optional: true,
+
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -43,6 +44,7 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 	"authentication_settings": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
+		ForceNew: true,
 		Description: ` x ∈ { "CHAP" , "CHAPComplyingWithInitiatorSetting" , "None" }
 		Authentication scheme of the compute port.
 		o CHAP: CHAP authentication.
@@ -51,7 +53,8 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 	},
 	"target_chap_users": &schema.Schema{
 		Type:     schema.TypeList,
-		Optional: true,
+		Required: true,
+		ForceNew: true,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -80,31 +83,13 @@ var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "Name of the port",
 	},
-	/*
-		"authentication_settings": &schema.Schema{
-			Type:     schema.TypeString,
-			Required: true,
-			Description: ` x ∈ { "CHAP" , "CHAPComplyingWithInitiatorSetting" , "None" }
-			Authentication scheme of the compute port.
-			o CHAP: CHAP authentication.
-			o CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
-			o None: No authentication is performed.`,
-		},
-		"target_chap_users": &schema.Schema{
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem: &schema.Schema{
-				Type: schema.TypeString,
-			},
-			Description: "List of compute nodes to be attached to the volume. To remove all the nodes from the volume declare compute_nodes = []",
-		},
-	*/
+
 	// output
 	"compute_port": &schema.Schema{
-		Type:        schema.TypeList,
-		Computed:    true,
+		Type:     schema.TypeList,
+		Computed: true,
 		Optional:    true,
-		Description: "Outputs information about the volume",
+		Description: "Outputs information about the computr port",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiPortAuthInfoSchema,
 		},

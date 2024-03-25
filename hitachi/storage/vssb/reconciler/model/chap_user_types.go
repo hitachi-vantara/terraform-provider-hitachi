@@ -12,8 +12,8 @@ type ChapUsers struct {
 
 type ChapUserReq struct {
 	ID                    string `json:"id,omitempty"`
-	TargetChapUserName    string `json:"targetChapUserName"`
-	TargetChapSecret      string `json:"targetChapSecret"`
+	TargetChapUserName    string `json:"targetChapUserName,omitempty"`
+	TargetChapSecret      string `json:"targetChapSecret,omitempty"`
 	InitiatorChapUserName string `json:"initiatorChapUserName,omitempty"`
 	InitiatorChapSecret   string `json:"initiatorChapSecret,omitempty"`
 }

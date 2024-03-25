@@ -41,6 +41,7 @@ var DataVssbIscsiChapUsersSchema = map[string]*schema.Schema{
 	"chap_users": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
+		Optional:    true,
 		Description: "This is output schema",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
@@ -65,6 +66,7 @@ var DataVssbIscsiChapUserSchema = map[string]*schema.Schema{
 	"chap_user": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
+		Optional:    true,
 		Description: "This is output schema",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
@@ -113,7 +115,8 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"chap_users": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is output schema",
+		Optional:    true,
+		Description: "This is chap users output",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
 		},

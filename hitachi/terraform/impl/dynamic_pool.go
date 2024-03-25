@@ -7,7 +7,9 @@ import (
 	// "fmt"
 	// "io/ioutil"
 
+	"fmt"
 	"strconv"
+	"strings"
 
 	// "time"
 
@@ -68,6 +70,72 @@ func GetDynamicPools(d *schema.ResourceData) (*[]terraformmodel.DynamicPool, err
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DYNAMIC_POOLS_END), setting.Serial)
 
 	return &terraformModelDynamicPools, nil
+}
+
+func GetDynamicPoolByName(d *schema.ResourceData) (*terraformmodel.DynamicPool, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	serial := d.Get("serial").(int)
+	poolName := d.Get("pool_name").(string)
+
+	storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
+	if err != nil {
+		return nil, err
+	}
+
+	setting := reconcilermodel.StorageDeviceSettings{
+		Serial:   storageSetting.Serial,
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+		MgmtIP:   storageSetting.MgmtIP,
+	}
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx, err: %v", err)
+		return nil, err
+	}
+
+	pools, err := reconObj.GetDynamicPools()
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_DYNAMIC_POOLS_FAILED), setting.Serial)
+		return nil, err
+	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DYNAMIC_POOLS_END), setting.Serial)
+
+	poolId := -1
+
+	for _, pool := range *pools {
+		if strings.EqualFold(pool.PoolName, poolName) {
+			poolId = pool.PoolID
+			break
+
+		}
+	}
+
+	if poolId == -1 {
+		return nil, fmt.Errorf("could not find pool with pool name %v", poolName)
+
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DYNAMIC_POOL_ID_BEGIN), poolId, setting.Serial)
+	dynamicPool, err := reconObj.GetDynamicPoolById(poolId)
+	if err != nil {
+
+		return nil, err
+	}
+
+	terraformModelDynamicPool := terraformmodel.DynamicPool{}
+	err = copier.Copy(&terraformModelDynamicPool, dynamicPool)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DYNAMIC_POOL_ID_END), poolId, setting.Serial)
+
+	return &terraformModelDynamicPool, nil
 }
 
 func GetDynamicPoolById(d *schema.ResourceData) (*terraformmodel.DynamicPool, error) {

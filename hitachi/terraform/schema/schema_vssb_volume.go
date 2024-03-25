@@ -18,6 +18,7 @@ var DataVolumeSchema = map[string]*schema.Schema{
 	"volumes": &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
+		Optional: true,
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,
 		},
@@ -84,6 +85,7 @@ var VolumeNodeSchema = map[string]*schema.Schema{
 	"volume": &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
+		Optional: true,
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,
 		},

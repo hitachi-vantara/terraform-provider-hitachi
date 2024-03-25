@@ -8,12 +8,12 @@ var StoragePortSchema = map[string]*schema.Schema{
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Port id of the storage device",
+		Description: "Port ID",
 	},
 	"port_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "port type of the storage device",
+		Description: "Port type",
 	},
 	"port_attributes": &schema.Schema{
 		Type:        schema.TypeList,
@@ -31,7 +31,7 @@ var StoragePortSchema = map[string]*schema.Schema{
 	"loop_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Loop id of the storage device",
+		Description: "Loop ID of the storage device",
 	},
 	"fabric_mode": &schema.Schema{
 		Type:        schema.TypeBool,
@@ -51,7 +51,7 @@ var StoragePortSchema = map[string]*schema.Schema{
 	"wwn": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Wwn of the port",
+		Description: "WWN of the port",
 	},
 }
 
@@ -59,12 +59,12 @@ var StoragePortsSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage device is required",
+		Description: "Serial number of storage",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Port id of the storage device",
+		Description: "Port ID of the storage device",
 	},
 	"total_port_count": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -76,7 +76,7 @@ var StoragePortsSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is output schema",
+		Description: "This is ports output",
 		Elem: &schema.Resource{
 			Schema: StoragePortSchema,
 		},

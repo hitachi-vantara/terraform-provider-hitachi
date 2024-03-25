@@ -3,7 +3,6 @@ package terraform
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	// "fmt"
 
@@ -54,18 +53,10 @@ func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, 
 	}
 
 	// Local Check
-	name, ok := d.GetOk("compute_node_name")
+	name, ok := d.GetOk("target_chap_user_name")
 	if !ok {
-
-		log.WriteDebug("TFDebug | name: %s", name.(string))
+		log.WriteDebug("TFDebug | target_chap_user_name: %s", name.(string))
 		return fmt.Errorf("name is required")
-	}
-	osType, ok := d.GetOk("os_type")
-	if ok {
-		log.WriteDebug("TFDebug | osType: %s", osType.(string))
-		if !strings.EqualFold(osType.(string), "Linux") && !strings.EqualFold(osType.(string), "VMware") && !strings.EqualFold(osType.(string), "Windows") {
-			return fmt.Errorf("os_type is invalid, valid options are Linux, VMware and Windows")
-		}
 	}
 
 	// REST API Check

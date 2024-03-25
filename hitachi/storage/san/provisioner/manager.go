@@ -53,4 +53,6 @@ type SanStorageManager interface {
 	GetDynamicPoolById(poolId int) (*sanmodel.DynamicPool, error)
 	// PARITY GROUP
 	GetParityGroups(parityGroupIds ...[]string) (*[]sanmodel.ParityGroup, error)
+
+	GetPools() (*[]sanmodel.Pool, error)
 }

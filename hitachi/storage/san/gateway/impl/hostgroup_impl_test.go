@@ -10,7 +10,7 @@ import (
 func newHostgroupTestManager() (*sanStorageManager, error) {
 
 	objStorage := sanmodel.StorageDeviceSettings{
-		Serial:   40014,
+		Serial:   12345,
 		Username: "bXNfdm13YXJl",
 		Password: "SGl0YWNoaTE=",
 		MgmtIP:   "172.25.47.115",

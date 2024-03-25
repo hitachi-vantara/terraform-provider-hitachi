@@ -311,10 +311,14 @@ func CreateIscsiTargetChapUserRequestFromSchema(d *schema.ResourceData) (*terraf
 	cupass, ok := d.GetOk("chap_user_password")
 	if ok {
 		pass := cupass.(string)
+		if len(pass) < 12 || len(pass) > 32 {
+			err := fmt.Errorf("chap_user_password must be 12 to 32 characters")
+			return nil, err
+		}
 		createInput.ChapUserSecret = pass
 	}
 
-	log.WriteDebug("createInput: %+v", createInput)
+	//log.WriteDebug("createInput: %+v", createInput)
 	return &createInput, nil
 }
 
