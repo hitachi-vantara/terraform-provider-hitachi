@@ -381,37 +381,15 @@ func GetPortInfoByID(setting reconcilermodel.StorageDeviceSettings, portId strin
 	}
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PORT_BEGIN), portId)
 
-	reconPort, reconPortAuthSetting, err := reconObj.GetPort(portId)
+	terraformPort := terraformmodel.PortDetailSettings{}
+	portDetails, err := reconObj.GetPortInfoByID(portId)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetPort, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_PORT_FAILED), portId)
 		return nil, err
 	}
 
-	reconChapUsers, err := reconObj.GetChapUsersAllowedToAccessPort(portId)
-	if err != nil {
-		log.WriteDebug("TFError| error getting GetChapUsersAllowedToAccessPort, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_GET_PORT_FAILED), portId)
-		return nil, err
-	}
-
-	log.WriteDebug("TFError| recon chap users : %v", reconChapUsers)
-
-	// Converting reconciler to terraform
-	terraformPort := terraformmodel.PortDetailSettings{}
-	err = copier.Copy(&terraformPort.Port, reconPort)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
-	}
-
-	err = copier.Copy(&terraformPort.AuthSettings, reconPortAuthSetting)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
-	}
-
-	err = copier.Copy(&terraformPort.ChapUsers, reconChapUsers)
+	err = copier.Copy(&terraformPort, portDetails)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err

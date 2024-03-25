@@ -8,6 +8,7 @@ import (
 	// "time"
 
 	"errors"
+	"fmt"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	reconimpl "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/impl"
@@ -260,6 +261,8 @@ func CreateVssbChapUser(d *schema.ResourceData) (*terraformmodel.ChapUser, error
 		return nil, err
 	}
 
+	log.WriteDebug("TFError| error in Creating Chap User - ReconcileChapUser : %v", reconcilerCreateChapUser)
+
 	chapUser, err := reconObj.ReconcileChapUser(&reconcilerCreateChapUser)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_CHAP_USER_FAILED), createInput.TargetChapUserName)
@@ -293,6 +296,10 @@ func CreateVssbChapUserFromSchema(d *schema.ResourceData) (*terraformmodel.ChapU
 	tsecret, ok := d.GetOk("target_chap_user_secret")
 	if ok {
 		ts := tsecret.(string)
+		if len(ts) < 12 || len(ts) > 32 {
+			err := fmt.Errorf("target_chap_user_secret must be 12 to 32 characters")
+			return nil, err
+		}
 		createInput.TargetChapSecret = ts
 	}
 
@@ -305,6 +312,10 @@ func CreateVssbChapUserFromSchema(d *schema.ResourceData) (*terraformmodel.ChapU
 	isecret, ok := d.GetOk("initiator_chap_user_secret")
 	if ok {
 		is := isecret.(string)
+		if len(is) < 12 || len(is) > 32 {
+			err := fmt.Errorf("initiator_chap_user_secret must be 12 to 32 characters")
+			return nil, err
+		}
 		createInput.InitiatorChapSecret = is
 	}
 

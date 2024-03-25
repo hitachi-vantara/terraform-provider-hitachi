@@ -119,11 +119,6 @@ func resourceMyResourceCustomDiff(ctx context.Context, d *schema.ResourceDiff, m
 		return err
 	}
 
-	if err != nil {
-		log.WriteDebug("TFError| error in Provisoner NewEx, err: %v", err)
-		return err
-	}
-
 	name, ok := d.GetOk("name")
 	if !ok {
 

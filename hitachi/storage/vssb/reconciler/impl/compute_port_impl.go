@@ -182,7 +182,7 @@ func (psm *vssbStorageManager) UpdatePortAuthSettings(portId string, existingPor
 	if strings.Compare(authMode, "None") == 0 {
 		pas.IsDiscoveryChapAuth = false
 		pas.IsMutualChapAuth = false
-	} else if strings.Compare(authMode, "CAHP") == 0 {
+	} else if strings.Compare(authMode, "CHAP") == 0 {
 		pas.IsDiscoveryChapAuth = existingPortAuthSettings.IsDiscoveryChapAuth
 		pas.IsMutualChapAuth = true
 	} else {

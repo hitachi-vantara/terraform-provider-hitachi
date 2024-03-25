@@ -5,6 +5,7 @@ import (
 	// "time"
 
 	"context"
+	"fmt"
 	"strconv"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
@@ -34,12 +35,25 @@ func DataSourceStorageDynamicPoolsRead(ctx context.Context, d *schema.ResourceDa
 	serial := d.Get("serial").(int)
 
 	pid := 0
-	poolId, ok := d.GetOk("pool_id")
-	if ok {
+	poolId, okId := d.GetOk("pool_id")
+	if okId {
 		pid = poolId.(int)
 	}
 
-	if !ok { // fetch all dynamic pool info
+	pName := ""
+	poolName, okName := d.GetOk("pool_name")
+	if okName {
+		pName = poolName.(string)
+	}
+
+	if okId == okName {
+		err := fmt.Errorf("either pool_id or pool_name is required for dynamic pool datasource")
+		return diag.FromErr(err)
+
+	}
+
+	if !okId && !okName {
+		// fetch all dynamic pool info
 		var dynamicPools []terraformmodel.DynamicPool
 
 		dynamicPoolsSource, err := impl.GetDynamicPools(d)
@@ -66,35 +80,40 @@ func DataSourceStorageDynamicPoolsRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
 		log.WriteInfo("all dynamic pool read successfully")
-	} else { // fetch dynamic pool info by pool id
+	} else {
+		var dynamicPool *terraformmodel.DynamicPool
+		var err error
 		if pid >= 0 {
-			var dynamicPool terraformmodel.DynamicPool
+			// fetch dynamic pool info by pool id
 
-			dynamicPoolSource, err := impl.GetDynamicPoolById(d)
+			dynamicPool, err = impl.GetDynamicPoolById(d)
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			err = copier.Copy(&dynamicPool, dynamicPoolSource)
-			if err != nil {
-				log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-				return diag.FromErr(err)
-			}
-
-			dpList := []map[string]interface{}{}
-
-			dp := impl.ConvertDynamicPoolToSchema(&dynamicPool, serial)
-			log.WriteDebug("dp: %+v\n", *dp)
-			dpList = append(dpList, *dp)
-
-			if err := d.Set("dynamic_pools", dpList); err != nil {
-				return diag.FromErr(err)
-			}
-
-			d.SetId(strconv.FormatInt(int64(dynamicPool.PoolID), 10))
-
-			log.WriteInfo("dynamic pool read successfully")
-
 		}
+		if pName != "" {
+			// fetch dynamic pool info by pool name
+
+			dynamicPool, err = impl.GetDynamicPoolByName(d)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+
+		dpList := []map[string]interface{}{}
+
+		dp := impl.ConvertDynamicPoolToSchema(dynamicPool, serial)
+		log.WriteDebug("dp: %+v\n", *dp)
+		dpList = append(dpList, *dp)
+
+		if err := d.Set("dynamic_pools", dpList); err != nil {
+			return diag.FromErr(err)
+		}
+
+		d.SetId(strconv.FormatInt(int64(dynamicPool.PoolID), 10))
+
+		log.WriteInfo("dynamic pool read successfully")
+
 	}
 
 	return nil

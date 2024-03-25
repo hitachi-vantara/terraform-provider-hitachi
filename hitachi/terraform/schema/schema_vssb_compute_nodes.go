@@ -14,6 +14,7 @@ var ComputeNodesSchema = map[string]*schema.Schema{
 	"compute_node": &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
+		Optional: true,
 		Elem: &schema.Resource{
 			Schema: NodeInfoSchema,
 		},

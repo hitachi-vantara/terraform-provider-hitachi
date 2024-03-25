@@ -42,7 +42,8 @@ func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
 		return "", err
 	}
 
-	log.WriteDebug("resJSONString: %s", resJSONString)
+	// DO NOT PRINT THE SESSION TOKEN in the Log File
+	//log.WriteDebug("resJSONString: %s", resJSONString)
 
 	type ResponseSession struct {
 		Token     string `json:"token"`

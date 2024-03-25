@@ -13,7 +13,7 @@ var DataComputeNodeSchema = map[string]*schema.Schema{
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "The name of the compute node to be fetched",
+		Description: "The name  to be fetched",
 	},
 	// output
 	"compute_nodes": &schema.Schema{
@@ -32,27 +32,27 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 	"id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The id of the compute node",
+		Description: "ID",
 	},
 	"nickname": &schema.Schema{ //this is the actual nickname
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The name of the compute node",
+		Description: "Nickname",
 	},
 	"os_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The OS type of the compute node",
+		Description: "OS type",
 	},
 	"total_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "The total capacity of the compute node in megabytes",
+		Description: "Total capacity in MB",
 	},
 	"used_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "The used capacity of the compute node in megabytes",
+		Description: "Used capacity in MB",
 	},
 	"number_of_volumes": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -62,14 +62,14 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 	"number_of_paths": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Number of ISCSI connection initiated to the compute node",
+		Description: "Number of iSCSI connection initiated to the compute node",
 	},
 
 	"paths": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "Path/ISCSI connections details for the compute node",
+		Description: "Path/iSCSI connections details",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"protocol": &schema.Schema{
@@ -88,7 +88,7 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 					Elem: &schema.Schema{
 						Type: schema.TypeString,
 					},
-					Description: "Port IDs of the ISCSI connection",
+					Description: "Port IDs of the iSCSI connection",
 				},
 			},
 		},
@@ -97,7 +97,7 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Optional:    true,
 		Type:        schema.TypeList,
-		Description: "Port Details of the ISCSI connection",
+		Description: "Port Details of the iSCSI connection",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"port_id": {
@@ -108,7 +108,7 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 				"iscsi_initiator": {
 					Computed:    true,
 					Type:        schema.TypeString,
-					Description: "Iscsi initiator name.",
+					Description: "iSCSI initiator name",
 				},
 				"port_name": {
 					Computed:    true,
@@ -129,7 +129,7 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "Name of the compute node to be created",
+		Description: "Name to be created",
 	},
 	"os_type": &schema.Schema{
 		Type:        schema.TypeString,
@@ -139,13 +139,13 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"iscsi_connection": &schema.Schema{
 		Type:        schema.TypeSet,
 		Optional:    true,
-		Description: "Details of ICSI connection to the compute node",
+		Description: "Details of iSCSI connection to the compute node",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"iscsi_initiator": {
 					Optional:    true,
 					Type:        schema.TypeString,
-					Description: "Name of the ICSI initiator",
+					Description: "Name of the iSCSI initiator",
 				},
 				"port_names": &schema.Schema{
 					Optional:    true,

@@ -188,10 +188,10 @@ func (psm *vssbStorageManager) GetChapUserInfoByName(chapUserTargetName string) 
 	}
 
 	if found {
-		log.WriteInfo(mc.GetMessage(mc.INFO_GET_CHAP_USER_BEGIN), chapUserTargetName, chapUserId)
+		log.WriteInfo(mc.GetMessage(mc.INFO_GET_CHAP_USER_BEGIN), chapUserTargetName)
 		chapUser, err := gatewayObj.GetChapUserInfo(chapUserId)
 		if err != nil {
-			log.WriteError(mc.GetMessage(mc.ERR_GET_CHAP_USER_FAILED), chapUserTargetName, chapUserId)
+			log.WriteError(mc.GetMessage(mc.ERR_GET_CHAP_USER_FAILED), chapUserTargetName)
 			log.WriteDebug("TFError| failed to call GetAllChapUsers err: %+v", err)
 			return nil, err
 		} else {
@@ -201,7 +201,7 @@ func (psm *vssbStorageManager) GetChapUserInfoByName(chapUserTargetName string) 
 				log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
 				return nil, err
 			}
-			log.WriteInfo(mc.GetMessage(mc.INFO_GET_CHAP_USER_END), chapUserTargetName, chapUserId)
+			log.WriteInfo(mc.GetMessage(mc.INFO_GET_CHAP_USER_END), chapUserTargetName)
 			return &provChapUser, nil
 		}
 

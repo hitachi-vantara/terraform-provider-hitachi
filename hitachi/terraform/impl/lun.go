@@ -5,6 +5,8 @@ import (
 	// "errors"
 	// "context"
 	"fmt"
+	"strings"
+
 	// "io/ioutil"
 	"strconv"
 	// "time"
@@ -257,24 +259,94 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 	*/
 
 	// either pool or paritygroup
-	pool_id, okPO := d.GetOk("pool_id")
-	paritygroup_id, okPG := d.GetOk("paritygroup_id")
-	log.WriteDebug("Pool=%v PG=%v\n", pool_id, paritygroup_id)
 
-	if okPO == okPG {
-		return nil, fmt.Errorf("either pool_id or paritygroup_id required for create volume")
+	var pool_name = ""
+	var paritygroup_id = ""
+	pool_id, exists := d.GetOk("pool_id")
+	okPO := exists || (pool_id.(int) == 0)
+
+	pool_name = d.Get("pool_name").(string)
+	paritygroup_id = d.Get("paritygroup_id").(string)
+	log.WriteDebug("Pool ID=%v Pool Name=%v PG=%v\n", pool_id, pool_name, paritygroup_id)
+
+	log.WriteDebug("ok=%v \n", ok)
+
+	count := 0
+	if okPO && pool_id != -1 {
+		count++
 	}
-	if okPO {
-		pid := pool_id.(int)
-		createInput.PoolID = &pid
+	if pool_name != "" {
+		count++
 	}
-	if okPG {
-		pgid := paritygroup_id.(string)
-		createInput.ParityGroupID = &pgid
+	if paritygroup_id != "" {
+		count++
+	}
+	log.WriteDebug("count=%v\n", count)
+	if count != 1 {
+		return nil, fmt.Errorf("either pool_id or pool_name or paritygroup_id is required to create volume")
+	}
+
+	if pool_id.(int) >= 0 {
+		pool_id_int := pool_id.(int)
+		createInput.PoolID = &pool_id_int
+	} else if pool_name != "" {
+		ppid, err := GetPoolIdFromPoolName(d, pool_name)
+		createInput.PoolID = ppid
+		if err != nil {
+			return nil, fmt.Errorf("could not find a pool with name %v", pool_name)
+		}
+	} else if paritygroup_id != "" {
+		createInput.ParityGroupID = &paritygroup_id
 	}
 
 	log.WriteDebug("createInput: %+v", createInput)
 	return &createInput, nil
+}
+
+func GetPoolIdFromPoolName(d *schema.ResourceData, poolName string) (*int, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	serial := d.Get("serial").(int)
+	storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
+	if err != nil {
+		return nil, err
+	}
+
+	setting := reconcilermodel.StorageDeviceSettings{
+		Serial:   storageSetting.Serial,
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+		MgmtIP:   storageSetting.MgmtIP,
+	}
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	//log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_LUN_BEGIN), ldevID, setting.Serial)
+
+	pools, err := reconObj.GetPools()
+	if err != nil {
+		//log.WriteError(mc.GetMessage(mc.ERR_DELETE_LUN_FAILED), ldevID, setting.Serial)
+		return nil, err
+	}
+	//log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_LUN_END), ldevID, setting.Serial)
+
+	poolId := -1
+
+	for _, pool := range *pools {
+		if strings.EqualFold(pool.PoolName, poolName) {
+			poolId = pool.PoolID
+			break
+
+		}
+	}
+
+	return &poolId, nil
 }
 
 func CheckSchemaIfLunGet(d *schema.ResourceData) *int {
@@ -287,6 +359,7 @@ func CheckSchemaIfLunGet(d *schema.ResourceData) *int {
 		"name",
 		//"dedup_mode",
 		"pool_id",
+		"pool_name",
 		"paritygroup_id",
 	}
 

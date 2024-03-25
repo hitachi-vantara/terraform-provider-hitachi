@@ -21,7 +21,7 @@ var DataVssbStoragePortSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is output schema",
+		Description: "This is ports output",
 		Elem: &schema.Resource{
 			Schema: VssbStoragePortInfoSchema,
 		},
@@ -72,12 +72,12 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 	"protection_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Protection domain id of port",
+		Description: "Protection domain ID of port",
 	},
 	"storage_node_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage node id of port",
+		Description: "Storage node ID of port",
 	},
 	"interface_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -114,7 +114,7 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 				"physical_wwn": {
 					Computed:    true,
 					Type:        schema.TypeString,
-					Description: "Wwn of port",
+					Description: "WWN of port",
 				},
 			},
 		},
@@ -129,27 +129,27 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 				"ip_mode": {
 					Computed:    true,
 					Type:        schema.TypeString,
-					Description: "Ip mode of Iscsi port",
+					Description: "IP mode of iSCSI port",
 				},
 				"delayed_ack": {
 					Computed:    true,
 					Type:        schema.TypeBool,
-					Description: "Delayed ack of Iscsi port",
+					Description: "Delayed ack of iSCSI port",
 				},
 				"mtu_size": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Mtu size of Iscsi port",
+					Description: "MTU size of iSCSI port",
 				},
 				"mac_address": {
 					Computed:    true,
 					Type:        schema.TypeString,
-					Description: "Mac address of Iscsi port",
+					Description: "MAC address of iSCSI port",
 				},
 				"is_isns_client_enabled": {
 					Computed:    true,
 					Type:        schema.TypeBool,
-					Description: "Checks if is isns client enabled of Iscsi port",
+					Description: "Checks if is isns client enabled of iSCSI port",
 				},
 				"ipv4_information": &schema.Schema{
 					Computed:    true,

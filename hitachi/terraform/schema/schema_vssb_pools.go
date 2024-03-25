@@ -18,7 +18,7 @@ var StoragePoolSchema = map[string]*schema.Schema{
 	"protection_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Protection domain id of pool",
+		Description: "Protection domain ID of pool",
 	},
 	"status_summary": &schema.Schema{
 		Type:        schema.TypeString,
@@ -281,7 +281,7 @@ var StoragePoolsSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is output schema",
+		Description: "This is storage pools output",
 		Elem: &schema.Resource{
 			Schema: StoragePoolSchema,
 		},

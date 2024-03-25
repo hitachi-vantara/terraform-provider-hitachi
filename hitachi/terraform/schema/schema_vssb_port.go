@@ -20,7 +20,8 @@ var DataVssbPortSchema = map[string]*schema.Schema{
 	"vssb_port": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is output schema",
+		Optional:    true,
+		Description: "This is port output",
 		Elem: &schema.Resource{
 			Schema: VssbPortInfoSchema,
 		},

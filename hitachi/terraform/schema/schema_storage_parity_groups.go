@@ -8,12 +8,12 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of the storage device",
+		Description: "Serial number of storage",
 	},
 	"parity_group_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Parity group id of storage device",
+		Description: "Parity group ID",
 	},
 	"num_of_ldevs": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -43,7 +43,7 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"clpr_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Clpr id of parity group",
+		Description: "Clpr ID of parity group",
 	},
 	"drive_type": &schema.Schema{
 		Type:        schema.TypeString,
@@ -86,12 +86,12 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage device is required",
+		Description: "Serial number of storage",
 	},
 	"parity_group_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "List of parity group ids to fetch",
+		Description: "List of parity group IDs to fetch",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -101,7 +101,7 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is output schema",
+		Description: "This is parity groups output",
 		Elem: &schema.Resource{
 			Schema: ParityGroupsInfoSchema,
 		},

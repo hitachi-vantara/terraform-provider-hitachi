@@ -106,7 +106,7 @@ func (psm *vssbStorageManager) GetChapUserInfoByName(targetChapUserName string) 
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_GET_SERVER_BEGIN), targetChapUserName)
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_CHAP_USER_BEGIN), targetChapUserName)
 	provChapUser, err := provObj.GetChapUserInfoByName(targetChapUserName)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetChapUserInfoByName provisioner call, err: %v", err)
@@ -209,7 +209,7 @@ func (psm *vssbStorageManager) UpdateChapUser(reqBody *vssbmodel.ChapUserReq) er
 		return err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_CHAP_USER_BEGIN), reqBody.TargetChapUserName)
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_CHAP_USER_BEGIN), reqBody.ID, reqBody.TargetChapUserName)
 	chapUser := provisonermodel.ChapUserReq{
 		ID:                    reqBody.ID,
 		TargetChapUserName:    reqBody.TargetChapUserName,
@@ -220,10 +220,10 @@ func (psm *vssbStorageManager) UpdateChapUser(reqBody *vssbmodel.ChapUserReq) er
 	err = provObj.UpdateChapUserById(chapUser.ID, &chapUser)
 	if err != nil {
 		log.WriteDebug("TFError| failed to call UpdateChapUser err: %+v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_CHAP_USER_FAILED), reqBody.TargetChapUserName)
+		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_CHAP_USER_FAILED), reqBody.ID, reqBody.TargetChapUserName)
 		return err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_CHAP_USER_END), reqBody.TargetChapUserName)
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_CHAP_USER_END), reqBody.ID, reqBody.TargetChapUserName)
 	return nil
 
 }
@@ -264,7 +264,7 @@ func (psm *vssbStorageManager) GetExistingChapUserInformation(chapUserName strin
 	return existingResource, nil
 }
 
-// ReconcileComputeNode .
+// ReconcileChapUser .
 func (psm *vssbStorageManager) ReconcileChapUser(inputChapUser *vssbmodel.ChapUserReq) (*vssbmodel.ChapUser, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -286,6 +286,7 @@ func (psm *vssbStorageManager) ReconcileChapUser(inputChapUser *vssbmodel.ChapUs
 		existingResource = nil
 
 	}
+	log.WriteDebug("TFDebug| existingResource: %v", existingResource)
 
 	// CREATE RESOURCE
 	if existingResource == nil {
@@ -306,16 +307,24 @@ func (psm *vssbStorageManager) ReconcileChapUser(inputChapUser *vssbmodel.ChapUs
 		}
 		log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_CHAP_USER_END), inputChapUser.TargetChapUserName)
 	} else {
-		// UPDATE RESOURCE
-		err := psm.UpdateChapUser(inputChapUser)
-		if err != nil {
-			log.WriteDebug("TFError| error in UpdateChapUser provisioner call, err: %v", err)
-			return nil, err
+		// update chap user if input id and existing id are same
+		if inputChapUser.ID == existingResource.ID {
+			if existingResource.TargetChapUserName == inputChapUser.TargetChapUserName {
+				// if chap user id and target chap user name are same, should not pass
+				// target chap user name in the request body of the PATCH call
+				inputChapUser.TargetChapUserName = ""
+			}
+			err := psm.UpdateChapUser(inputChapUser)
+			if err != nil {
+				log.WriteDebug("TFError| error in UpdateChapUser provisioner call, err: %v", err)
+				return nil, err
+			}
+
 		}
 	}
 
 	// Read resource after all operations
-	provisionerResource, err := psm.GetChapUserInfoByName(inputChapUser.TargetChapUserName)
+	provisionerResource, err := psm.GetChapUserInfoById(existingResource.ID)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetChapUserInfoByName provisioner call, err: %v", err)
 		return nil, err

@@ -15,11 +15,13 @@ var VssbDashboardInfoSchema = map[string]*schema.Schema{
 			Schema: map[string]*schema.Schema{
 				"type": {
 					Computed:    true,
+					Optional:    true,
 					Type:        schema.TypeString,
 					Description: "Object type.",
 				},
 				"status": {
 					Computed:    true,
+					Optional:    true,
 					Type:        schema.TypeString,
 					Description: "Health status.",
 				},
@@ -64,32 +66,32 @@ var VssbDashboardInfoSchema = map[string]*schema.Schema{
 	"total_capacity_mb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total pool capacity in MiB",
+		Description: "Total pool capacity in MB",
 	},
 	"used_capacity_mb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Used pool capacity in MiB",
+		Description: "Used pool capacity in MB",
 	},
 	"free_capacity_mb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Free pool capacity in MiB",
+		Description: "Free pool capacity in MB",
 	},
 	"total_capacity_gb": &schema.Schema{
 		Type:        schema.TypeFloat,
 		Computed:    true,
-		Description: "Total pool capacity in MiB",
+		Description: "Total pool capacity in GB",
 	},
 	"used_capacity_gb": &schema.Schema{
 		Type:        schema.TypeFloat,
 		Computed:    true,
-		Description: "Used pool capacity in MiB",
+		Description: "Used pool capacity in GB",
 	},
 	"free_capacity_gb": &schema.Schema{
 		Type:        schema.TypeFloat,
 		Computed:    true,
-		Description: "Free pool capacity in MiB",
+		Description: "Free pool capacity in GB",
 	},
 	"total_efficiency": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -113,7 +115,8 @@ var DataVssbDashboardSchema = map[string]*schema.Schema{
 	"dashboard_info": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is output schema",
+		Optional:    true,
+		Description: "This is dashboard output",
 		Elem: &schema.Resource{
 			Schema: VssbDashboardInfoSchema,
 		},

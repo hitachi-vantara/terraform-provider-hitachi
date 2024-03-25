@@ -8,7 +8,7 @@ var IscsiChapUserInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "The serial number of the storage",
+		Description: "Serial number of storage",
 	},
 	"iscsi_target_number": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -23,14 +23,14 @@ var IscsiChapUserInfoSchema = map[string]*schema.Schema{
 	"chap_user_type": &schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
-		Description: `Type of the CHAP user name
-		o target : The CHAP user name of the iSCSI target side
-		o initiator : The CHAP user name of the host bus adapter (iSCSI initiator) side`,
+		Description: `Type of CHAP user name
+		o target : CHAP user name of the iSCSI target side
+		o initiator : CHAP user name of the host bus adapter (iSCSI initiator) side`,
 	},
 	"chap_user_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The CHAP user name.",
+		Description: "CHAP user name.",
 	},
 	"chap_user_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -43,7 +43,7 @@ var DataIscsiChapUserSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "The serial number of the storage",
+		Description: "Serial number of storage",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -58,21 +58,21 @@ var DataIscsiChapUserSchema = map[string]*schema.Schema{
 	"chap_user_type": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
-		Description: `Type of the CHAP user name
-		o target : The CHAP user name of the iSCSI target side
-		o initiator : The CHAP user name of the host bus adapter (iSCSI initiator) side`,
+		Description: `Type of CHAP user name
+		o target : CHAP user name of the iSCSI target side
+		o initiator : CHAP user name of the host bus adapter (iSCSI initiator) side`,
 	},
 	"chap_user_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The CHAP user name.",
+		Description: "CHAP user name.",
 	},
 
 	// output
 	"chap_user": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is output schema",
+		Description: "This is chap user output",
 		Elem: &schema.Resource{
 			Schema: IscsiChapUserInfoSchema,
 		},
@@ -83,7 +83,7 @@ var DataIscsiChapUsersSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "The serial number of the storage",
+		Description: "Serial number of storage",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -99,7 +99,8 @@ var DataIscsiChapUsersSchema = map[string]*schema.Schema{
 	"chap_users": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is output schema",
+		Optional:    true,
+		Description: "This is chap users output",
 		Elem: &schema.Resource{
 			Schema: IscsiChapUserInfoSchema,
 		},
@@ -110,7 +111,7 @@ var ResourceIscsiChapUserSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "The serial number of the storage",
+		Description: "Serial number of storage",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -125,14 +126,14 @@ var ResourceIscsiChapUserSchema = map[string]*schema.Schema{
 	"chap_user_type": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
-		Description: `Type of the CHAP user name
-			o target : The CHAP user name of the iSCSI target side
-			o initiator : The CHAP user name of the host bus adapter (iSCSI initiator) side`,
+		Description: `Type of CHAP user name
+			o target : CHAP user name of the iSCSI target side
+			o initiator : CHAP user name of the host bus adapter (iSCSI initiator) side`,
 	},
 	"chap_user_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The CHAP user name.",
+		Description: "CHAP user name.",
 	},
 	"chap_user_password": &schema.Schema{
 		Type:     schema.TypeString,
@@ -145,7 +146,8 @@ var ResourceIscsiChapUserSchema = map[string]*schema.Schema{
 	"chap_user": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is output schema",
+		Optional:    true,
+		Description: "This is chap user output",
 		Elem: &schema.Resource{
 			Schema: IscsiChapUserInfoSchema,
 		},

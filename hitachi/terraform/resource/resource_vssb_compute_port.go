@@ -11,8 +11,9 @@ import (
 	"sync"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
-
 	utils "terraform-provider-hitachi/hitachi/common/utils"
+
+	//utils "terraform-provider-hitachi/hitachi/common/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	// "github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
@@ -141,9 +142,22 @@ func VssbStorageComputePortCustomDiff(ctx context.Context, d *schema.ResourceDif
 	data := &schema.ResourceData{}
 	res, err := impl.GetVssbComputePortByName(data, d.Get("vss_block_address").(string), d.Get("name").(string))
 	if err == nil {
-		if strings.ToLower(name) == "none" && length == 0 && len(res.ChapUsers.Data) > 0 {
-			return fmt.Errorf("target_chap_users are still present in the VSSB storage when authentication_settings is set to 'None' and target_chap_users is to a empty list")
+		cp := impl.ConvertVssbIscsiPortAuthSettingsToSchema(res)
+		log.WriteDebug("Compute Port: %+v\n", *cp)
+		cuList := []map[string]interface{}{
+			*cp,
 		}
+		if err := data.Set("compute_port", cuList); err != nil {
+			data.SetId("")
+			//return fmt.Errorf("could not set compute_port in the custom diff")
+			return nil
+		}
+		/*
+			if strings.ToLower(name) == "none" && length == 0 && len(res.ChapUsers.Data) > 0 {
+				return fmt.Errorf("target_chap_users are still present in the VSSB storage when authentication_settings is set to 'None' and target_chap_users is to a empty list")
+			}
+		*/
+		log.WriteInfo("compute port updated successfully")
 	}
 
 	return nil
