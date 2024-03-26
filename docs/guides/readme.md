@@ -20,25 +20,21 @@ The RPM package is in /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.0.0-1.e
 You must be a superuser to install the rpm package.
 
 Check what RPM version is installed
-
 ```
 # /usr/bin/rpm -qa HV_Storage_Terraform
 ```
 
 Uninstall the old version
-
 ```
 # /usr/bin/rpm -e HV_Storage_Terraform
 ```
 
 Install the new version
-
 ```
 # /usr/bin/rpm -Uvh HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
 ```
 
 Check if the hitachi terraform plugin is installed. It must be linked to /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
-
 ```
 # ls -l /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi 
 lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi -> /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
@@ -46,26 +42,22 @@ lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hita
 
 ## Use the tf samples
 Navigate to /opt/hitachi-vantara/storage-systems/terraform-provider/samples
-
 ```
 # cd /opt/hitachi-vantara/storage-systems/terraform-provider/samples
 ```
 
 Go to any samples directory. Example:
-
 ```
 # cd data/hitachi_storage_data
 ```
 
 If not the first time using the sample directory, do cleanup
-
 ```
 # rm .terraform .terraform.lock.hcl terraform.tfstate
 # rm -rf san_settings
 ```
 
 Modify provider.tf and storage.tf with your storage information, then do:
-
 ```
 # terraform init
 # terraform apply
