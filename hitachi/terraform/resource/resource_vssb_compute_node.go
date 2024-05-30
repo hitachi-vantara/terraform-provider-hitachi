@@ -52,11 +52,11 @@ func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, 
 		return err
 	}
 
-	// Local Check
-	name, ok := d.GetOk("target_chap_user_name")
-	if !ok {
-		return fmt.Errorf("name is required")
-	}
+	// // Local Check
+	// name, ok := d.GetOk("target_chap_user_name")
+	// if !ok {
+	// 	return fmt.Errorf("name is required")
+	// }
 	
 
 	// REST API Check
