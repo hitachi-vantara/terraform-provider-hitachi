@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.14.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.23.0
-	github.com/jinzhu/copier v0.3.5
+	github.com/jinzhu/copier v0.4.0
 	github.com/romana/rlog v0.0.0-20220412051723-c08f605858a9
 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
