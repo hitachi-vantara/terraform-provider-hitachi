@@ -19,7 +19,7 @@ BUILD_MODE=${1:-Release}
 echo "Build Mode: ${BUILD_MODE}"
 
 TERRAFORM_NAME=HV_Storage_Terraform
-TERRAFORM_VERSION=02.5.0
+TERRAFORM_VERSION=02.0.0
 TERRAFORM_PKG="${TERRAFORM_NAME}-${TERRAFORM_VERSION}"
 TERRAFORM_SOURCE_TAR="${TERRAFORM_PKG}.tar.gz"
 
@@ -44,7 +44,7 @@ cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f  ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
 
-# example: HV_Storage_Terraform-02.5.0.tar.gz
+# example: HV_Storage_Terraform-${TERRAFORM_VERSION}.tar.gz
 cd ${RPMBUILD_DIR}
 
 tar -czf SOURCES/${TERRAFORM_SOURCE_TAR} ${TERRAFORM_PKG}
