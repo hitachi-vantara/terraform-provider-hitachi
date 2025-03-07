@@ -13,8 +13,8 @@ HOSTNAME=localhost
 NAMESPACE=hitachi-vantara
 NAME=hitachi
 BINARY=terraform-provider-${NAME}
-TP_VERSION?=2.0
-TP_PATCH_VERSION?=0
+VERSION?=2.0
+PATCH_VERSION?=0
 BUILD_NUMBER?=1
 OS_ARCH=x86_64
 LINUX_OS_ARCH=linux_amd64
@@ -29,7 +29,7 @@ all: build install
 .PHONY:  build
 build:  mod
 	go build -o ${BINARY}
-	echo "${TP_VERSION}.${TP_PATCH_VERSION}-${BUILD_NUMBER}" > version.txt
+	echo "${VERSION}.${PATCH_VERSION}-${BUILD_NUMBER}" > version.txt
 
 .PHONY: release
 release:
@@ -37,10 +37,10 @@ release:
 
 .PHONY: install
 install: build
-	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${TP_VERSION}/${OS_ARCH}
-	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${TP_VERSION}/${LINUX_OS_ARCH}
-	cp ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${TP_VERSION}/${OS_ARCH}
-	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${TP_VERSION}/${LINUX_OS_ARCH}
+	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${LINUX_OS_ARCH}
+	cp ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${LINUX_OS_ARCH}
 
 .PHONY: test
 test: 
