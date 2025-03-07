@@ -1,17 +1,18 @@
+# -*- rpm-spec -*-
+# Spec file for HV_Storage_Terraform
+
 Name:          HV_Storage_Terraform
 Version:       02.0.0
 Release:       %{_BUILD_NUMBER}
-#Release:      1%{?dist}
 Summary:       Hitachi Vantara storage plugin provider for terraform
 Vendor:        Hitachi Vantara
-
-Group:         Adapters 
+Group:         Adapters
 License:       hiAdapterLicense
-URL:           http://www.hitachivantara.com 
-Source0:       HV_Storage_Terraform-02.0.0.tar.gz        
+URL:           http://www.hitachivantara.com
+Source0:       HV_Storage_Terraform-02.0.0.tar.gz
 ExclusiveArch: x86_64
 BuildRoot:     %{_tmppath}/%{name}-%{version}.%{release}-root-%(%{__id_u} -n)
-AutoReqProv:   no 
+AutoReqProv:   no
 
 %description
 Hitachi Terraform RPM Package
@@ -72,6 +73,12 @@ if [[ ( ${MAJOR_VER} -lt ${MIN_MAJOR_VER} ) ||  ( ${MINOR_VER} -lt ${MIN_MINOR_V
     exit 1
 fi
 
+%if "%{_BUILD}" == "Release"
+  %define debug_package %{nil}
+%endif
+
+%undefine _missing_build_ids_terminate_build
+
 %prep
 %setup -q
 
@@ -96,11 +103,10 @@ install -d %{buildroot}/%{terraform}/bin
 
 # Create all the directory inside SRC examples path
 for dir in %{examples_src}/*; do
-  # Check if the directory is a directory
   if [ -d "$dir" ]; then
     main_dir="examples"/${dir##*/}
     install -d %{buildroot}/%{terraform}/"$main_dir"
-    # Recursively print the subdirectories of the current directory
+    # Recursively create subdirectories
     for sub_dir in "$dir"/*; do
       if [ -d "$sub_dir" ]; then
         sub_main_dir=${sub_dir##*/}
@@ -113,11 +119,10 @@ done
 
 # Create all the directory inside SRC docs path
 for dir in %{docs_src}/*; do
-  # Check if the directory is a directory
   if [ -d "$dir" ]; then
     main_dir="docs"/${dir##*/}
     install -d %{buildroot}/%{terraform}/"$main_dir"
-    # Recursively print the subdirectories of the current directory
+    # Recursively create subdirectories
     for sub_dir in "$dir"/*; do
       if [ -d "$sub_dir" ]; then
         sub_main_dir=${sub_dir##*/}
@@ -128,24 +133,20 @@ for dir in %{docs_src}/*; do
   fi
 done
 
+# Install files
 install -d %{buildroot}/%{terraform}/examples/provider
-
 install %{examples_src}/provider/provider.tf   %{examples_dst}/provider/provider.tf 
 install %{source_dir}/bin/terraform-provider-hitachi %{buildroot}/%{terraform}/bin/terraform-provider-hitachi
-
 install %{docs_src}/index.md %{docs_dst}/index.md
 
-# Iterate over the list of data-source files and install them
+# Data-source and resource files
 for file in %{examples_src}/data-sources/*/*.tf; do
-  # Get the directory name of the file
   dir_name=$(dirname "$file")
   last_path_name=${dir_name##*/}
-  # Install the file
   file_name=$(basename "$file")
   install "$file" %{examples_dst}/data-sources/"$last_path_name"/"$file_name"
 done
 
-# Iterate over the list of resource files and install them
 for file in %{examples_src}/resources/*/*.tf; do
   dir_name=$(dirname "$file")
   last_path_name=${dir_name##*/}
@@ -153,7 +154,7 @@ for file in %{examples_src}/resources/*/*.tf; do
   install "$file" %{examples_dst}/resources/"$last_path_name"/"$file_name"
 done
 
-# Iterate over the list of docs files and install them
+# Docs files
 for file in %{docs_src}/*/*.md; do
   dir_name=$(dirname "$file")
   last_path_name=${dir_name##*/}
@@ -161,24 +162,31 @@ for file in %{docs_src}/*/*.md; do
   install "$file" %{docs_dst}/"$last_path_name"/"$file_name"
 done
 
-%define terraform %{hitachi_base}/terraform
-
+# Temporary lists for files
 %define mytffiles %{_builddir}/mytffiles.txt
+%define mydocfiles %{_builddir}/mydocfiles.txt
 
-# List all files and store in a temporary file 
+# Store all tf and md files
 for file in %{terraform}/examples/*/*/*.tf; do
     echo "$file" >> %{mytffiles}
 done
 
-%define mydocfiles %{_builddir}/mydocfiles.txt
-
-# List all files and store in a temporary file 
 for file in %{terraform}/docs/*/*.md; do
     echo "$file" >> %{mydocfiles}
 done
 
 %files -f %{mytffiles}
+%if ! -s %{mytffiles}
+    echo "ERROR: %{mytffiles} is empty or not found!" >&2
+    exit 1
+%endif
+
 %files -f %{mydocfiles}
+%if ! -s %{mydocfiles}
+    echo "ERROR: %{mydocfiles} is empty or not found!" >&2
+    exit 1
+%endif
+
 %dir %{terraform}
 %defattr(-,root,root,-)
 
@@ -203,34 +211,5 @@ if [[ $tuser != root ]]; then
   ln -sf %{terraform}/bin/terraform-provider-hitachi  ${home}/%{terraform_plugin}/terraform-provider-hitachi
 fi
 
-if [[ $1 -eq 1 ]]; then
-    echo "Installation complete"
-fi
-
 %preun
-# Reserved for future expansion.
-#if [[ $1 -eq 0 ]]; then
-#    # Do some tasks prior to uninstall
-#    systemctl stop puma
-#elif [[ $1 -eq 1 ]]; then
-#    # Do some tasks prior to upgrade
-#    echo "Preparing uninstall for upgrading..."
-#fi
-
 %postun
-if [[ $1 -eq 0 ]]; then
-  # Erase terraform plugin for user.
-  tuser=$(logname)
-  if [[ $tuser != root ]]; then
-    echo "  Erasing : terraform plugin for ${tuser}"
-    entry=$(grep "^${tuser}" /etc/passwd )
-    entry="${entry%:*}"
-    home="${entry##*:}"
-    rm -rf ${home}/%{plugin_dir}/hitachi-vantara   || true
-    rmdir --ignore-fail-on-non-empty ${home}/.terraform.d/plugins || true
-    rmdir --ignore-fail-on-non-empty ${home}/.terraform.d         || true
-  fi
-  # Erase terraform plugin for root.
-  echo "  Erasing : terraform plugin for root"
-  rm -rf ${HOME}/%{plugin_dir}/hitachi-vantara   || true
-  rmdir --ignore-fail-on-non-empty
