@@ -60,6 +60,7 @@ rm ~/.rpmmacros || true
 # Copy the RPM to the original directory
 echo; echo "Copying RPM to ${TERRAFORM_DIR}..."
 cd ${TERRAFORM_DIR}
+pwd
 cp ./rpmbuild/RPMS/x86_64/*.rpm ${TERRAFORM_DIR}
 
 echo "Finished build rpm for ${BUILD_MODE} version..."
