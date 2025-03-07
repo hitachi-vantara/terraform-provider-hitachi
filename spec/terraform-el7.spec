@@ -73,9 +73,8 @@ if [[ ( ${MAJOR_VER} -lt ${MIN_MAJOR_VER} ) ||  ( ${MINOR_VER} -lt ${MIN_MINOR_V
     exit 1
 fi
 
-%if "%{_BUILD}" == "Release"
-  %define debug_package %{nil}
-%endif
+%define _BUILD Release  # Or set to "Debug" for debug builds
+%define debug_package %{nil}
 
 %undefine _missing_build_ids_terminate_build
 
@@ -162,6 +161,10 @@ for file in %{docs_src}/*/*.md; do
   install "$file" %{docs_dst}/"$last_path_name"/"$file_name"
 done
 
+# Ensure .tf and .md files are not executable
+find %{buildroot}/%{terraform}/examples -type f -name "*.tf" -exec chmod -x {} \;
+find %{buildroot}/%{terraform}/docs -type f -name "*.md" -exec chmod -x {} \;
+
 # Temporary lists for files
 %define mytffiles %{_builddir}/mytffiles.txt
 %define mydocfiles %{_builddir}/mydocfiles.txt
@@ -176,16 +179,7 @@ for file in %{terraform}/docs/*/*.md; do
 done
 
 %files -f %{mytffiles}
-%if ! -s %{mytffiles}
-    echo "ERROR: %{mytffiles} is empty or not found!" >&2
-    exit 1
-%endif
-
 %files -f %{mydocfiles}
-%if ! -s %{mydocfiles}
-    echo "ERROR: %{mydocfiles} is empty or not found!" >&2
-    exit 1
-%endif
 
 %dir %{terraform}
 %defattr(-,root,root,-)
@@ -211,5 +205,40 @@ if [[ $tuser != root ]]; then
   ln -sf %{terraform}/bin/terraform-provider-hitachi  ${home}/%{terraform_plugin}/terraform-provider-hitachi
 fi
 
+if [[ $1 -eq 1 ]]; then
+    echo "Installation complete"
+fi
+
+
 %preun
+
 %postun
+if [[ $1 -eq 0 ]]; then
+  # Erase terraform plugin for user.
+  tuser=$(logname)
+  if [[ $tuser != root ]]; then
+    echo "  Erasing : terraform plugin for ${tuser}"
+    entry=$(grep "^${tuser}" /etc/passwd )
+    entry=$(grep "^${tuser}" /etc/passwd )
+    entry="${entry%:*}"
+    home="${entry##*:}"
+    rm -rf ${home}/%{plugin_dir}/hitachi-vantara   || true
+    rmdir --ignore-fail-on-non-empty ${home}/.terraform.d/plugins || true
+    rmdir --ignore-fail-on-non-empty ${home}/.terraform.d         || true
+  fi
+  # Erase terraform plugin for root.
+  echo "  Erasing : terraform plugin for root"
+  rm -rf ${HOME}/%{plugin_dir}/hitachi-vantara   || true
+  rmdir --ignore-fail-on-non-empty ${HOME}/.terraform.d/plugins || true
+  rmdir --ignore-fail-on-non-empty ${HOME}/.terraform.d         || true
+
+  # Delete /opt/hitachi/terraform-provider-hitachi
+  #echo "  Erasing %{terraform}"
+  rm -rf %{terraform} || true
+
+  # Delete /opt/hitachi if empty.
+  #echo "  Erasing %{hitachi_base}"
+  rmdir --ignore-fail-on-non-empty %{hitachi_base} || true
+  echo "Erase complete"
+
+%changelog
