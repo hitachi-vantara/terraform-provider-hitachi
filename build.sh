@@ -41,23 +41,29 @@ cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
 
-# example: HV_Storage_Terraform-${TERRAFORM_VERSION}.tar.gz
+# Example: HV_Storage_Terraform-${TERRAFORM_VERSION}.tar.gz
+echo; echo "Creating tarball..."
 cd ${RPMBUILD_DIR}
-
 tar -czf SOURCES/${TERRAFORM_SOURCE_TAR} ${TERRAFORM_PKG}
 
-# RELEASE version
+# Set the RPM build environment
 echo "%_topdir ${RPMBUILD_DIR}" > ~/.rpmmacros
 RPMARGS="--target=x86_64 -bb"
 
+# Start RPM build for the specified version
 echo; echo "Starting rpm build for ${BUILD_MODE} version..."
-cd ${RPMBUILD_DIR}
 rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER $1" -v SPECS/terraform-el7.spec
+
+# Clean up the rpmmacros after the build
 rm ~/.rpmmacros || true
 
+# Copy the RPM to the original directory
+echo; echo "Copying RPM to ${TERRAFORM_DIR}..."
 cd ${TERRAFORM_DIR}
 cp ./rpmbuild/RPMS/x86_64/*.rpm ${TERRAFORM_DIR}
+
 echo "Finished build rpm for ${BUILD_MODE} version..."
 
-#rm -rf ${RPMBUILD_DIR} || true
-#rm -rf terraform-provider-hitachi
+# Optional clean-up
+# rm -rf ${RPMBUILD_DIR} || true
+# rm -rf terraform-provider-hitachi

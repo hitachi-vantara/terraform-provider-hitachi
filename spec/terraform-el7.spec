@@ -1,4 +1,4 @@
-name:          HV_Storage_Terraform
+Name:          HV_Storage_Terraform
 Version:       02.0.0
 Release:       %{_BUILD_NUMBER}
 #Release:      1%{?dist}
@@ -13,15 +13,10 @@ ExclusiveArch: x86_64
 BuildRoot:     %{_tmppath}/%{name}-%{version}.%{release}-root-%(%{__id_u} -n)
 AutoReqProv:   no 
 
-#BuildRequires:  
-#Requires:       
-
 %description
 Hitachi Terraform RPM Package
 
-
 %pre
-
 #
 # Check for OS distribution and minimum version
 # RHEL family distributions only.
@@ -77,19 +72,8 @@ if [[ ( ${MAJOR_VER} -lt ${MIN_MAJOR_VER} ) ||  ( ${MINOR_VER} -lt ${MIN_MINOR_V
     exit 1
 fi
 
-# Inhibit debug package collection for release builds.
-%if "%{_BUILD}" == "Release"
-  %define debug_package %{nil}
-%endif
-
-
-# XX: Disable Build ID checking in RedHat macro file.
-%undefine _missing_build_ids_terminate_build
-
-
 %prep
 %setup -q
-
 
 %build
 %define hitachi_base /opt/hitachi
@@ -104,22 +88,16 @@ fi
 %define examples_dst %{buildroot}/%{terraform}/examples
 %define docs_dst %{buildroot}/%{terraform}/docs
 
-
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
 install -d %{buildroot}/%{terraform}
 install -d %{buildroot}/%{terraform}/bin
-#install -d %{buildroot}/%{terraform}/log
 
-#Create all the directory inside SRC examples path
+# Create all the directory inside SRC examples path
 for dir in %{examples_src}/*; do
-
   # Check if the directory is a directory
   if [ -d "$dir" ]; then
-
-    # Print the directory name
     main_dir="examples"/${dir##*/}
     install -d %{buildroot}/%{terraform}/"$main_dir"
     # Recursively print the subdirectories of the current directory
@@ -130,17 +108,13 @@ for dir in %{examples_src}/*; do
         install -d %{buildroot}/%{terraform}/"$new_dir"
       fi
     done
-
   fi
 done
 
-#Create all the directory inside SRC docs path
+# Create all the directory inside SRC docs path
 for dir in %{docs_src}/*; do
-
   # Check if the directory is a directory
   if [ -d "$dir" ]; then
-
-    # Print the directory name
     main_dir="docs"/${dir##*/}
     install -d %{buildroot}/%{terraform}/"$main_dir"
     # Recursively print the subdirectories of the current directory
@@ -151,7 +125,6 @@ for dir in %{docs_src}/*; do
         install -d %{buildroot}/%{terraform}/"$new_dir"
       fi
     done
-
   fi
 done
 
@@ -164,53 +137,42 @@ install %{docs_src}/index.md %{docs_dst}/index.md
 
 # Iterate over the list of data-source files and install them
 for file in %{examples_src}/data-sources/*/*.tf; do
-
   # Get the directory name of the file
   dir_name=$(dirname "$file")
   last_path_name=${dir_name##*/}
   # Install the file
   file_name=$(basename "$file")
-  # Install the file
   install "$file" %{examples_dst}/data-sources/"$last_path_name"/"$file_name"
-
 done
 
 # Iterate over the list of resource files and install them
 for file in %{examples_src}/resources/*/*.tf; do
-
-  # Get the directory name of the file
   dir_name=$(dirname "$file")
   last_path_name=${dir_name##*/}
   file_name=$(basename "$file")
-  # Install the file
   install "$file" %{examples_dst}/resources/"$last_path_name"/"$file_name"
-
 done
 
 # Iterate over the list of docs files and install them
 for file in %{docs_src}/*/*.md; do
-
-  # Get the directory name of the file
   dir_name=$(dirname "$file")
   last_path_name=${dir_name##*/}
   file_name=$(basename "$file")
-  # Install the file
   install "$file" %{docs_dst}/"$last_path_name"/"$file_name"
-
 done
 
 %define terraform %{hitachi_base}/terraform
 
 %define mytffiles %{_builddir}/mytffiles.txt
 
-#list all files and store in a temporary file 
+# List all files and store in a temporary file 
 for file in %{terraform}/examples/*/*/*.tf; do
     echo "$file" >> %{mytffiles}
 done
 
 %define mydocfiles %{_builddir}/mydocfiles.txt
 
-#list all files and store in a temporary file 
+# List all files and store in a temporary file 
 for file in %{terraform}/docs/*/*.md; do
     echo "$file" >> %{mydocfiles}
 done
@@ -245,7 +207,6 @@ if [[ $1 -eq 1 ]]; then
     echo "Installation complete"
 fi
 
-
 %preun
 # Reserved for future expansion.
 #if [[ $1 -eq 0 ]]; then
@@ -263,7 +224,6 @@ if [[ $1 -eq 0 ]]; then
   if [[ $tuser != root ]]; then
     echo "  Erasing : terraform plugin for ${tuser}"
     entry=$(grep "^${tuser}" /etc/passwd )
-    entry=$(grep "^${tuser}" /etc/passwd )
     entry="${entry%:*}"
     home="${entry##*:}"
     rm -rf ${home}/%{plugin_dir}/hitachi-vantara   || true
@@ -273,24 +233,4 @@ if [[ $1 -eq 0 ]]; then
   # Erase terraform plugin for root.
   echo "  Erasing : terraform plugin for root"
   rm -rf ${HOME}/%{plugin_dir}/hitachi-vantara   || true
-  rmdir --ignore-fail-on-non-empty ${HOME}/.terraform.d/plugins || true
-  rmdir --ignore-fail-on-non-empty ${HOME}/.terraform.d         || true
-
-  # Delete /opt/hitachi/terraform-provider-hitachi
-  #echo "  Erasing %{terraform}"
-  rm -rf %{terraform} || true
-
-  # Delete /opt/hitachi if empty.
-  #echo "  Erasing %{hitachi_base}"
-  rmdir --ignore-fail-on-non-empty %{hitachi_base} || true
-  echo "Erase complete"
-
-# Reserved for future expansion.
-#elif [[ $1 -eq 1 ]]; then
-#    # Do some tasks after upgrade
-#    echo "Perform some uninstalled post-tasks for upgrading..."
-#fi
-fi
-
-%changelog
-
+  rmdir --ignore-fail-on-non-empty
