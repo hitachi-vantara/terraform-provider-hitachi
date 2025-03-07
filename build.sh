@@ -14,8 +14,10 @@ elif [[ $1 == --help || $1 == -h ]]; then
     exit 1
 fi
 
-BUILD_MODE=${1:-Release}
+BUILD_MODE="Release"
+BUILD_NUMBER=${1}
 echo "Build Mode: ${BUILD_MODE}"
+echo "Build Number: ${BUILD_NUMBER}"
 
 TERRAFORM_NAME=HV_Storage_Terraform
 TERRAFORM_VERSION=02.0.0
@@ -52,16 +54,33 @@ RPMARGS="--target=x86_64 -bb"
 
 # Start RPM build for the specified version
 echo; echo "Starting rpm build for ${BUILD_MODE} version..."
-rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER $1" -v SPECS/terraform-el7.spec
+echo rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER ${BUILD_NUMBER}" -v SPECS/terraform-el7.spec
+rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER ${BUILD_NUMBER}" -v SPECS/terraform-el7.spec
+
+
+# Check if the RPM build was successful
+if [ $? -eq 0 ]; then
+    echo "RPM build successful."
+else
+    echo "Error: RPM build failed."
+    exit 1
+fi
 
 # Clean up the rpmmacros after the build
 rm ~/.rpmmacros || true
 
 # Copy the RPM to the original directory
 echo; echo "Copying RPM to ${TERRAFORM_DIR}..."
-cd ${TERRAFORM_DIR}
-pwd
-cp ./rpmbuild/RPMS/x86_64/*.rpm ${TERRAFORM_DIR}
+cd ${RPMBUILD_DIR}/RPMS/x86_64/
+RPM_FILE=$(ls *.rpm)
+
+if [ -z "$RPM_FILE" ]; then
+    echo "Error: No RPM file found in ${RPMBUILD_DIR}/RPMS/x86_64/"
+    exit 1
+else
+    cp ${RPM_FILE} ${TERRAFORM_DIR}
+    echo "RPM file copied to ${TERRAFORM_DIR}/${RPM_FILE}"
+fi
 
 echo "Finished build rpm for ${BUILD_MODE} version..."
 
