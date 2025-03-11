@@ -29,12 +29,6 @@ type StorageSettingsAndInfo struct {
 	Info     *StorageSystem        `json:"info"`
 }
 
-type InfraGwSettings struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Address  string `json:"address"`
-}
-
 type StorageVersionInfo struct {
 	ApiVersion  string `json:"apiVersion"`
 	ProductName string `json:"productName"`
@@ -43,7 +37,4 @@ type StorageVersionInfo struct {
 type AllStorageTypes struct {
 	VspStorageSystem       []*StorageSystem
 	VssbStorageVersionInfo []*StorageVersionInfo
-	InfraGwInfo            []*InfraGwSettings
 }
-
-type ProviderType string

@@ -21,8 +21,6 @@ import (
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
-	common "terraform-provider-hitachi/hitachi/terraform/common"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/jinzhu/copier"
 )
@@ -39,8 +37,8 @@ func GetLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
 	lunID := d.Get("ldev_id").(int)
 
 	// check if this is getting executed from "resource"
-	// _, lunOk := d.GetOk("ldev_id")
-	if lunID <= 0 {
+	_, lunOk := d.GetOk("ldev_id")
+	if !lunOk {
 		lunFromState := d.State().ID
 		log.WriteDebug("TFDebug| lunFromState from state: %s", lunFromState)
 		if lunFromState != "" {
@@ -102,14 +100,12 @@ func GetRangeOfLuns(d *schema.ResourceData) (*[]terraformmodel.LogicalUnit, erro
 
 	startLdevID := d.Get("start_ldev_id").(int)
 	if startLdevID < 0 {
-		startLdevID = 0
-		// return nil, fmt.Errorf("start_ldev_id must be greater than or equal to 0")
+		return nil, fmt.Errorf("start_ldev_id must be greater than or equal to 0")
 	}
 
 	endLdevID := d.Get("end_ldev_id").(int)
-	if endLdevID <= 0 {
-		endLdevID = 65000
-		// return nil, fmt.Errorf("end_ldev_id must be greater than or equal to 0")
+	if endLdevID < 0 {
+		return nil, fmt.Errorf("end_ldev_id must be greater than or equal to 0")
 	}
 
 	if endLdevID < startLdevID {
@@ -236,12 +232,14 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 
 	createInput := terraformmodel.CreateLunRequest{}
 
-	size_gb, _ := d.GetOk("size_gb")
+	size_gb, ok := d.GetOk("size_gb")
+	if !ok {
+		return nil, fmt.Errorf("size_gb must be greater than 0 for create")
+	}
+	createInput.CapacityInGB = uint64(size_gb.(int))
 
-	createInput.CapacityInGB = size_gb.(float64)
-
-	ldevId, _ := d.GetOk("ldev_id")
-	if ldevId.(int) > 0 {
+	ldevId, ok := d.GetOk("ldev_id")
+	if ok {
 		lid := ldevId.(int)
 		createInput.LdevID = &lid
 	}
@@ -251,16 +249,42 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 		label := name.(string)
 		createInput.Name = &label
 	}
+	// Remove dedup from this version
+	/*
+		dedup_mode, ok := d.GetOk("dedup_mode")
+		if ok {
+			dedup := dedup_mode.(string)
+			createInput.DataReductionMode = &dedup
+		}
+	*/
+
+	// either pool or paritygroup
 
 	var pool_name = ""
 	var paritygroup_id = ""
-	pool_id, _ := d.GetOk("pool_id")
+	pool_id, exists := d.GetOk("pool_id")
+	okPO := exists || (pool_id.(int) == 0)
 
 	pool_name = d.Get("pool_name").(string)
 	paritygroup_id = d.Get("paritygroup_id").(string)
 	log.WriteDebug("Pool ID=%v Pool Name=%v PG=%v\n", pool_id, pool_name, paritygroup_id)
 
 	log.WriteDebug("ok=%v \n", ok)
+
+	count := 0
+	if okPO && pool_id != -1 {
+		count++
+	}
+	if pool_name != "" {
+		count++
+	}
+	if paritygroup_id != "" {
+		count++
+	}
+	log.WriteDebug("count=%v\n", count)
+	if count != 1 {
+		return nil, fmt.Errorf("either pool_id or pool_name or paritygroup_id is required to create volume")
+	}
 
 	if pool_id.(int) >= 0 {
 		pool_id_int := pool_id.(int)
@@ -273,12 +297,6 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 		}
 	} else if paritygroup_id != "" {
 		createInput.ParityGroupID = &paritygroup_id
-	}
-
-	data_reduction_mode, ok := d.GetOk("deduplication_compression_mode")
-	if ok {
-		label := data_reduction_mode.(string)
-		createInput.DataReductionMode = &label
 	}
 
 	log.WriteDebug("createInput: %+v", createInput)
@@ -351,8 +369,8 @@ func CheckSchemaIfLunGet(d *schema.ResourceData) *int {
 		}
 	}
 
-	ldevId, _ := d.GetOk("ldev_id")
-	if ldevId.(int) > 0 {
+	ldevId, ok := d.GetOk("ldev_id")
+	if ok {
 		lid := ldevId.(int)
 		return &lid
 	}
@@ -367,11 +385,11 @@ func DeleteLun(d *schema.ResourceData) error {
 
 	serial := d.Get("serial").(int)
 
-	ldevID := d.Get("ldev_id")
+	ldevID, ok := d.GetOk("ldev_id")
 	log.WriteDebug("ldevID: %+v", ldevID)
 	lunID := 0
 	isLdevIdSetFromState := false
-	if ldevID.(int) < 0 {
+	if !ok {
 		lunFromState := d.State().ID
 		if lunFromState != "" {
 			lun, err := strconv.Atoi(lunFromState)
@@ -442,20 +460,15 @@ func ConvertLunToSchema(logicalUnit *terraformmodel.LogicalUnit, serial int) *ma
 		"mpblade_id":                 logicalUnit.MpBladeID,
 		"ss_id":                      logicalUnit.Ssid,
 		"pool_id":                    logicalUnit.PoolID,
-		"parity_group_id":            logicalUnit.ParityGroupId,
+		"paritygroup_id":             logicalUnit.ParityGroupId,
 		"is_full_allocation_enabled": logicalUnit.IsFullAllocationEnabled,
-		"resource_group_id":          logicalUnit.ResourceGroupID,
+		"resourcegroup_id":           logicalUnit.ResourceGroupID,
 		//"data_reduction_mode":        logicalUnit.DataReductionMode,
-		"is_alua_enabled":                logicalUnit.IsAluaEnabled,
-		"naa_id":                         logicalUnit.NaaID,
-		"total_capacity_in_mb":           logicalUnit.TotalCapacityInMB,
-		"free_capacity_in_mb":            logicalUnit.FreeCapacityInMB,
-		"total_capacity":                 common.MegaBytesToBytes(logicalUnit.TotalCapacityInMB),
-		"used_capacity_in_mb":            logicalUnit.UsedCapacityInMB,
-		"used_capacity":                  common.MegaBytesToBytes(logicalUnit.UsedCapacityInMB),
-		"deduplication_compression_mode": logicalUnit.DataReductionMode,
-		"dedup_compression_progress":     logicalUnit.DataReductionProgressRate,
-		"dedup_compression_status":       logicalUnit.DataReductionStatus,
+		"is_alua_enabled":      logicalUnit.IsAluaEnabled,
+		"naa_id":               logicalUnit.NaaID,
+		"total_capacity_in_mb": logicalUnit.TotalCapacityInMB,
+		"free_capacity_in_mb":  logicalUnit.FreeCapacityInMB,
+		"used_capacity_in_mb":  logicalUnit.UsedCapacityInMB,
 	}
 
 	ports := []map[string]interface{}{}
@@ -545,8 +558,8 @@ func UpdateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.UpdateL
 
 	if d.HasChange("size_gb") {
 		old, new := d.GetChange("size_gb")
-		expandSize := new.(float64) - old.(float64)
-		size_gb := float64(expandSize)
+		expandSize := new.(int) - old.(int)
+		size_gb := uint64(expandSize)
 		updateInput.CapacityInGB = &size_gb
 	}
 
@@ -581,10 +594,9 @@ func getLdevIdFromSchema(d *schema.ResourceData) (*int, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	ldevID := d.Get("ldev_id")
-	ldevIDInt := ldevID.(int)
+	ldevID, ok := d.GetOk("ldev_id")
 	log.WriteDebug("spec input ldevID: %+v", ldevID)
-	if ldevIDInt < 0 {
+	if !ok {
 		volume, ok := d.GetOk("volume")
 		if !ok {
 			return nil, fmt.Errorf("no info data in resource")
