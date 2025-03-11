@@ -1,5 +1,5 @@
 #
-# Hitachi VSP Volume Data Retrieval from VSP Direct Connect and Gateway connections
+# Hitachi VSP Volume Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
 # volume from a Hitachi Virtual Storage Platform (VSP) using HashiCorp Configuration
@@ -14,14 +14,8 @@
 #
 
 data "hitachi_vsp_volume" "volume" {
-
-  // Mandatory parameters for both the provider
   serial  = 12345
   ldev_id = 281
-
-  // Optional parameters for the hitachi_infrastructure_gateway_provider
-
-  subscriber_id = ""
 }
 
 output "volume" {
@@ -39,19 +33,10 @@ output "volume" {
 #
 
 data "hitachi_vsp_volumes" "volume1" {
-  
-  // Mandatory parameters for both the providers
   serial         = 12345
-
-  // optional parameters for both the providers
   start_ldev_id  = 280
   end_ldev_id    = 285
   undefined_ldev = false
-
-// Optional parameters for the hitachi_infrastructure_gateway_provider
-
-  subscriber_id = ""
-
 }
 
 output "volume1" {

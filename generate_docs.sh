@@ -10,7 +10,7 @@ unalias cp
 
 cp -rf ${guide_path}/* ${guide_path_tmp}
 
-go generate ./...
+tfplugindocs generate
 
 
 mkdir -p ${guide_path}

@@ -13,7 +13,7 @@ You must use Golang version 1.20, and set GOPATH to your Golang v1.20 directory.
 # ./build
 ```
 
-The RPM package is in /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.5.0-1.el7.x86_64.rpm
+The RPM package is in /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
 
 
 ## Install RPM package
@@ -31,24 +31,24 @@ Uninstall the old version
 
 Install the new version
 ```
-# /usr/bin/rpm -Uvh HV_Storage_Terraform-02.5.0-1.el7.x86_64.rpm
+# /usr/bin/rpm -Uvh HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
 ```
 
 Check if the hitachi terraform plugin is installed. It must be linked to /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
 ```
-# ls -l /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.5/linux_amd64/terraform-provider-hitachi 
-lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.5/linux_amd64/terraform-provider-hitachi -> /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
+# ls -l /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi 
+lrwxrwxrwx 1 root root 61 Mar 22 19:58 /root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.0/linux_amd64/terraform-provider-hitachi -> /opt/hitachi-vantara/storage-systems/terraform-provider/bin/terraform-provider-hitachi
 ```
 
 ## Use the tf samples
-Navigate to /opt/hitachi/terraform/examples/
+Navigate to /opt/hitachi-vantara/storage-systems/terraform-provider/samples
 ```
-# cd /opt/hitachi/terraform/examples/
+# cd /opt/hitachi-vantara/storage-systems/terraform-provider/samples
 ```
 
 Go to any samples directory. Example:
 ```
-# cd data-sources/hitachi_vsp_volumes
+# cd data/hitachi_storage_data
 ```
 
 If not the first time using the sample directory, do cleanup
@@ -57,7 +57,7 @@ If not the first time using the sample directory, do cleanup
 # rm -rf san_settings
 ```
 
-Modify provider.tf with your storage or UAI gateway information, then do:
+Modify provider.tf and storage.tf with your storage information, then do:
 ```
 # terraform init
 # terraform apply
@@ -83,21 +83,3 @@ Run the following command to initialize the workspace and apply the sample confi
 ```shell
 $ terraform init && terraform apply
 ```
-
-
-## Additional Information about the terraform provider 
-
-# Log Directory:
-
-```
-"/var/log/hitachi/terraform/"
-
-```
-
-Change the Log level to DEBUG, INFO, WARN, ERROR, Need to set the environment variable and set as per need by running below command in the command line before doing anything
-
-```
-export TF_LOG_LEVEL = "DEBUG"
-```
-
-Note : Change the Log level to INFO, WARN, ERROR as per need

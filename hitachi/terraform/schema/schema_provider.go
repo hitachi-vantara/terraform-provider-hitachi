@@ -6,42 +6,6 @@ import (
 
 var ProviderSchema = map[string]*schema.Schema{
 
-	"hitachi_infrastructure_gateway_provider": &schema.Schema{
-		Type:        schema.TypeList,
-		Optional:    true,
-		Description: "Hitachi Unified Compute Platform (UCP) Advisor is a comprehensive cloud infrastructure management and automation software tool that enables IT agility and simplifies day 0-N operations for edge, core, and cloud environments.",
-		Elem: &schema.Resource{
-			Schema: map[string]*schema.Schema{
-				"address": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    true,
-					Description: "Host name or the IP address (IPv4) of Virtual Storage Software block.",
-				},
-				"username": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    true,
-					Description: "Username of the Hitachi UCP Advisor",
-				},
-				"password": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    true,
-					Description: "Password of the Hitachi UCP Advisor",
-				},
-				"partner_id": &schema.Schema{
-					Type:        schema.TypeString,
-					Optional:    true,
-					Description: "Partner Id of the Hitachi UCP Advisor",
-				},
-				"subscriber_id": &schema.Schema{
-					Type:        schema.TypeString,
-					Optional:    true,
-					Description: "Subscriber Id of the Hitachi UCP Advisor",
-				},
-			},
-		},
-		DefaultFunc: schema.EnvDefaultFunc("HITACHI_UCP_ADVISOR_PROVIDER", nil),
-	},
-
 	"hitachi_vss_block_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
