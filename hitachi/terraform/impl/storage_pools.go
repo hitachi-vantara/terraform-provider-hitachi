@@ -31,7 +31,7 @@ func GetAllStoragePools(d *schema.ResourceData) (*[]terraformmodel.StoragePool, 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vssb_address").(string)
+	vssbAddr := d.Get("vss_block_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -75,7 +75,7 @@ func GetStoragePoolsByPoolNames(d *schema.ResourceData) (*[]terraformmodel.Stora
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vssb_address").(string)
+	vssbAddr := d.Get("vss_block_address").(string)
 	spNames, ok := d.GetOk("storage_pool_names")
 	storagePoolNames := make([]string, 0)
 	if ok {
