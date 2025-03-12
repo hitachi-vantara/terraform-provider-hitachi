@@ -12,7 +12,7 @@ output "id_output" {
 */
 
 data "hitachi_vss_block_iscsi_chap_users" "chap_user_by_name" {
-  vss_block_address = "10.76.47.55"
+  vss_block_address = var.vssb_address
   #target_chap_user = "rahul70"
 }
 
@@ -21,7 +21,7 @@ output "name_output" {
 }
 
 data "hitachi_vss_block_iscsi_chap_users" "my_chap_users" {
-  vss_block_address = "10.76.47.55"
+  vss_block_address = var.vssb_address
 }
 
 output "my_iscsi_chap_users_output" {
