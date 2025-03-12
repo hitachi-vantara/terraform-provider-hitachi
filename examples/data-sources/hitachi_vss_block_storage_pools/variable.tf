@@ -9,3 +9,8 @@ variable "hitachi_storage_password" {
   description = "Password of the Hitachi storage system."
   sensitive   = true
 }
+
+variable "vssb_address" {
+  description = "VSSB block address"
+  type        = string
+}

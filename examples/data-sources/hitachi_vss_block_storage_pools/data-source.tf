@@ -13,7 +13,7 @@
 #
 
 data "hitachi_vss_block_storage_pools" "pool" {
-  vssb_address = "10.10.11.12"
+  vss_block_address  = var.vssb_address
   storage_pool_names = ["SP01"]
 }
 
