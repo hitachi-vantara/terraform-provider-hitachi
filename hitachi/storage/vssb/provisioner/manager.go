@@ -61,4 +61,8 @@ type VssbStorageManager interface {
 	DeleteAllChapUsersFromComputePort(portId string) error
 	UpdatePortAuthSettings(portID string, reqBody *vssbmodel.PortAuthSettings) error
 	AddChapUsersToComputePort(portId string, chapUserIds []string) error
+
+	// STORAGE CREDENTIAL
+	ChangeUserPassword(userId string, reqBody *vssbmodel.ChangeUserPasswordReq) (*vssbmodel.User, error)
+
 }

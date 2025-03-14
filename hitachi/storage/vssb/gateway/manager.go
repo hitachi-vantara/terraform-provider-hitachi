@@ -61,4 +61,8 @@ type VssbStorageManager interface {
 	GetChapUserInfoAllowedToAccessPort(portId, chapUserId string) (*vssbmodel.ChapUsers, error)
 	UpdatePortAuthSettings(portID string, reqBody *vssbmodel.PortAuthSettings) error
 	AllowChapUserToAccessPort(portID string, reqBody *vssbmodel.ChapUserIdReq) error
+
+	// STORAGE CREDENTIAL
+	ChangeUserPassword(userId string, reqBody *vssbmodel.ChangeUserPasswordReq) (*vssbmodel.User, error)
+
 }

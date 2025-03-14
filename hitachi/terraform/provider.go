@@ -26,14 +26,15 @@ func Provider() *schema.Provider {
 		Schema: schemaimpl.ProviderSchema,
 		ResourcesMap: map[string]*schema.Resource{
 
-			"hitachi_vsp_volume":                resourceimpl.ResourceStorageLun(),
-			"hitachi_vsp_hostgroup":             resourceimpl.ResourceStorageHostGroup(),
-			"hitachi_vsp_iscsi_target":          resourceimpl.ResourceStorageIscsiTarget(),
-			"hitachi_vsp_iscsi_chap_user":       resourceimpl.ResourceStorageIscsiChapUser(),
-			"hitachi_vss_block_compute_node":    resourceimpl.ResourceVssbStorageComputeNode(),
-			"hitachi_vss_block_volume":          resourceimpl.ResourceVssbStorageCreateVolume(),
-			"hitachi_vss_block_iscsi_chap_user": resourceimpl.ResourceVssbStorageChapUser(),
-			"hitachi_vss_block_compute_port":    resourceimpl.ResourceVssbStorageComputePort(),
+			"hitachi_vsp_volume":                     resourceimpl.ResourceStorageLun(),
+			"hitachi_vsp_hostgroup":                  resourceimpl.ResourceStorageHostGroup(),
+			"hitachi_vsp_iscsi_target":               resourceimpl.ResourceStorageIscsiTarget(),
+			"hitachi_vsp_iscsi_chap_user":            resourceimpl.ResourceStorageIscsiChapUser(),
+			"hitachi_vss_block_compute_node":         resourceimpl.ResourceVssbStorageComputeNode(),
+			"hitachi_vss_block_volume":               resourceimpl.ResourceVssbStorageCreateVolume(),
+			"hitachi_vss_block_iscsi_chap_user":      resourceimpl.ResourceVssbStorageChapUser(),
+			"hitachi_vss_block_compute_port":         resourceimpl.ResourceVssbStorageComputePort(),
+			"hitachi_vss_block_change_user_password": resourceimpl.ResourceVssbChangeUserPassword(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":                datasourceimpl.DataSourceStorageSystem(),

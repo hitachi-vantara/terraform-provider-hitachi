@@ -76,4 +76,10 @@ var MessageCatalog = map[interface{}]string{
 	INFO_UPDATE_CHAP_USER_BEGIN:  "Updating chap user for chap user id  %s and target chap user name %s.",
 	ERR_UPDATE_CHAP_USER_FAILED:  "Failed to update chap user for chap user id  %s and target chap user name %s.",
 	INFO_UPDATE_CHAP_USER_END:    "Successfully updated chap user for chap user id  %s and target chap user name %s.",
+
+	//STORAGE CREDENTIAL
+	INFO_CHANGE_USER_PASSWORD_BEGIN: "Changing password for user id %s.",
+	ERR_CHANGE_USER_PASSWORD_FAILED: "Failed to change password for user id %s.",
+	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
+
 }
