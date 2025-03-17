@@ -1,4 +1,4 @@
-# Terraform Provider Hitachi
+### Terraform Provider Hitachi
 
 ## Build RPM package
 You must be a superuser to build the package.
