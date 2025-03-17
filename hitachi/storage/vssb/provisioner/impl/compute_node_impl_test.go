@@ -11,7 +11,8 @@ func newTestManager() (*vssbStorageManager, error) {
 	objStorage := vssbmodel.StorageDeviceSettings{
 		Username:       "admin",    // admin
 		Password:       "vssb-789", // vssb-789
-		ClusterAddress: "172.25.58.151",
+		ClusterAddress: "10.76.47.55",
+		// ClusterAddress: "172.25.58.151",
 	}
 	psm, err := newVssbStorageManagerEx(objStorage)
 	if err != nil {
