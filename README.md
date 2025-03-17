@@ -13,8 +13,10 @@ You must use Golang version 1.20 and set GOPATH to your Golang v1.20 directory.
 # ./build
 ```
 
-The RPM package is in /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
+The RPM package is in 
 ```
+# /root/rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.0.0-1.el7.x86_64.rpm
+
 ```
 ## Install RPM package
 You must be a superuser to install the rpm package.
