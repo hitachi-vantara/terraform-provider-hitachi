@@ -7,7 +7,7 @@ In build.sh, modify this variable to point to your hitachi terraform source code
 
     TERRAFORM_SRC_DIR
 
-You must use Golang version 1.20, and set GOPATH to your Golang v1.20 directory.
+You must use Golang version 1.20 and set GOPATH to your Golang v1.20 directory.
 ```
 # export GOPATH=/usr/local/go
 # ./build
