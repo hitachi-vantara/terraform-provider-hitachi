@@ -166,4 +166,10 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_DASHBOARD_BEGIN: "Reading dashboard information.",
 	ERR_GET_DASHBOARD_FAILED: "Failed to read dashboard information.",
 	INFO_GET_DASHBOARD_END:   "Successfully read dashboard information.",
+
+	//STORAGE CREDENTIAL
+	INFO_CHANGE_USER_PASSWORD_BEGIN: "Changing password for user id %s.",
+	ERR_CHANGE_USER_PASSWORD_FAILED: "Failed to change password for user id %s.",
+	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
+
 }

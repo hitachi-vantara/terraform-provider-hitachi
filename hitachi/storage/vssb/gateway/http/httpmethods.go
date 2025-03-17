@@ -132,6 +132,43 @@ func PatchCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf strin
 	return &jobString, err
 }
 
+func PatchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}, output interface{}) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	reqBodyInBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
+		return err
+	}
+
+	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
+	url := GetUrl(storageSetting.ClusterAddress, apiSuf)
+
+	httpBasicAuth := utils.HttpBasicAuthentication{
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+	}
+
+	resJSONString, err := utils.HTTPPatch(url, nil, reqBodyInBytes, &httpBasicAuth)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in utils.HTTPPatch call, err: %v", err)
+		return err
+	}
+
+	log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
+	err2 := json.Unmarshal([]byte(resJSONString), output)
+	if err2 != nil {
+		log.WriteDebug("TFError| error in Unmarshal, err: %v", err2)
+		return fmt.Errorf("failed to unmarshal json response: %+v", err2)
+	}
+
+	return nil
+}
+
 func PatchCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()

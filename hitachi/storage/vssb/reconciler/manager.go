@@ -42,4 +42,7 @@ type VssbStorageManager interface {
 	AllowChapUsersToAccessComputePort(portId string, authMode string, inputChapUsers []string) error
 	GetPortInfoByID(portId string) (*vssbmodel.PortDetailSettings, error)
 	//GetIscsiPortAuthInfo(portId string) (*vssbmodel.PortDetailSettings, error)
+
+	// STORAGE USER
+	ChangeUserPassword(userID string, reqBody *vssbmodel.ChangeUserPasswordReq) (*vssbmodel.User, error) 
 }

@@ -52,12 +52,12 @@ func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, 
 		return err
 	}
 
-	// Local Check
-	name, ok := d.GetOk("target_chap_user_name")
-	if !ok {
-		log.WriteDebug("TFDebug | target_chap_user_name: %s", name.(string))
-		return fmt.Errorf("name is required")
-	}
+	// // Local Check
+	// name, ok := d.GetOk("target_chap_user_name")
+	// if !ok {
+	// 	log.WriteDebug("TFDebug | target_chap_user_name: %s", name.(string))
+	// 	return fmt.Errorf("name is required")
+	// }
 
 	// REST API Check
 	setting := reconcilermodel.StorageDeviceSettings{
