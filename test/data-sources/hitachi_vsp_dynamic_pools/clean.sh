@@ -1,4 +1,4 @@
-!#/bin/sh
+#!/bin/sh
 
 echo "Start cleaning terraform files"
 rm -rf .terraform
