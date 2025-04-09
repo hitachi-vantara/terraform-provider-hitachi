@@ -17,8 +17,8 @@ import (
 
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 
-	reconimpl "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/impl"
-	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/model"
+	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
+	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -31,7 +31,7 @@ func GetAllStoragePools(d *schema.ResourceData) (*[]terraformmodel.StoragePool, 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vss_block_address").(string)
+	vssbAddr := d.Get("vosb_block_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -75,7 +75,7 @@ func GetStoragePoolsByPoolNames(d *schema.ResourceData) (*[]terraformmodel.Stora
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vss_block_address").(string)
+	vssbAddr := d.Get("vosb_block_address").(string)
 	spNames, ok := d.GetOk("storage_pool_names")
 	storagePoolNames := make([]string, 0)
 	if ok {

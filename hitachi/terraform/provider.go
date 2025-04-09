@@ -30,11 +30,11 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_hostgroup":                  resourceimpl.ResourceStorageHostGroup(),
 			"hitachi_vsp_iscsi_target":               resourceimpl.ResourceStorageIscsiTarget(),
 			"hitachi_vsp_iscsi_chap_user":            resourceimpl.ResourceStorageIscsiChapUser(),
-			"hitachi_vss_block_compute_node":         resourceimpl.ResourceVssbStorageComputeNode(),
-			"hitachi_vss_block_volume":               resourceimpl.ResourceVssbStorageCreateVolume(),
-			"hitachi_vss_block_iscsi_chap_user":      resourceimpl.ResourceVssbStorageChapUser(),
-			"hitachi_vss_block_compute_port":         resourceimpl.ResourceVssbStorageComputePort(),
-			"hitachi_vss_block_change_user_password": resourceimpl.ResourceVssbChangeUserPassword(),
+			"hitachi_vosb_block_compute_node":         resourceimpl.ResourceVssbStorageComputeNode(),
+			"hitachi_vosb_block_volume":               resourceimpl.ResourceVssbStorageCreateVolume(),
+			"hitachi_vosb_block_iscsi_chap_user":      resourceimpl.ResourceVssbStorageChapUser(),
+			"hitachi_vosb_block_compute_port":         resourceimpl.ResourceVssbStorageComputePort(),
+			"hitachi_vosb_block_change_user_password": resourceimpl.ResourceVssbChangeUserPassword(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":                datasourceimpl.DataSourceStorageSystem(),
@@ -49,14 +49,14 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_storage_ports":          datasourceimpl.DataSourceStoragePorts(),
 			"hitachi_vsp_dynamic_pools":          datasourceimpl.DataSourceStorageDynamicPools(),
 			"hitachi_vsp_parity_groups":          datasourceimpl.DataSourceStorageParityGroups(),
-			"hitachi_vss_block_storage_pools":    datasourceimpl.DataSourceStoragePools(),
-			"hitachi_vss_block_volumes":          datasourceimpl.DataSourceVssbVolumes(),
-			"hitachi_vss_block_compute_nodes":    datasourceimpl.DataSourceVssbComputeNodes(),
-			"hitachi_vss_block_volume":           datasourceimpl.DataSourceVssbVolumeNodes(),
-			"hitachi_vss_block_storage_ports":    datasourceimpl.DataSourceVssbStoragePorts(),
-			"hitachi_vss_block_iscsi_chap_users": datasourceimpl.DataSourceVssbChapUsers(),
-			"hitachi_vss_block_iscsi_port_auth":  datasourceimpl.DataSourceVssbComputePort(),
-			"hitachi_vss_block_dashboard":        datasourceimpl.DataSourceVssbDashboard(),
+			"hitachi_vosb_block_storage_pools":    datasourceimpl.DataSourceStoragePools(),
+			"hitachi_vosb_block_volumes":          datasourceimpl.DataSourceVssbVolumes(),
+			"hitachi_vosb_block_compute_nodes":    datasourceimpl.DataSourceVssbComputeNodes(),
+			"hitachi_vosb_block_volume":           datasourceimpl.DataSourceVssbVolumeNodes(),
+			"hitachi_vosb_block_storage_ports":    datasourceimpl.DataSourceVssbStoragePorts(),
+			"hitachi_vosb_block_iscsi_chap_users": datasourceimpl.DataSourceVssbChapUsers(),
+			"hitachi_vosb_block_iscsi_port_auth":  datasourceimpl.DataSourceVssbComputePort(),
+			"hitachi_vosb_block_dashboard":        datasourceimpl.DataSourceVssbDashboard(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -109,8 +109,8 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	for _, pss := range ssarray.VssbStorageVersionInfo {
 		ss := *pss
 		vssb := map[string]interface{}{
-			"vssb_storage_api_version":  ss.ApiVersion,
-			"vssb_storage_product_name": ss.ProductName,
+			"vosb_storage_api_version":  ss.ApiVersion,
+			"vosb_storage_product_name": ss.ProductName,
 		}
 
 		log.WriteDebug("vssb: %+v\n", vssb)

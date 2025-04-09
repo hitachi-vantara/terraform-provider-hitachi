@@ -6,13 +6,13 @@ import (
 
 var ProviderSchema = map[string]*schema.Schema{
 
-	"hitachi_vss_block_provider": &schema.Schema{
+	"hitachi_vosb_block_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		Description: "Hitachi Virtual Storage Software Block (VSS block) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
-				"vss_block_address": &schema.Schema{
+				"vosb_block_address": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
 					Description: "Host name or the IP address (IPv4) of Virtual Storage Software block.",
@@ -29,7 +29,7 @@ var ProviderSchema = map[string]*schema.Schema{
 				},
 			},
 		},
-		DefaultFunc: schema.EnvDefaultFunc("HITACHI_VSS_BLOCK_PROVIDER", nil),
+		DefaultFunc: schema.EnvDefaultFunc("HITACHI_VOSB_BLOCK_PROVIDER", nil),
 	},
 	"san_storage_system": &schema.Schema{
 		Type:        schema.TypeList,

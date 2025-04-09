@@ -9,7 +9,7 @@
 **
 ** The "provider" block configures the Hitachi provider with necessary authentication details for the
 ** VSS block and SAN storage system.
-** Customize the values of "vss_block_address", "management_ip", "username", and "password" to match your
+** Customize the values of "vosb_block_address", "management_ip", "username", and "password" to match your
 ** environment's configuration.
 **
 */
@@ -24,8 +24,8 @@ terraform {
 }
 
 provider "hitachi" {
-  hitachi_vss_block_provider {
-    vss_block_address = "10.10.12.13"
+  hitachi_vosb_block_provider {
+    vosb_block_address = "10.10.12.13"
     username          = "username"
     password          = "password"
   }

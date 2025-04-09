@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"reflect"
 	"time"
+	"io"
 
 	log "github.com/romana/rlog"
+	commonlog "terraform-provider-hitachi/hitachi/common/log"
 )
 
 var TIMEOUT time.Duration = 120
@@ -67,6 +69,8 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 			req.Header.Add(k, v)
 		}
 	}
+
+	logRequest(req)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -136,6 +140,8 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 		}
 	}
 
+	logRequest(req)
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Error(err)
@@ -189,6 +195,8 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 		}
 	}
 
+	logRequest(req)
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Error(err)
@@ -239,6 +247,8 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 			req.Header.Add(k, v)
 		}
 	}
+
+	logRequest(req)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -301,6 +311,8 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
 	}
 
+	logRequest(req)
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Error(err)
@@ -354,6 +366,8 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 		}
 	}
 
+	logRequest(req)
+
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Error(err)
@@ -374,4 +388,29 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 
 	log.Debugf("HTTP Response: %s\n", string(body))
 	return string(body), nil
+}
+
+func logRequest(req *http.Request) {
+	log := commonlog.GetLogger()
+
+	bodyBytes := []byte{}
+	if req.Body != nil {
+		var err error
+		bodyBytes, err = io.ReadAll(req.Body)
+		if err != nil {
+			log.WriteError("Error reading request body: %v", err)
+			return
+		}
+
+		// Since we've read the body, we need to reset it so that the server can read it too
+		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+	}
+
+	log.WriteDebug("Method: %s", req.Method)
+	log.WriteDebug("URL: %s", req.URL.String())
+	log.WriteDebug("Headers: %s", req.Header)
+	log.WriteDebug("Body: %s", string(bodyBytes))
+	log.WriteDebug("ContentLength: %d", req.ContentLength)
+	log.WriteDebug("Host: %s", req.Host)
+	log.WriteDebug("RequestURI: %s", req.RequestURI)
 }

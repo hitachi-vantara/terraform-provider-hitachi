@@ -24,7 +24,7 @@ description: |-
 **
 ** The "provider" block configures the Hitachi provider with necessary authentication details for the
 ** VSS block and SAN storage system.
-** Customize the values of "vss_block_address", "management_ip", "username", and "password" to match your
+** Customize the values of "vosb_block_address", "management_ip", "username", and "password" to match your
 ** environment's configuration.
 **
 */
@@ -39,8 +39,8 @@ terraform {
 }
 
 provider "hitachi" {
-  hitachi_vss_block_provider {
-    vss_block_address = "10.10.12.13"
+  hitachi_vosb_block_provider {
+    vosb_block_address = "10.10.12.13"
     username          = "username"
     password          = "password"
   }
@@ -59,17 +59,17 @@ provider "hitachi" {
 
 ### Optional
 
-- `hitachi_vss_block_provider` (Block List) Hitachi Virtual Storage Software Block (VSS block) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vss_block_provider))
+- `hitachi_vosb_block_provider` (Block List) Hitachi Virtual Storage Software Block (VSS block) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vosb_block_provider))
 - `san_storage_system` (Block List) Hitachi VSP 5000 series reliably delivers more data faster than ever for open systems and mainframe applications. VSP 5000 series provides response times as low as 39 microseconds and can be configured with up to 69 PB of raw capacity, with scalability to handle up to 33 million IOPS. All VSP 5000 models are backed by the industry’s most comprehensive 100% data availability guarantee to ensure that your operations are always up and running. (see [below for nested schema](#nestedblock--san_storage_system))
 
-<a id="nestedblock--hitachi_vss_block_provider"></a>
-### Nested Schema for `hitachi_vss_block_provider`
+<a id="nestedblock--hitachi_vosb_block_provider"></a>
+### Nested Schema for `hitachi_vosb_block_provider`
 
 Required:
 
 - `password` (String) Password of the Virtual Storage Software block
 - `username` (String) Username of the Virtual Storage Software block
-- `vss_block_address` (String) Host name or the IP address (IPv4) of Virtual Storage Software block.
+- `vosb_block_address` (String) Host name or the IP address (IPv4) of Virtual Storage Software block.
 
 
 <a id="nestedblock--san_storage_system"></a>
