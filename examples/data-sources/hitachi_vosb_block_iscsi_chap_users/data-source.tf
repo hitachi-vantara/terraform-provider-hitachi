@@ -14,7 +14,7 @@
 
 # Retrieve iSCSI CHAP user by ID
 data "hitachi_vosb_block_iscsi_chap_users" "chap_user_by_id" {
-  vosb_block_address   = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
   target_chap_user = "a79c1a1d-2719-4e07-b800-faf9de73d0ae" //chap user id
 }
 
