@@ -9,18 +9,3 @@ variable "hitachi_storage_password" {
   description = "Password of the Hitachi storage system."
   sensitive   = true
 }
-
-variable "vosb_block_address" {
-  description = "VOSB block address"
-  type        = string
-}
-
-variable "current_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "new_password" {
-  type      = string
-  sensitive = true
-}

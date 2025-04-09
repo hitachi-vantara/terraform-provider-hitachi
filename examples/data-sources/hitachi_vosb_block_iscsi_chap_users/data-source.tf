@@ -24,7 +24,7 @@ output "id_output" {
 
 # Retrieve iSCSI CHAP user by name
 data "hitachi_vosb_block_iscsi_chap_users" "chap_user_by_name" {
-  vosb_block_address = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
   target_chap_user = "chapusername"
 }
 
@@ -34,7 +34,7 @@ output "name_output" {
 
 # Retrieve all iSCSI CHAP users
 data "hitachi_vosb_block_iscsi_chap_users" "my_chap_users" {
-  vosb_block_address = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
 }
 
 output "my_iscsi_chap_users_output" {

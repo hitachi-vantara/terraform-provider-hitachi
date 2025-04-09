@@ -11,10 +11,10 @@
 // whose password you wish to change.
 
 resource "hitachi_vosb_block_change_user_password" "my_user" {
-  vosb_block_address = var.vosb_block_address
-  user_id           = "testUser"
-  current_password  = var.current_password
-  new_password      = var.new_password
+  vosb_block_address = "10.10.12.13"
+  user_id            = "testUser"
+  current_password   = var.current_password
+  new_password       = var.new_password
 }
 
 output "user_output" {

@@ -13,7 +13,7 @@
 #
 
 data "hitachi_vosb_block_storage_drives" "my_drives" {
-  vosb_block_address = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
 }
 
 output "my_drives_output" {

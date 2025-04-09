@@ -11,7 +11,7 @@
 //
 
 resource "hitachi_vosb_block_iscsi_chap_user" "my_chap_user" {
-  vosb_block_address       = "10.10.12.13"
+  vosb_block_address      = "10.10.12.13"
   target_chap_user_name   = "targetchapuser"
   target_chap_user_secret = "targetchapuserpasswd"
 }

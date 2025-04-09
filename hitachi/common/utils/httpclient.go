@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"time"
-	"io"
+	// "io"
 
 	log "github.com/romana/rlog"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -393,23 +393,23 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 func logRequest(req *http.Request) {
 	log := commonlog.GetLogger()
 
-	bodyBytes := []byte{}
-	if req.Body != nil {
-		var err error
-		bodyBytes, err = io.ReadAll(req.Body)
-		if err != nil {
-			log.WriteError("Error reading request body: %v", err)
-			return
-		}
+	// bodyBytes := []byte{}
+	// if req.Body != nil {
+	// 	var err error
+	// 	bodyBytes, err = io.ReadAll(req.Body)
+	// 	if err != nil {
+	// 		log.WriteError("Error reading request body: %v", err)
+	// 		return
+	// 	}
 
-		// Since we've read the body, we need to reset it so that the server can read it too
-		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
-	}
+	// 	// Since we've read the body, we need to reset it so that the server can read it too
+	// 	req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+	// }
 
 	log.WriteDebug("Method: %s", req.Method)
 	log.WriteDebug("URL: %s", req.URL.String())
 	log.WriteDebug("Headers: %s", req.Header)
-	log.WriteDebug("Body: %s", string(bodyBytes))
+	// log.WriteDebug("Body: %s", string(bodyBytes))
 	log.WriteDebug("ContentLength: %d", req.ContentLength)
 	log.WriteDebug("Host: %s", req.Host)
 	log.WriteDebug("RequestURI: %s", req.RequestURI)

@@ -29,7 +29,7 @@
 
 
 resource "hitachi_vosb_block_storage_pool" "pool" {
-  vosb_block_address = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
   storage_pool_name = "SP01"
   add_all_offline_drives = true
   # drive_ids = [
