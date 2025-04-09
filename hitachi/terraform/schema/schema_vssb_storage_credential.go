@@ -112,11 +112,13 @@ var ResourceVssbChangeUserPasswordSchema = map[string]*schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The current password of the user.",
+		Sensitive:   true,
 	},
 	"new_password": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The new password for the user.",
+		Sensitive:   true,
 	},
 	// Output field for User
 	"storage_user": &schema.Schema{

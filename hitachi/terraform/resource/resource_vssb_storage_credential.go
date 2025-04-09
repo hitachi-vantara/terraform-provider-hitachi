@@ -57,7 +57,7 @@ func resourceVssbChangeUserPasswordCreate(ctx context.Context, d *schema.Resourc
 }
 
 func resourceVssbChangeUserPasswordUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return nil
+	return resourceVssbChangeUserPasswordCreate(ctx,d, m)
 }
 
 func resourceVssbChangeUserPasswordDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

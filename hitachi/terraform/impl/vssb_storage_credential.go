@@ -69,7 +69,6 @@ func CreateVssbChangeUserPasswordInputFromSchema(d *schema.ResourceData) (*terra
 		input.NewPassword = ts
 	}
 
-	log.WriteDebug("input: %+v", input)
 	return &input, nil
 }
 
