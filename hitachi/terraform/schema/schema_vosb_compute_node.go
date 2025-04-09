@@ -8,7 +8,7 @@ var DataComputeNodeSchema = map[string]*schema.Schema{
 	"vosb_block_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The  VSS block address of the storage server",
+		Description: "The  VOSB address of the storage server",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,

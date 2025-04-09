@@ -19,7 +19,7 @@ import (
 
 func DataSourceVssbComputeNodes() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSS Block Compute Node:Obtains a list of compute node information.",
+		Description: ":meta:subcategory:VOS Block Compute Node:Obtains a list of compute node information.",
 		ReadContext: DataSourceVssbComputeNodesRead,
 		Schema:      schemaimpl.DataComputeNodeSchema,
 	}

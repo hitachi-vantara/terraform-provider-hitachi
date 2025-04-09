@@ -1,8 +1,8 @@
 #
-# Hitachi VSS Block Volumes Data Retrieval
+# Hitachi VOS Block Volumes Data Retrieval
 #
 # This section defines a data source block to fetch information about multiple volumes
-# from a Hitachi Virtual Storage System (VSS) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_block_volumes" retrieves details about volumes
 # associated with the provided parameters. This allows you to access configuration

@@ -3,22 +3,22 @@
 page_title: "hitachi_vosb_block_compute_port Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+  :meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
 ---
 
 # hitachi_vosb_block_compute_port (Resource)
 
-:meta:subcategory:VSS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+:meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
 
 ## Example Usage
 
 ```terraform
 //
-// Hitachi VSS Block Compute Port Resource
+// Hitachi VOS Block Compute Port Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VSS block compute port.
-// The resource "hitachi_vosb_block_compute_port" represents a compute port on a Hitachi Virtual
-// Storage System (VSS) using its block interface and allows you to manage its configuration
+// This section defines a Terraform resource block to create a Hitachi VOS Block compute port.
+// The resource "hitachi_vosb_block_compute_port" represents a compute port on a Hitachi VSP One SDS Block
+// (VOSB) using its block interface and allows you to manage its configuration
 // using Terraform.
 //
 // Customize the values of the parameters (vosb_block_address, name, authentication_settings,

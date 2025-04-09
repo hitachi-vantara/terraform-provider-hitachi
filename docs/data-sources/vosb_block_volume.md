@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_block_volume Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSS Block Storage Volume:Obtains a list of volume information.
+  :meta:subcategory:VOS Block Storage Volume:Obtains a list of volume information.
 ---
 
 # hitachi_vosb_block_volume (Data Source)
 
-:meta:subcategory:VSS Block Storage Volume:Obtains a list of volume information.
+:meta:subcategory:VOS Block Storage Volume:Obtains a list of volume information.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VSS Block Volume Data Retrieval
+# Hitachi VOS Block Volume Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific volume
-# from a Hitachi Virtual Storage System (VSS) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_block_volume" retrieves details about a volume
 # associated with the provided parameters. This allows you to access configuration

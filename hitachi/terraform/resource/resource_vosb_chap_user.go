@@ -26,7 +26,7 @@ var syncChapUserOperation = &sync.Mutex{}
 
 func ResourceVssbStorageChapUser() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VSS Block iSCSI Target CHAP User:The following request sets the CHAP user.",
+		Description:   ":meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.",
 		CreateContext: resourceVssbChapUserCreate,
 		ReadContext:   resourceVssbChapUserRead,
 		UpdateContext: resourceVssbChapUserUpdate,

@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_block_volume Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSS Block Compute Node:Creates a volume.
+  :meta:subcategory:VOS Block Compute Node:Creates a volume.
 ---
 
 # hitachi_vosb_block_volume (Resource)
 
-:meta:subcategory:VSS Block Compute Node:Creates a volume.
+:meta:subcategory:VOS Block Compute Node:Creates a volume.
 
 ## Example Usage
 
 ```terraform
 //
-// Hitachi VSS Block Volume Resource
+// Hitachi VOS Block Volume Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VSS block volume.
-// The resource "hitachi_vosb_block_volume" represents a volume on a Hitachi Virtual Storage System (VSS)
+// This section defines a Terraform resource block to create a Hitachi VOS Block volume.
+// The resource "hitachi_vosb_block_volume" represents a volume on a Hitachi VSP One SDS Block (VOSB)
 // using its block interface and allows you to manage its configuration using Terraform.
 //
 // Customize the values of the parameters (vosb_block_address, name, capacity_gb, storage_pool, compute_nodes,

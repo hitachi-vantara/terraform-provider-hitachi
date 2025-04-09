@@ -1,9 +1,9 @@
 //
-// Hitachi VSS Block iSCSI CHAP User Resource
+// Hitachi VOS Block iSCSI CHAP User Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VSS block iSCSI CHAP user.
+// This section defines a Terraform resource block to create a Hitachi VOS Block iSCSI CHAP user.
 // The resource "hitachi_vosb_block_iscsi_chap_user" represents an iSCSI CHAP user on a Hitachi
-// Virtual Storage System (VSS) using its block interface and allows you to manage its configuration
+// Virtual (VOSB) using its block interface and allows you to manage its configuration
 // using Terraform.
 //
 // Customize the values of the parameters (vosb_block_address, target_chap_user_name,

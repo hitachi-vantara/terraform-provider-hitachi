@@ -1,8 +1,8 @@
 #
-# Hitachi VSS Block iSCSI CHAP Users Data Retrieval
+# Hitachi VOS Block iSCSI CHAP Users Data Retrieval
 #
 # This section defines multiple data source blocks to fetch iSCSI CHAP user information
-# from a Hitachi Virtual Storage System (VSS) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 #
 # Each data source block in this configuration retrieves details about iSCSI CHAP users
 # associated with the provided parameters. This enables you to access authentication

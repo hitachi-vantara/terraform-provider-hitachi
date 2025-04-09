@@ -31,7 +31,7 @@ var syncComputePortOperation = &sync.Mutex{}
 
 func ResourceVssbStorageComputePort() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VSS Block iSCSI Target CHAP User:The following request sets the CHAP user.",
+		Description:   ":meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.",
 		CreateContext: resourceVssbComputrPortCreate,
 		ReadContext:   resourceVssbComputrPortRead,
 		UpdateContext: resourceVssbComputrPortUpdate,
@@ -154,7 +154,7 @@ func VssbStorageComputePortCustomDiff(ctx context.Context, d *schema.ResourceDif
 		}
 		/*
 			if strings.ToLower(name) == "none" && length == 0 && len(res.ChapUsers.Data) > 0 {
-				return fmt.Errorf("target_chap_users are still present in the VSSB storage when authentication_settings is set to 'None' and target_chap_users is to a empty list")
+				return fmt.Errorf("target_chap_users are still present in the VOSB storage when authentication_settings is set to 'None' and target_chap_users is to a empty list")
 			}
 		*/
 		log.WriteInfo("compute port updated successfully")

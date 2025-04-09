@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_block_iscsi_chap_users Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSS Block iSCSI Target CHAP User:Obtains the information about chap users.
+  :meta:subcategory:VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
 ---
 
 # hitachi_vosb_block_iscsi_chap_users (Data Source)
 
-:meta:subcategory:VSS Block iSCSI Target CHAP User:Obtains the information about chap users.
+:meta:subcategory:VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VSS Block iSCSI CHAP Users Data Retrieval
+# Hitachi VOS Block iSCSI CHAP Users Data Retrieval
 #
 # This section defines multiple data source blocks to fetch iSCSI CHAP user information
-# from a Hitachi Virtual Storage System (VSS) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 #
 # Each data source block in this configuration retrieves details about iSCSI CHAP users
 # associated with the provided parameters. This enables you to access authentication

@@ -2,7 +2,7 @@
 # Hitachi VSP Dynamic Pool Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# dynamic pool from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# dynamic pool from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_dynamic_pools" retrieves details about a

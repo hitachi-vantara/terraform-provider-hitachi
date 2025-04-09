@@ -27,7 +27,7 @@ var syncCreateVolOpertation = &sync.Mutex{}
 
 func ResourceVssbStorageCreateVolume() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VSS Block Compute Node:Creates a volume.",
+		Description:   ":meta:subcategory:VOS Block Compute Node:Creates a volume.",
 		CreateContext: resourceCreateVolume,
 		Schema:        schemaimpl.ResourceVolumeSchema,
 		ReadContext:   resourceReadVolume,

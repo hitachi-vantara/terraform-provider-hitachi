@@ -1,8 +1,8 @@
 #
-# Hitachi VSS Block iSCSI Port Authentication Data Retrieval
+# Hitachi VOS Block iSCSI Port Authentication Data Retrieval
 #
 # This section defines a data source block to fetch authentication information for
-# a specific iSCSI port from a Hitachi Virtual Storage System (VSS) using HashiCorp
+# a specific iSCSI port from a Hitachi VSP One SDS Block (VOSB) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_block_iscsi_port_auth" retrieves authentication

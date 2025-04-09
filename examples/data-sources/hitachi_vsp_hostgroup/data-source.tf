@@ -2,7 +2,7 @@
 # Hitachi VSP Hostgroup Data Retrieval
 #
 # This section defines a data source block and an output block to fetch
-# and expose information about a specific hostgroup from a Hitachi Virtual
+# and expose information about a specific hostgroup from a Hitachi VSP One SDS Block
 # Storage Platform (VSP) using HashiCorp Configuration Language (HCL).
 
 

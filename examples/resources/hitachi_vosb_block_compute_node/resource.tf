@@ -1,9 +1,9 @@
 //
-// Hitachi VSS Block Compute Node Resource
+// Hitachi VOS Block Compute Node Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VSS block compute node.
-// The resource "hitachi_vosb_block_compute_node" represents a compute node on a Hitachi Virtual
-// Storage System (VSS) using its block interface and allows you to manage its configuration
+// This section defines a Terraform resource block to create a Hitachi VOS Block compute node.
+// The resource "hitachi_vosb_block_compute_node" represents a compute node on a Hitachi VSP One SDS Block
+// (VOSB) using its block interface and allows you to manage its configuration
 // using Terraform.
 //
 // Customize the values of the parameters (vosb_block_address, compute_node_name, os_type),
