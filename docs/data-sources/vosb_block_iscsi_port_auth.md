@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_iscsi_port_auth Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Storage Port:Obtains a list of ports information.
+  VOS Block Storage Port:Obtains a list of ports information.
 ---
 
 # hitachi_vosb_block_iscsi_port_auth (Data Source)
 
-:meta:subcategory:VOS Block Storage Port:Obtains a list of ports information.
+VOS Block Storage Port:Obtains a list of ports information.
 
 ## Example Usage
 

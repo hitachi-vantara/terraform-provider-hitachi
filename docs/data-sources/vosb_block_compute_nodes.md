@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_compute_nodes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Compute Node:Obtains a list of compute node information.
+  VOS Block Compute Node:Obtains a list of compute node information.
 ---
 
 # hitachi_vosb_block_compute_nodes (Data Source)
 
-:meta:subcategory:VOS Block Compute Node:Obtains a list of compute node information.
+VOS Block Compute Node:Obtains a list of compute node information.
 
 ## Example Usage
 
@@ -44,7 +44,7 @@ output "nodeoutput" {
 
 ### Required
 
-- `vosb_block_address` (String) The  VOS Block address of the storage server
+- `vosb_block_address` (String) The  VOSB address of the storage server
 
 ### Optional
 

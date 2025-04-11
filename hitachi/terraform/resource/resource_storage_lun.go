@@ -27,7 +27,7 @@ var syncLunOperation = &sync.Mutex{}
 
 func ResourceStorageLun() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VSP Storage Volume:The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.",
+		Description:   `The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.`,
 		CreateContext: resourceStorageLunCreate,
 		ReadContext:   resourceStorageLunRead,
 		UpdateContext: resourceStorageLunUpdate,

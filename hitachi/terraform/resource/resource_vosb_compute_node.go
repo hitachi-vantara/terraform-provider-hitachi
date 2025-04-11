@@ -30,7 +30,7 @@ var syncHComputeNodeOperation = &sync.Mutex{}
 
 func ResourceVssbStorageComputeNode() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VOS Block Compute Node:Registers the information of the compute node.",
+		Description:   "VOS Block Compute Node:Registers the information of the compute node.",
 		CreateContext: resourceVssbStorageComputeNodeCreate,
 		ReadContext:   resourceVssbStorageComputeNodeRead,
 		UpdateContext: resourceVssbStorageComputeNodeUpdate,

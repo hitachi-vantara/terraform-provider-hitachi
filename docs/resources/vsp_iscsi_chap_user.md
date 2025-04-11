@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_iscsi_chap_user Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user name for the iSCSI target. Two types of CHAP user names can be set: the CHAP user name of the iSCSI target side and the CHAP user name of the host (iSCSI initiator) that connects to the iSCSI target.
+  VOS Block iSCSI Target CHAP User:The following request sets the CHAP user name for the iSCSI target. Two types of CHAP user names can be set: the CHAP user name of the iSCSI target side and the CHAP user name of the host (iSCSI initiator) that connects to the iSCSI target.
 ---
 
 # hitachi_vsp_iscsi_chap_user (Resource)
 
-:meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user name for the iSCSI target. Two types of CHAP user names can be set: the CHAP user name of the iSCSI target side and the CHAP user name of the host (iSCSI initiator) that connects to the iSCSI target.
+VOS Block iSCSI Target CHAP User:The following request sets the CHAP user name for the iSCSI target. Two types of CHAP user names can be set: the CHAP user name of the iSCSI target side and the CHAP user name of the host (iSCSI initiator) that connects to the iSCSI target.
 
 ## Example Usage
 

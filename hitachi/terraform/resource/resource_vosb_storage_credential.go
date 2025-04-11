@@ -17,7 +17,7 @@ var syncChangeUserPasswordOperation = &sync.Mutex{}
 
 func ResourceVssbChangeUserPassword() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VOS Block Change Storage User Password:The following request changes user password.",
+		Description:   "VOS Block Change Storage User Password:The following request changes user password.",
 		CreateContext: resourceVssbChangeUserPasswordCreate,
 		UpdateContext: resourceVssbChangeUserPasswordUpdate,
 		DeleteContext: resourceVssbChangeUserPasswordDelete,

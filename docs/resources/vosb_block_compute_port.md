@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_compute_port Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+  VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
 ---
 
 # hitachi_vosb_block_compute_port (Resource)
 
-:meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
 
 ## Example Usage
 

@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_storage_ports Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Ports:The following request obtains information about ports.
+  VSP Storage Ports:The following request obtains information about ports.
 ---
 
 # hitachi_vsp_storage_ports (Data Source)
 
-:meta:subcategory:VSP Storage Ports:The following request obtains information about ports.
+VSP Storage Ports:The following request obtains information about ports.
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ description: |-
 # Hitachi VSP Storage Ports Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# storage port from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# storage port from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_storage_ports" retrieves details about a

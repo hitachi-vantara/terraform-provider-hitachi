@@ -215,17 +215,17 @@ var ResourceLunSchema = map[string]*schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Default: -1 ,
-		Description: "Pool ID in which volume is to be created",
+		Description: "Pool ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**",
 	},
 	"pool_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Pool Name in which volume is to be created",
+		Description: "Pool Name in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**",
 	},
 	"paritygroup_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Parity group ID in which volume is to be created",
+		Description: "Parity group ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**",
 	},
 	"size_gb": &schema.Schema{
 		Type:        schema.TypeInt,

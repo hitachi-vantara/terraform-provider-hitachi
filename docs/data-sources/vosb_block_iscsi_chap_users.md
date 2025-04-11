@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_iscsi_chap_users Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
+  VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
 ---
 
 # hitachi_vosb_block_iscsi_chap_users (Data Source)
 
-:meta:subcategory:VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
+VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
 
 ## Example Usage
 
@@ -29,7 +29,7 @@ description: |-
 
 # Retrieve iSCSI CHAP user by ID
 data "hitachi_vosb_block_iscsi_chap_users" "chap_user_by_id" {
-  vosb_block_address   = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
   target_chap_user = "a79c1a1d-2719-4e07-b800-faf9de73d0ae" //chap user id
 }
 
@@ -39,7 +39,7 @@ output "id_output" {
 
 # Retrieve iSCSI CHAP user by name
 data "hitachi_vosb_block_iscsi_chap_users" "chap_user_by_name" {
-  vosb_block_address = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
   target_chap_user = "chapusername"
 }
 
@@ -49,7 +49,7 @@ output "name_output" {
 
 # Retrieve all iSCSI CHAP users
 data "hitachi_vosb_block_iscsi_chap_users" "my_chap_users" {
-  vosb_block_address = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
 }
 
 output "my_iscsi_chap_users_output" {

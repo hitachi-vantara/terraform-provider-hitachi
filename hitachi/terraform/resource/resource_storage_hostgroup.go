@@ -35,7 +35,7 @@ var syncHostGroupOperation = &sync.Mutex{}
 
 func ResourceStorageHostGroup() *schema.Resource {
 	return &schema.Resource{
-		Description:   `:meta:subcategory:VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.`,
+		Description:   `VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.`,
 		CreateContext: resourceStorageHostGroupCreate,
 
 		ReadContext:   resourceStorageHostGroupRead,

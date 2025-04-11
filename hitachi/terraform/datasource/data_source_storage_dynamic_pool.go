@@ -21,7 +21,7 @@ import (
 
 func DataSourceStorageDynamicPools() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.",
+		Description: "VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.",
 		ReadContext: DataSourceStorageDynamicPoolsRead,
 		Schema:      schemaimpl.DataDynamicPoolsSchema,
 	}

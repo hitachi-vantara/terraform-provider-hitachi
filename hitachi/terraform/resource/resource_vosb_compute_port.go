@@ -31,7 +31,7 @@ var syncComputePortOperation = &sync.Mutex{}
 
 func ResourceVssbStorageComputePort() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.",
+		Description:   "VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.",
 		CreateContext: resourceVssbComputrPortCreate,
 		ReadContext:   resourceVssbComputrPortRead,
 		UpdateContext: resourceVssbComputrPortUpdate,

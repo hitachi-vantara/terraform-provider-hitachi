@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_storage_ports Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Storage Port:Obtains a list of storage ports information.
+  VOS Block Storage Port:Obtains a list of storage ports information.
 ---
 
 # hitachi_vosb_block_storage_ports (Data Source)
 
-:meta:subcategory:VOS Block Storage Port:Obtains a list of storage ports information.
+VOS Block Storage Port:Obtains a list of storage ports information.
 
 ## Example Usage
 

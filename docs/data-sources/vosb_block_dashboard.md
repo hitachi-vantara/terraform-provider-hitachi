@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_dashboard Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Dashboard:Obtains the information about Dashboard Information.
+  VOS Block Dashboard:Obtains the information about Dashboard Information.
 ---
 
 # hitachi_vosb_block_dashboard (Data Source)
 
-:meta:subcategory:VOS Block Dashboard:Obtains the information about Dashboard Information.
+VOS Block Dashboard:Obtains the information about Dashboard Information.
 
 ## Example Usage
 

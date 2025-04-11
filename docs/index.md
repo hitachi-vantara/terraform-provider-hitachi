@@ -13,22 +13,6 @@ description: |-
 ## Example Usage
 
 ```terraform
-/*
-** Terraform Configuration for Hitachi Provider and VOS Block / SAN Storage System
-**
-** This Terraform configuration defines the required provider blocks for interacting with Hitachi
-** resources, specifically for VOS Block and SAN storage system.
-**
-** The "required_providers" block specifies the version and source of the Hitachi provider to be used.
-** You can customize the version and source accordingly.
-**
-** The "provider" block configures the Hitachi provider with necessary authentication details for the
-** VOS Block and SAN storage system.
-** Customize the values of "vosb_block_address", "management_ip", "username", and "password" to match your
-** environment's configuration.
-**
-*/
-
 terraform {
   required_providers {
     hitachi = {
@@ -41,16 +25,10 @@ terraform {
 provider "hitachi" {
   hitachi_vosb_block_provider {
     vosb_block_address = "10.10.12.13"
-    username          = "username"
-    password          = "password"
+    username           = var.hitachi_storage_user
+    password           = var.hitachi_storage_password
   }
-  
-  san_storage_system {
-    serial        = 12345
-    management_ip = "10.10.11.12"
-    username      = "username"
-    password      = "password"
-  }
+
 }
 ```
 
@@ -59,7 +37,7 @@ provider "hitachi" {
 
 ### Optional
 
-- `hitachi_vosb_block_provider` (Block List) Hitachi Virtual Storage Software Block (VOS Block) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vosb_block_provider))
+- `hitachi_vosb_block_provider` (Block List) Hitachi VSP One SDS Block (VOSB) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vosb_block_provider))
 - `san_storage_system` (Block List) Hitachi VSP 5000 series reliably delivers more data faster than ever for open systems and mainframe applications. VSP 5000 series provides response times as low as 39 microseconds and can be configured with up to 69 PB of raw capacity, with scalability to handle up to 33 million IOPS. All VSP 5000 models are backed by the industry’s most comprehensive 100% data availability guarantee to ensure that your operations are always up and running. (see [below for nested schema](#nestedblock--san_storage_system))
 
 <a id="nestedblock--hitachi_vosb_block_provider"></a>

@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_compute_node Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Compute Node:Registers the information of the compute node.
+  VOS Block Compute Node:Registers the information of the compute node.
 ---
 
 # hitachi_vosb_block_compute_node (Resource)
 
-:meta:subcategory:VOS Block Compute Node:Registers the information of the compute node.
+VOS Block Compute Node:Registers the information of the compute node.
 
 ## Example Usage
 

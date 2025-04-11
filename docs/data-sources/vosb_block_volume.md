@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_volume Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Storage Volume:Obtains a list of volume information.
+  VOS Block Storage Volume:Obtains a list of volume information.
 ---
 
 # hitachi_vosb_block_volume (Data Source)
 
-:meta:subcategory:VOS Block Storage Volume:Obtains a list of volume information.
+VOS Block Storage Volume:Obtains a list of volume information.
 
 ## Example Usage
 

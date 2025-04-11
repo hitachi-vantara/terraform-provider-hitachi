@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_storage_pools Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Storage Pools:Obtains a list of storage pool information.
+  VOS Block Storage Pools:Obtains a list of storage pool information.
 ---
 
 # hitachi_vosb_block_storage_pools (Data Source)
 
-:meta:subcategory:VOS Block Storage Pools:Obtains a list of storage pool information.
+VOS Block Storage Pools:Obtains a list of storage pool information.
 
 ## Example Usage
 
@@ -28,7 +28,7 @@ description: |-
 #
 
 data "hitachi_vosb_block_storage_pools" "pool" {
-  vosb_block_address  = var.vosb_block_address
+  vosb_block_address = "10.10.12.13"
   storage_pool_names = ["SP01"]
 }
 
@@ -42,7 +42,7 @@ output "pool" {
 
 ### Required
 
-- `vosb_block_address` (String) VOS Block address of the storage device
+- `vosb_block_address` (String) VOSB address of the storage device
 
 ### Optional
 

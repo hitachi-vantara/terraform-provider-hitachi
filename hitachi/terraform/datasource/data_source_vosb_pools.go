@@ -17,7 +17,7 @@ import (
 
 func DataSourceStoragePools() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VOS Block Storage Pools:Obtains a list of storage pool information.",
+		Description: "VOS Block Storage Pools:Obtains a list of storage pool information.",
 		ReadContext: dataSourceStoragePoolsRead,
 		Schema:      schemaimpl.StoragePoolsSchema,
 	}

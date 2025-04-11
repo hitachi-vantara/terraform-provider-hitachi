@@ -19,7 +19,7 @@ import (
 
 func DataSourceStorageChapUsers() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP users information that is specified for the iSCSI target.",
+		Description: "VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP users information that is specified for the iSCSI target.",
 		ReadContext: DataSourceStorageChapUsersRead,
 		Schema:      schemaimpl.DataIscsiChapUsersSchema,
 	}

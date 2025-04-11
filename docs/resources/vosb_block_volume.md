@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_block_volume Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VOS Block Compute Node:Creates a volume.
+  VOS Block Compute Node:Creates a volume.
 ---
 
 # hitachi_vosb_block_volume (Resource)
 
-:meta:subcategory:VOS Block Compute Node:Creates a volume.
+VOS Block Compute Node:Creates a volume.
 
 ## Example Usage
 

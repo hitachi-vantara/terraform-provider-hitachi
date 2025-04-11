@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_storage Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage System:It returns the storage device related information.
+  VSP Storage System:It returns the storage device related information.
 ---
 
 # hitachi_vsp_storage (Data Source)
 
-:meta:subcategory:VSP Storage System:It returns the storage device related information.
+VSP Storage System:It returns the storage device related information.
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ description: |-
 # Hitachi VSP Storage System Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# storage system from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# storage system from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_storage" retrieves details about a storage
