@@ -5,7 +5,7 @@ import (
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
-	vssbmodel "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/model"
+	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 )
 
 var SanSettingsMap map[string]sanmodel.StorageSettingsAndInfo

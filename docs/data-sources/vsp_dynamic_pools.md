@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_dynamic_pools Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.
+  VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.
 ---
 
 # hitachi_vsp_dynamic_pools (Data Source)
 
-:meta:subcategory:VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.
+VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ description: |-
 # Hitachi VSP Dynamic Pool Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# dynamic pool from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# dynamic pool from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_dynamic_pools" retrieves details about a

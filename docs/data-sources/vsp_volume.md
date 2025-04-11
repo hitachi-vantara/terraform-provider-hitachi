@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_volume Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Volume:It returns the Lun information such as capacity, ports, paritygroup, pool etc.
+  VSP Storage Volume:It returns the Lun information such as capacity, ports, paritygroup, pool etc.
 ---
 
 # hitachi_vsp_volume (Data Source)
 
-:meta:subcategory:VSP Storage Volume:It returns the Lun information such as capacity, ports, paritygroup, pool etc.
+VSP Storage Volume:It returns the Lun information such as capacity, ports, paritygroup, pool etc.
 
 
 

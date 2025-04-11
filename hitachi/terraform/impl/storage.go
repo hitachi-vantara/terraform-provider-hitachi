@@ -18,8 +18,8 @@ import (
 
 	reconimpl "terraform-provider-hitachi/hitachi/storage/san/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
-	reconimplvssb "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/impl"
-	reconcilermodelvssb "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/model"
+	reconimplvssb "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
+	reconcilermodelvssb "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -43,9 +43,9 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 	}
 
 	vssbList := []*terraformmodel.StorageVersionInfo{}
-	ss_vssb_items := d.Get("hitachi_vss_block_provider").([]interface{})
-	if len(ss_vssb_items) > 0 {
-		vssbList, err = GetVssbStorageSystem(ss_vssb_items)
+	ss_vosb_items := d.Get("hitachi_vosb_block_provider").([]interface{})
+	if len(ss_vosb_items) > 0 {
+		vssbList, err = GetVssbStorageSystem(ss_vosb_items)
 		if err != nil {
 			log.WriteDebug("TFError| error in GetVssbStorageSystem, err: %v", err)
 			return nil, err
@@ -123,7 +123,7 @@ func GetVssbStorageSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.S
 	for _, item := range ssVssbItems {
 		i := item.(map[string]interface{})
 
-		mgmtIP := i["vss_block_address"].(string)
+		mgmtIP := i["vosb_block_address"].(string)
 		usernameEncoded := i["username"].(string)
 		passwordEncoded := i["password"].(string)
 

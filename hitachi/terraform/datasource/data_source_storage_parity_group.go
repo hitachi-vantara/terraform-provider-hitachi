@@ -20,7 +20,7 @@ import (
 
 func DataSourceStorageParityGroups() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage Parity Group:The following request obtains information about all parity groups.",
+		Description: "VSP Storage Parity Group:The following request obtains information about all parity groups.",
 		ReadContext: DataSourceStorageParityGroupsRead,
 		Schema:      schemaimpl.DataParityGroupsSchema,
 	}

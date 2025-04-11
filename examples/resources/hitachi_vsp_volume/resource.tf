@@ -2,7 +2,7 @@
 // Hitachi VSP Volume Resource
 //
 // This section defines a Terraform resource block to create a Hitachi VSP volume.
-// The resource "hitachi_vsp_volume" represents a volume on a Hitachi Virtual Storage
+// The resource "hitachi_vsp_volume" represents a volume on a Hitachi VSP One SDS Block Storage
 // Platform (VSP) and allows you to manage its configuration using Terraform.
 //
 // Customize the values of the parameters (serial, size_gb, pool_id) to match your

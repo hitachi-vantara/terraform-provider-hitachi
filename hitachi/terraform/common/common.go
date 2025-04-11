@@ -17,9 +17,11 @@ import (
 
 	// mc "terraform-provider-hitachi/hitachi/messagecatalog"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/model"
-	vssbmodel "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/model"
+	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 	// sanprov "terraform-provider-hitachi/hitachi/storage/san/provisioner"
 )
+
+// file not used
 
 func GetSanSettingsFromFile(serialNumber string) (*sanmodel.StorageDeviceSettings, error) {
 	log := commonlog.GetLogger()
@@ -50,7 +52,7 @@ func GetVssbSettingsFromFile(vssbAddr string) (*vssbmodel.StorageDeviceSettings,
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	filePath := utils.VSSB_SETTINGS_DIR + "/" + vssbAddr
+	filePath := utils.VOSB_SETTINGS_DIR + "/" + vssbAddr
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.WriteError(err)

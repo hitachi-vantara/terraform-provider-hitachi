@@ -27,13 +27,13 @@ var MessageCatalog = map[interface{}]string{
 	INFO_UPDATE_LUN_BEGIN:    "Updating lun with id %d on storage serial %d.",
 	INFO_UPDATE_LUN_END:      "Successfully updated lun with id %d on storage serial %d.",
 
-	// VSSB - VOLUME
+	// VOSB - VOLUME
 	INFO_GET_ALL_VOLUME_INFO_BEGIN: "Reading all volume information.",
 	ERR_GET_ALL_VOLUME_INFO_FAILED: "Failed to read all volume information.",
 	INFO_GET_ALL_VOLUME_INFO_END:   "Successfully read all volume information.",
 	ERR_DELETE_VOLUME_FAILED_MSG:   `"The specified volume cannot be deleted because it is connected to the compute node.","Disconnect the compute node from the specified volume, and then retry the operation.`,
 
-	//VSSB - COMPUTE
+	//VOSB - COMPUTE
 	INFO_GET_ALL_SERVERS_BEGIN:     "Reading all compute node information.",
 	ERR_GET_ALL_SERVERS_FAILED:     "Failed to read all compute node information.",
 	INFO_GET_ALL_SERVERS_END:       "Successfully read compute node information.",
@@ -131,7 +131,7 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_STORAGE_POOL_FAILED:      "Failed to read storage pool information for pool names %s.",
 	INFO_GET_STORAGE_POOL_END:        "Successfully read storage pool information for pool names %s.",
 
-	// VSSB - STORAGE PORTS
+	// VOSB - STORAGE PORTS
 	INFO_GET_ALL_STORAGE_PORTS_BEGIN: "Reading all storage ports information.",
 	ERR_GET_ALL_STORAGE_PORTS_FAILED: "Failed to read all storage ports information.",
 	INFO_GET_ALL_STORAGE_PORTS_END:   "Successfully read storage ports information.",

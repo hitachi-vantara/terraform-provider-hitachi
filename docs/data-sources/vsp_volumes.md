@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_volumes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Volume:It returns all luns information from given storage device.
+  VSP Storage Volume:It returns all luns information from given storage device.
 ---
 
 # hitachi_vsp_volumes (Data Source)
 
-:meta:subcategory:VSP Storage Volume:It returns all luns information from given storage device.
+VSP Storage Volume:It returns all luns information from given storage device.
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ description: |-
 # Hitachi VSP Volume Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# volume from a Hitachi Virtual Storage Platform (VSP) using HashiCorp Configuration
+# volume from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp Configuration
 # Language (HCL).
 #
 # The data source block "hitachi_vsp_volume" retrieves details about a volume

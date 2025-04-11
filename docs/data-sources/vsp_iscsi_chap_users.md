@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_iscsi_chap_users Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP users information that is specified for the iSCSI target.
+  VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP users information that is specified for the iSCSI target.
 ---
 
 # hitachi_vsp_iscsi_chap_users (Data Source)
 
-:meta:subcategory:VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP users information that is specified for the iSCSI target.
+VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP users information that is specified for the iSCSI target.
 
 
 

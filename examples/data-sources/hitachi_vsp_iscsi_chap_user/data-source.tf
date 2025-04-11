@@ -2,7 +2,7 @@
 # Hitachi VSP iSCSI CHAP User Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# iSCSI CHAP user from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# iSCSI CHAP user from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_iscsi_chap_user" retrieves details about an
@@ -45,4 +45,3 @@ data "hitachi_vsp_iscsi_chap_users" "my_iscsi_chap_users" {
 
 output "my_iscsi_chap_users_output" {
   value = data.hitachi_vsp_iscsi_chap_users.my_iscsi_chap_users
-}

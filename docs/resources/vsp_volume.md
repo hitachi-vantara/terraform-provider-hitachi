@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_volume Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Volume:The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.
+  The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.
 ---
 
 # hitachi_vsp_volume (Resource)
 
-:meta:subcategory:VSP Storage Volume:The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.
+The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ description: |-
 // Hitachi VSP Volume Resource
 //
 // This section defines a Terraform resource block to create a Hitachi VSP volume.
-// The resource "hitachi_vsp_volume" represents a volume on a Hitachi Virtual Storage
+// The resource "hitachi_vsp_volume" represents a volume on a Hitachi VSP One SDS Block Storage
 // Platform (VSP) and allows you to manage its configuration using Terraform.
 //
 // Customize the values of the parameters (serial, size_gb, pool_id) to match your
@@ -42,9 +42,9 @@ resource "hitachi_vsp_volume" "mylun" {
 
 - `ldev_id` (Number) Ldev ID of lun
 - `name` (String) Name of volume to be created
-- `paritygroup_id` (String) Parity group ID in which volume is to be created
-- `pool_id` (Number) Pool ID in which volume is to be created
-- `pool_name` (String) Pool Name in which volume is to be created
+- `paritygroup_id` (String) Parity group ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
+- `pool_id` (Number) Pool ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
+- `pool_name` (String) Pool Name in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
 - `size_gb` (Number) Size of volume to be created in GB
 
 ### Read-Only

@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_iscsi_target Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.
+  VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.
 ---
 
 # hitachi_vsp_iscsi_target (Data Source)
 
-:meta:subcategory:VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.
+VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ description: |-
 # Hitachi VSP iSCSI Target Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# iSCSI target from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# iSCSI target from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_iscsi_target" retrieves details about an

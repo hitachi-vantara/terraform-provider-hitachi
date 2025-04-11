@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_iscsi_target Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.
+  VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.
 ---
 
 # hitachi_vsp_iscsi_target (Resource)
 
-:meta:subcategory:VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.
+VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.
 
 ## Example Usage
 

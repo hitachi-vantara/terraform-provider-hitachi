@@ -17,7 +17,7 @@ import (
 
 func DataSourceStorageLun() *schema.Resource {
 	return &schema.Resource{
-		Description: `:meta:subcategory:VSP Storage Volume:It returns the Lun information such as capacity, ports, paritygroup, pool etc.`,
+		Description: `VSP Storage Volume:It returns the Lun information such as capacity, ports, paritygroup, pool etc.`,
 		ReadContext: DataSourceStorageLunRead,
 		Schema:      schemaimpl.DataLunSchema,
 	}
