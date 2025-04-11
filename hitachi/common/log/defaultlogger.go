@@ -31,7 +31,7 @@ func init() {
 	}
 
 	finalpath := fmt.Sprintf("%s%s", path, "hitachi-terraform.log")
-	setNewLogFile(finalpath, 1, 1)
+	setNewLogFile(finalpath, 100, 10)
 
 }
 
