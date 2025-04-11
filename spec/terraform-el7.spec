@@ -165,28 +165,18 @@ done
 find %{buildroot}/%{terraform}/examples -type f -name "*.tf" -exec chmod -x {} \;
 find %{buildroot}/%{terraform}/docs -type f -name "*.md" -exec chmod -x {} \;
 
-# Temporary lists for files
-%define mytffiles %{_builddir}/mytffiles.txt
-%define mydocfiles %{_builddir}/mydocfiles.txt
-
-# Store all tf and md files
-for file in %{terraform}/examples/*/*/*.tf; do
-    echo "$file" >> %{mytffiles}
-done
-
-for file in %{terraform}/docs/*/*.md; do
-    echo "$file" >> %{mydocfiles}
-done
-
-%files -f %{mytffiles}
-%files -f %{mydocfiles}
-
-%dir %{terraform}
+%files
 %defattr(-,root,root,-)
 
+# Top-level directory
+%dir %{terraform}
+
+# Binaries
 %{terraform}/bin/terraform-provider-hitachi
-%{terraform}/examples/provider/provider.tf
-%{terraform}/docs/index.md
+
+# Examples and docs (include full tree recursively)
+%{terraform}/examples
+%{terraform}/docs
 
 %post
 chmod 755 -R %{hitachi_base}
@@ -240,5 +230,6 @@ if [[ $1 -eq 0 ]]; then
   #echo "  Erasing %{hitachi_base}"
   rmdir --ignore-fail-on-non-empty %{hitachi_base} || true
   echo "Erase complete"
+fi
 
 %changelog
