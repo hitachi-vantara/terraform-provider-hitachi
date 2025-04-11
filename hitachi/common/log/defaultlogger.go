@@ -9,6 +9,13 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+const (
+	LOGDIR        = "/var/log/hitachi/terraform/"
+	LOGFILENAME   = "hitachi-terraform.log"
+	LOGMAXSIZE    = 10 // MB
+	LOGMAXBACKUPS = 10
+)
+
 // Default Log Provider - the default implementation of hitachi log interface ILogger
 type DefaultLogger struct {
 }
@@ -16,65 +23,44 @@ type DefaultLogger struct {
 // use this to write to our log file
 var logWriterFile *logger.Logger
 
-// init for logger
 func init() {
-
-	path := "/var/log/hitachi/terraform/"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.Mkdir(path, os.ModePerm)
-		if os.IsNotExist(err) {
-            err = os.MkdirAll(path, os.ModePerm)
-        }
-		if err != nil {
-			fmt.Println(err)
+	// Ensure log directory exists
+	if _, err := os.Stat(LOGDIR); os.IsNotExist(err) {
+		if err := os.MkdirAll(LOGDIR, os.ModePerm); err != nil {
+			fmt.Println("Failed to create log directory:", err)
+			return
 		}
 	}
 
-	finalpath := fmt.Sprintf("%s%s", path, "hitachi-terraform.log")
-	setNewLogFile(finalpath, 100, 10)
-
+	finalPath := LOGDIR + LOGFILENAME
+	if err := setNewLogFile(finalPath, LOGMAXSIZE, LOGMAXBACKUPS); err != nil {
+		fmt.Println("Log setup failed:", err)
+	}
 }
 
 func NewDefaultLogger() *DefaultLogger {
 	return &DefaultLogger{}
 }
 
-func fmtPrintf(a string, b interface{}) {
-
-}
-
-// setNewLogFile set new log file on init
-func setNewLogFile(fname string,
-	maxsize int,
-	maxbackups int) error {
-
-	fmtPrintf("OpenLogFile:180  Log Provider setNewLogFile, fname: %s\n", fname)
-	fmtPrintf("OpenLogFile: maxsize: %d\n", maxsize)
-	fmtPrintf("OpenLogFile: maxbackups: %d\n", maxbackups)
-	newLogFile, err := os.OpenFile(fname,
-		os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err == nil {
-		fmtPrintf("OpenLogFile newLogFile: %v\n", newLogFile)
-		logWriterFile = logger.New(newLogFile, "", 0)
-		logWriterFile.SetOutput(&lumberjack.Logger{
-			Filename:   fname,
-			MaxSize:    maxsize,
-			MaxBackups: maxbackups,
-			// MaxAge:     28, //days
-		})
-
-		if logWriterFile != nil {
-			// write to rotated log files
-			fmtPrintf("OpenLogFile: file opened: %v\n", fname)
-			logWriterFile.Print("starting new log file")
-		}
-
-	} else {
-		// rlogIssue("Unable to open log file: %s", err)
-		fmtPrintf("OpenLogFile  Log Provider unable to open log file: %+v\n", err)
+// ─────────────────────────────────────────────────────────────
+// Set new log file with rotation support
+// ─────────────────────────────────────────────────────────────
+func setNewLogFile(fname string, maxsize, maxbackups int) error {
+	newLogFile, err := os.OpenFile(fname, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Printf("OpenLogFile: unable to open log file: %+v\n", err)
 		return err
 	}
 
+	logWriterFile = logger.New(newLogFile, "", 0)
+	logWriterFile.SetOutput(&lumberjack.Logger{
+		Filename:   fname,
+		MaxSize:    maxsize,
+		MaxBackups: maxbackups,
+		// MaxAge:     28, // Optionally uncomment to limit log age
+	})
+
+	logWriterFile.Print("Starting new log file")
 	return nil
 }
 
