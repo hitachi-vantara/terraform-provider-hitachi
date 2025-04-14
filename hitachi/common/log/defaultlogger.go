@@ -103,7 +103,7 @@ func setNewLogFile(fname string, maxSize int, maxBackups int) error {
 		MaxBackups: maxBackups,
 		// MaxAge:     28, // Optionally uncomment to limit log age
 	})
-	logWriterFile.Print("Starting new log file")
+	logWriterFile.Printf("Starting new log file. MaxSize:%dMB MaxBackups:%d", maxSize, maxBackups)
 	return nil
 }
 
