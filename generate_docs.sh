@@ -6,7 +6,7 @@ guide_path_tmp="/tmp/docs/guides/"
 guide_path="docs/guides/"
 mkdir -p ${guide_path_tmp}
 
-unalias cp
+# unalias cp
 
 cp -rf ${guide_path}/* ${guide_path_tmp}
 

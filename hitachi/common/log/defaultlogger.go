@@ -2,82 +2,112 @@ package common
 
 import (
 	"fmt"
-	logger "log"
+	"log"
 	"os"
 	"time"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// Default Log Provider - the default implementation of hitachi log interface ILogger
-type DefaultLogger struct {
-}
+// LogLevel defines the log level type.
+type LogLevel int
 
-// use this to write to our log file
-var logWriterFile *logger.Logger
+// Log level constants.
+const (
+	DEBUGT LogLevel = iota
+	INFOT
+	WARNT
+	ERRORT
+)
 
-// init for logger
+const (
+	LOGDIR        = "/var/log/hitachi/terraform/"
+	LOGFILENAME   = "hitachi-terraform.log"
+	LOGMAXSIZE    = 10 // MB
+	LOGMAXBACKUPS = 10
+)
+
+// currentLogLevel holds the global log level for the application.
+var currentLogLevel = INFOT
+
+// DefaultLogger is the default implementation of logger.
+type DefaultLogger struct{}
+
+// logWriterFile is used to write to our log file.
+var logWriterFile *log.Logger
+
+// init initializes the logger with log file and log level from environment.
 func init() {
-
-	path := "/var/log/hitachi/terraform/"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.Mkdir(path, os.ModePerm)
-		if os.IsNotExist(err) {
-            err = os.MkdirAll(path, os.ModePerm)
-        }
-		if err != nil {
-			fmt.Println(err)
+	// Ensure log directory exists
+	if _, err := os.Stat(LOGDIR); os.IsNotExist(err) {
+		if err := os.MkdirAll(LOGDIR, os.ModePerm); err != nil {
+			fmt.Println("Failed to create log directory:", err)
+			return
 		}
 	}
 
-	finalpath := fmt.Sprintf("%s%s", path, "hitachi-terraform.log")
-	setNewLogFile(finalpath, 1, 1)
+	finalPath := LOGDIR + LOGFILENAME
+	if err := setNewLogFile(finalPath, LOGMAXSIZE, LOGMAXBACKUPS); err != nil {
+		fmt.Println("Log setup failed:", err)
+	}
 
+	// Set log level from environment variable.
+	setLogLevelFromEnv()
 }
 
+// NewDefaultLogger creates a new default logger.
 func NewDefaultLogger() *DefaultLogger {
 	return &DefaultLogger{}
 }
 
-func fmtPrintf(a string, b interface{}) {
-
+// SetLogLevel sets the current global log level.
+func SetLogLevel(level LogLevel) {
+	currentLogLevel = level
 }
 
-// setNewLogFile set new log file on init
-func setNewLogFile(fname string,
-	maxsize int,
-	maxbackups int) error {
+// setLogLevelFromEnv sets the log level based on an environment variable.
+func setLogLevelFromEnv() {
+	envLogLevel := os.Getenv("TF_LOG")
+	switch envLogLevel {
+	case "DEBUG":
+		SetLogLevel(DEBUGT)
+	case "INFO":
+		SetLogLevel(INFOT)
+	case "WARN":
+		SetLogLevel(WARNT)
+	case "ERROR":
+		SetLogLevel(ERRORT)
+	default:
+		// fmt.Println("Invalid or no LOG_LEVEL environment variable set. Defaulting to INFO.")
+		SetLogLevel(INFOT)
+	}
+}
 
-	fmtPrintf("OpenLogFile:180  Log Provider setNewLogFile, fname: %s\n", fname)
-	fmtPrintf("OpenLogFile: maxsize: %d\n", maxsize)
-	fmtPrintf("OpenLogFile: maxbackups: %d\n", maxbackups)
-	newLogFile, err := os.OpenFile(fname,
-		os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err == nil {
-		fmtPrintf("OpenLogFile newLogFile: %v\n", newLogFile)
-		logWriterFile = logger.New(newLogFile, "", 0)
-		logWriterFile.SetOutput(&lumberjack.Logger{
-			Filename:   fname,
-			MaxSize:    maxsize,
-			MaxBackups: maxbackups,
-			// MaxAge:     28, //days
-		})
+// shouldLog determines if a log should be written based on the current log level.
+func shouldLog(level LogLevel) bool {
+	return level >= currentLogLevel
+}
 
-		if logWriterFile != nil {
-			// write to rotated log files
-			fmtPrintf("OpenLogFile: file opened: %v\n", fname)
-			logWriterFile.Print("starting new log file")
-		}
-
-	} else {
-		// rlogIssue("Unable to open log file: %s", err)
-		fmtPrintf("OpenLogFile  Log Provider unable to open log file: %+v\n", err)
+// setNewLogFile sets a new log file on initialization.
+func setNewLogFile(fname string, maxSize int, maxBackups int) error {
+	newLogFile, err := os.OpenFile(fname, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Printf("Unable to open log file: %+v\n", err)
 		return err
 	}
 
+	logWriterFile = log.New(newLogFile, "", 0)
+	logWriterFile.SetOutput(&lumberjack.Logger{
+		Filename:   fname,
+		MaxSize:    maxSize,
+		MaxBackups: maxBackups,
+		// MaxAge:     28, // Optionally uncomment to limit log age
+	})
+	logWriterFile.Printf("Starting new log file. MaxSize:%dMB MaxBackups:%d", maxSize, maxBackups)
 	return nil
 }
 
+// formatLog formats the log statement with severity, time, and message.
 func formatLog(severity string, message string) string {
 	_, funcname, filename, lineno := getSourceFileInfo(3)
 	filesource := fmt.Sprintf("%s:%s:%d", funcname, filename, lineno)
@@ -85,40 +115,57 @@ func formatLog(severity string, message string) string {
 	return logStatement
 }
 
+// Logging functions:
+
+func (l *DefaultLogger) WriteDebug(message string, a ...interface{}) {
+	if shouldLog(DEBUGT) {
+		log := formatLog("DEBUG", fmt.Sprintf(message, a...))
+		logWriterFile.Println(log)
+	}
+}
+
+func (l *DefaultLogger) WriteInfo(message interface{}, a ...interface{}) {
+	if shouldLog(INFOT) {
+		msg := fmt.Sprintf("%v", message)
+		log := formatLog("INFO", fmt.Sprintf(msg, a...))
+		logWriterFile.Println(log)
+	}
+}
+
+func (l *DefaultLogger) WriteWarn(message interface{}, a ...interface{}) {
+	if shouldLog(WARNT) {
+		msg := fmt.Sprintf("%v", message)
+		log := formatLog("WARN", fmt.Sprintf(msg, a...))
+		logWriterFile.Println(log)
+	}
+}
+
+func (l *DefaultLogger) WriteError(message interface{}, a ...interface{}) {
+	if shouldLog(ERRORT) {
+		msg := fmt.Sprintf("%v", message)
+		log := formatLog("ERROR", fmt.Sprintf(msg, a...))
+		logWriterFile.Println(log)
+	}
+}
+
 func (l *DefaultLogger) WriteEnter(a ...interface{}) {
 	log := formatLog(string(ENTER), "")
 	logWriterFile.Println(log)
 }
+
 func (l *DefaultLogger) WriteParam(format string, value interface{}) {
-	log := formatLog(string(PARAM), fmt.Sprintf("%v", value))
-	logWriterFile.Println(log)
-}
+	if shouldLog(INFOT) {
 
-func (l *DefaultLogger) WriteInfo(message interface{}, a ...interface{}) {
-	msg := fmt.Sprintf("%v", message)
-	log := formatLog(string(INFO), fmt.Sprintf(msg, a...))
-	logWriterFile.Println(log)
-
-}
-
-func (l *DefaultLogger) WriteWarn(message interface{}, a ...interface{}) {
-	msg := fmt.Sprintf("%v", message)
-	log := formatLog(string(WARN), fmt.Sprintf(msg, a...))
-	logWriterFile.Println(log)
-}
-
-func (l *DefaultLogger) WriteError(message interface{}, a ...interface{}) {
-	msg := fmt.Sprintf("%v", message)
-	log := formatLog(string(ERROR), fmt.Sprintf(msg, a...))
-	logWriterFile.Println(log)
-}
-
-func (l *DefaultLogger) WriteDebug(message string, a ...interface{}) {
-	log := formatLog(string(DEBUG), fmt.Sprintf(message, a...))
-	logWriterFile.Println(log)
+		log := formatLog(string(PARAM), fmt.Sprintf("%v", value))
+		logWriterFile.Println(log)
+	}
 }
 
 func (l *DefaultLogger) WriteExit() {
-	log := formatLog(string(EXIT), "")
-	logWriterFile.Println(log)
+
+	if shouldLog(INFOT) {
+
+		log := formatLog(string(EXIT), "")
+		logWriterFile.Println(log)
+	}
 }
