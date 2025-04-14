@@ -6,8 +6,8 @@ display_usage() {
 }
 
 # Build versioning
-DISPLAY_VERSION="2.0.7"         # For plugin and Makefile
-RPM_VERSION="02.0.7"            # For RPM spec & filename
+DISPLAY_VERSION="2.0.0"         # For plugin and Makefile
+RPM_VERSION="02.0.0"            # For RPM spec & filename
 BUILD_NUMBER=$1
 BUILD_MODE="Release"
 
