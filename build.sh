@@ -5,7 +5,14 @@ display_usage() {
     echo "Format to run the script: ${0} <build_number>"
 }
 
-if [[ -z $1 ]]; then
+# Build versioning
+DISPLAY_VERSION="2.0.7"         # For plugin and Makefile
+RPM_VERSION="02.0.7"            # For RPM spec & filename
+BUILD_NUMBER=$1
+BUILD_MODE="Release"
+
+
+if [[ -z $BUILD_NUMBER ]]; then
     echo "Missing parameter"
     display_usage
     exit 1
@@ -14,18 +21,21 @@ elif [[ $1 == --help || $1 == -h ]]; then
     exit 1
 fi
 
-BUILD_MODE="Release"
-BUILD_NUMBER=${1}
 echo "Build Mode: ${BUILD_MODE}"
 echo "Build Number: ${BUILD_NUMBER}"
+echo "Display Version: ${DISPLAY_VERSION}"
+echo "RPM Version: ${RPM_VERSION}"
 
-TERRAFORM_NAME=HV_Storage_Terraform
-TERRAFORM_VERSION=02.0.0
-TERRAFORM_PKG="${TERRAFORM_NAME}-${TERRAFORM_VERSION}"
+TERRAFORM_NAME="HV_Storage_Terraform"
+TERRAFORM_PKG="${TERRAFORM_NAME}-${RPM_VERSION}"
 TERRAFORM_SOURCE_TAR="${TERRAFORM_PKG}.tar.gz"
 
 TERRAFORM_DIR=$(pwd)
 RPMBUILD_DIR=$(pwd)/rpmbuild
+
+# Pass TERRAFORM_VERSION and BUILD_NUMBER to Makefile
+export TERRAFORM_VERSION=${DISPLAY_VERSION}
+export BUILD_NUMBER=${BUILD_NUMBER}
 
 # Build mode: Debug or Release(default)
 echo "Starting terraform provider build..."
@@ -43,7 +53,6 @@ cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
 
-# Example: HV_Storage_Terraform-${TERRAFORM_VERSION}.tar.gz
 echo; echo "Creating tarball..."
 cd ${RPMBUILD_DIR}
 tar -czf SOURCES/${TERRAFORM_SOURCE_TAR} ${TERRAFORM_PKG}
@@ -54,9 +63,15 @@ RPMARGS="--target=x86_64 -bb"
 
 # Start RPM build for the specified version
 echo; echo "Starting rpm build for ${BUILD_MODE} version..."
-echo rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER ${BUILD_NUMBER}" -v SPECS/terraform-el7.spec
-rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}" --define "_BUILD_NUMBER ${BUILD_NUMBER}" -v SPECS/terraform-el7.spec
+# echo rpmbuild ${RPMARGS} --define "_BUILD ${BUILD_MODE}"  --define "_VERSION ${RPM_VERSION}" --define "_BUILD_NUMBER ${BUILD_NUMBER}" -v SPECS/terraform-el7.spec
 
+set -x
+rpmbuild ${RPMARGS} \
+  --define "_BUILD ${BUILD_MODE}" \
+  --define "_VERSION ${RPM_VERSION}" \
+  --define "_DISPLAY_VERSION ${DISPLAY_VERSION}" \
+  --define "_BUILD_NUMBER ${BUILD_NUMBER}" \
+  SPECS/terraform-el7.spec
 
 # Check if the RPM build was successful
 if [ $? -eq 0 ]; then
@@ -65,6 +80,7 @@ else
     echo "Error: RPM build failed."
     exit 1
 fi
+set +x
 
 # Clean up the rpmmacros after the build
 rm ~/.rpmmacros || true
