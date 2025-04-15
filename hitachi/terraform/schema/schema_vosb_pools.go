@@ -263,7 +263,7 @@ var StoragePoolSchema = map[string]*schema.Schema{
 }
 
 var StoragePoolsSchema = map[string]*schema.Schema{
-	"vosb_block_address": &schema.Schema{
+	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "VOSB address of the storage device",

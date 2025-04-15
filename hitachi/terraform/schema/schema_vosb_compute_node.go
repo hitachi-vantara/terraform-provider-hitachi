@@ -5,7 +5,7 @@ import (
 )
 
 var DataComputeNodeSchema = map[string]*schema.Schema{
-	"vosb_block_address": &schema.Schema{
+	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The  VOSB address of the storage server",
@@ -121,7 +121,7 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 }
 
 var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
-	"vosb_block_address": &schema.Schema{
+	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",

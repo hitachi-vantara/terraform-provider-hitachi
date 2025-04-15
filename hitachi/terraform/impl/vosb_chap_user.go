@@ -27,7 +27,7 @@ func GetAllVssbChapUsers(d *schema.ResourceData) (*terraformmodel.ChapUsers, err
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -88,7 +88,7 @@ func GetVssbChapUserById(d *schema.ResourceData) (*terraformmodel.ChapUser, erro
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -137,7 +137,7 @@ func GetVssbChapUserByName(d *schema.ResourceData) (*terraformmodel.ChapUser, er
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -191,7 +191,7 @@ func DeleteVssbChapUserResource(d *schema.ResourceData) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -232,7 +232,7 @@ func CreateVssbChapUser(d *schema.ResourceData) (*terraformmodel.ChapUser, error
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -328,7 +328,7 @@ func UpdateVssbChapUser(d *schema.ResourceData) (*terraformmodel.ChapUser, error
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {

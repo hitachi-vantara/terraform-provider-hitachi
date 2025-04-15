@@ -30,7 +30,7 @@ func GetVssbVolumes(d *schema.ResourceData) (*[]terraformmodel.Volume, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -75,7 +75,7 @@ func GetVssbVolumeNode(d *schema.ResourceData) (*terraformmodel.Volume, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -190,7 +190,7 @@ func CreateVolume(d *schema.ResourceData) (*terraformmodel.Volume, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -245,7 +245,7 @@ func DeleteVolume(d *schema.ResourceData) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {

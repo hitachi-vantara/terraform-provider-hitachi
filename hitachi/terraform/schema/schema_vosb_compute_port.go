@@ -31,7 +31,7 @@ var VssbComputePortInfoSchema = map[string]*schema.Schema{
 }
 
 var ResourceComputePortSchema = map[string]*schema.Schema{
-	"vosb_block_address": &schema.Schema{
+	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
@@ -73,7 +73,7 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 }
 
 var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
-	"vosb_block_address": &schema.Schema{
+	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",

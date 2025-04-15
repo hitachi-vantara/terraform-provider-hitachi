@@ -43,7 +43,7 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 	}
 
 	vssbList := []*terraformmodel.StorageVersionInfo{}
-	ss_vosb_items := d.Get("hitachi_vosb_block_provider").([]interface{})
+	ss_vosb_items := d.Get("hitachi_vosb_provider").([]interface{})
 	if len(ss_vosb_items) > 0 {
 		vssbList, err = GetVssbStorageSystem(ss_vosb_items)
 		if err != nil {
@@ -123,7 +123,7 @@ func GetVssbStorageSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.S
 	for _, item := range ssVssbItems {
 		i := item.(map[string]interface{})
 
-		mgmtIP := i["vosb_block_address"].(string)
+		mgmtIP := i["vosb_address"].(string)
 		usernameEncoded := i["username"].(string)
 		passwordEncoded := i["password"].(string)
 

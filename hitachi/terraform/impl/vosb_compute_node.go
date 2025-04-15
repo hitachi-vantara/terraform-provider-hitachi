@@ -29,7 +29,7 @@ func GetVssbComputeNodes(d *schema.ResourceData) (*[]terraformmodel.Server, erro
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -76,7 +76,7 @@ func GetVssbComputeNode(d *schema.ResourceData, id string) (*terraformmodel.Comp
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -125,7 +125,7 @@ func DeleteVssbComputeNodeResource(d *schema.ResourceData) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -231,7 +231,7 @@ func CreateVssbComputeNode(d *schema.ResourceData) (*terraformmodel.ComputeNodeW
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -282,7 +282,7 @@ func UpdateVssbComputeNode(d *schema.ResourceData) (*terraformmodel.ComputeNodeW
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {

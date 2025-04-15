@@ -45,7 +45,7 @@ func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
