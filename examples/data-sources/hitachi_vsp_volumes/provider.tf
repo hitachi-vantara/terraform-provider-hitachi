@@ -8,10 +8,11 @@ terraform {
 }
 
 provider "hitachi" {
-  hitachi_vosb_provider {
-    vosb_address = "10.10.12.13"
-    username           = var.hitachi_storage_user
-    password           = var.hitachi_storage_password
+  san_storage_system {
+    serial        = 12345
+    management_ip = "10.10.11.12"
+    username      = var.hitachi_storage_user
+    password      = var.hitachi_storage_password
   }
 
 }
