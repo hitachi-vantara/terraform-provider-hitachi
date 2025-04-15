@@ -16,8 +16,8 @@ provider "hitachi" {
     password = var.hitachi_storage_password
   }
 
-  # hitachi_vosb_block_provider {
-  #   vosb_block_address = ""
+  # hitachi_vosb_provider {
+  #   vosb_address = ""
   #   username          = "YWRtaW4="
   #   password          = "dnNzYi03ODk="
   # }

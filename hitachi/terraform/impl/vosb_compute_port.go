@@ -35,7 +35,7 @@ func GetVssbComputePortByName(d *schema.ResourceData, vssbaddr string, inputPort
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr, ok := d.Get("vosb_block_address").(string)
+	vssbAddr, ok := d.Get("vosb_address").(string)
 	if !ok {
 		vssbAddr = vssbaddr
 	}
@@ -98,7 +98,7 @@ func AllowChapUsersToAccessComputePort(d *schema.ResourceData) (*terraformmodel.
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
@@ -302,7 +302,7 @@ func GetVssbAllPorts(d *schema.ResourceData, vssbaddr string) (*[]terraformmodel
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr, ok := d.Get("vosb_block_address").(string)
+	vssbAddr, ok := d.Get("vosb_address").(string)
 	if !ok {
 		vssbAddr = vssbaddr
 
@@ -351,7 +351,7 @@ func GetVssbPortById(d *schema.ResourceData) (*terraformmodel.PortDetailSettings
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	vssbAddr := d.Get("vosb_block_address").(string)
+	vssbAddr := d.Get("vosb_address").(string)
 
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {

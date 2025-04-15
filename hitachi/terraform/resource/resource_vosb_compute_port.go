@@ -140,7 +140,7 @@ func VssbStorageComputePortCustomDiff(ctx context.Context, d *schema.ResourceDif
 	}
 
 	data := &schema.ResourceData{}
-	res, err := impl.GetVssbComputePortByName(data, d.Get("vosb_block_address").(string), d.Get("name").(string))
+	res, err := impl.GetVssbComputePortByName(data, d.Get("vosb_address").(string), d.Get("name").(string))
 	if err == nil {
 		cp := impl.ConvertVssbIscsiPortAuthSettingsToSchema(res)
 		log.WriteDebug("Compute Port: %+v\n", *cp)
