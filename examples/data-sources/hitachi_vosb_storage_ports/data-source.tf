@@ -14,7 +14,7 @@
 
 data "hitachi_vosb_storage_ports" "storagePorts" {
   vosb_address = "10.10.12.13"
-  port_name = "001-iSCSI-002"
+  port_name    = "001-iSCSI-002"
 }
 
 output "storagePorts" {

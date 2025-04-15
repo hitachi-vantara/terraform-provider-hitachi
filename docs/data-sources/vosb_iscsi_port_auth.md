@@ -30,7 +30,7 @@ VOS Block Storage Port:Obtains a list of ports information.
 
 data "hitachi_vosb_iscsi_port_auth" "mycomputeport" {
   vosb_address = "10.10.12.13"
-  name = "001-iSCSI-002"
+  name         = "001-iSCSI-002"
 }
 
 output "mycomputeport" {

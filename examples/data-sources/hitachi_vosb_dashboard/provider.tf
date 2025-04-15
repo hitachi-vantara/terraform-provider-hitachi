@@ -10,8 +10,8 @@ terraform {
 provider "hitachi" {
   hitachi_vosb_provider {
     vosb_address = "10.10.12.13"
-    username           = var.hitachi_storage_user
-    password           = var.hitachi_storage_password
+    username     = var.hitachi_storage_user
+    password     = var.hitachi_storage_password
   }
 
 }

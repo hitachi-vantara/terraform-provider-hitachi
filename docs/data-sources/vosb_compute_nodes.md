@@ -30,7 +30,7 @@ VOS Block Compute Node:Obtains a list of compute node information.
 #
 
 data "hitachi_vosb_compute_nodes" "computenodes" {
-  vosb_address = "10.10.12.13"
+  vosb_address      = "10.10.12.13"
   compute_node_name = "ComputeNode-RESTAPI123"
 }
 
