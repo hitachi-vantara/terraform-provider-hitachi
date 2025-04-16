@@ -29,9 +29,9 @@ VOS Block Compute Node:Registers the information of the compute node.
 //
 
 resource "hitachi_vosb_compute_node" "mycompute" {
-  vosb_address = "10.10.12.13"
+  vosb_address      = "10.10.12.13"
   compute_node_name = "ComputeNode-RESTAPI123"
-  os_type = "VMware"
+  os_type           = "VMware"
 
   fc_connection {
     host_wwn = "60060e8107595326"

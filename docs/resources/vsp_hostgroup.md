@@ -30,13 +30,13 @@ VSP Storage Host Group:The following request creates a host group for the port. 
 #
 
 resource "hitachi_vsp_hostgroup" "myhg" {
-  serial           = 12345 
-  hostgroup_number = 23
-  hostgroup_name   = "TESTING-HOSTGROUP" 
-  port_id          = "CL1-A"           
+  serial            = 12345
+  hostgroup_number  = 23
+  hostgroup_name    = "TESTING-HOSTGROUP"
+  port_id           = "CL1-A"
   host_mode_options = [12, 32]
   host_mode         = "AIX"
- 
+
   # SET of LUN
   lun {
     ldev_id = 25

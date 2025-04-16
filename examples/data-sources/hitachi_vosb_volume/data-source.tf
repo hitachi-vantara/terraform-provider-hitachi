@@ -14,7 +14,7 @@
 
 data "hitachi_vosb_volume" "vosbvolumes" {
   vosb_address = "10.10.12.13"
-  volume_name       = "Mongonode3_vol4dd"
+  volume_name  = "Mongonode3_vol4dd"
 }
 
 output "volumeoutput" {

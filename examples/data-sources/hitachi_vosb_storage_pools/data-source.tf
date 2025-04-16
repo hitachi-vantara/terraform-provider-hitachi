@@ -13,7 +13,7 @@
 #
 
 data "hitachi_vosb_storage_pools" "pool" {
-  vosb_address = "10.10.12.13"
+  vosb_address       = "10.10.12.13"
   storage_pool_names = ["SP01"]
 }
 

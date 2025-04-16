@@ -29,7 +29,7 @@ VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
 
 # Retrieve iSCSI CHAP user by ID
 data "hitachi_vosb_iscsi_chap_users" "chap_user_by_id" {
-  vosb_address = "10.10.12.13"
+  vosb_address     = "10.10.12.13"
   target_chap_user = "a79c1a1d-2719-4e07-b800-faf9de73d0ae" //chap user id
 }
 
@@ -39,7 +39,7 @@ output "id_output" {
 
 # Retrieve iSCSI CHAP user by name
 data "hitachi_vosb_iscsi_chap_users" "chap_user_by_name" {
-  vosb_address = "10.10.12.13"
+  vosb_address     = "10.10.12.13"
   target_chap_user = "chapusername"
 }
 
