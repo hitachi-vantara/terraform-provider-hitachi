@@ -168,7 +168,22 @@ func CheckResponseAndWaitForJob(storageSetting vssbmodel.StorageDeviceSettings, 
 	log.WriteDebug("TFDebug|Final JOB: %+v", job)
 
 	if state != "Succeeded" {
-		return job, fmt.Errorf(job.Error.Message)
+		// example: Error: {ErrorSource:/ConfigurationManager/simple/v1/objects/servers/c26def00-d9b4-4d08-be6f-2dba8d71643a/hbas
+		// Message:The request could not be executed. Cause:The specified initiator and compute port protocol parameters are different.
+		// Solution:Retry the operation with the same value specified for the initiator protocol and the compute port protocol.
+		// SolutionType:SEE_ERROR_DETAIL
+		// MessageID:KARS03080-E
+		// ErrorCode:{Ssb2: Ssb1:} DetailCode:}
+
+		errmsg := fmt.Sprintf("%s: %s %s Solution: %s", job.Error.MessageID, job.Error.Message, job.Error.Cause, job.Error.Solution)
+		if job.Error.ErrorCode.Ssb1 != "" {
+			errmsg = fmt.Sprintf("%s ErrCode: %+v", errmsg, job.Error.ErrorCode)
+			if job.Error.DetailCode != "" {
+				errmsg = fmt.Sprintf("%s ErrCode: %+v", errmsg, job.Error.ErrorCode)
+				errmsg = fmt.Sprintf("%s DetailCode: %s", errmsg, job.Error.DetailCode)
+			}
+		}
+		return job, fmt.Errorf("%s", errmsg)
 	}
 
 	return job, nil

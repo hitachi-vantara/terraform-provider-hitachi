@@ -81,7 +81,7 @@ func resourceDeleteVolume(ctx context.Context, d *schema.ResourceData, m interfa
 
 	err := impl.DeleteVolume(d)
 	if err != nil {
-		if err.Error() == "The request could not be executed." {
+		if strings.Contains(err.Error(), "The request could not be executed") {
 			log.WriteDebug("TFError| error deleting volume, err: %v", err)
 			log.WriteError(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED_MSG))
 			err = fmt.Errorf(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED_MSG))
