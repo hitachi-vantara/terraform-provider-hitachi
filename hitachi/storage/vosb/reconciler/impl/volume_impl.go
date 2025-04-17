@@ -5,7 +5,7 @@ import (
 	utils "terraform-provider-hitachi/hitachi/common/utils"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
 	provisonermodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
-	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catelog"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
 	"github.com/jinzhu/copier"
@@ -258,7 +258,7 @@ func (psm *vssbStorageManager) DeleteVolumeResource(volumeID *string) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN), volumeID)
+	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN), *volumeID)
 	objStorage := provisonermodel.StorageDeviceSettings{
 		Username:       psm.storageSetting.Username,
 		Password:       psm.storageSetting.Password,
@@ -273,9 +273,9 @@ func (psm *vssbStorageManager) DeleteVolumeResource(volumeID *string) error {
 	err = provObj.DeleteVolume(*volumeID)
 	if err != nil {
 		log.WriteDebug("TFError| error in Deletevolume call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED), volumeID)
+		log.WriteError(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED), *volumeID)
 		return err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_END), volumeID)
+	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_END), *volumeID)
 	return nil
 }

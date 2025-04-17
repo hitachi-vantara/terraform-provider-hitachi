@@ -6,7 +6,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/storage/vosb/gateway/impl"
 	vssbgatewaymodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
-	mc "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/message-catelog"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
 
 	"github.com/jinzhu/copier"
@@ -54,8 +54,8 @@ func (psm *vssbStorageManager) GetComputeNode(serverID string) (*vssbmodel.Compu
 	}
 
 	initatorInfo, err := gatewayObj.GetInitiatorsInformationForComputeNode(serverID)
-	for i := 0 ; i < len(initatorInfo.Data); i++{
-		for j := 0 ; j < len(provServer.Paths); j++ {
+	for i := 0; i < len(initatorInfo.Data); i++ {
+		for j := 0; j < len(provServer.Paths); j++ {
 			if initatorInfo.Data[i].Name == provServer.Paths[j].HbaName {
 				provServer.Paths[j].Protocol = initatorInfo.Data[i].Protocol
 				break

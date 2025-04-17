@@ -17,7 +17,7 @@ VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the followi
 # Hitachi VSP iSCSI CHAP User Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# iSCSI CHAP user from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
+# iSCSI CHAP user from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_iscsi_chap_user" retrieves details about an

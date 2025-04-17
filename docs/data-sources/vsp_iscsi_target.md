@@ -17,7 +17,7 @@ VSP Storage ISCSI Targets:The following request gets information about iSCSI tar
 # Hitachi VSP iSCSI Target Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# iSCSI target from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
+# iSCSI target from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_iscsi_target" retrieves details about an

@@ -16,7 +16,7 @@ import (
 	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
-	rmc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catelog"
+	rmc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"

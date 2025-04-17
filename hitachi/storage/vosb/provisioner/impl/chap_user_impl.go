@@ -6,7 +6,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/storage/vosb/gateway/impl"
 	vssbgatewaymodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
-	mc "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/message-catelog"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
 
 	"github.com/jinzhu/copier"

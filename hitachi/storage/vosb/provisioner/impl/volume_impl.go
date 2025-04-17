@@ -5,7 +5,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	gatewayimpl "terraform-provider-hitachi/hitachi/storage/vosb/gateway/impl"
 	vssbgatewaymodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
-	mc "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/message-catelog"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
 
 	"github.com/jinzhu/copier"
@@ -533,13 +533,13 @@ func (psm *vssbStorageManager) DeleteVolume(volumeId string) error {
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN))
+	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN), volumeId)
 	err = gatewayObj.DeleteVolume(&volumeId)
 	if err != nil {
 		log.WriteDebug("TFError| error in Delete volume call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED))
+		log.WriteError(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED), volumeId)
 		return err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_END))
+	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_END), volumeId)
 	return nil
 }

@@ -2,7 +2,7 @@
 # Hitachi VSP Parity Groups Data Retrieval
 #
 # This section defines a data source block to fetch information about specific
-# parity groups from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
+# parity groups from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_parity_groups" retrieves details about

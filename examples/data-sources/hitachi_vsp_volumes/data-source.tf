@@ -1,8 +1,8 @@
 #
-# Hitachi VSP Volume Data Retrieval
+# Hitachi VSP Volume Data Retrieval from VSP Direct Connect and Gateway connections
 #
 # This section defines a data source block to fetch information about a specific
-# volume from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp Configuration
+# volume from a Hitachi Virtual Storage Platform (VSP) using HashiCorp Configuration
 # Language (HCL).
 #
 # The data source block "hitachi_vsp_volume" retrieves details about a volume

@@ -111,7 +111,7 @@ func setNewLogFile(fname string, maxSize int, maxBackups int) error {
 func formatLog(severity string, message string) string {
 	_, funcname, filename, lineno := getSourceFileInfo(3)
 	filesource := fmt.Sprintf("%s:%s:%d", funcname, filename, lineno)
-	logStatement := fmt.Sprintf("%s\t%s\t%s\t%s", time.Now().Format("15:04:05"), severity, filesource, message)
+	logStatement := fmt.Sprintf("%s\t%s\t%s\t%s", time.Now().Format("2006-01-02 15:04:05 MST"), severity, filesource, message)
 	return logStatement
 }
 

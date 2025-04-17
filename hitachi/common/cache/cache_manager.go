@@ -57,7 +57,7 @@ func ReadFromSanCache(key string) (sanmodel.StorageSettingsAndInfo, error) {
 	}
 	// DO NOT UMCOMMENT THIS LINE, it prints username/password in the log file
 	//log.WriteDebug("key: %+v  data: %v", key, value)
-	return value, fmt.Errorf("%s not found in the cache", key)
+	return value, fmt.Errorf("storage serial number %v not found", key)
 }
 
 func ReadFromVssbCache(key string) (vssbmodel.StorageSettingsAndInfo, error) {
@@ -73,7 +73,7 @@ func ReadFromVssbCache(key string) (vssbmodel.StorageSettingsAndInfo, error) {
 	}
 	// DO NOT UMCOMMENT THIS LINE, it prints username/password in the log file
 	//log.WriteDebug("key: %+v  data: %v", key, value)
-	return value, fmt.Errorf("%s not found in the cache", key)
+	return value, fmt.Errorf("vosb address %v not found", key)
 }
 
 func GetSanSettingsFromCache(serialNumber string) (*sanmodel.StorageDeviceSettings, error) {

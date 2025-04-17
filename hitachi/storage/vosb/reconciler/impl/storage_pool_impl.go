@@ -5,7 +5,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
 	provisonermodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
-	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catelog"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
 	"github.com/jinzhu/copier"
@@ -105,7 +105,6 @@ func (psm *vssbStorageManager) GetStoragePoolByPoolName(poolName string) (*vssbm
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
-
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_STORAGE_POOL_BEGIN), poolName)
 	provStoragePools, err := provObj.GetStoragePoolByPoolName(poolName)
