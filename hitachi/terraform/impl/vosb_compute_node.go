@@ -252,6 +252,32 @@ func CreateVssbComputeNode(d *schema.ResourceData) (*terraformmodel.ComputeNodeW
 		return nil, err
 	}
 
+	protocolsToCheck := map[string]bool{}
+	if len(createInput.FcConnections) > 0 {
+		protocolsToCheck["FC"] = true
+	}
+	if len(createInput.IscsiConnections) > 0 {
+		protocolsToCheck["iSCSI"] = true
+	}
+	if len(protocolsToCheck) > 0 {
+		storagePorts, err := reconObj.GetStoragePorts()
+		if err != nil {
+			log.WriteDebug("TFError| error in GetStoragePorts, err: %v", err)
+			return nil, err
+		}
+		availableProtocol := map[string]bool{}
+		for _, port := range storagePorts.Data {
+			availableProtocol[port.Protocol] = true
+		}
+		for requiredProtocol, _ := range protocolsToCheck {
+			if !availableProtocol[requiredProtocol] {
+				err := fmt.Errorf("no ports with protocol %s found — check your storage configuration", requiredProtocol)
+				log.WriteDebug("TFError| error in Creating ComputeNode - ReconcileComputeNode , err: %v", err)
+				return nil, err
+			}
+		}
+	}
+
 	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_COMPUTE_NODE_BEGIN), createInput.Name)
 	reconcilerCreateComputeNode := reconcilermodel.ComputeResource{}
 	err = copier.Copy(&reconcilerCreateComputeNode, createInput)
@@ -301,6 +327,32 @@ func UpdateVssbComputeNode(d *schema.ResourceData) (*terraformmodel.ComputeNodeW
 	updateInput, err := CreateVssbComputeNodeFromSchema(d)
 	if err != nil {
 		return nil, err
+	}
+
+	protocolsToCheck := map[string]bool{}
+	if len(updateInput.FcConnections) > 0 {
+		protocolsToCheck["FC"] = true
+	}
+	if len(updateInput.IscsiConnections) > 0 {
+		protocolsToCheck["iSCSI"] = true
+	}
+	if len(protocolsToCheck) > 0 {
+		storagePorts, err := reconObj.GetStoragePorts()
+		if err != nil {
+			log.WriteDebug("TFError| error in GetStoragePorts, err: %v", err)
+			return nil, err
+		}
+		availableProtocol := map[string]bool{}
+		for _, port := range storagePorts.Data {
+			availableProtocol[port.Protocol] = true
+		}
+		for requiredProtocol, _ := range protocolsToCheck {
+			if !availableProtocol[requiredProtocol] {
+				err := fmt.Errorf("no ports with protocol %s found — check your storage configuration", requiredProtocol)
+				log.WriteDebug("TFError| error in Creating ComputeNode - ReconcileComputeNode , err: %v", err)
+				return nil, err
+			}
+		}
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_COMPUTE_NODE_BEGIN), updateInput.Name)
