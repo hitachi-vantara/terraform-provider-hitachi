@@ -98,8 +98,8 @@ func (psm *sanStorageManager) GetStorageSystem() (*sanmodel.StorageSystem, error
 		mgmtIP = ssInfo.Ctl1IP
 	}
 
-	totalCapInMB := utils.ConvertSizeFromBytesToMb(ssCapacity.Total.TotalCapacity)
-	freeCapInMB := utils.ConvertSizeFromBytesToMb(ssCapacity.Total.FreeSpace)
+	totalCapInMB := utils.ConvertSizeFromKbToMb(ssCapacity.Total.TotalCapacity)
+	freeCapInMB := utils.ConvertSizeFromKbToMb(ssCapacity.Total.FreeSpace)
 	usedCapInMB := totalCapInMB - freeCapInMB
 
 	ss := sanmodel.StorageSystem{

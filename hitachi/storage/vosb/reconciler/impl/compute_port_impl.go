@@ -6,7 +6,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
 	provisonermodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
-	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catelog"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
 	"github.com/jinzhu/copier"

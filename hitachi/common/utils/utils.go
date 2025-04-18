@@ -106,6 +106,14 @@ func ConvertSizeFromBytesToMb(size uint64) uint64 {
 	return uint64(float64(size) / float64(MEGABYTES))
 }
 
+func ConvertSizeFromKbToMb(size uint64) uint64 {
+	return uint64(float64(size * 1024) / float64(MEGABYTES))
+}
+
+func ConvertSizeFromKbToGb(size uint64) uint64 {
+	return uint64(float64(size * 1024) / float64(GIGABYTES))
+}
+
 // ConvertSizeToBytes -- examples: 1GB, 2.5MB
 func ConvertSizeToBytes(size string) (uint64, error) {
 	var sizeInBytes uint64

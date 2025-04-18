@@ -2,7 +2,7 @@
 # Hitachi VSP Hostgroup Resource
 #
 # This section defines a Terraform resource block to create a Hitachi VSP hostgroup.
-# The resource "hitachi_vsp_hostgroup" represents a hostgroup on a Hitachi VSP One SDS Block
+# The resource "hitachi_vsp_hostgroup" represents a hostgroup on a Hitachi Virtual
 # Storage Platform (VSP) and allows you to manage its configuration using Terraform.
 #
 # Customize the values of the parameters (serial, hostgroup_number, hostgroup_name,
@@ -13,6 +13,7 @@
 # the official Hitachi documentation:
 # https://knowledge.hitachivantara.com/Documents/Management_Software/SVOS/9.8.6/Volume_Management_-_VSP_E_Series/Host_Attachment/14_Host_modes_and_host_mode_options
 #
+
 
 resource "hitachi_vsp_hostgroup" "myhg" {
   serial            = 12345

@@ -17,7 +17,7 @@ VSP Storage System:It returns the storage device related information.
 # Hitachi VSP Storage System Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# storage system from a Hitachi VSP One SDS Block Storage Platform (VSP) using HashiCorp
+# storage system from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vsp_storage" retrieves details about a storage
