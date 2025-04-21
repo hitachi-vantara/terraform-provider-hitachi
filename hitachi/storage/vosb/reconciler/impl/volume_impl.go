@@ -67,8 +67,10 @@ func (psm *vssbStorageManager) GetVolumeDetails(volumeName string) (*vssbmodel.V
 	}
 	provNodes, err := provObj.GetVolumeDetails(volumeName)
 	if err != nil {
-		log.WriteDebug("TFError| error in GetVolumeDetails provisioner call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_VOLUME_INFO_FAILED))
+		// don't log it as error as this is used for checking if vol exists or not
+		// log.WriteDebug("TFError| error in GetVolumeDetails provisioner call, err: %v", err)
+		// log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_VOLUME_INFO_FAILED))
+		log.WriteDebug("volume %s not found", volumeName)
 		return nil, err
 	}
 	// Converting Prov to Reconciler

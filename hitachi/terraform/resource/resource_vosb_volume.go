@@ -33,7 +33,7 @@ func ResourceVssbStorageCreateVolume() *schema.Resource {
 		ReadContext:   resourceReadVolume,
 		UpdateContext: resourceCreateVolume,
 		DeleteContext: resourceDeleteVolume,
-		// CustomizeDiff: resourceMyResourceCustomDiff,
+		CustomizeDiff: resourceMyResourceCustomDiff,
 	}
 }
 
@@ -96,9 +96,15 @@ func resourceReadVolume(ctx context.Context, d *schema.ResourceData, m interface
 	return datasourceimpl.DataSourceVssbVolumeNodesRead(ctx, d, m)
 }
 
-// This is causing problem for creating new non-existing volume
-// CustomDiff should not do api calls but only check schema inputs
-// TODO: retain only checks in inputs, but move checks that needs api call to both create/update resource code
+// CustomDiff is intended for schema-based validations only.
+// Terraform expects CustomDiff to be deterministic, stateless, and side-effect free.
+// Avoid making API calls here, as they may introduce performance issues,
+// non-deterministic behavior, or failures during `terraform plan`.
+//
+// All backend validations (e.g., checking if volume exists, validating compute node names, etc.)
+// should be moved to the resource's Create/Update functions instead.
+//
+// See: https://developer.hashicorp.com/terraform/plugin/framework/resources/customize-diff
 func resourceMyResourceCustomDiff(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
