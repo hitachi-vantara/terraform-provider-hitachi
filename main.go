@@ -11,7 +11,7 @@ import (
 	"terraform-provider-hitachi/hitachi/terraform"
 )
 
-var version = "2.0.0" // Will be overridden with -ldflags during build
+var version = "2.1" // Will be overridden with -ldflags during build
 
 func main() {
 	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "-v") {
