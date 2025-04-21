@@ -16,7 +16,7 @@ description: |-
 terraform {
   required_providers {
     hitachi = {
-      version = "2.0"
+      version = "2.1"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -45,9 +45,9 @@ provider "hitachi" {
 
 Required:
 
-- `password` (String) Password of the Virtual Storage Software block
-- `username` (String) Username of the Virtual Storage Software block
-- `vosb_address` (String) Host name or the IP address (IPv4) of Virtual Storage Software block.
+- `password` (String) Password of the VSP One SDS Block
+- `username` (String) Username of the VSP One SDS Block
+- `vosb_address` (String) Host name or the IP address (IPv4) of VSP One SDS Block.
 
 
 <a id="nestedblock--san_storage_system"></a>

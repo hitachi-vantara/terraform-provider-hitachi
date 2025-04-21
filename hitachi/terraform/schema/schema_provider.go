@@ -15,17 +15,17 @@ var ProviderSchema = map[string]*schema.Schema{
 				"vosb_address": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Host name or the IP address (IPv4) of Virtual Storage Software block.",
+					Description: "Host name or the IP address (IPv4) of VSP One SDS Block.",
 				},
 				"username": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Username of the Virtual Storage Software block",
+					Description: "Username of the VSP One SDS Block",
 				},
 				"password": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Password of the Virtual Storage Software block",
+					Description: "Password of the VSP One SDS Block",
 				},
 			},
 		},

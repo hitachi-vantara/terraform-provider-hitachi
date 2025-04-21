@@ -27,20 +27,20 @@ The following request creates a volume by using the specified parity groups or p
 /* 
 Refer to the below table for more information
 
-| Property                      | UAI Gateway Provider           | VSP Direct Connect Provider  |
-|-------------------------------|----------------------------|------------------------------|
-| serial                        | 12345 **                   | 12345 *                      |
-| storage_id                    | ""   **                    | -                            |
-| size_gb                       | 1  *                       | 1 *                          |
-| pool_id                       | 2  *                       | 1 **                         |
-| name                          | "SampleName"               | "SampleName"                 |
-| system                        | "SampleSystemName"         | -                            |
-| subscriber_id                 | ""                         | -                            |
-| resource_group_id             | ""                         | -                            |
-| ldev_id                       | 2                          | -                            |
-| deduplication_compression_mode| ""                         | ""                           |
-| pool_name                     | -                          | "PoolName"   **              |
-| paritygroup_id                | -                          | "parity_group_id" **         |
+| Property                      | VSP Direct Connect Provider  |
+|-------------------------------|------------------------------|
+| serial                        | 12345 *                      |
+| storage_id                    | -                            |
+| size_gb                       | 1 *                          |
+| pool_id                       | 1 **                         |
+| name                          | "SampleName"                 |
+| system                        | -                            |
+| subscriber_id                 | -                            |
+| resource_group_id             | -                            |
+| ldev_id                       | -                            |
+| deduplication_compression_mode| ""                           |
+| pool_name                     | "PoolName"   **              |
+| paritygroup_id                | "parity_group_id" **         |
 
 
 
@@ -60,9 +60,7 @@ resource "hitachi_vsp_volume" "mylun" {
 
   //Optional parameters in both the provider
   name = "hitachi_vsp_volume"
-  deduplication_compression_mode ="DISABLED"
   ldev_id = 0
-
 }
 ```
 
