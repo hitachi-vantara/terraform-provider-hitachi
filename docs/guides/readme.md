@@ -57,7 +57,7 @@ If not the first time using the sample directory, do cleanup
 # rm -rf san_settings
 ```
 
-Modify provider.tf with your storage or UAI gateway information, then do:
+Modify provider.tf with your vsp or vosb storage information, then do:
 ```
 # terraform init
 # terraform apply
