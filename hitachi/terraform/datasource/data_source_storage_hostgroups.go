@@ -71,6 +71,10 @@ func DataSourceStorageHostGroupsRead(ctx context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("total_hostgroup_count", len(hgList)); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	// d.SetId(hostgroup.PortID + strconv.Itoa(hostgroup.HostGroupNumber))
 	log.WriteInfo("all hg read successfully")
