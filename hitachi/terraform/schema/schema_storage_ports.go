@@ -66,12 +66,12 @@ var StoragePortsSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Description: "Port ID of the storage device",
 	},
+	// output
 	"total_port_count": &schema.Schema{
 		Type:        schema.TypeInt,
-		Optional:    true,
+		Computed:    true,
 		Description: "Total number of ports on the storage device",
 	},
-	// output
 	"ports": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
