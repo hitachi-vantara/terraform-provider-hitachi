@@ -4,17 +4,42 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"net/http"
 	"reflect"
 	"time"
-	// "io"
+	"io"
 
 	log "github.com/romana/rlog"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 )
 
-var TIMEOUT time.Duration = 120
+var TIMEOUT time.Duration = 300
+
+// SharedClient is the global, reusable HTTP client
+var SharedClient *http.Client
+
+// init() is called automatically when the package is loaded
+func init() {
+	SharedClient = newHTTPClient(TIMEOUT*time.Second, true)
+}
+
+// Helper function to build a configured client
+func newHTTPClient(timeout time.Duration, skipTLSVerify bool) *http.Client {
+	tr := &http.Transport{
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: skipTLSVerify},
+		MaxIdleConns:          100,              // Reuses connections across requests
+		IdleConnTimeout:       90 * time.Second, // Keeps unused connections alive
+		DisableKeepAlives:     false,            // Enables connection reuse
+		TLSHandshakeTimeout:   10 * time.Second, // Gives up TLS setup after 10s
+		ExpectContinueTimeout: 1 * time.Second,  // Waits 1s for "100 Continue"
+	}
+
+	return &http.Client{
+		Timeout:   timeout,
+		Transport: tr,
+	}
+}
 
 func IsHttpError(statusCode int) bool {
 	if statusCode >= 400 && statusCode <= 599 {
@@ -24,15 +49,6 @@ func IsHttpError(statusCode int) bool {
 }
 
 func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{
-		Timeout:   TIMEOUT * time.Second,
-		Transport: tr,
-	}
-
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Error(err)
@@ -72,7 +88,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 
 	logRequest(req)
 
-	resp, err := client.Do(req)
+	resp, err := SharedClient.Do(req)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -84,7 +100,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 		return "", fmt.Errorf("%v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -95,15 +111,6 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 }
 
 func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{
-		Timeout:   TIMEOUT * time.Second,
-		Transport: tr,
-	}
-
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(httpBody))
 	if err != nil {
 		log.Error(err)
@@ -142,7 +149,7 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 
 	logRequest(req)
 
-	resp, err := client.Do(req)
+	resp, err := SharedClient.Do(req)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -154,7 +161,7 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 		return "", fmt.Errorf("%v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -165,15 +172,6 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 }
 
 func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string]string, httpBody []byte) (string, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{
-		Timeout:   TIMEOUT * time.Second,
-		Transport: tr,
-	}
-
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(httpBody))
 	if err != nil {
 		log.Error(err)
@@ -197,7 +195,7 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 
 	logRequest(req)
 
-	resp, err := client.Do(req)
+	resp, err := SharedClient.Do(req)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -209,7 +207,7 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 		return "", fmt.Errorf("%v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -220,12 +218,6 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 }
 
 func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{Transport: tr}
-
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		log.Error(err)
@@ -250,7 +242,7 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 
 	logRequest(req)
 
-	resp, err := client.Do(req)
+	resp, err := SharedClient.Do(req)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -262,7 +254,7 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 		return "", fmt.Errorf("%v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -273,14 +265,6 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 }
 
 func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{
-		Timeout:   TIMEOUT * time.Second,
-		Transport: tr,
-	}
 	var req *http.Request
 	var err error
 	nullValue := []byte("null")
@@ -313,7 +297,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 
 	logRequest(req)
 
-	resp, err := client.Do(req)
+	resp, err := SharedClient.Do(req)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -325,7 +309,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 		return "", fmt.Errorf("%v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -336,14 +320,6 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 }
 
 func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
-	client := &http.Client{
-		Timeout:   TIMEOUT * time.Second,
-		Transport: tr,
-	}
 	req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(httpBody))
 	if err != nil {
 		log.Error(err)
@@ -368,7 +344,7 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 
 	logRequest(req)
 
-	resp, err := client.Do(req)
+	resp, err := SharedClient.Do(req)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -380,7 +356,7 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 		return "", fmt.Errorf("%v", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
 		return "", err
