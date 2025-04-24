@@ -36,6 +36,37 @@ Hitachi Terraform RPM Package
 %define examples_dst %{buildroot}/%{terraform}/examples
 %define docs_dst %{buildroot}/%{terraform}/docs
 
+
+%pre
+logfile="/var/log/hitachi_terraform_install.log"
+
+# Remove old log if it exists
+[ -f "$logfile" ] && rm -f "$logfile"
+
+echo "[$(date)] Starting pre-install checks" | tee -a "$logfile"
+
+# Check if same or different version is installed
+installed_version=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}' %{name} 2>/dev/null)
+if [ $? -eq 0 ]; then
+  echo "[$(date)] ERROR: Version $installed_version of %{name} is already installed." | tee -a "$logfile" >&2
+  echo "[$(date)] Please remove or move it before reinstalling. Aborting." | tee -a "$logfile" >&2
+  exit 1
+fi
+
+# Check if install directory exists
+if [ -d "%{terraform}" ]; then
+  echo "[$(date)] ERROR: Installation directory %{terraform} already exists." | tee -a "$logfile" >&2
+  echo "[$(date)] Please remove or move it before reinstalling. Aborting." | tee -a "$logfile" >&2
+  exit 1
+fi
+
+# Redirection of any errors generated from RPM scriptlet
+# This will suppress the scriptlet error messages (like exit status 1, etc.)
+exec 2>/dev/null
+
+echo "[$(date)] Pre-install checks passed" | tee -a "$logfile"
+
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -122,48 +153,61 @@ find %{buildroot}/%{terraform}/docs -type f -name "*.md" -exec chmod -x {} \;
 %post
 chmod 755 -R %{hitachi_base}
 
-echo "  Installing : terraform plugin for root"
+# Log file
+logfile="/var/log/hitachi_terraform_install.log"
+
+echo "[$(date)] Starting installation of HV_Storage_Terraform" | tee -a "$logfile"
+
+# Warning about overwrite
+echo "[$(date)] WARN: Overwriting existing directories under %{terraform}" | tee -a "$logfile" >&2
+
+echo "[$(date)] Installing terraform plugin for root"
 mkdir -p /root/%{terraform_plugin}
-ln -sf %{terraform}/bin/terraform-provider-hitachi  ${HOME}/%{terraform_plugin}/terraform-provider-hitachi 
+ln -sf %{terraform}/bin/terraform-provider-hitachi  ${HOME}/%{terraform_plugin}/terraform-provider-hitachi 2>>"$logfile" | tee -a "$logfile"
 
 tuser=$(logname)
 if [[ $tuser != root ]]; then
-  echo "  Installing : terraform plugin for ${tuser}"
+  echo "[$(date)]  Installing terraform plugin for ${tuser}" | tee -a "$logfile"
   entry=$(grep "^${tuser}" /etc/passwd )
   entry="${entry%:*}"
   home="${entry##*:}"
   mkdir -p ${home}/%{terraform_plugin}
-  ln -sf %{terraform}/bin/terraform-provider-hitachi  ${home}/%{terraform_plugin}/terraform-provider-hitachi
+  ln -sf %{terraform}/bin/terraform-provider-hitachi  ${home}/%{terraform_plugin}/terraform-provider-hitachi 2>>"$logfile" | tee -a "$logfile"
 fi
 
 if [[ $1 -eq 1 ]]; then
-    echo "Installation complete"
+    echo "[$(date)] Installation complete" | tee -a "$logfile"
+    echo "[$(date)] Installation successful" | tee -a "$logfile"
 fi
 
-
-%preun
 
 %postun
+logfile="/var/log/hitachi_terraform_uninstall.log"
+
+# Remove old log if it exists
+[ -f "$logfile" ] && rm -f "$logfile"
+
+echo "[$(date)] Starting uninstallation of HV_Storage_Terraform" | tee -a "$logfile"
+
 if [[ $1 -eq 0 ]]; then
-  # Remove plugin for the user
+  echo "[$(date)] WARN: Deleting %{terraform} and contents" | tee -a "$logfile" >&2
+
   tuser=$(logname)
   if [[ $tuser != root ]]; then
-    echo "  Erasing : terraform plugin %{_DISPLAY_VERSION} for ${tuser}"
+    echo "[$(date)] Erasing : terraform plugin %{_DISPLAY_VERSION} for ${tuser}" | tee -a "$logfile"
     home=$(getent passwd "$tuser" | cut -d: -f6)
-    rm -rf "${home}/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}" || true
-    rmdir --ignore-fail-on-non-empty "${home}/.terraform.d/plugins/localhost/hitachi-vantara/hitachi" || true
+    rm -rf "${home}/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}" >> "$logfile" 2>&1 | tee -a "$logfile" || true
+    rmdir --ignore-fail-on-non-empty "${home}/.terraform.d/plugins/localhost/hitachi-vantara/hitachi" >> "$logfile" 2>&1 | tee -a "$logfile" || true
   fi
 
-  # Remove plugin for root
-  echo "  Erasing : terraform plugin %{_DISPLAY_VERSION} for root"
-  rm -rf "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}" || true
-  rmdir --ignore-fail-on-non-empty "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi" || true
+  echo "[$(date)] Erasing terraform plugin %{_DISPLAY_VERSION} for root" | tee -a "$logfile"
+  rm -rf "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}" >> "$logfile" 2>&1 | tee -a "$logfile" || true
+  rmdir --ignore-fail-on-non-empty "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi" >> "$logfile" 2>&1 | tee -a "$logfile" || true
 
-  # Remove install dir
-  rm -rf %{terraform} || true
-  rmdir --ignore-fail-on-non-empty %{hitachi_base} || true
+  echo "[$(date)] Removing install directory %{terraform}" | tee -a "$logfile"
+  rm -rf %{terraform} >> "$logfile" 2>&1 | tee -a "$logfile" || true
+  rmdir --ignore-fail-on-non-empty %{hitachi_base} >> "$logfile" 2>&1 | tee -a "$logfile" || true
 
-  echo "Erase complete"
+  echo "[$(date)] Erase complete" | tee -a "$logfile"
+  echo "[$(date)] Uninstallation complete" | tee -a "$logfile"
 fi
-
-%changelog
