@@ -91,6 +91,7 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 	"parity_group_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
+		Computed:    true,
 		Description: "List of parity group IDs to fetch",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,

@@ -56,6 +56,10 @@ func DataSourceStorageIscsiTargetsRead(ctx context.Context, d *schema.ResourceDa
 			return diag.FromErr(err)
 		}
 
+		if err := d.Set("port_ids", []string{}); err != nil {
+			return diag.FromErr(err)
+		}
+
 	}
 	itList := []map[string]interface{}{}
 	for _, it := range iscsiTargets.IscsiTargets {
