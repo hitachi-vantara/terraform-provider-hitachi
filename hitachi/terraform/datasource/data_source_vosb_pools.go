@@ -71,6 +71,10 @@ func dataSourceStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m i
 			return diag.FromErr(err)
 		}
 
+		if err := d.Set("storage_pool_names", []string{}); err != nil {
+			return diag.FromErr(err)
+		}
+
 		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 		log.WriteInfo("all storage pools read successfully")
 

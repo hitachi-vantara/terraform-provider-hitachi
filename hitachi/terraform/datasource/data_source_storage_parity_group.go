@@ -55,6 +55,13 @@ func DataSourceStorageParityGroupsRead(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
+	_, ok := d.GetOk("parity_group_ids")
+	if !ok {
+		if err := d.Set("parity_group_ids", []string{}); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
 	log.WriteInfo("all parity group read successfully")

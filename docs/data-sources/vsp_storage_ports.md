@@ -48,12 +48,12 @@ output "storageports" {
 ### Optional
 
 - `port_id` (String) Port ID of the storage device
-- `total_port_count` (Number) Total number of ports on the storage device
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `ports` (Block List) This is ports output (see [below for nested schema](#nestedblock--ports))
+- `total_port_count` (Number) Total number of ports on the storage device
 
 <a id="nestedblock--ports"></a>
 ### Nested Schema for `ports`

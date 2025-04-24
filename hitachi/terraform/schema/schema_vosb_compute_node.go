@@ -13,6 +13,7 @@ var DataComputeNodeSchema = map[string]*schema.Schema{
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
+		Computed:    true,
 		Description: "The name  to be fetched",
 	},
 	// output

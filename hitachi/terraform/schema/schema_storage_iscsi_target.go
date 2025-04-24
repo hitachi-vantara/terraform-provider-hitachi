@@ -176,6 +176,7 @@ var DataIscsiTargetsSchema = map[string]*schema.Schema{
 	"port_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
+		Computed:    true,
 		Description: "List of Port IDs which need to be fetched from the storage server",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
