@@ -152,28 +152,50 @@ var DynamicPoolInfoSchema = map[string]*schema.Schema{
 	},
 }
 
-var DataDynamicPoolsSchema = map[string]*schema.Schema{
+var DataDynamicPoolSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
 		Description: "Serial number of storage",
 	},
 	"pool_id": &schema.Schema{
-		Type:        schema.TypeInt,
-		Optional:    true,
-		Description: "Pool ID of the storage",
+		Type:          schema.TypeInt,
+		Optional:      true,
+		Computed:      true,
+		ConflictsWith: []string{"pool_name"},
+		Description:   "Pool ID of the storage. Either `pool_id` or `pool_name` must be specified.",
 	},
 	"pool_name": &schema.Schema{
-		Type:        schema.TypeString,
-		Optional:    true,
-		Description: "Pool Name of the storage",
+		Type:          schema.TypeString,
+		Optional:      true,
+		Computed:      true,
+		ConflictsWith: []string{"pool_id"},
+		Description:   "Pool name of the storage. Either `pool_name` or `pool_id` must be specified.",
 	},
 	// output
 	"dynamic_pools": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is dynamic pools output",
+		Description: "Information about the dynamic pool.",
+		Elem: &schema.Resource{
+			Schema: DynamicPoolInfoSchema,
+		},
+	},
+}
+
+var DataDynamicPoolsSchema = map[string]*schema.Schema{
+	"serial": &schema.Schema{
+		Type:        schema.TypeInt,
+		Required:    true,
+		Description: "Serial number of storage",
+	},
+	// output
+	"dynamic_pools": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "List of all dynamic pools retrieved from the storage system.",
 		Elem: &schema.Resource{
 			Schema: DynamicPoolInfoSchema,
 		},
