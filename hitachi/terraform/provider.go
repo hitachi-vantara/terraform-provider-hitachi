@@ -47,6 +47,7 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_iscsi_chap_user":   datasourceimpl.DataSourceStorageChapUser(),
 			"hitachi_vsp_iscsi_chap_users":  datasourceimpl.DataSourceStorageChapUsers(),
 			"hitachi_vsp_storage_ports":     datasourceimpl.DataSourceStoragePorts(),
+			"hitachi_vsp_dynamic_pool":      datasourceimpl.DataSourceStorageDynamicPool(),
 			"hitachi_vsp_dynamic_pools":     datasourceimpl.DataSourceStorageDynamicPools(),
 			"hitachi_vsp_parity_groups":     datasourceimpl.DataSourceStorageParityGroups(),
 			"hitachi_vosb_storage_pools":    datasourceimpl.DataSourceStoragePools(),

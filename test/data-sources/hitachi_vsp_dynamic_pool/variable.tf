@@ -1,0 +1,1 @@
+../../common/variable_san.tf

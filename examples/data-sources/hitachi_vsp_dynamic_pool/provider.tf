@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     hitachi = {
-      version = "~> 2.1"
+      version = "2.1"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -9,8 +9,8 @@ terraform {
 
 provider "hitachi" {
   san_storage_system {
-    serial        = var.serial_number
-    management_ip = var.vsp_address 
+    serial        = 12345
+    management_ip = "10.10.11.12"
     username      = var.hitachi_storage_user
     password      = var.hitachi_storage_password
   }
