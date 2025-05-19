@@ -1,7 +1,7 @@
 ### Terraform Provider Hitachi
 
 
-## Build RPM package
+## Build RPM package:
 You must be a superuser to build the package.
 
 You must use Golang version 1.22 and set GOPATH to your Golang v1.22 directory.
