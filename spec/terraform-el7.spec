@@ -38,7 +38,12 @@ Hitachi Terraform RPM Package
 
 
 %pre
-logfile="/var/log/hitachi_terraform_install.log"
+logdir="/var/log/hitachi/terraform"
+logfile="$logdir/hitachi_terraform_install.log"
+
+# Ensure the log directory exists
+mkdir -p "$logdir"
+chmod 755 "$logdir"
 
 # Remove old log if it exists
 [ -f "$logfile" ] && rm -f "$logfile"
@@ -154,7 +159,12 @@ find %{buildroot}/%{terraform}/docs -type f -name "*.md" -exec chmod -x {} \;
 chmod 755 -R %{hitachi_base}
 
 # Log file
-logfile="/var/log/hitachi_terraform_install.log"
+logdir="/var/log/hitachi/terraform"
+logfile="$logdir/hitachi_terraform_install.log"
+
+# Ensure the log directory exists
+mkdir -p "$logdir"
+chmod 755 "$logdir"
 
 echo "[$(date)] Starting installation of HV_Storage_Terraform" | tee -a "$logfile"
 
@@ -182,7 +192,12 @@ fi
 
 
 %postun
-logfile="/var/log/hitachi_terraform_uninstall.log"
+logdir="/var/log/hitachi/terraform"
+logfile="$logdir/hitachi_terraform_uninstall.log"
+
+# Ensure the log directory exists
+mkdir -p "$logdir"
+chmod 755 "$logdir"
 
 # Remove old log if it exists
 [ -f "$logfile" ] && rm -f "$logfile"
