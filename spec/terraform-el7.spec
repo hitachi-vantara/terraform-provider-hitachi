@@ -50,11 +50,10 @@ chmod 755 "$logdir"
 
 echo "[$(date)] Starting pre-install checks" | tee -a "$logfile"
 
-# Check if same or different version is installed
-installed_version=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}' %{name} 2>/dev/null)
-if [ $? -eq 0 ]; then
-  echo "[$(date)] ERROR: Version $installed_version of %{name} is already installed." | tee -a "$logfile" >&2
-  echo "[$(date)] Please remove or move it before reinstalling. Aborting." | tee -a "$logfile" >&2
+installed_ver=$(rpm -q %{name})
+if [ ${installed_ver} != "" ]; then
+  echo "[$(date)] ERROR: $installed_ver is already installed." | tee -a "$logfile" >&2
+  echo "[$(date)] Please uninstall it before reinstalling. Aborting." | tee -a "$logfile" >&2
   exit 1
 fi
 
