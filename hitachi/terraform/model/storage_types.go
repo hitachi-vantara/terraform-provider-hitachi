@@ -38,3 +38,23 @@ type AllStorageTypes struct {
 	VspStorageSystem       []*StorageSystem
 	VssbStorageVersionInfo []*StorageVersionInfo
 }
+
+type Drive struct {
+	Id               string `json:"id"`
+	WwwId            string `json:"wwwid"`
+	StatusSummary    string `json:"statusSummary"`
+	Status           string `json:"status"`
+	TypeCode         string `json:"typeCode"`
+	SerialNumber     string `json:"serialNumber"`
+	StorageNodeId    string `json:"storageNodeId"`
+	DeviceFileName   string `json:"deviceFileName"`
+	VendorName       string `json:"vendorName"`
+	FirmwareRevision string `json:"firmwareRevision"`
+	LocatorLedStatus string `json:"locatorLedStatus"`
+	DriveType        string `json:"driveType"`
+	DriveCapacity    int    `json:"driveCapacity"`
+}
+
+type Drives struct {
+	Data []Drive `json:"data"`
+}

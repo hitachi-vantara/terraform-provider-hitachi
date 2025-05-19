@@ -4,6 +4,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
 	provisonermodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
+	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
 	"github.com/jinzhu/copier"
@@ -133,4 +134,43 @@ func ConvertToDashBoard(healths *provisonermodel.HealthStatuses, clusterInfo *pr
 	dashboardInfo.EfficiencyDataReduction = clusterInfo.SavingEffects.EfficiencyDataReduction
 
 	return &dashboardInfo, nil
+}
+
+// GetDrivesInfo Obtains a list of drive information.
+func (psm *vssbStorageManager) GetDrivesInfo() (*vssbmodel.Drives, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := provisonermodel.StorageDeviceSettings{
+		Username:       psm.storageSetting.Username,
+		Password:       psm.storageSetting.Password,
+		ClusterAddress: psm.storageSetting.ClusterAddress,
+	}
+
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DRIVES_BEGIN))
+
+	drivesInfo, err := provObj.GetDrivesInfo()
+	if err != nil {
+		log.WriteDebug("TFError| Error fetching drives, err: %+v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_DRIVES_FAILED))
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DRIVES_END))
+
+	reconDrivesInfo := vssbmodel.Drives{}
+	err = copier.Copy(&reconDrivesInfo, drivesInfo)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		return nil, err
+	}
+
+	return &reconDrivesInfo, nil
 }

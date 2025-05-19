@@ -63,3 +63,7 @@ type SpSavingEffects struct {
 type StoragePools struct {
 	Data []StoragePool `json:"data"`
 }
+
+type ExpandStoragePoolReq struct {
+	DriveIds []string `json:"driveIds"`
+}

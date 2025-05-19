@@ -33,3 +33,18 @@ func xTestGetDashboardInfo(t *testing.T) {
 	}
 	t.Logf("Response: %v", resp)
 }
+
+// go test -v -run TestGetDrivesInfo
+func xTestGetDrivesInfo(t *testing.T) {
+	psm, err := newTestManager()
+	if err != nil {
+		t.Fatalf("Unexpected error %v", err)
+	}
+
+	resp, err := psm.GetDrivesInfo()
+	if err != nil {
+		t.Errorf("Unexpected error in GetDrivesInfo %v", err)
+		return
+	}
+	t.Logf("Response: %v", resp)
+}

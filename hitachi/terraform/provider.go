@@ -35,6 +35,7 @@ func Provider() *schema.Provider {
 			"hitachi_vosb_iscsi_chap_user":      resourceimpl.ResourceVssbStorageChapUser(),
 			"hitachi_vosb_compute_port":         resourceimpl.ResourceVssbStorageComputePort(),
 			"hitachi_vosb_change_user_password": resourceimpl.ResourceVssbChangeUserPassword(),
+			"hitachi_vosb_add_drives_to_pool":   resourceimpl.ResourceVssbAddDrivesToPool(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":           datasourceimpl.DataSourceStorageSystem(),
@@ -58,6 +59,7 @@ func Provider() *schema.Provider {
 			"hitachi_vosb_iscsi_chap_users": datasourceimpl.DataSourceVssbChapUsers(),
 			"hitachi_vosb_iscsi_port_auth":  datasourceimpl.DataSourceVssbComputePort(),
 			"hitachi_vosb_dashboard":        datasourceimpl.DataSourceVssbDashboard(),
+			"hitachi_vosb_storage_drives":   datasourceimpl.DataSourceVssbStorageDrives(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

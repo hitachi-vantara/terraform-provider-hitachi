@@ -135,3 +135,83 @@ func (psm *vssbStorageManager) GetStoragePoolByPoolName(poolName string) (*vssbm
 
 	return &provStoragePool, nil
 }
+
+// ExpandStoragePool expands the storage pool capacity.
+func (psm *vssbStorageManager) ExpandStoragePool(storagePoolName string, driveIds []string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := vssbgatewaymodel.StorageDeviceSettings{
+		Username:       psm.storageSetting.Username,
+		Password:       psm.storageSetting.Password,
+		ClusterAddress: psm.storageSetting.ClusterAddress,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_STORAGE_POOL_BEGIN))
+	req := vssbgatewaymodel.ExpandStoragePoolReq{
+		DriveIds: driveIds,
+	}
+
+	provStoragePool, err := psm.GetStoragePoolByPoolName(storagePoolName)
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_EXPAND_STORAGE_POOL_FAILED))
+		return err
+	}
+
+	poolId := provStoragePool.ID
+	
+	err = gatewayObj.ExpandStoragePool(poolId, &req)
+	if err != nil {
+		log.WriteDebug("TFError| failed to call ExpandStoragePool, err: %+v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_EXPAND_STORAGE_POOL_FAILED))
+		return err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_STORAGE_POOL_END))
+	return nil
+}
+
+// AddOfflineDrivesToStoragePool expands the storage pool capacity by adding all offline drives.
+func (psm *vssbStorageManager) AddOfflineDrivesToStoragePool(storagePoolName string) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_ADD_DRIVES_STORAGE_POOL_BEGIN))
+
+	// get all pool drives that are offline
+	offlineDrives := []string{}
+	provDrives, err := psm.GetDrivesInfo()
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_ADD_DRIVES_STORAGE_POOL_FAILED))
+		return err
+	}
+
+	for _, drive := range provDrives.Data {
+		if drive.Status == "Offline" {
+			offlineDrives = append(offlineDrives, drive.Id)
+		}
+	}
+
+	if len(offlineDrives) == 0 {
+		log.WriteError(mc.GetMessage(mc.ERR_NO_OFFLINE_DRIVES))
+		log.WriteError(mc.GetMessage(mc.ERR_ADD_DRIVES_STORAGE_POOL_FAILED))
+		return fmt.Errorf("%s", mc.GetMessage(mc.ERR_NO_OFFLINE_DRIVES))
+	}
+
+	err = psm.ExpandStoragePool(storagePoolName, offlineDrives)
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_ADD_DRIVES_STORAGE_POOL_FAILED))
+		return err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_ADD_DRIVES_STORAGE_POOL_END))
+	return nil
+}

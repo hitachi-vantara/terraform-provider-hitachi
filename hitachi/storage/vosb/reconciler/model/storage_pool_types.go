@@ -63,3 +63,9 @@ type SpSavingEffects struct {
 type StoragePools struct {
 	Data []StoragePool `json:"data"`
 }
+
+type StoragePoolResource struct {
+	StoragePoolName     string   `json:"storagePoolName,omitempty"`
+	AddAllOfflineDrives bool     `json:"addAllOfflineDrives,omitempty"`
+	DriveIds            []string `json:"driveIds,omitempty"`
+}
