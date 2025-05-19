@@ -50,8 +50,8 @@ chmod 755 "$logdir"
 
 echo "[$(date)] Starting pre-install checks" | tee -a "$logfile"
 
-installed_ver=$(rpm -q %{name})
-if [ ${installed_ver} != "" ]; then
+installed_ver=$(rpm -qa %{name})
+if [ "${installed_ver}" != "" ]; then
   echo "[$(date)] ERROR: $installed_ver is already installed." | tee -a "$logfile" >&2
   echo "[$(date)] Please uninstall it before reinstalling. Aborting." | tee -a "$logfile" >&2
   exit 1
