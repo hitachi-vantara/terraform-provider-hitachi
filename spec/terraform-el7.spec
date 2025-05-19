@@ -38,18 +38,22 @@ Hitachi Terraform RPM Package
 
 
 %pre
-logfile="/var/log/hitachi_terraform_install.log"
+logdir="/var/log/hitachi/terraform"
+logfile="$logdir/hitachi_terraform_install.log"
+
+# Ensure the log directory exists
+mkdir -p "$logdir"
+chmod 755 "$logdir"
 
 # Remove old log if it exists
 [ -f "$logfile" ] && rm -f "$logfile"
 
 echo "[$(date)] Starting pre-install checks" | tee -a "$logfile"
 
-# Check if same or different version is installed
-installed_version=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}' %{name} 2>/dev/null)
-if [ $? -eq 0 ]; then
-  echo "[$(date)] ERROR: Version $installed_version of %{name} is already installed." | tee -a "$logfile" >&2
-  echo "[$(date)] Please remove or move it before reinstalling. Aborting." | tee -a "$logfile" >&2
+installed_ver=$(rpm -qa %{name})
+if [ "${installed_ver}" != "" ]; then
+  echo "[$(date)] ERROR: $installed_ver is already installed." | tee -a "$logfile" >&2
+  echo "[$(date)] Please uninstall it before reinstalling. Aborting." | tee -a "$logfile" >&2
   exit 1
 fi
 
@@ -154,7 +158,12 @@ find %{buildroot}/%{terraform}/docs -type f -name "*.md" -exec chmod -x {} \;
 chmod 755 -R %{hitachi_base}
 
 # Log file
-logfile="/var/log/hitachi_terraform_install.log"
+logdir="/var/log/hitachi/terraform"
+logfile="$logdir/hitachi_terraform_install.log"
+
+# Ensure the log directory exists
+mkdir -p "$logdir"
+chmod 755 "$logdir"
 
 echo "[$(date)] Starting installation of HV_Storage_Terraform" | tee -a "$logfile"
 
@@ -182,7 +191,12 @@ fi
 
 
 %postun
-logfile="/var/log/hitachi_terraform_uninstall.log"
+logdir="/var/log/hitachi/terraform"
+logfile="$logdir/hitachi_terraform_uninstall.log"
+
+# Ensure the log directory exists
+mkdir -p "$logdir"
+chmod 755 "$logdir"
 
 # Remove old log if it exists
 [ -f "$logfile" ] && rm -f "$logfile"
