@@ -42,6 +42,9 @@ type VssbStorageManager interface {
 	GetAllStoragePools() (*vssbmodel.StoragePools, error)
 	GetStoragePoolsByPoolNames(poolNames []string) (*vssbmodel.StoragePools, error)
 	GetStoragePoolByPoolName(poolName string) (*vssbmodel.StoragePool, error)
+	ExpandStoragePool(storagePoolName string, driveIds []string) error
+	AddOfflineDrivesToStoragePool(storagePoolName string) error
+
 	// STORAGE PORTS
 	GetStoragePorts() (*vssbmodel.StoragePorts, error)
 	GetPort(portId string) (*vssbmodel.StoragePort, error)

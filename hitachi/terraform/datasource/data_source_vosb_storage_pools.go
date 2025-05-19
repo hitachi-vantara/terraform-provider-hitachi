@@ -2,28 +2,24 @@ package terraform
 
 import (
 	"context"
-	// "fmt"
-	"strconv"
-	"time"
-
-	commonlog "terraform-provider-hitachi/hitachi/common/log"
-
-	impl "terraform-provider-hitachi/hitachi/terraform/impl"
-	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"strconv"
+	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	impl "terraform-provider-hitachi/hitachi/terraform/impl"
+	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
+	"time"
 )
 
 func DataSourceStoragePools() *schema.Resource {
 	return &schema.Resource{
 		Description: "VOS Block Storage Pools:Obtains a list of storage pool information.",
-		ReadContext: dataSourceStoragePoolsRead,
-		Schema:      schemaimpl.StoragePoolsSchema,
+		ReadContext: DataSourceStoragePoolsRead,
+		Schema:      schemaimpl.DatasourceVssbStoragePoolsSchema,
 	}
 }
 
-func dataSourceStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -68,10 +64,6 @@ func dataSourceStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m i
 		}
 
 		if err := d.Set("storage_pools", spList); err != nil {
-			return diag.FromErr(err)
-		}
-
-		if err := d.Set("storage_pool_names", []string{}); err != nil {
 			return diag.FromErr(err)
 		}
 

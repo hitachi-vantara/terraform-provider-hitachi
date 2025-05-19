@@ -131,6 +131,19 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_STORAGE_POOL_FAILED:      "Failed to read storage pool information for pool names %s.",
 	INFO_GET_STORAGE_POOL_END:        "Successfully read storage pool information for pool names %s.",
 
+	INFO_EXPAND_STORAGE_POOL_BEGIN: "Expanding storage pool %s.",
+	ERR_EXPAND_STORAGE_POOL_FAILED: "Failed to expand storage pool %s.",
+	INFO_EXPAND_STORAGE_POOL_END:   "Successfully expanded storage pool %s.",
+
+	INFO_GET_DRIVES_BEGIN: "Reading drives info %s.",
+	ERR_GET_DRIVES_FAILED: "Failed to read drives info %s.",
+	INFO_GET_DRIVES_END:   "Successfully read drives info %s.",
+	ERR_NO_OFFLINE_DRIVES: "No offline drives available.",
+
+	INFO_ADD_DRIVES_STORAGE_POOL_BEGIN: "Adding offline drives to storage pool.",
+	ERR_ADD_DRIVES_STORAGE_POOL_FAILED: "Failed adding offline drives to storage pool.",
+	INFO_ADD_DRIVES_STORAGE_POOL_END:   "Successfully added offline drives to storage pool.",
+
 	// VOSB - STORAGE PORTS
 	INFO_GET_ALL_STORAGE_PORTS_BEGIN: "Reading all storage ports information.",
 	ERR_GET_ALL_STORAGE_PORTS_FAILED: "Failed to read all storage ports information.",
@@ -171,5 +184,4 @@ var MessageCatalog = map[interface{}]string{
 	INFO_CHANGE_USER_PASSWORD_BEGIN: "Changing password for user id %s.",
 	ERR_CHANGE_USER_PASSWORD_FAILED: "Failed to change password for user id %s.",
 	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
-
 }

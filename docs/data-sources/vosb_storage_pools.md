@@ -42,7 +42,7 @@ output "pool" {
 
 ### Required
 
-- `vosb_address` (String) VOSB address of the storage device
+- `vosb_address` (String) VOSB block address of the storage device
 
 ### Optional
 

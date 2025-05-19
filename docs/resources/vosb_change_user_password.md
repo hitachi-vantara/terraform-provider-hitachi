@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_change_user_password Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Change Storage User Password:The following request changes user password.
+  VOS Block: Change Storage User Password.
 ---
 
 # hitachi_vosb_change_user_password (Resource)
 
-VOS Block Change Storage User Password:The following request changes user password.
+VOS Block: Change Storage User Password.
 
 ## Example Usage
 

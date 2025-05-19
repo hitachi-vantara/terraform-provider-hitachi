@@ -182,7 +182,7 @@ func validatePoolDiff() schema.CustomizeDiffFunc {
 func validateParitygroupDiff() schema.CustomizeDiffFunc {
 	return customdiff.ValidateChange("paritygroup_id", func(ctx context.Context, old, new, meta any) error {
 		if new.(string) != old.(string) {
-			return fmt.Errorf("paritygroup_id should not change: old value: %d", old.(string))
+			return fmt.Errorf("paritygroup_id should not change: old value: %s", old.(string))
 		}
 		return nil
 	})

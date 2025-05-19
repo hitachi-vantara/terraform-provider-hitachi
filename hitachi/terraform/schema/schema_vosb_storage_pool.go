@@ -262,16 +262,15 @@ var StoragePoolSchema = map[string]*schema.Schema{
 	},
 }
 
-var StoragePoolsSchema = map[string]*schema.Schema{
+var DatasourceVssbStoragePoolsSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "VOSB address of the storage device",
+		Description: "VOSB block address of the storage device",
 	},
 	"storage_pool_names": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Computed: true,
 		Description: "List of pool names to be fetched from storage device",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
@@ -286,5 +285,36 @@ var StoragePoolsSchema = map[string]*schema.Schema{
 		Elem: &schema.Resource{
 			Schema: StoragePoolSchema,
 		},
+	},
+}
+
+var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
+	"vosb_address": &schema.Schema{
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "VOS block address of the storage device",
+	},
+	"storage_pool_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "Storage pool name",
+	},
+	"add_all_offline_drives": &schema.Schema{
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     false, // Defaults to false if not provided
+		Description: "Flag to indicate if all offline drives should be added for expansion",
+	},
+	"drive_ids": &schema.Schema{
+		Type:        schema.TypeList,
+		Optional:    true,
+		Elem:        &schema.Schema{Type: schema.TypeString},
+		Description: "List of specific drive IDs for expansion of the storage pool",
+	},
+	// Output:
+	"status": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "The status of the storage pool operation.",
 	},
 }

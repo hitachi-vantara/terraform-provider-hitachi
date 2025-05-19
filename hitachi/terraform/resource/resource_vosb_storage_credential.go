@@ -2,10 +2,11 @@ package terraform
 
 import (
 	"context"
-	"sync"
-
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"regexp"
+	"sync"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
@@ -13,20 +14,19 @@ import (
 
 var syncChangeUserPasswordOperation = &sync.Mutex{}
 
-// password change is a one-time operation
-
+// Resource for changing user password
 func ResourceVssbChangeUserPassword() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VOS Block Change Storage User Password:The following request changes user password.",
+		Description:   "VOS Block: Change Storage User Password.",
 		CreateContext: resourceVssbChangeUserPasswordCreate,
 		UpdateContext: resourceVssbChangeUserPasswordUpdate,
 		DeleteContext: resourceVssbChangeUserPasswordDelete,
 		ReadContext:   resourceVssbChangeUserPasswordRead,
 		Schema:        schemaimpl.ResourceVssbChangeUserPasswordSchema,
+		CustomizeDiff: validatePasswordChangeInputs,
 	}
 }
 
-// Create method will handle the password change
 func resourceVssbChangeUserPasswordCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -42,10 +42,7 @@ func resourceVssbChangeUserPasswordCreate(ctx context.Context, d *schema.Resourc
 	}
 
 	userInfoMap := impl.ConvertVssbStorageUserToSchema(userInfo)
-	log.WriteDebug("userInfoMap: %+v\n", userInfoMap)
-
-	storageUserList := []interface{}{userInfoMap}
-	if err := d.Set("storage_user", storageUserList); err != nil {
+	if err := d.Set("storage_user", []interface{}{userInfoMap}); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
@@ -57,13 +54,53 @@ func resourceVssbChangeUserPasswordCreate(ctx context.Context, d *schema.Resourc
 }
 
 func resourceVssbChangeUserPasswordUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceVssbChangeUserPasswordCreate(ctx,d, m)
+	return resourceVssbChangeUserPasswordCreate(ctx, d, m)
 }
 
 func resourceVssbChangeUserPasswordDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	d.SetId("")
 	return nil
 }
 
 func resourceVssbChangeUserPasswordRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return nil
+}
+
+func validatePasswordChangeInputs(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	return validatePasswordChangeInputsLogic(d)
+}
+
+type minimalDiff interface {
+	Get(string) interface{}
+}
+
+// testable
+func validatePasswordChangeInputsLogic(diff minimalDiff) error {
+	currentPassword := diff.Get("current_password").(string)
+	newPassword := diff.Get("new_password").(string)
+	userID := diff.Get("user_id").(string)
+
+	userIDRegex := regexp.MustCompile(`^[-A-Za-z0-9!#$%&'.@^_{}~]{5,255}$`)
+	passwordRegex := regexp.MustCompile(`^[-A-Za-z0-9!#$%&"'()*+,./:;<>=?@[\]\\^_` + "`" + `{|}~]{1,256}$`)
+
+	if userID == "" {
+		return fmt.Errorf("missing user_id")
+	}
+	if len(userID) < 5 || len(userID) > 255 || !userIDRegex.MatchString(userID) {
+		return fmt.Errorf("user_id must be 5 to 255 valid characters")
+	}
+
+	if currentPassword == newPassword {
+		return fmt.Errorf("new_password must be different from current_password")
+	}
+
+	if len(currentPassword) < 1 || len(currentPassword) > 256 || !passwordRegex.MatchString(currentPassword) {
+		return fmt.Errorf("current_password must be 1 to 256 valid characters")
+	}
+
+	if len(newPassword) < 1 || len(newPassword) > 256 || !passwordRegex.MatchString(newPassword) {
+		return fmt.Errorf("new_password must be 1 to 256 valid characters")
+	}
+
 	return nil
 }

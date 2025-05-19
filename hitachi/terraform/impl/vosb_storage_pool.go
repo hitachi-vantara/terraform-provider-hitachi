@@ -1,29 +1,16 @@
 package terraform
 
 import (
-	// "encoding/json"
-	// "errors"
-	// "context"
-	// "fmt"
-	// "io/ioutil"
-
-	// "time"
-
-	"strings"
-	commonlog "terraform-provider-hitachi/hitachi/common/log"
-
-	// mc "terraform-provider-hitachi/hitachi/messagecatalog"
-	cache "terraform-provider-hitachi/hitachi/common/cache"
-
-	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
-
-	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
-	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
-	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
-
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/jinzhu/copier"
-	//"github.com/patrickmn/go-cache"
+	"strings"
+	cache "terraform-provider-hitachi/hitachi/common/cache"
+	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
+	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
+	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
+	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 )
 
 func GetAllStoragePools(d *schema.ResourceData) (*[]terraformmodel.StoragePool, error) {
@@ -129,6 +116,56 @@ func GetStoragePoolsByPoolNames(d *schema.ResourceData) (*[]terraformmodel.Stora
 	return &terraformStoragePools, nil
 }
 
+func AddDrivesToStoragePool(d *schema.ResourceData) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	vssbAddr := d.Get("vosb_address").(string)
+
+	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
+	if err != nil {
+		return err
+	}
+
+	setting := reconcilermodel.StorageDeviceSettings{
+		Username:       storageSetting.Username,
+		Password:       storageSetting.Password,
+		ClusterAddress: storageSetting.ClusterAddress,
+	}
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
+		return err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_ADD_DRIVES_STORAGE_POOL_BEGIN))
+
+	updateInput, err := ConvertVssbStoragePoolFromSchema(d)
+	if err != nil {
+		return err
+	}
+
+	reconStoragePoolResource := reconcilermodel.StoragePoolResource{}
+	err = copier.Copy(&reconStoragePoolResource, updateInput)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return err
+	}
+
+	err = reconObj.AddDrivesToStoragePool(&reconStoragePoolResource)
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_ADD_DRIVES_STORAGE_POOL_FAILED))
+		log.WriteDebug("TFError| error in Updating ComputeNode - ReconcileComputeNode , err: %v", err)
+		return err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_ADD_DRIVES_STORAGE_POOL_END))
+
+	return nil
+}
+
 func ConvertStoragePoolToSchema(storagePool *terraformmodel.StoragePool) *map[string]interface{} {
 	sp := map[string]interface{}{
 		"pool_id":                     storagePool.ID,
@@ -202,4 +239,48 @@ func ConvertStoragePoolToSchema(storagePool *terraformmodel.StoragePool) *map[st
 	sp["rebuildable_resources"] = rr
 
 	return &sp
+}
+
+func ConvertVssbStoragePoolFromSchema(d *schema.ResourceData) (*terraformmodel.StoragePoolResource, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	input := terraformmodel.StoragePoolResource{}
+
+	storagePoolName := d.Get("storage_pool_name")
+	input.StoragePoolName = storagePoolName.(string)
+
+	addAllOfflineDrives, ok := d.GetOk("add_all_offline_drives")
+	if ok {
+		aaod := addAllOfflineDrives.(bool)
+		input.AddAllOfflineDrives = aaod
+	}
+
+	rawDriveIds := d.Get("drive_ids")
+
+	// If 'drive_ids' is not provided, set input.DriveIds to nil
+	if rawDriveIds == nil {
+		input.DriveIds = nil
+	} else {
+		// Convert it to a slice of strings
+		var driveIds []string
+		for _, v := range rawDriveIds.([]interface{}) {
+			if str, ok := v.(string); ok {
+				driveIds = append(driveIds, str)
+			} else {
+				return nil, fmt.Errorf("invalid value in drive_ids list: expected string, got %T", v)
+			}
+		}
+		// Assign the populated driveIds slice to input.DriveIds
+		input.DriveIds = driveIds
+	}
+
+	// Check if 'AddOfflineDrives' and 'DriveIds' are both provided, which is invalid
+	if input.AddAllOfflineDrives && len(input.DriveIds) > 0 {
+		return nil, fmt.Errorf("invalid input: 'AddOfflineDrives' cannot be true when 'DriveIds' are provided. Set one, not both")
+	}
+
+	log.WriteDebug("input: %+v", input)
+	return &input, nil
 }

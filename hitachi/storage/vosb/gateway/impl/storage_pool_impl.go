@@ -42,3 +42,19 @@ func (psm *vssbStorageManager) GetStoragePoolsByPoolNames(poolNames []string) (*
 	}
 	return &storagePools, nil
 }
+
+// ExpandStoragePool expands the storage pool capacity.
+func (psm *vssbStorageManager) ExpandStoragePool(poolId string, reqBody *vssbmodel.ExpandStoragePoolReq) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	apiSuf := fmt.Sprintf("objects/pools/%s/actions/expand/invoke", poolId)
+	_, err := httpmethod.PostCall(psm.storageSetting, apiSuf, reqBody)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return err
+	}
+	return nil
+}
