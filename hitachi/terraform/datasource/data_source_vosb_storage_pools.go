@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-func DataSourceStoragePools() *schema.Resource {
+func DataSourceVssbStoragePools() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Pools:Obtains a list of storage pool information.",
-		ReadContext: DataSourceStoragePoolsRead,
+		Description: "VOS Block Storage Pools: Obtains a list of storage pool information.",
+		ReadContext: DataSourceVssbStoragePoolsRead,
 		Schema:      schemaimpl.DatasourceVssbStoragePoolsSchema,
 	}
 }
 
-func DataSourceStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceVssbStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -51,6 +51,13 @@ func DataSourceStoragePoolsRead(ctx context.Context, d *schema.ResourceData, m i
 		return nil
 
 	} else { // fetch all storage pools
+		_, ok := d.GetOk("storage_pool_names")
+		if !ok {
+			if err := d.Set("storage_pool_names", []string{}); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+
 		storagePools, err := impl.GetAllStoragePools(d)
 		if err != nil {
 			return diag.FromErr(err)

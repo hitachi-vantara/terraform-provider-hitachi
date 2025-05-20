@@ -16,8 +16,7 @@ func (psm *vssbStorageManager) ChangeUserPassword(userId string, reqBody *vssbmo
 	var userInfo vssbmodel.User
 
 	apiSuf := fmt.Sprintf("objects/users/%s/password", userId)
-	sensitiveLogging := false
-	err := httpmethod.PatchCallSync(psm.storageSetting, apiSuf, reqBody, &userInfo, sensitiveLogging)
+	err := httpmethod.PatchCallSync(psm.storageSetting, apiSuf, reqBody, &userInfo)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)

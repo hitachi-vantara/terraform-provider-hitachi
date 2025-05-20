@@ -43,7 +43,7 @@ resource "hitachi_vsp_hostgroup" "myhg" {
   hostgroup_name   = "TESTING-HOSTGROUP112ki" // REQUIRED
   port_id          = "CL1-A"             // REQUIRED
   // For detail information about host_mode_options and host_mode, please look at the following link:
-  // https://knowledge.hitachivantara.com/Documents/Management_Software/SVOS/9.8.6/Volume_Management_-_VSP_E_Series/Host_Attachment/14_Host_modes_and_host_mode_options
+  // https://docs.hitachivantara.com/r/en-us/svos/9.8.7/mk-97hm85026/managing-logical-volumes/configuring-hosts/host-modes-and-host-mode-options-for-host-facing-host-ports
   host_mode_options = []
   host_mode         = "VMware Extension"
   #host_mode_options = [11] 

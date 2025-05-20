@@ -5,6 +5,7 @@ import (
 
 	// "fmt"
 	// "strconv"
+	"sync"
 	// "time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -17,6 +18,11 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var (
+	configOnce sync.Once
+	configErr  error
 )
 
 // Provider returns a terraform.ResourceProvider.
@@ -51,7 +57,7 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_dynamic_pool":      datasourceimpl.DataSourceStorageDynamicPool(),
 			"hitachi_vsp_dynamic_pools":     datasourceimpl.DataSourceStorageDynamicPools(),
 			"hitachi_vsp_parity_groups":     datasourceimpl.DataSourceStorageParityGroups(),
-			"hitachi_vosb_storage_pools":    datasourceimpl.DataSourceStoragePools(),
+			"hitachi_vosb_storage_pools":    datasourceimpl.DataSourceVssbStoragePools(),
 			"hitachi_vosb_volumes":          datasourceimpl.DataSourceVssbVolumes(),
 			"hitachi_vosb_compute_nodes":    datasourceimpl.DataSourceVssbComputeNodes(),
 			"hitachi_vosb_volume":           datasourceimpl.DataSourceVssbVolumeNodes(),
@@ -69,6 +75,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+
 
 	// var diags diag.Diagnostics
 	// tflog.Info(ctx, "THIS IS JUST TESTING TFLOG")

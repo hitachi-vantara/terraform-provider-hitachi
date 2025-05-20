@@ -86,7 +86,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 		}
 	}
 
-	logRequest(req)
+	logRequest(req, nil)
 
 	resp, err := SharedClient.Do(req)
 	if err != nil {
@@ -147,7 +147,7 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 		}
 	}
 
-	logRequest(req)
+	logRequest(req, httpBody)
 
 	resp, err := SharedClient.Do(req)
 	if err != nil {
@@ -193,7 +193,7 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 		}
 	}
 
-	logRequest(req)
+	logRequest(req, httpBody)
 
 	resp, err := SharedClient.Do(req)
 	if err != nil {
@@ -240,7 +240,7 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 		}
 	}
 
-	logRequest(req)
+	logRequest(req, nil)
 
 	resp, err := SharedClient.Do(req)
 	if err != nil {
@@ -295,7 +295,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
 	}
 
-	logRequest(req)
+	logRequest(req, httpBody)
 
 	resp, err := SharedClient.Do(req)
 	if err != nil {
@@ -342,7 +342,7 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 		}
 	}
 
-	logRequest(req)
+	logRequest(req, httpBody)
 
 	resp, err := SharedClient.Do(req)
 	if err != nil {
@@ -366,7 +366,7 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 	return string(body), nil
 }
 
-func logRequest(req *http.Request) {
+func logRequest(req *http.Request, reqBodyInBytes []byte) {
 	log := commonlog.GetLogger()
 
 	// bodyBytes := []byte{}
@@ -382,10 +382,16 @@ func logRequest(req *http.Request) {
 	// 	req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 	// }
 
+	maskedReq := ""
+	if reqBodyInBytes != nil {
+		maskedReq, _ = MaskSensitiveData(string(reqBodyInBytes))
+	}
+
 	log.WriteDebug("Method: %s", req.Method)
 	log.WriteDebug("URL: %s", req.URL.String())
 	log.WriteDebug("Headers: %s", req.Header)
 	// log.WriteDebug("Body: %s", string(bodyBytes))
+	log.WriteDebug("Body: %s", string(maskedReq))
 	log.WriteDebug("ContentLength: %d", req.ContentLength)
 	log.WriteDebug("Host: %s", req.Host)
 	log.WriteDebug("RequestURI: %s", req.RequestURI)

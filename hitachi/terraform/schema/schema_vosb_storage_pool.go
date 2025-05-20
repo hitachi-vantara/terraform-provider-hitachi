@@ -271,6 +271,7 @@ var DatasourceVssbStoragePoolsSchema = map[string]*schema.Schema{
 	"storage_pool_names": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
+		Computed:    true,
 		Description: "List of pool names to be fetched from storage device",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,

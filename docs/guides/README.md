@@ -34,9 +34,11 @@ If you proceed with the installation, these directories will be replaced by the 
 
 
 2. **Uninstall the old version (if necessary):**
-    ```script
-    See below section 'Uninstall RPM package'
     ```
+    /usr/bin/rpm -e HV_Storage_Terraform
+    ```
+
+    See 'Uninstall RPM package' below for more info
 
 
 3. **Install the new version:**
@@ -58,7 +60,7 @@ If you proceed with the installation, these directories will be replaced by the 
 A detailed installation log is written to:
 
 ```
-/var/log/hitachi_terraform_install.log
+/var/log/hitachi/terraform/hitachi_terraform_install.log
 ```
 
 ## Uninstall RPM package
@@ -81,7 +83,7 @@ Ensure you have backups of any important data before proceeding with the uninsta
 A detailed uninstallation log is written to:
 
 ```
-/var/log/hitachi_terraform_uninstall.log
+/var/log/hitachi/terraform/hitachi_terraform_uninstall.log
 ```
 
 ## Use the tf samples

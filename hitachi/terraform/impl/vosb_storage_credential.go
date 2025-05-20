@@ -111,7 +111,7 @@ func ChangeVssbUserPassword(d *schema.ResourceData) (*terraformmodel.User, error
 	userInfo, err := reconObj.ChangeUserPassword(userId, &reconChangeUserPasswordReq)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_CHANGE_USER_PASSWORD_FAILED), userId)
-		log.WriteDebug("TFError| error in Updating ComputeNode - ReconcileComputeNode , err: %v", err)
+		log.WriteDebug("TFError| error in ChangeUserPassword , err: %v", err)
 		return nil, err
 	}
 
