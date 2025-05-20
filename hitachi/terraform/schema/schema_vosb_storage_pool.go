@@ -309,6 +309,7 @@ var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
 	"drive_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
+		Computed:    true,
 		Elem:        &schema.Schema{Type: schema.TypeString},
 		Description: "List of specific drive IDs for expansion of the storage pool",
 	},
