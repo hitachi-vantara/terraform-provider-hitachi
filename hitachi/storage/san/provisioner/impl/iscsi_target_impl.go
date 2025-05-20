@@ -44,13 +44,11 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 
 		provIscsiTarget := sanmodel.IscsiTargetGwy{}
 		err = copier.Copy(&provIscsiTarget, it)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
-			return
-		}
-
 		errMap.Store(n, err)
 		outMap.Store(n, provIscsiTarget)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		}
 		return
 	}(n)
 
@@ -62,13 +60,11 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 
 		provIscsiNameInfo := []sanmodel.IscsiNameInformation{}
 		err = copier.Copy(&provIscsiNameInfo, itNameInfo)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
-			return
-		}
-
 		errMap.Store(n, err)
 		outMap.Store(n, provIscsiNameInfo)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		}
 		return
 	}(n)
 
@@ -80,13 +76,11 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 
 		provIscsiTargetLupaths := []sanmodel.IscsiTargetLuPath{}
 		err = copier.Copy(&provIscsiTargetLupaths, itLuPaths)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
-			return
-		}
-
 		errMap.Store(n, err)
 		outMap.Store(n, provIscsiTargetLupaths)
+		if err != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		}
 		return
 	}(n)
 
