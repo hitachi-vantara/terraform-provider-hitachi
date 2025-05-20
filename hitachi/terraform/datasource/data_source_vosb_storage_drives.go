@@ -15,13 +15,13 @@ import (
 func DataSourceVssbStorageDrives() *schema.Resource {
 	return &schema.Resource{
 		Description: "VOS Block Storage Drives: Obtains a list of drive information.",
-		ReadContext: dataSourceVssbStorageDrivesRead,
+		ReadContext: DataSourceVssbStorageDrivesRead,
 		Schema:      schemaimpl.ResourceVssbStorageDriveSchema, // Use the schema we defined for the drives
 	}
 }
 
-// dataSourceVssbStorageDrivesRead is the function that retrieves the drive information
-func dataSourceVssbStorageDrivesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+// DataSourceVssbStorageDrivesRead is the function that retrieves the drive information
+func DataSourceVssbStorageDrivesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()

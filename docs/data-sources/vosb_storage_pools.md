@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_storage_pools Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Storage Pools:Obtains a list of storage pool information.
+  VOS Block Storage Pools: Obtains a list of storage pool information.
 ---
 
 # hitachi_vosb_storage_pools (Data Source)
 
-VOS Block Storage Pools:Obtains a list of storage pool information.
+VOS Block Storage Pools: Obtains a list of storage pool information.
 
 ## Example Usage
 

@@ -132,26 +132,16 @@ func PatchCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf strin
 	return &jobString, err
 }
 
-func PatchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}, output interface{}, sensitiveLogging ...bool) error {
+func PatchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
-
-	// Set the default value for sensitiveLogging to true if it's not provided
-	shouldLogSensitive := true
-	if len(sensitiveLogging) > 0 {
-		shouldLogSensitive = sensitiveLogging[0]
-	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
 		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return err
-	}
-
-	if shouldLogSensitive {
-		log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	}
 
 	url := GetUrl(storageSetting.ClusterAddress, apiSuf)

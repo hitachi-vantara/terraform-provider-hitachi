@@ -26,11 +26,10 @@ GOVERSION = 1.22
 .PHONY: all
 all: build install
 
-.PHONY: build
-build: mod
-	@echo "🔧 Building provider version ${SEMVER}"
-	go build -ldflags="-X main.version=${SEMVER}" -o ${BINARY}
-	echo "${FULL_VERSION}" > version.txt
+.PHONY:  build
+build:  mod
+	go build -o ${BINARY}
+	echo "${VERSION}.${PATCH_VERSION}-${BUILD_NUMBER}" > version.txt
 
 .PHONY: release
 release:
