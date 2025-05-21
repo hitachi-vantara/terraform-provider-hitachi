@@ -14,7 +14,7 @@ func (psm *sanStorageManager) GetDynamicPools() (*[]sanmodel.DynamicPool, error)
 	defer log.WriteExit()
 
 	var dynamicPools sanmodel.DynamicPools
-	apiSuf := fmt.Sprintf("objects/pools?poolType=DP")
+	apiSuf := "objects/pools"
 	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &dynamicPools)
 	if err != nil {
 		log.WriteError(err)
