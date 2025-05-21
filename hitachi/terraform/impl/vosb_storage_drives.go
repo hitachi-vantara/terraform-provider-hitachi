@@ -2,13 +2,15 @@ package terraform
 
 import (
 	"errors"
+	"strings"
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // GetAllDrives fetches all drives without any arguments
@@ -53,18 +55,18 @@ func GetAllDrives(d *schema.ResourceData) (*[]terraformmodel.Drive, error) {
 	terraformDrives := []terraformmodel.Drive{}
 	for _, drive := range driveInfo.Data {
 		terraformDrives = append(terraformDrives, terraformmodel.Drive{
-			Id:               drive.Id,
-			WwwId:            drive.WwwId,
-			StatusSummary:    drive.StatusSummary,
-			Status:           drive.Status,
-			TypeCode:         drive.TypeCode,
-			SerialNumber:     drive.SerialNumber,
-			StorageNodeId:    drive.StorageNodeId,
-			DeviceFileName:   drive.DeviceFileName,
-			VendorName:       drive.VendorName,
-			FirmwareRevision: drive.FirmwareRevision,
-			LocatorLedStatus: drive.LocatorLedStatus,
-			DriveType:        drive.DriveType,
+			Id:               strings.TrimSpace(drive.Id),
+			WwId:             strings.TrimSpace(drive.WwId),
+			StatusSummary:    strings.TrimSpace(drive.StatusSummary),
+			Status:           strings.TrimSpace(drive.Status),
+			TypeCode:         strings.TrimSpace(drive.TypeCode),
+			SerialNumber:     strings.TrimSpace(drive.SerialNumber),
+			StorageNodeId:    strings.TrimSpace(drive.StorageNodeId),
+			DeviceFileName:   strings.TrimSpace(drive.DeviceFileName),
+			VendorName:       strings.TrimSpace(drive.VendorName),
+			FirmwareRevision: strings.TrimSpace(drive.FirmwareRevision),
+			LocatorLedStatus: strings.TrimSpace(drive.LocatorLedStatus),
+			DriveType:        strings.TrimSpace(drive.DriveType),
 			DriveCapacity:    drive.DriveCapacity,
 		})
 	}

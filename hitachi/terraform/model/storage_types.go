@@ -41,7 +41,7 @@ type AllStorageTypes struct {
 
 type Drive struct {
 	Id               string `json:"id"`
-	WwwId            string `json:"wwwid"`
+	WwId             string `json:"wwid"`
 	StatusSummary    string `json:"statusSummary"`
 	Status           string `json:"status"`
 	TypeCode         string `json:"typeCode"`
