@@ -39,6 +39,13 @@ func resourceVssbAddDrivesToPoolCreate(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(fmt.Errorf("failed to add drives to storage pool: %w", err))
 	}
 
+	_, ok := d.GetOk("drive_ids")
+	if !ok {
+		if err := d.Set("drive_ids", []string{}); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	d.SetId(fmt.Sprintf("add-drives-%s", d.Get("storage_pool_name").(string)))
 	d.Set("status", "Drives added successfully")
 	log.WriteInfo("Drives added to storage pool successfully")
@@ -66,7 +73,7 @@ func validateAddDrivesToPoolInputs(ctx context.Context, diff *schema.ResourceDif
 	driveIds := diff.Get("drive_ids").([]interface{})
 
 	if addAllOffline && len(driveIds) > 0 {
-		return fmt.Errorf("'add_all_offline_drives' cannot be true when 'drive_ids' are specified. Use one or the other.")
+		return fmt.Errorf("'add_all_offline_drives' cannot be true when 'drive_ids' are specified. Use one or the other")
 	}
 
 	if !addAllOffline && len(driveIds) == 0 {
