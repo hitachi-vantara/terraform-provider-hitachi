@@ -54,7 +54,7 @@ output "my_drives_output" {
 Read-Only:
 
 - `device_file_name` (String)
-- `drive_capacity` (Number)
+- `drive_capacity` (String)
 - `drive_type` (String)
 - `firmware_revision` (String)
 - `id` (String)
@@ -65,4 +65,4 @@ Read-Only:
 - `storage_node_id` (String)
 - `type_code` (String)
 - `vendor_name` (String)
-- `wwwid` (String)
+- `wwid` (String)

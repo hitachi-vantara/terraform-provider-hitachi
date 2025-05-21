@@ -2,13 +2,15 @@ package terraform
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"fmt"
 	"strconv"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // DataSourceVssbStorageDrives defines the Terraform data source for retrieving drives
@@ -38,7 +40,7 @@ func DataSourceVssbStorageDrivesRead(ctx context.Context, d *schema.ResourceData
 		// Convert each drive into the schema map format
 		eachDrive := map[string]interface{}{
 			"id":                 drive.Id,
-			"wwwid":              drive.WwwId,
+			"wwid":               drive.WwId,
 			"status_summary":     drive.StatusSummary,
 			"status":             drive.Status,
 			"type_code":          drive.TypeCode,
@@ -49,7 +51,7 @@ func DataSourceVssbStorageDrivesRead(ctx context.Context, d *schema.ResourceData
 			"firmware_revision":  drive.FirmwareRevision,
 			"locator_led_status": drive.LocatorLedStatus,
 			"drive_type":         drive.DriveType,
-			"drive_capacity":     drive.DriveCapacity,
+			"drive_capacity":     fmt.Sprintf("%d GB", drive.DriveCapacity),
 		}
 		// Append to the list
 		driveList = append(driveList, eachDrive)

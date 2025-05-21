@@ -11,7 +11,7 @@ var VssbStorageDriveSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "The ID of the drive.",
 	},
-	"wwwid": &schema.Schema{
+	"wwid": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
 		Description: "The WWW ID of the drive.",
@@ -67,7 +67,7 @@ var VssbStorageDriveSchema = map[string]*schema.Schema{
 		Description: "The type of the drive.",
 	},
 	"drive_capacity": &schema.Schema{
-		Type:        schema.TypeInt,
+		Type:        schema.TypeString,
 		Computed:    true,
 		Description: "The capacity of the drive in GB.",
 	},
