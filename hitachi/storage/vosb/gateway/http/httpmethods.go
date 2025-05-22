@@ -4,15 +4,61 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	// "strconv"
-
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	telemetry "terraform-provider-hitachi/hitachi/common/telemetry"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
 )
 
+// New wrapper functions for telemetry
 func GetCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("GetCall", getCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(vssbmodel.StorageDeviceSettings, string, interface{}) error)
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, output)
+}
+
+func PostCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("PostCall", postCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(vssbmodel.StorageDeviceSettings, string, interface{}) (*string, error))
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody)
+}
+
+func PatchCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("PatchCall", patchCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(vssbmodel.StorageDeviceSettings, string, interface{}) (*string, error))
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody)
+}
+
+func PatchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}, output interface{}) error {
+	// Wrap the original function
+	wrappedFunc := telemetry.WrapMethod("PatchCallSync", patchCallSync)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(vssbmodel.StorageDeviceSettings, string, interface{}, interface{}) error)
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody, output)
+}
+
+func DeleteCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("DeleteCall", deleteCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(vssbmodel.StorageDeviceSettings, string, interface{}) (*string, error))
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody)
+}
+
+///////////////////
+
+func getCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -76,7 +122,7 @@ func PostCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string
 	return &jobString, err
 }
 
-func PostCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func postCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -132,7 +178,7 @@ func PatchCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf strin
 	return &jobString, err
 }
 
-func PatchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}, output interface{}) error {
+func patchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -168,7 +214,7 @@ func PatchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string
 	return nil
 }
 
-func PatchCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func patchCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -225,7 +271,7 @@ func DeleteCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf stri
 	return &jobString, err
 }
 
-func DeleteCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func deleteCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()

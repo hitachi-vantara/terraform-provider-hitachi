@@ -3,7 +3,7 @@ package terraform
 import (
 	"context"
 
-	// "fmt"
+	"fmt"
 	// "strconv"
 	"sync"
 	// "time"
@@ -18,6 +18,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	config "terraform-provider-hitachi/hitachi/common/config"
 )
 
 var (
@@ -71,11 +72,24 @@ func Provider() *schema.Provider {
 	}
 }
 
+const CONFIG_FILE = "/opt/hitachi/terraform/config.json"
+
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	configErr := config.Load(CONFIG_FILE)
+	if configErr != nil {
+		log.WriteInfo("Could not load config.json. A default config may have been created. Details: %v", configErr)
+		return nil, diag.Diagnostics{
+			{
+				Severity: diag.Warning,
+				Summary:  "Default config file created",
+				Detail:   fmt.Sprintf("Could not read %s — a new default config.json was created. Details: %v", CONFIG_FILE, configErr),
+			},
+		}
+	}
 
 	// var diags diag.Diagnostics
 	// tflog.Info(ctx, "THIS IS JUST TESTING TFLOG")

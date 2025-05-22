@@ -44,7 +44,7 @@ make build
 echo; echo "Preparing ${RPMBUILD_DIR}..."
 rm -rf ${RPMBUILD_DIR} || true
 mkdir -p ${RPMBUILD_DIR}/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-mkdir -p ${RPMBUILD_DIR}/${TERRAFORM_PKG}/{bin,examples,docs}
+mkdir -p ${RPMBUILD_DIR}/${TERRAFORM_PKG}/{bin,examples,docs,telemetry}
 
 # Populate rpmbuild with terraform files
 echo; echo "Copying files to ${RPMBUILD_DIR}..."
@@ -52,6 +52,10 @@ cp ${TERRAFORM_DIR}/spec/*.spec ${RPMBUILD_DIR}/SPECS
 cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
+cp -f ${TERRAFORM_DIR}/hitachi/common/telemetry/user_consent.sh ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
+
+(cd ${TERRAFORM_DIR}/hitachi/common/config/main; go run create_config.go)
+cp -f ${TERRAFORM_DIR}/hitachi/common/config/main/config.json ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 
 echo; echo "Creating tarball..."
 cd ${RPMBUILD_DIR}

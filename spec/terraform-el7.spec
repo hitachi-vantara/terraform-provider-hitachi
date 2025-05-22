@@ -23,18 +23,13 @@ Hitachi Terraform RPM Package
 %prep
 %setup -q
 
+
 %build
 %define hitachi_base /opt/hitachi
 %define terraform %{hitachi_base}/terraform
 %define plugin_dir  .terraform.d/plugins
 %define terraform_plugin %{plugin_dir}/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}/linux_amd64
-
 %define source_dir %{_topdir}/HV_Storage_Terraform-%{_VERSION}
-%define examples_src %{source_dir}/examples
-%define docs_src %{source_dir}/docs
-
-%define examples_dst %{buildroot}/%{terraform}/examples
-%define docs_dst %{buildroot}/%{terraform}/docs
 
 
 %pre
@@ -74,88 +69,22 @@ echo "[$(date)] Pre-install checks passed" | tee -a "$logfile"
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d %{buildroot}/%{terraform}/bin
+# Define terraform install root
+install -d %{buildroot}/%{terraform}
 
-# Create all the directory inside SRC examples path
-for dir in %{examples_src}/*; do
-  if [ -d "$dir" ]; then
-    main_dir="examples"/${dir##*/}
-    install -d %{buildroot}/%{terraform}/"$main_dir"
-    # Recursively create subdirectories
-    for sub_dir in "$dir"/*; do
-      if [ -d "$sub_dir" ]; then
-        sub_main_dir=${sub_dir##*/}
-        new_dir="$main_dir/$sub_main_dir"
-        install -d %{buildroot}/%{terraform}/"$new_dir"
-      fi
-    done
-  fi
-done
+# Copy everything from extracted source tree to terraform install location
+cp -a * %{buildroot}/%{terraform}
+find %{buildroot}/%{terraform}/docs -type f -name '*.md' -exec chmod 0644 {} \;
+find %{buildroot}/%{terraform}/examples -type f -name '*.tf' -exec chmod 0644 {} \;
+find %{buildroot}/%{terraform} -type f -name '*.json' -exec chmod 0644 {} \;
 
-# Create all the directory inside SRC docs path
-for dir in %{docs_src}/*; do
-  if [ -d "$dir" ]; then
-    main_dir="docs"/${dir##*/}
-    install -d %{buildroot}/%{terraform}/"$main_dir"
-    # Recursively create subdirectories
-    for sub_dir in "$dir"/*; do
-      if [ -d "$sub_dir" ]; then
-        sub_main_dir=${sub_dir##*/}
-        new_dir="$main_dir/$sub_main_dir"
-        install -d %{buildroot}/%{terraform}/"$new_dir"
-      fi
-    done
-  fi
-done
-
-# Install files
-install -d %{buildroot}/%{terraform}/examples/provider
-install %{examples_src}/provider/provider.tf   %{examples_dst}/provider/provider.tf 
-install %{source_dir}/bin/terraform-provider-hitachi %{buildroot}/%{terraform}/bin/terraform-provider-hitachi
-install %{docs_src}/index.md %{docs_dst}/index.md
-
-# Data-source and resource files
-for file in %{examples_src}/data-sources/*/*.tf; do
-  dir_name=$(dirname "$file")
-  last_path_name=${dir_name##*/}
-  file_name=$(basename "$file")
-  install "$file" %{examples_dst}/data-sources/"$last_path_name"/"$file_name"
-done
-
-for file in %{examples_src}/resources/*/*.tf; do
-  dir_name=$(dirname "$file")
-  last_path_name=${dir_name##*/}
-  file_name=$(basename "$file")
-  install "$file" %{examples_dst}/resources/"$last_path_name"/"$file_name"
-done
-
-# Docs files
-for file in %{docs_src}/*/*.md; do
-  dir_name=$(dirname "$file")
-  last_path_name=${dir_name##*/}
-  file_name=$(basename "$file")
-  install "$file" %{docs_dst}/"$last_path_name"/"$file_name"
-done
-
-# Ensure .tf and .md files are not executable
-find %{buildroot}/%{terraform}/examples -type f -name "*.tf" -exec chmod -x {} \;
-find %{buildroot}/%{terraform}/docs -type f -name "*.md" -exec chmod -x {} \;
 
 %files
-%defattr(-,root,root,-)
+%defattr(-,root,root)
+%{terraform}
 
-# Top-level directory
-%dir %{terraform}
-
-# Binaries
-%{terraform}/bin/terraform-provider-hitachi
-
-# Examples and docs (include full tree recursively)
-%{terraform}/examples
-%{terraform}/docs
 
 %post
-chmod 755 -R %{hitachi_base}
 
 # Log file
 logdir="/var/log/hitachi/terraform"

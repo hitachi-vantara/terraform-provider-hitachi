@@ -1,6 +1,7 @@
 package vssbstorage
 
 import (
+	telemetry "terraform-provider-hitachi/hitachi/common/telemetry"
 	spmanager "terraform-provider-hitachi/hitachi/storage/vosb/gateway"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
 )
@@ -14,9 +15,10 @@ type vssbStorageManager struct {
 func newVssbStorageManagerEx(storageSetting vssbmodel.StorageDeviceSettings) (*vssbStorageManager, error) {
 	psm := &vssbStorageManager{
 		storageSetting: vssbmodel.StorageDeviceSettings{
-			Username:       storageSetting.Username,
-			Password:       storageSetting.Password,
-			ClusterAddress: storageSetting.ClusterAddress,
+			Username:                storageSetting.Username,
+			Password:                storageSetting.Password,
+			ClusterAddress:          storageSetting.ClusterAddress,
+			TerraformResourceMethod: telemetry.GetTerraformCallStackInfo(),
 		},
 	}
 	return psm, nil

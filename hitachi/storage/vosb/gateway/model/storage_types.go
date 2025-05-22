@@ -1,9 +1,10 @@
 package vssbstorage
 
 type StorageDeviceSettings struct {
-	Username       string `json:"username"`
-	Password       string `json:"password"`
-	ClusterAddress string `json:"clusterAddress"`
+	Username                string `json:"username"`
+	Password                string `json:"password"`
+	ClusterAddress          string `json:"clusterAddress"`
+	TerraformResourceMethod string `json:"terraformResourceMethod"`
 }
 
 type StorageVersionInfo struct {
@@ -71,7 +72,7 @@ type StorageClusterInfo struct {
 
 type Drive struct {
 	Id               string `json:"id"`
-	WwId             string `json:"wwid"`
+	WwwId            string `json:"wwwid"`
 	StatusSummary    string `json:"statusSummary"`
 	Status           string `json:"status"`
 	TypeCode         string `json:"typeCode"`
