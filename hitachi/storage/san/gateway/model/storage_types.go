@@ -2,10 +2,11 @@ package sanstorage
 
 // StorageDeviceSettings is details for Storage settings
 type StorageDeviceSettings struct {
-	Serial   int    `json:"serial"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	MgmtIP   string `json:"mgmtIP"`
+	Serial                  int    `json:"serial"`
+	Username                string `json:"username"`
+	Password                string `json:"password"`
+	MgmtIP                  string `json:"mgmtIP"`
+	TerraformResourceMethod string `json:"terraformResourceMethod"`
 }
 
 // StorageSystemInfo is used for Storage System Informaiton

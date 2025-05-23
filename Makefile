@@ -23,21 +23,37 @@ GOVERSION = 1.22
 
 .DEFAULT_GOAL := all
 
+# called from dev environment
 .PHONY: all
 all: build install
 
-.PHONY: build
-build: mod
+# called from build.sh
+.PHONY:  build
+build:  mod telemetry
 	@echo "🔧 Building provider version ${SEMVER}"
 	go build -ldflags="-X main.version=${SEMVER}" -o ${BINARY}
 	echo "${FULL_VERSION}" > version.txt
+
+.PHONY:  telemetry
+telemetry:
+	go run hitachi/common/telemetry/createmap/createmap.go
+
+# called from dev environment
+.PHONY:  config
+config:
+	@echo "📦 creating config.json"
+	(cd hitachi/common/config/main; go run create_config.go)
+	@echo "📦 copying config.json to /opt/hitachi/terraform"
+	mkdir -p /opt/hitachi/terraform
+	cp hitachi/common/config/main/config.json /opt/hitachi/terraform
 
 .PHONY: release
 release:
 	goreleaser release --rm-dist --snapshot --skip-publish --skip-sign
 
+# called from dev environment
 .PHONY: install
-install: build
+install: build config
 	@echo "📦 Installing provider to local plugin path"
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${OS_ARCH}
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${LINUX_OS_ARCH}
@@ -67,7 +83,8 @@ help:
 	@echo ""
 	@echo "Terraform Provider Makefile"
 	@echo "  make                     - Build and install the provider"
-	@echo "  make build               - Compile the provider binary"
+	@echo "  make all                 - Build and install the provider, called from dev environment"
+	@echo "  make build               - Compile the provider binary, called from build.sh"
 	@echo "  make install             - Install to ~/.terraform.d/plugins"
 	@echo "  make release             - Run goreleaser (snapshot)"
 	@echo "  make test                - Run unit tests"

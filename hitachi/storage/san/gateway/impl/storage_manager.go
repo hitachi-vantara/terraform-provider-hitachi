@@ -1,6 +1,7 @@
 package sanstorage
 
 import (
+	telemetry "terraform-provider-hitachi/hitachi/common/telemetry"
 	spmanager "terraform-provider-hitachi/hitachi/storage/san/gateway"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 )
@@ -14,10 +15,11 @@ type sanStorageManager struct {
 func newSanStorageManagerEx(storageSetting sanmodel.StorageDeviceSettings) (*sanStorageManager, error) {
 	psm := &sanStorageManager{
 		storageSetting: sanmodel.StorageDeviceSettings{
-			Serial:   storageSetting.Serial,
-			Username: storageSetting.Username,
-			Password: storageSetting.Password,
-			MgmtIP:   storageSetting.MgmtIP,
+			Serial:                  storageSetting.Serial,
+			Username:                storageSetting.Username,
+			Password:                storageSetting.Password,
+			MgmtIP:                  storageSetting.MgmtIP,
+			TerraformResourceMethod: telemetry.GetTerraformCallStackInfo(),
 		},
 	}
 	return psm, nil

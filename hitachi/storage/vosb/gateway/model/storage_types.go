@@ -1,9 +1,10 @@
 package vssbstorage
 
 type StorageDeviceSettings struct {
-	Username       string `json:"username"`
-	Password       string `json:"password"`
-	ClusterAddress string `json:"clusterAddress"`
+	Username                string `json:"username"`
+	Password                string `json:"password"`
+	ClusterAddress          string `json:"clusterAddress"`
+	TerraformResourceMethod string `json:"terraformResourceMethod"`
 }
 
 type StorageVersionInfo struct {

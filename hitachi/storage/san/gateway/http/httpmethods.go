@@ -4,13 +4,51 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	telemetry "terraform-provider-hitachi/hitachi/common/telemetry"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 )
 
+// New wrapper functions for telemetry
 func GetCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("GetCall", getCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(sanmodel.StorageDeviceSettings, string, interface{}) error)
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, output)
+}
+
+func PostCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("PostCall", postCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(sanmodel.StorageDeviceSettings, string, interface{}) (*string, error))
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody)
+}
+
+func PatchCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("PatchCall", patchCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(sanmodel.StorageDeviceSettings, string, interface{}) (*string, error))
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody)
+}
+
+func DeleteCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	// Wrap the original function using telemetry.WrapMethod
+	wrappedFunc := telemetry.WrapMethod("DeleteCall", deleteCall)
+	// Type assert to the original function signature
+	wrappedHTTPMethod := wrappedFunc.(func(sanmodel.StorageDeviceSettings, string, interface{}) (*string, error))
+	// Now call the wrapped function
+	return wrappedHTTPMethod(storageSetting, apiSuf, reqBody)
+}
+
+///////////////
+func getCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -77,7 +115,7 @@ func PostCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string,
 	return &jobString, err
 }
 
-func PostCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func postCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -133,7 +171,7 @@ func PatchCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string
 	return &jobString, err
 }
 
-func PatchCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func patchCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -189,7 +227,7 @@ func DeleteCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf strin
 	return &jobString, err
 }
 
-func DeleteCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func deleteCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
