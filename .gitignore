@@ -49,3 +49,6 @@ hitachi-terraform.log
 
 rpmbuild
 terraform-provider-hitachi
+
+.vscode/*
+
