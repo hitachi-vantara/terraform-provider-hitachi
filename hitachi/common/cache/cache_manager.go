@@ -16,7 +16,7 @@ func init() {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteDebug("cache init function has been called")
+	log.WriteDebug("memory cache init function has been called")
 
 	SanSettingsMap = make(map[string]sanmodel.StorageSettingsAndInfo)
 	VssbSettingsMap = make(map[string]vssbmodel.StorageSettingsAndInfo)

@@ -182,6 +182,7 @@ func Set(key string, value interface{}, ttl ...time.Duration) error {
 		return err
 	}
 
+	log.WriteDebug("saving disk cache key: %v", key)
 	return d.Write(key, cacheItemBytes) // Write the marshaled JSON to diskv
 }
 
@@ -192,7 +193,7 @@ func Get(key string, result interface{}) (bool, error) {
 	// Read the data from the cache
 	buf, err := d.Read(key)
 	if err != nil {
-		log.WriteDebug("Error reading from cache: %v", err)
+		log.WriteDebug("warning: reading from cache: %v", err)
 		return false, err
 	}
 
@@ -224,5 +225,6 @@ func Get(key string, result interface{}) (bool, error) {
 		return false, err
 	}
 
+	log.WriteDebug("successfully read disk cache key %v", key)
 	return true, nil
 }

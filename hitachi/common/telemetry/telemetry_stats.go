@@ -4,19 +4,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"math"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
+	config "terraform-provider-hitachi/hitachi/common/config"
 	diskcache "terraform-provider-hitachi/hitachi/common/diskcache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 	vosbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var statsMutex sync.Mutex
@@ -42,7 +44,7 @@ func init() {
 }
 
 // UpdateTelemetryStats updates the execution stats based on the method call
-func UpdateTelemetryStats(status string, elapsedTime float64, storageSettingInt interface{}, thirdArg interface{}) {
+func UpdateTelemetryStats(status string, elapsedTime float64, storageSettingInt interface{}, outputForModelOrVersion interface{}) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -50,7 +52,7 @@ func UpdateTelemetryStats(status string, elapsedTime float64, storageSettingInt 
 	statsMutex.Lock()
 	defer statsMutex.Unlock()
 
-	task := getMethodTaskExecutionInfo(status, elapsedTime, storageSettingInt, thirdArg)
+	task := getMethodTaskExecutionInfo(status, elapsedTime, storageSettingInt, outputForModelOrVersion)
 
 	err := updateLocalJsonFileStats(task)
 	if err != nil {
@@ -65,7 +67,7 @@ func UpdateTelemetryStats(status string, elapsedTime float64, storageSettingInt 
 }
 
 // fill up initial data
-func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSettingInt interface{}, thirdArg interface{}) MethodTaskExecution {
+func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSettingInt interface{}, outputForModelOrVersion interface{}) MethodTaskExecution {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -84,13 +86,13 @@ func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSetti
 		storageSetting := storageSettingInt.(sanmodel.StorageDeviceSettings)
 		terraformResourceMethod = storageSetting.TerraformResourceMethod
 		storageSerial = strconv.Itoa(storageSetting.Serial)
-		storageModel = getSanStorageModel(storageSettingInt, thirdArg)
+		storageModel = getSanStorageModel(storageSettingInt, outputForModelOrVersion)
 	} else if connectionType == "vosb" {
 		storageType = "sds_block"
 		storageSetting := storageSettingInt.(vosbmodel.StorageDeviceSettings)
 		terraformResourceMethod = storageSetting.TerraformResourceMethod
 		storageSerial = getUUIDFromIP(storageSetting.ClusterAddress).String()
-		storageModel = getVosbStorageVersion(storageSettingInt, thirdArg)
+		storageModel = getVosbStorageVersion(storageSettingInt, outputForModelOrVersion)
 	}
 
 	log.WriteDebug("terraformResourceMethod: %+v", terraformResourceMethod)
@@ -235,9 +237,15 @@ func sendTelemetryStatsToAWS(task MethodTaskExecution) error {
 		return fmt.Errorf("failed to save execution stats: %w", err)
 	}
 
+	if config.ConfigData.AWS_URL == "" {
+		log.WriteDebug("AWS URL is not configured. Skipping telemetry data sending.")
+		return nil
+	}
+
 	log.WriteDebug("Sending telemetry data: %+v", telemetryPayload)
 
-	err = sendPOSTRequestToAWS(APIG_URL, telemetryPayload)
+	// err = sendPOSTRequestToAWS(AWS_URL, telemetryPayload)
+	err = sendPOSTRequestToAWS(config.ConfigData.AWS_URL, telemetryPayload)
 	if err != nil {
 		log.WriteError("Error sending telemetry stat details: %v", err)
 		return err
@@ -284,7 +292,7 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 
 	// Create an HTTP client with a timeout (e.g., 30 seconds)
 	client := &http.Client{
-		Timeout: 30 * time.Second, // Set the timeout to 30 seconds
+		Timeout: time.Duration(config.ConfigData.AWSTimeout),
 	}
 
 	// Send the HTTP request
@@ -419,63 +427,64 @@ func getTerraformProviderMapValue(input string) string {
 	return ""
 }
 
-func getSanStorageModel(storageSettingInt interface{}, thirdArg interface{}) string {
+func getSanStorageModel(storageSettingInt interface{}, outputForModelOrVersion interface{}) string {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	storageSetting := storageSettingInt.(sanmodel.StorageDeviceSettings)
 
-	// use global
+	// Use global cache if already populated
 	if sanStorageModel != "" {
+		log.WriteDebug("from global cache var sanStorageModel: %v", sanStorageModel)
 		return sanStorageModel
 	}
 
-	// read from disk cache
 	key := storageSetting.MgmtIP + ":StorageSystemInfo"
-	storageInfo := sanmodel.StorageSystemInfo{}
-	found, _ := diskcache.Get(key, &storageInfo)
+	var cachedInfo sanmodel.StorageSystemInfo
+	found, _ := diskcache.Get(key, &cachedInfo)
 	if found {
-		sanStorageModel = storageInfo.Model
+		sanStorageModel = cachedInfo.Model
+		log.WriteDebug("from disk cache sanStorageModel: %v", sanStorageModel)
 		return sanStorageModel
 	}
 
-	// for first time http call of san GetStorageSystemInfo(), get storage model from output of api call
-	if storageInfo, ok := thirdArg.(*sanmodel.StorageSystemInfo); ok {
-		log.WriteDebug("sanmodel.StorageSystemInfo: %+v", storageInfo)
-		sanStorageModel = storageInfo.Model
+	// Fallback to API response if provided
+	if infoFromAPI, ok := outputForModelOrVersion.(*sanmodel.StorageSystemInfo); ok && infoFromAPI != nil {
+		log.WriteDebug("sanmodel.StorageSystemInfo from API: %+v", infoFromAPI)
+		sanStorageModel = infoFromAPI.Model
 		return sanStorageModel
 	}
 
 	return ""
 }
 
-func getVosbStorageVersion(storageSettingInt interface{}, thirdArg interface{}) string {
+func getVosbStorageVersion(storageSettingInt interface{}, outputForModelOrVersion interface{}) string {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	storageSetting := storageSettingInt.(vosbmodel.StorageDeviceSettings)
 
-	// use global
+	// Use global cache if already populated
 	if vosbStorageVersion != "" {
+		log.WriteDebug("from global cache var vosbStorageVersion: %v", vosbStorageVersion)
 		return vosbStorageVersion
 	}
 
 	// read from disk cache first
 	key := storageSetting.ClusterAddress + ":StorageVersionInfo"
-	versionInfo := vosbmodel.StorageVersionInfo{}
-	found, err := diskcache.Get(key, &versionInfo)
-	log.WriteDebug("diskcache.Get Found=%v, ERR: %+v, versionInfo:%+v", found, err, versionInfo)
-
+	var cachedInfo vosbmodel.StorageVersionInfo
+	found, _ := diskcache.Get(key, &cachedInfo)
 	if found {
-		vosbStorageVersion = versionInfo.ApiVersion
+		vosbStorageVersion = cachedInfo.ApiVersion
+		log.WriteDebug("from disk cache vosbStorageVersion: %v", vosbStorageVersion)
 		return vosbStorageVersion
 	}
 
 	// for first time http call of vosb GetStorageVersionInfo(), get apiVersion from output of api call
-	if versionInfo, ok := thirdArg.(*vosbmodel.StorageVersionInfo); ok {
-		log.WriteDebug("StorageVersionInfo: %+v", versionInfo)
+	if versionInfo, ok := outputForModelOrVersion.(*vosbmodel.StorageVersionInfo); ok {
+		log.WriteDebug("vosbmodel.StorageVersionInfo: %+v", versionInfo)
 		vosbStorageVersion = versionInfo.ApiVersion
 		return vosbStorageVersion
 	}
@@ -483,10 +492,9 @@ func getVosbStorageVersion(storageSettingInt interface{}, thirdArg interface{}) 
 	return ""
 }
 
-// // not used yet
-// func ValidateTerraformUserConsent() string {
-// 	if _, err := os.Stat(TERRAFORM_USER_CONSENT_FILE); os.IsNotExist(err) {
-// 		return USER_CONSENT_MISSING
-// 	}
-// 	return ""
-// }
+func IsUserConsentExist() bool {
+	if _, err := os.Stat(TERRAFORM_USER_CONSENT_FILE); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}

@@ -2,27 +2,27 @@ package utils
 
 import (
 	"bytes"
-	"encoding/json"
+	b64 "encoding/base64"
+	// "encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"golang.org/x/exp/slices"
+	// "io/ioutil"
+	// "os"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"golang.org/x/exp/slices"
-
-	// "log"
-	b64 "encoding/base64"
-
-	log "github.com/romana/rlog"
+	commonlog "terraform-provider-hitachi/hitachi/common/log"
 )
 
+// these funcs are not used in the code
+/*
 func GetOutputValue(value interface{}) interface{} {
+	log := commonlog.GetLogger()
+
 	valArray, okArray := value.([]interface{})
 	if okArray {
-		// log.Infof("It's an array : %+v\n", valArray)
+		// log.WriteInfo("It's an array : %+v\n", valArray)
 		outArray := make([]interface{}, 0)
 		for _, item := range valArray {
 			outMap := GetOutputValue(item)
@@ -33,14 +33,14 @@ func GetOutputValue(value interface{}) interface{} {
 	} else {
 		valMap, okMap := value.(map[string]interface{})
 		if okMap {
-			// log.Infof("It's a map : %+v\n", valMap)
+			// log.WriteInfo("It's a map : %+v\n", valMap)
 			outMap := map[string]interface{}{}
 			for k, v := range valMap {
 				outMap[ToSnakeCase(k)] = GetOutputValue(v)
 			}
 			return outMap
 		} else {
-			// log.Infof("It's primitive type : %+v\n", value)
+			// log.WriteInfo("It's primitive type : %+v\n", value)
 			return value
 		}
 	}
@@ -51,14 +51,14 @@ func PopulateOutput(value interface{}) []interface{} {
 	lastValue := GetOutputValue(value)
 	valMap, okMap := lastValue.(map[string]interface{})
 	if okMap {
-		// log.Infof("Last value is a map : %+v\n", lastValue)
+		// log.WriteInfo("Last value is a map : %+v\n", lastValue)
 		lastValueInArray = append(lastValueInArray, valMap)
 	} else {
-		// log.Infof("Last value is an array : %+v\n", lastValue)
+		// log.WriteInfo("Last value is an array : %+v\n", lastValue)
 		lastValueInArray = lastValue.([]interface{})
 	}
 
-	log.Infof("Output Schema Value: %s\n", ConvertToJson(lastValueInArray))
+	log.WriteInfo("Output Schema Value: %s\n", ConvertToJson(lastValueInArray))
 	return lastValueInArray
 }
 
@@ -72,18 +72,78 @@ func ToSnakeCase(str string) string {
 }
 
 func IsInterfaceArray(v interface{}) bool {
+	log := commonlog.GetLogger()
+
 	switch x := v.(type) {
 	case []interface{}:
-		log.Debug("[]interface, len:", len(x))
+		log.WriteDebug("[]interface, len:", len(x))
 		return true
 	case interface{}:
-		log.Debug("interface:", x)
+		log.WriteDebug("interface:", x)
 		return false
 	default:
-		log.Debugf("Unsupported type: %T\n", x)
+		log.WriteDebugf("Unsupported type: %T\n", x)
 		return false
 	}
 }
+
+func ConvertToJson(m interface{}) string {
+	log := commonlog.GetLogger()
+
+	b, err := json.Marshal(m)
+	if err != nil {
+		log.WriteError(err)
+	}
+	return string(b)
+}
+
+func SaveOutputToFile(resourceName string, id string, output interface{}) error {
+	log := commonlog.GetLogger()
+
+	name := "output/" + resourceName + "_" + id + ".out"
+	_ = os.Mkdir("output", os.ModeDir|os.ModePerm)
+
+	file, err := json.MarshalIndent(output, "", " ")
+	if err != nil {
+		log.WriteError(err)
+		return err
+	}
+
+	err = ioutil.WriteFile(name, file, 0644)
+	if err != nil {
+		log.WriteError(err)
+		return err
+	}
+
+	return nil
+}
+
+func SaveDataToFile(dirPath, fileName string, data interface{}) error {
+	log := commonlog.GetLogger()
+
+	err := os.MkdirAll(dirPath, os.ModeDir|os.ModePerm)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	filePath := dirPath + "/" + fileName
+
+	jsonString, err := json.MarshalIndent(data, "", " ")
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	err = ioutil.WriteFile(filePath, jsonString, 0644)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
+}
+*/
 
 // TransformSizeToUnit --
 func TransformSizeToUnit(size uint64) string {
@@ -107,11 +167,11 @@ func ConvertSizeFromBytesToMb(size uint64) uint64 {
 }
 
 func ConvertSizeFromKbToMb(size uint64) uint64 {
-	return uint64(float64(size * 1024) / float64(MEGABYTES))
+	return uint64(float64(size*1024) / float64(MEGABYTES))
 }
 
 func ConvertSizeFromKbToGb(size uint64) uint64 {
-	return uint64(float64(size * 1024) / float64(GIGABYTES))
+	return uint64(float64(size*1024) / float64(GIGABYTES))
 }
 
 // ConvertSizeToBytes -- examples: 1GB, 2.5MB
@@ -144,68 +204,19 @@ func ConvertSizeToBytes(size string) (uint64, error) {
 	return sizeInBytes, nil
 }
 
-func ConvertToJson(m interface{}) string {
-	b, err := json.Marshal(m)
-	if err != nil {
-		log.Error(err)
-	}
-	return string(b)
-}
-
-func SaveOutputToFile(resourceName string, id string, output interface{}) error {
-	name := "output/" + resourceName + "_" + id + ".out"
-	_ = os.Mkdir("output", os.ModeDir|os.ModePerm)
-
-	file, err := json.MarshalIndent(output, "", " ")
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	err = ioutil.WriteFile(name, file, 0644)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	return nil
-}
-
 func DecodeBase64EncodedString(strvalue string) (string, error) {
+	log := commonlog.GetLogger()
+
 	var x string
 	// fmt.Println(strvalue)
 	uDec, err := b64.URLEncoding.DecodeString(strvalue)
 	// fmt.Println(string(uDec))
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return x, err
 	}
 
 	return strings.TrimSuffix(bytes.NewBuffer(uDec).String(), "\n"), nil
-}
-
-func SaveDataToFile(dirPath, fileName string, data interface{}) error {
-	err := os.MkdirAll(dirPath, os.ModeDir|os.ModePerm)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	filePath := dirPath + "/" + fileName
-
-	jsonString, err := json.MarshalIndent(data, "", " ")
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	err = ioutil.WriteFile(filePath, jsonString, 0644)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	return nil
 }
 
 func IsParityGroupPresent(parityGroupId string, parityGroupIDs []string) bool {

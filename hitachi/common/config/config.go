@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	config     *Config
+	ConfigData *Config
 	configOnce sync.Once
 )
 
@@ -43,7 +43,7 @@ func Load(path string) error {
 				return
 			}
 
-			config = &cfg
+			ConfigData = &cfg
 			log.WriteDebug("Config successfully loaded from file.")
 			return
 		}
@@ -54,7 +54,7 @@ func Load(path string) error {
 			UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
 			APITimeout:         DEFAULT_API_TIMEOUT,
 		}
-		config = &defaultCfg
+		ConfigData = &defaultCfg
 
 		if mkdirErr := os.MkdirAll(filepath.Dir(path), 0755); mkdirErr != nil {
 			err = mkdirErr
@@ -91,17 +91,19 @@ func Get() *Config {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	if config == nil {
+	if ConfigData == nil {
 		log.WriteError("config.Load() must be called before config.Get()")
 		panic("config.Load() must be called before config.Get()")
 	}
-	return config
+	return ConfigData
 }
 
 func CreateDefaultConfigFile(path string) error {
 	defaultCfg := Config{
 		UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
 		APITimeout:         DEFAULT_API_TIMEOUT,
+		AWSTimeout:         DEFAULT_AWS_TIMEOUT,
+		AWS_URL:            DEFAULT_AWS_URL,
 	}
 
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {

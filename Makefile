@@ -45,7 +45,13 @@ config:
 	(cd hitachi/common/config/main; go run create_config.go)
 	@echo "📦 copying config.json to /opt/hitachi/terraform"
 	mkdir -p /opt/hitachi/terraform
+	mkdir -p /opt/hitachi/terraform/bin
+	mkdir -p /opt/hitachi/terraform/telemetry
 	cp hitachi/common/config/main/config.json /opt/hitachi/terraform
+	cp hitachi/common/telemetry/user_consent.sh /opt/hitachi/terraform/bin
+	cp ${BINARY} /opt/hitachi/terraform/bin
+	cp -r docs /opt/hitachi/terraform
+	cp -r examples /opt/hitachi/terraform
 
 .PHONY: release
 release:
@@ -58,7 +64,7 @@ install: build config
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${OS_ARCH}
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${LINUX_OS_ARCH}
 	cp ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${OS_ARCH}/
-	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${LINUX_OS_ARCH}/
+	cp ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${SEMVER}/${LINUX_OS_ARCH}/
 
 .PHONY: test
 test:

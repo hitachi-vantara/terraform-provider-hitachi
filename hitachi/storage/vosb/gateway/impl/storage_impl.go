@@ -1,6 +1,7 @@
 package vssbstorage
 
 import (
+	diskcache "terraform-provider-hitachi/hitachi/common/diskcache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	httpmethod "terraform-provider-hitachi/hitachi/storage/vosb/gateway/http"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
@@ -13,6 +14,14 @@ func (psm *vssbStorageManager) GetStorageVersionInfo() (*vssbmodel.StorageVersio
 	defer log.WriteExit()
 
 	var versionInfo vssbmodel.StorageVersionInfo
+
+	// read from disk cache first
+	key := psm.storageSetting.ClusterAddress + ":StorageVersionInfo"
+	found, _ := diskcache.Get(key, &versionInfo)
+	if found {
+		return &versionInfo, nil
+	}
+
 	apiSuf := "configuration/version"
 	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &versionInfo)
 	if err != nil {
@@ -20,6 +29,10 @@ func (psm *vssbStorageManager) GetStorageVersionInfo() (*vssbmodel.StorageVersio
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
+
+	// save this to disk cache
+	diskcache.Set(key, versionInfo)
+
 	return &versionInfo, nil
 }
 

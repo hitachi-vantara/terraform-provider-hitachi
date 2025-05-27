@@ -89,7 +89,7 @@ func GetSanStorageSystem(ssItems []interface{}) (ssList []*terraformmodel.Storag
 			return nil, err
 		}
 
-		storageSystem, err := reconObj.GetStorageSystem()
+		storageSystem, err := reconObj.GetStorageSystemInfo()
 		if err != nil {
 			log.WriteDebug("TFError| error getting storage system, err: %v", err)
 			return nil, err

@@ -31,9 +31,11 @@ if [[ "$USER_INPUT_LOWER" != "yes" && "$USER_INPUT_LOWER" != "no" ]]; then
   exit 1
 fi
 
-USER_CONSENT_BOOL=false
+# Convert to raw JSON boolean (unquoted)
 if [ "$USER_INPUT_LOWER" == "yes" ]; then
   USER_CONSENT_BOOL=true
+else
+  USER_CONSENT_BOOL=false
 fi
 
 # Get current UTC timestamp
@@ -41,8 +43,10 @@ CURRENT_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Initialize or update consent file
 if [ -f "$CONSENT_FILE" ]; then
-  # Read existing data
   SITE_ID=$(jq -r '.site_id' "$CONSENT_FILE")
+  if [ "$SITE_ID" == "" ]; then
+    SITE_ID=$(uuidgen)
+  fi
   PREVIOUS_CONSENT=$(jq -r '.user_consent_accepted' "$CONSENT_FILE")
   PREVIOUS_TIME=$(jq -r '.time' "$CONSENT_FILE")
   CONSENT_HISTORY=$(jq -c '.consent_history' "$CONSENT_FILE")
@@ -53,14 +57,14 @@ if [ -f "$CONSENT_FILE" ]; then
     '. + [$prev]')
 else
   SITE_ID=$(uuidgen)
-  UPDATED_HISTORY="[]"
+  UPDATED_HISTORY='[]'
 fi
 
 # Write updated consent file
 jq -n \
   --arg site_id "$SITE_ID" \
-  --argjson user_consent_accepted "$USER_CONSENT_BOOL" \
   --arg time "$CURRENT_TIMESTAMP" \
+  --argjson user_consent_accepted $USER_CONSENT_BOOL \
   --argjson consent_history "$UPDATED_HISTORY" \
   '{
     site_id: $site_id,
