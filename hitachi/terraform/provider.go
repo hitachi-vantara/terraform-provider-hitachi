@@ -2,29 +2,28 @@ package terraform
 
 import (
 	"context"
-
 	"fmt"
-	// "strconv"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sync"
-	// "time"
-
+	config "terraform-provider-hitachi/hitachi/common/config"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
-
-	// "github.com/hashicorp/terraform-plugin-log/tflog"
+	telemetry "terraform-provider-hitachi/hitachi/common/telemetry"
 	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	resourceimpl "terraform-provider-hitachi/hitachi/terraform/resource"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	config "terraform-provider-hitachi/hitachi/common/config"
 )
 
 var (
 	configOnce sync.Once
 	configErr  error
+
+	userConsentOnce    sync.Once
+	isUserConsentExist bool
 )
+
+const CONFIG_FILE = "/opt/hitachi/terraform/config.json"
 
 // Provider returns a terraform.ResourceProvider.
 func Provider() *schema.Provider {
@@ -72,14 +71,25 @@ func Provider() *schema.Provider {
 	}
 }
 
-const CONFIG_FILE = "/opt/hitachi/terraform/config.json"
+// providerConfigure sets up the provider's configuration.
+// providerConfigure is executed each time Terraform runs plan, apply, etc., and it's the canonical place to:
+// Load provider settings,
+// Initialize clients,
+// Validate environment or file presence (like consent file),
+// Return diagnostics if required files are missing or invalid.
+// Recommended:
+// This function must not make any backend API calls or perform side effects.
+// It should only validate and return the configured client or settings.
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	configErr := config.Load(CONFIG_FILE)
+	configOnce.Do(func() {
+		configErr = config.Load(CONFIG_FILE) // data saved in config.ConfigData global var
+	})
+
 	if configErr != nil {
 		log.WriteInfo("Could not load config.json. A default config may have been created. Details: %v", configErr)
 		return nil, diag.Diagnostics{
@@ -87,6 +97,21 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 				Severity: diag.Warning,
 				Summary:  "Default config file created",
 				Detail:   fmt.Sprintf("Could not read %s — a new default config.json was created. Details: %v", CONFIG_FILE, configErr),
+			},
+		}
+	}
+
+	userConsentOnce.Do(func() {
+		isUserConsentExist = telemetry.IsUserConsentExist()
+	})
+
+	if !isUserConsentExist {
+		log.WriteInfo("User has not run bin/user_consent.sh")
+		return nil, diag.Diagnostics{
+			{
+				Severity: diag.Error,
+				Summary:  "Telemetry consent required",
+				Detail:   "Please run `bin/user_consent.sh` to create `user_consent.json` in `/opt/hitachi/terraform`, indicating whether you consent to telemetry.",
 			},
 		}
 	}

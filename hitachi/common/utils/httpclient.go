@@ -4,24 +4,40 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	// "io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
+	"sync"
 	"time"
-	"io"
 
-	log "github.com/romana/rlog"
+	config "terraform-provider-hitachi/hitachi/common/config"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 )
 
-var TIMEOUT time.Duration = 300
+var (
+	sharedClient     *http.Client
+	sharedClientOnce sync.Once
+)
 
-// SharedClient is the global, reusable HTTP client
-var SharedClient *http.Client
+// SharedClient returns a singleton, reusable HTTP client
+func SharedClient() *http.Client {
+	sharedClientOnce.Do(func() {
+		log := commonlog.GetLogger()
+		log.WriteEnter()
+		defer log.WriteExit()
 
-// init() is called automatically when the package is loaded
-func init() {
-	SharedClient = newHTTPClient(TIMEOUT*time.Second, true)
+		timeoutSeconds := config.ConfigData.APITimeout
+		if timeoutSeconds <= 0 {
+			timeoutSeconds = 300 // Fallback default if config is invalid
+		}
+
+		timeout := time.Duration(timeoutSeconds) * time.Second
+		sharedClient = newHTTPClient(timeout, true)
+
+		log.WriteDebug("API Execution Timeout: %v", timeout)
+	})
+
+	return sharedClient
 }
 
 // Helper function to build a configured client
@@ -49,9 +65,13 @@ func IsHttpError(statusCode int) bool {
 }
 
 func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -81,16 +101,16 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 	if headers != nil {
 		for k, v := range *headers {
 			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.Infof(strValue)
+			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
 	}
 
 	logRequest(req, nil)
 
-	resp, err := SharedClient.Do(req)
+	resp, err := SharedClient().Do(req)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -102,18 +122,22 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
-	log.Debugf("HTTP Response: %s\n", string(body))
+	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
 }
 
 func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(httpBody))
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -142,16 +166,16 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 	if headers != nil {
 		for k, v := range *headers {
 			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.Infof(strValue)
+			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
 	}
 
 	logRequest(req, httpBody)
 
-	resp, err := SharedClient.Do(req)
+	resp, err := SharedClient().Do(req)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -163,18 +187,22 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
-	log.Debugf("HTTP Response: %s\n", string(body))
+	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
 }
 
 func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string]string, httpBody []byte) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(httpBody))
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -188,16 +216,16 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 	if headers != nil {
 		for k, v := range *headers {
 			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.Infof(strValue)
+			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
 	}
 
 	logRequest(req, httpBody)
 
-	resp, err := SharedClient.Do(req)
+	resp, err := SharedClient().Do(req)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -209,18 +237,22 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
-	log.Debugf("HTTP Response: %s\n", string(body))
+	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
 }
 
 func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -235,16 +267,16 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 	if headers != nil {
 		for k, v := range *headers {
 			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.Infof(strValue)
+			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
 	}
 
 	logRequest(req, nil)
 
-	resp, err := SharedClient.Do(req)
+	resp, err := SharedClient().Do(req)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -256,15 +288,19 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
-	log.Debugf("HTTP Response: %s\n", string(body))
+	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
 }
 
 func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	var req *http.Request
 	var err error
 	nullValue := []byte("null")
@@ -275,14 +311,14 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 	}
 
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
 	if headers != nil {
 		for k, v := range *headers {
 			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.Infof(strValue)
+			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
 	}
@@ -297,9 +333,9 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 
 	logRequest(req, httpBody)
 
-	resp, err := SharedClient.Do(req)
+	resp, err := SharedClient().Do(req)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -311,18 +347,22 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
-	log.Debugf("HTTP Response: %s\n", string(body))
+	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
 }
 
 func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
 	req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(httpBody))
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -337,16 +377,16 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 	if headers != nil {
 		for k, v := range *headers {
 			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.Infof(strValue)
+			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
 	}
 
 	logRequest(req, httpBody)
 
-	resp, err := SharedClient.Do(req)
+	resp, err := SharedClient().Do(req)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
@@ -358,11 +398,11 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		log.WriteError(err)
 		return "", err
 	}
 
-	log.Debugf("HTTP Response: %s\n", string(body))
+	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
 }
 

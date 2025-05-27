@@ -1,4 +1,6 @@
 {
   "user_consent_message": "Hitachi Vantara LLC collects usage data such as:\n\n  • Storage model\n  • Storage serial number\n  • Operation name\n  • Status (success or failure)\n  • Duration\n\nThis data is collected for product improvement purposes only.\nIt remains confidential and is not shared with any third parties.",
-  "api_timeout": 300
+  "api_timeout": 300,
+  "aws_timeout": 300,
+  "aws_url": ""
 }

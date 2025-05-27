@@ -52,13 +52,6 @@ if [ "${installed_ver}" != "" ]; then
   exit 1
 fi
 
-# Check if install directory exists
-if [ -d "%{terraform}" ]; then
-  echo "[$(date)] ERROR: Installation directory %{terraform} already exists." | tee -a "$logfile" >&2
-  echo "[$(date)] Please remove or move it before reinstalling. Aborting." | tee -a "$logfile" >&2
-  exit 1
-fi
-
 # Redirection of any errors generated from RPM scriptlet
 # This will suppress the scriptlet error messages (like exit status 1, etc.)
 exec 2>/dev/null
