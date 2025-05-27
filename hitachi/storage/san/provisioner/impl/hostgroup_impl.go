@@ -232,12 +232,46 @@ func (psm *sanStorageManager) CreateHostGroup(hgBody sanmodel.CreateHostGroupReq
 		HostMode:        hgBody.HostMode,
 	}
 	log.WriteDebug("TFDebug| CreateHostGroupReqGwy: %+v", objHostgroup)
-	_, phgNum, err := gatewayObj.CreateHostGroup(objHostgroup)
+	if objHostgroup.HostGroupName != nil {
+		log.WriteDebug("TFDebug| HostGroupName: %v", *objHostgroup.HostGroupName)
+	}
+	if objHostgroup.PortID != nil {
+		log.WriteDebug("TFDebug| PortID: %v", *objHostgroup.PortID)
+	}
+
+	// since GetHostGroup is by port and HostGroupNumber
+	// have to get all first then 
+	// use HostGroupName and portID to check if hostgroup already exists
+	doCreate := true
+	hostGroups, err := gatewayObj.GetAllHostGroups()
+	phgNum := hgBody.HostGroupNumber
 	if err != nil {
-		log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), hgBody.PortID, hgBody.HostGroupNumber)
-		log.WriteDebug("TFError| failed to call CreateHostGroup err: %+v", err)
+		log.WriteDebug("TFError| failed to call GetAllHostGroups err: %+v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_HOSTGROUP_FAILED), objStorage.Serial)
 		return nil, err
 	}
+	for _, hg := range hostGroups.HostGroups {
+		log.WriteDebug("TFDebug| HostGroupName: %v, PortID: %v, HostGroupNumber: %v", hg.HostGroupName, hg.PortID, hg.HostGroupNumber)
+		if objHostgroup.HostGroupName != nil && objHostgroup.PortID != nil &&
+			hg.HostGroupName == *objHostgroup.HostGroupName && hg.PortID == *objHostgroup.PortID {
+				hostGroupNumber := hg.HostGroupNumber
+				phgNum = &hostGroupNumber
+				doCreate = false
+				break
+		}
+	}
+
+	if doCreate {
+		_, phgNum, err = gatewayObj.CreateHostGroup(objHostgroup)
+		if err != nil || phgNum == nil {
+			log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), hgBody.PortID, hgBody.HostGroupNumber)
+			log.WriteDebug("TFError| failed to call CreateHostGroup err: %+v", err)
+			return nil, err
+		}
+	}
+	log.WriteDebug("TFDebug| phgNum: %v", *phgNum)
+	log.WriteDebug("TFDebug| doCreate: %+v", doCreate)
+	
 	// If user not pass then it will create automatically
 	if hgBody.HostGroupNumber == nil {
 		hgBody.HostGroupNumber = phgNum
