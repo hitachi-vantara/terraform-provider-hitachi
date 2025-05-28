@@ -29,7 +29,6 @@ func (psm *vssbStorageManager) GetStorageVersionInfo() (*vssbmodel.StorageVersio
 
 	versionInfo, err := gatewayObj.GetStorageVersionInfo()
 	if err != nil {
-		log.WriteDebug("TFError| failed to call GetStorageVersionInfo, err: %+v", err)
 		return nil, err
 	}
 

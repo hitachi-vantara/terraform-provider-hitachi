@@ -31,7 +31,6 @@ func (psm *sanStorageManager) GetStorageSystemInfo() (*sanmodel.StorageSystem, e
 	}
 	provStorageSysInfo, err := provObj.GetStorageSystemInfo()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageSystemInfo provisioner call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_STORAGE_SYSTEM_FAILED), objStorage.MgmtIP)
 		return nil, err
 	}
@@ -68,7 +67,6 @@ func (psm *sanStorageManager) GetStorageSystem() (*sanmodel.StorageSystem, error
 	}
 	provStorageSysInfo, err := provObj.GetStorageSystem()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageSystem provisioner call, err: %v", err)
 		log.WriteInfo(mc.GetMessage(mc.ERR_GET_STORAGE_SYSTEM_FAILED), objStorage.MgmtIP)
 		return nil, err
 	}

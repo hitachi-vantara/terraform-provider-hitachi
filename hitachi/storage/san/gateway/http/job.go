@@ -171,8 +171,22 @@ func CheckResponseAndWaitForJob(storageSetting sanmodel.StorageDeviceSettings, r
 	log.WriteDebug("TFDebug|Final JOB: %+v", job)
 
 	if state != "Succeeded" {
-		return job, fmt.Errorf(job.Error.Message)
+		// return job, fmt.Errorf(job.Error.Message)
+		return job, CheckHttpErrorResponse(*resJSONString, err)
 	}
 
 	return job, nil
+}
+
+func CheckHttpErrorResponse(resJSONString string, httpErr error) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if resJSONString == "" {
+		return httpErr
+	}
+
+	errmsg := fmt.Sprintf("%s\n%+v", httpErr.Error(), resJSONString)
+	return fmt.Errorf("%s", errmsg)
 }

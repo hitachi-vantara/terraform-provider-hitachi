@@ -27,7 +27,6 @@ func (psm *sanStorageManager) GetStorageSystemInfo() (*sanmodel.StorageSystemInf
 	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &storageInfo)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in objects/storages/instance API call, err: %v", err)
 		return nil, err
 	}
 

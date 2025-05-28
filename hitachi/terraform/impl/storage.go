@@ -91,7 +91,6 @@ func GetSanStorageSystem(ssItems []interface{}) (ssList []*terraformmodel.Storag
 
 		storageSystem, err := reconObj.GetStorageSystemInfo()
 		if err != nil {
-			log.WriteDebug("TFError| error getting storage system, err: %v", err)
 			return nil, err
 		}
 
@@ -141,7 +140,7 @@ func GetVssbStorageSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.S
 
 		versionInfo, err := reconObj.GetStorageVersionInfo()
 		if err != nil {
-			log.WriteDebug("TFError| error getting storage system, err: %v", err)
+			// log.WriteDebug("TFError| error getting storage system, err: %v", err)
 			return nil, err
 		}
 

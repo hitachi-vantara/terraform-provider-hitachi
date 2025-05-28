@@ -35,7 +35,6 @@ func (psm *vssbStorageManager) ChangeUserPassword(userID string, reqBody *vssbmo
 	}
 	userInfo, err := provObj.ChangeUserPassword(userID, &user)
 	if err != nil {
-		log.WriteDebug("TFError| failed to call ChangeUserPassword err: %+v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_CHANGE_USER_PASSWORD_FAILED), userID)
 		return nil, err
 	}

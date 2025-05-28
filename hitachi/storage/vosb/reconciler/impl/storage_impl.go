@@ -30,7 +30,6 @@ func (psm *vssbStorageManager) GetStorageVersionInfo() (*vssbmodel.StorageVersio
 
 	provVersionInfo, err := provObj.GetStorageVersionInfo()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageVersionInfo provisioner call, err: %v", err)
 		return nil, err
 	}
 

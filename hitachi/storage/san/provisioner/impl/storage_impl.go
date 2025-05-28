@@ -31,7 +31,6 @@ func (psm *sanStorageManager) GetStorageSystemInfo() (*sanmodel.StorageSystem, e
 	}
 	ssInfo, err := gatewayObj.GetStorageSystemInfo()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageSystemInfo gateway call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_STORAGE_SYSTEM_FAILED), objStorage.MgmtIP)
 		return nil, err
 	}
@@ -80,7 +79,6 @@ func (psm *sanStorageManager) GetStorageSystem() (*sanmodel.StorageSystem, error
 	}
 	ssInfo, err := gatewayObj.GetStorageSystemInfo()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageSystemInfo gateway call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_STORAGE_SYSTEM_FAILED), objStorage.MgmtIP)
 		return nil, err
 	}
