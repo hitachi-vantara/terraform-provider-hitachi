@@ -116,10 +116,6 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.WriteError(err)
@@ -127,6 +123,11 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 	}
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
+	}
+
 	return string(body), nil
 }
 
@@ -181,10 +182,6 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.WriteError(err)
@@ -192,6 +189,11 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 	}
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
+	}
+
 	return string(body), nil
 }
 
@@ -231,14 +233,14 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.WriteError(err)
 		return "", err
+	}
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))
@@ -282,14 +284,14 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.WriteError(err)
 		return "", err
+	}
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))
@@ -341,14 +343,14 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.WriteError(err)
 		return "", err
+	}
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))
@@ -392,14 +394,14 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 
 	defer resp.Body.Close()
 
-	if IsHttpError(resp.StatusCode) {
-		return "", fmt.Errorf("%v", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.WriteError(err)
 		return "", err
+	}
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))

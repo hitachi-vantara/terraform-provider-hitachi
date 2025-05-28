@@ -26,7 +26,6 @@ func (psm *vssbStorageManager) GetStorageVersionInfo() (*vssbmodel.StorageVersio
 	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &versionInfo)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return nil, err
 	}
 

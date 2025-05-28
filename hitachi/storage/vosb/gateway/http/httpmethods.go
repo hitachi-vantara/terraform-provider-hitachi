@@ -28,15 +28,14 @@ func getCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, outp
 
 	resJSONString, err := utils.HTTPGet(url, nil, &httpBasicAuth)
 	if err != nil {
+		err := CheckHttpErrorResponse(resJSONString, err)
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in HTTPGet call, err: %v", err)
 		return err
 	}
 
-	// log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
 	err2 := json.Unmarshal([]byte(resJSONString), output)
 	if err2 != nil {
-		log.WriteDebug("TFError| error in Unmarshal, err: %v", err2)
+		log.WriteError(err)
 		return fmt.Errorf("failed to unmarshal json response: %+v", err2)
 	}
 
@@ -51,11 +50,9 @@ func PostCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	// log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	url := GetUrl(storageSetting.ClusterAddress, apiSuf)
 
 	httpBasicAuth := utils.HttpBasicAuthentication{
@@ -65,8 +62,8 @@ func PostCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string
 
 	jobString, err := utils.HTTPPost(url, nil, reqBodyInBytes, &httpBasicAuth)
 	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPPost call, err: %v", err)
 		return nil, err
 	}
 
@@ -80,13 +77,13 @@ func postCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, req
 
 	jobString, err := PostCallAsync(storageSetting, apiSuf, reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in PostCallAsync call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForJob call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 	if len(job.AffectedResources) < 1 {
@@ -107,11 +104,9 @@ func PatchCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf strin
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	// log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	url := GetUrl(storageSetting.ClusterAddress, apiSuf)
 
 	httpBasicAuth := utils.HttpBasicAuthentication{
@@ -121,8 +116,8 @@ func PatchCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf strin
 
 	jobString, err := utils.HTTPPatch(url, nil, reqBodyInBytes, &httpBasicAuth)
 	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPPatch call, err: %v", err)
 		return nil, err
 	}
 
@@ -137,7 +132,6 @@ func patchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return err
 	}
 
@@ -150,15 +144,13 @@ func patchCallSync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string
 
 	resJSONString, err := utils.HTTPPatch(url, nil, reqBodyInBytes, &httpBasicAuth)
 	if err != nil {
+		err := CheckHttpErrorResponse(resJSONString, err)
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPPatch call, err: %v", err)
 		return err
 	}
 
-	// log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
 	err2 := json.Unmarshal([]byte(resJSONString), output)
 	if err2 != nil {
-		log.WriteDebug("TFError| error in Unmarshal, err: %v", err2)
 		return fmt.Errorf("failed to unmarshal json response: %+v", err2)
 	}
 
@@ -172,13 +164,13 @@ func patchCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, re
 
 	jobString, err := PatchCallAsync(storageSetting, apiSuf, reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in PatchCallAsync call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForJob call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
@@ -200,11 +192,9 @@ func DeleteCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf stri
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	// log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	url := GetUrl(storageSetting.ClusterAddress, apiSuf)
 
 	httpBasicAuth := utils.HttpBasicAuthentication{
@@ -214,8 +204,8 @@ func DeleteCallAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf stri
 
 	jobString, err := utils.HTTPDeleteWithBody(url, nil, reqBodyInBytes, &httpBasicAuth)
 	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPDeleteWithBody call, err: %v", err)
 		return nil, err
 	}
 
@@ -229,13 +219,13 @@ func deleteCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, r
 
 	jobString, err := DeleteCallAsync(storageSetting, apiSuf, reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in DeleteCallAsync call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForJob call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 	if len(job.AffectedResources) < 1 {
