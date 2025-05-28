@@ -19,4 +19,5 @@ resource "hitachi_vosb_change_user_password" "my_user" {
 
 output "user_output" {
   value = resource.hitachi_vosb_change_user_password.my_user
+  sensitive = true
 }
