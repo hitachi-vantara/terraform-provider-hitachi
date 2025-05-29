@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 var LunInfoSchema = map[string]*schema.Schema{
@@ -153,6 +154,7 @@ var DataLunSchema = map[string]*schema.Schema{
 	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
+		ValidateFunc: validation.IntBetween(0, 65535),
 		Description: "Ldev ID of lun",
 	},
 	// output
@@ -176,11 +178,13 @@ var DataLunsSchema = map[string]*schema.Schema{
 	"start_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
+		ValidateFunc: validation.IntBetween(0, 65535),
 		Description: "Start ldev ID of lun",
 	},
 	"end_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
+		ValidateFunc: validation.IntBetween(0, 65535),
 		Description: "End ldev ID of lun",
 	},
 	"undefined_ldev": &schema.Schema{
