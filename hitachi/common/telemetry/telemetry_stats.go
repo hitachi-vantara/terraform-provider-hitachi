@@ -276,7 +276,7 @@ func sendTelemetryStatsToAWS(task MethodTaskExecution) error {
 		return fmt.Errorf("failed to save execution stats: %w", err)
 	}
 
-	if config.ConfigData.AWS_URL == "" {
+	if config.ConfigData == nil || config.ConfigData.AWS_URL == "" {
 		log.WriteDebug("AWS URL is not configured. Skipping telemetry data sending.")
 		return nil
 	}
@@ -329,9 +329,14 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 	httpBasicAuth := utils.HttpBasicAuthentication{}
 	httpBasicAuth.SetAuthHeaders(req)
 
+	awsTimeout := config.DEFAULT_AWS_TIMEOUT
+	if config.ConfigData != nil && config.ConfigData.AWSTimeout > 0 {
+		awsTimeout = config.ConfigData.AWSTimeout
+	}
+
 	// Create an HTTP client with a timeout (e.g., 30 seconds)
 	client := &http.Client{
-		Timeout: time.Duration(config.ConfigData.AWSTimeout),
+		Timeout: time.Duration(awsTimeout),
 	}
 
 	// Send the HTTP request

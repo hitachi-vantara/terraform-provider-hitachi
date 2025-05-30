@@ -14,8 +14,7 @@ type Config struct {
 const DEFAULT_CONSENT_MESSAGE = `
   Hitachi Vantara LLC collects usage data such as storage model, storage serial number, operation name, status (success or failure),
   and duration. This data is collected for product improvement purposes only. It remains confidential and it is not shared with any
-  third parties. 
-`
+  third parties. `
 
 const RUN_CONSENT_MESSAGE = "To provide your consent, run bin/user_consent.sh from /opt/hitachi/terraform."
 
