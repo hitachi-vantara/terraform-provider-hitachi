@@ -19,6 +19,7 @@ CONSENT_MESSAGE=$(jq -r '.user_consent_message' "$CONFIG_FILE")
 echo ""
 echo "==================== USER CONSENT ===================="
 echo "$CONSENT_MESSAGE"
+echo
 echo "======================================================"
 echo ""
 

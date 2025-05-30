@@ -92,12 +92,12 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	})
 
 	if configErr != nil {
-		log.WriteInfo("Could not load .internal_config. A default config may have been created. Details: %v", configErr)
+		log.WriteInfo("Could not load %s. A default config may have been created. Details: %v", config.CONFIG_FILE, configErr)
 		return nil, diag.Diagnostics{
 			{
 				Severity: diag.Warning,
 				Summary:  "Default config file created",
-				Detail:   fmt.Sprintf("Could not read %s — a new default .internal_config was created. Details: %v", config.CONFIG_FILE, configErr),
+				Detail:   fmt.Sprintf("Could not read %s — a new default config was created. Details: %v", config.CONFIG_FILE, configErr),
 			},
 		}
 	}

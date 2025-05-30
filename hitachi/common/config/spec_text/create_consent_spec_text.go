@@ -18,7 +18,7 @@ func dedent(text string) string {
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "Usage: gen_consent_message <output_file>")
+		fmt.Fprintln(os.Stderr, "Usage: create_consent_spec_text <output_file>")
 		os.Exit(1)
 	}
 
