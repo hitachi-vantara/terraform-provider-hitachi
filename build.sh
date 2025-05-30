@@ -53,9 +53,17 @@ cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
 cp -f ${TERRAFORM_DIR}/hitachi/common/telemetry/user_consent.sh ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
+# for ex in ${RPMBUILD_DIR}/${TERRAFORM_PKG}/examples/{data-sources,resources}/*; do
+#     cp -f ${TERRAFORM_DIR}/hitachi/common/telemetry/user_consent_message.tf $ex
+# done
 
-(cd ${TERRAFORM_DIR}/hitachi/common/config/main; go run create_config.go)
-cp -f ${TERRAFORM_DIR}/hitachi/common/config/main/config.json ${RPMBUILD_DIR}/${TERRAFORM_PKG}
+CONSENT_MESSAGE_FOR_RPM_SPEC="${RPMBUILD_DIR}/BUILD/user_consent_message.txt"
+echo; echo "Creating for rpm spec the file ${CONSENT_MESSAGE_FOR_RPM_SPEC}"
+(cd ${TERRAFORM_DIR}/hitachi/common/config/spec_text; go run create_consent_spec_text.go ${CONSENT_MESSAGE_FOR_RPM_SPEC})
+
+INTERNAL_CONFIG_FOR_RPM="${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin/.internal_config"
+echo; echo "Creating for rpm the file ${INTERNAL_CONFIG_FOR_RPM}"
+(cd ${TERRAFORM_DIR}/hitachi/common/config/internal_config; go run create_internal_config.go ${INTERNAL_CONFIG_FOR_RPM})
 
 echo; echo "Creating tarball..."
 cd ${RPMBUILD_DIR}

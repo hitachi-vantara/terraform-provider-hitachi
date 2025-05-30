@@ -109,6 +109,11 @@ fi
 if [[ $1 -eq 1 ]]; then
     echo "[$(date)] Installation complete" | tee -a "$logfile"
     echo "[$(date)] Installation successful" | tee -a "$logfile"
+
+  %define user_consent_message %(sed 's/["`$\\]/\\&/g; s/^/echo "/; s/$/"/' BUILD/user_consent_message.txt | paste -sd';' -)
+  echo
+  %{user_consent_message}
+  echo
 fi
 
 
