@@ -20,7 +20,7 @@ type VssbStorageManager interface {
 	// STORAGE
 	GetStorageVersionInfo() (*vssbmodel.StorageVersionInfo, error)
 	GetDashboardInfo() (*vssbmodel.Dashboard, error)
-	GetDrivesInfo() (*vssbmodel.Drives, error)
+	GetDrivesInfo(status string) (*vssbmodel.Drives, error)
 
 	// STORAGE POOLS
 	GetAllStoragePools() (*vssbmodel.StoragePools, error)

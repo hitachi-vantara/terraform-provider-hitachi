@@ -188,7 +188,7 @@ func (psm *vssbStorageManager) AddOfflineDrivesToStoragePool(storagePoolName str
 
 	// get all pool drives that are offline
 	offlineDrives := []string{}
-	provDrives, err := psm.GetDrivesInfo()
+	provDrives, err := psm.GetDrivesInfo("Offline")
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_ADD_DRIVES_STORAGE_POOL_FAILED))
 		return err

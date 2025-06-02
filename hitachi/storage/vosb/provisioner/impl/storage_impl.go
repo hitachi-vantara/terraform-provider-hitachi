@@ -111,7 +111,7 @@ func (psm *vssbStorageManager) GetStorageClusterInfo() (*vssbmodel.StorageCluste
 }
 
 // GetDrivesInfo Obtains a list of drive information.
-func (psm *vssbStorageManager) GetDrivesInfo() (*vssbmodel.Drives, error) {
+func (psm *vssbStorageManager) GetDrivesInfo(status string) (*vssbmodel.Drives, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -128,7 +128,7 @@ func (psm *vssbStorageManager) GetDrivesInfo() (*vssbmodel.Drives, error) {
 		return nil, err
 	}
 
-	drivesInfo, err := gatewayObj.GetDrivesInfo()
+	drivesInfo, err := gatewayObj.GetDrivesInfo(status)
 	if err != nil {
 		log.WriteDebug("TFError| failed to call GetStorageClusterInfo, err: %+v", err)
 		return nil, err

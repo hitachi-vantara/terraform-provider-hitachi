@@ -56,7 +56,7 @@ func xTestGetDrivesInfo(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	resp, err := psm.GetDrivesInfo()
+	resp, err := psm.GetDrivesInfo("Normal")
 	if err != nil {
 		t.Errorf("Unexpected error in GetDrivesInfo %v", err)
 		return
