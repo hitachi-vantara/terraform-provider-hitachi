@@ -5,7 +5,7 @@
 # parity groups from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
 # Configuration Language (HCL).
 #
-# The data source block "hitachi_vsp_parity_group" retrieves details about
+# The data source block "hitachi_vsp_parity_groups" retrieves details about
 # parity groups associated with the provided parameters. This enables you to
 # access configuration and property information for the specified parity groups.
 #
@@ -14,11 +14,11 @@
 # parity groups.
 #
 
-data "hitachi_vsp_parity_group" "myparitygroup" {
+data "hitachi_vsp_parity_groups" "myparitygroup" {
   serial = 12345
   parity_group_ids = ["1-2","1-3"]
 }
 
 output "myparitygroup" {
-  value = data.hitachi_vsp_parity_group.myparitygroup
+  value = data.hitachi_vsp_parity_groups.myparitygroup
 }
