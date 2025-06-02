@@ -12,6 +12,7 @@ var TerraformProviderMap = map[string]string{
 	"san.datasource.DataSourceStorageIscsiTargets" : "san.datasource.hitachi_vsp_iscsi_targets",
 	"san.datasource.DataSourceStorageLun"          : "san.datasource.hitachi_vsp_volume",
 	"san.datasource.DataSourceStorageLuns"         : "san.datasource.hitachi_vsp_volumes",
+	"san.datasource.DataSourceStorageParityGroup"  : "san.datasource.hitachi_vsp_parity_group",
 	"san.datasource.DataSourceStorageParityGroups" : "san.datasource.hitachi_vsp_parity_groups",
 	"san.datasource.DataSourceStoragePorts"        : "san.datasource.hitachi_vsp_storage_ports",
 	"san.datasource.DataSourceStorageSystem"       : "san.datasource.hitachi_vsp_storage",

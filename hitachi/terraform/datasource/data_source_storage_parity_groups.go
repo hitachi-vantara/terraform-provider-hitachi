@@ -18,15 +18,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func DataSourceStorageParityGroup() *schema.Resource {
+func DataSourceStorageParityGroups() *schema.Resource {
 	return &schema.Resource{
 		Description: "VSP Storage Parity Group:The following request obtains information about all parity groups.",
-		ReadContext: DataSourceStorageParityGroupRead,
-		Schema:      schemaimpl.DataParityGroupSchema,
+		ReadContext: DataSourceStorageParityGroupsRead,
+		Schema:      schemaimpl.DataParityGroupsSchema,
 	}
 }
 
-func DataSourceStorageParityGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceStorageParityGroupsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()

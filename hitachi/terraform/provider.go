@@ -56,6 +56,7 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_dynamic_pool":      datasourceimpl.DataSourceStorageDynamicPool(),
 			"hitachi_vsp_dynamic_pools":     datasourceimpl.DataSourceStorageDynamicPools(),
 			"hitachi_vsp_parity_groups":     datasourceimpl.DataSourceStorageParityGroups(),
+			"hitachi_vsp_parity_group":     datasourceimpl.DataSourceStorageParityGroup(),
 			"hitachi_vosb_storage_pools":    datasourceimpl.DataSourceVssbStoragePools(),
 			"hitachi_vosb_volumes":          datasourceimpl.DataSourceVssbVolumes(),
 			"hitachi_vosb_compute_nodes":    datasourceimpl.DataSourceVssbComputeNodes(),
