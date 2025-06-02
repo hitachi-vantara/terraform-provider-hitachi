@@ -74,7 +74,7 @@ func (psm *vssbStorageManager) GetDashboardInfo() (*vssbmodel.Dashboard, error) 
 		return nil, err
 	}
 
-	provDrivesInfo, err := provObj.GetDrivesInfo()
+	provDrivesInfo, err := provObj.GetDrivesInfo("")
 	if err != nil {
 		log.WriteDebug("TFError| error in GetDrivesInfo provisioner call, err: %v", err)
 		return nil, err
@@ -136,7 +136,7 @@ func ConvertToDashBoard(healths *provisonermodel.HealthStatuses, clusterInfo *pr
 }
 
 // GetDrivesInfo Obtains a list of drive information.
-func (psm *vssbStorageManager) GetDrivesInfo() (*vssbmodel.Drives, error) {
+func (psm *vssbStorageManager) GetDrivesInfo(status string) (*vssbmodel.Drives, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -155,7 +155,7 @@ func (psm *vssbStorageManager) GetDrivesInfo() (*vssbmodel.Drives, error) {
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DRIVES_BEGIN))
 
-	drivesInfo, err := provObj.GetDrivesInfo()
+	drivesInfo, err := provObj.GetDrivesInfo(status)
 	if err != nil {
 		log.WriteDebug("TFError| Error fetching drives, err: %+v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_DRIVES_FAILED))

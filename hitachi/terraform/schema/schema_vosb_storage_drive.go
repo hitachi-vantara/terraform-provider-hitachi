@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 // Define the Drive struct schema
@@ -80,6 +81,12 @@ var ResourceVssbStorageDriveSchema = map[string]*schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The VOSB address.",
+	},
+	"status": &schema.Schema{
+		Type:         schema.TypeString,
+		Optional:     true,
+		ValidateFunc: validation.StringInSlice([]string{"", "Offline", "Normal", "TemporaryBlockage", "Blockage"}, false),
+		Description:  "Filter the drives by their status. Allowed values are: empty string, Offline, Normal, TemporaryBlockage, Blockage",
 	},
 	// Output
 	"drives": &schema.Schema{

@@ -23,12 +23,16 @@ VOS Block Storage Drives: Obtains a list of drive information.
 # associated with the provided parameters. This allows you to access configuration and property
 # information for the specified storage drives.
 #
-# Customize the values of the parameters (vosb_address) to match your
+# Customize the values of the parameters (e.g., vosb_address) to match your
 # environment, enabling you to retrieve information about the desired storage drives.
 #
+# Optional Input:
+# - status: Filter the drives by their status. Allowed values are:
+#   "", "Offline", "Normal", "TemporaryBlockage", "Blockage"
 
 data "hitachi_vosb_storage_drives" "my_drives" {
   vosb_address = "10.10.12.13"
+  status       = "Normal"
 }
 
 output "my_drives_output" {
@@ -42,6 +46,10 @@ output "my_drives_output" {
 ### Required
 
 - `vosb_address` (String) The VOSB address.
+
+### Optional
+
+- `status` (String) Filter the drives by their status. Allowed values are: empty string, Offline, Normal, TemporaryBlockage, Blockage
 
 ### Read-Only
 

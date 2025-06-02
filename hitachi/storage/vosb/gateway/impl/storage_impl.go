@@ -1,6 +1,7 @@
 package vssbstorage
 
 import (
+	"fmt"
 	diskcache "terraform-provider-hitachi/hitachi/common/diskcache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	httpmethod "terraform-provider-hitachi/hitachi/storage/vosb/gateway/http"
@@ -89,13 +90,18 @@ func (psm *vssbStorageManager) GetStorageClusterInfo() (*vssbmodel.StorageCluste
 }
 
 // GetDrivesInfo Obtains a list of drive information.
-func (psm *vssbStorageManager) GetDrivesInfo() (*vssbmodel.Drives, error) {
+func (psm *vssbStorageManager) GetDrivesInfo(status string) (*vssbmodel.Drives, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	var drivesInfo vssbmodel.Drives
+
 	apiSuf := "objects/drives"
+	if status != "" {
+		apiSuf = fmt.Sprintf("objects/drives?status=%v", status)
+	}
+
 	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &drivesInfo)
 	if err != nil {
 		log.WriteError(err)
