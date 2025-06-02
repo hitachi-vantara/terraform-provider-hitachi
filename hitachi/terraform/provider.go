@@ -3,8 +3,6 @@ package terraform
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sync"
 	config "terraform-provider-hitachi/hitachi/common/config"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -13,6 +11,9 @@ import (
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	resourceimpl "terraform-provider-hitachi/hitachi/terraform/resource"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var (
@@ -22,8 +23,6 @@ var (
 	userConsentOnce    sync.Once
 	isUserConsentExist bool
 )
-
-const CONFIG_FILE = "/opt/hitachi/terraform/config.json"
 
 // Provider returns a terraform.ResourceProvider.
 func Provider() *schema.Provider {
@@ -86,46 +85,25 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	diags := diag.Diagnostics{}
+
 	configOnce.Do(func() {
-		configErr = config.Load(CONFIG_FILE) // data saved in config.ConfigData global var
+		configErr = config.Load(config.CONFIG_FILE) // data saved in config.ConfigData global var
 	})
 
 	if configErr != nil {
-		log.WriteInfo("Could not load config.json. A default config may have been created. Details: %v", configErr)
+		log.WriteInfo("Could not load %s. A default config may have been created. Details: %v", config.CONFIG_FILE, configErr)
 		return nil, diag.Diagnostics{
 			{
 				Severity: diag.Warning,
 				Summary:  "Default config file created",
-				Detail:   fmt.Sprintf("Could not read %s — a new default config.json was created. Details: %v", CONFIG_FILE, configErr),
+				Detail:   fmt.Sprintf("Could not read %s — a new default config was created. Details: %v", config.CONFIG_FILE, configErr),
 			},
 		}
 	}
 
-	userConsentOnce.Do(func() {
-		isUserConsentExist = telemetry.IsUserConsentExist()
-	})
+	consentMessage(&diags)
 
-	if !isUserConsentExist {
-		log.WriteInfo("User has not run bin/user_consent.sh")
-		return nil, diag.Diagnostics{
-			{
-				Severity: diag.Error,
-				Summary:  "Telemetry consent required",
-				Detail:   "Please run `bin/user_consent.sh` to create `user_consent.json` in `/opt/hitachi/terraform`, indicating whether you consent to telemetry.",
-			},
-		}
-	}
-
-	// var diags diag.Diagnostics
-	// tflog.Info(ctx, "THIS IS JUST TESTING TFLOG")
-	// // example to append to diags
-	// 	diags = append(diags, diag.Diagnostic{
-	// 		Severity: diag.Error,
-	// 		Summary:  "Unable to create HashiCups client",
-	// 		Detail:   "Unable to create anonymous HashiCups client",
-	// 	})
-
-	// ============
 	// check storage with creds then saves the input given and minimal storage info in a file.
 
 	sanList := []map[string]interface{}{}
@@ -135,7 +113,8 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	ssarray, err := impl.RegisterStorageSystem(d)
 	if err != nil {
-		return nil, diag.FromErr(err)
+		diags = append(diags, diag.FromErr(err)...)
+		return nil, diags
 	}
 
 	for _, pss := range ssarray.VspStorageSystem {
@@ -150,7 +129,6 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 			"controller1_ip":         ss.ControllerIP1,
 			"controller2_ip":         ss.ControllerIP2,
 		}
-
 		log.WriteDebug("san: %+v\n", san)
 		sanList = append(sanList, san)
 	}
@@ -161,10 +139,29 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 			"vosb_storage_api_version":  ss.ApiVersion,
 			"vosb_storage_product_name": ss.ProductName,
 		}
-
-		log.WriteDebug("vssb: %+v\n", vssb)
+		log.WriteDebug("vosb: %+v\n", vssb)
 		sanList = append(sanList, vssb)
 	}
 
-	return ssarray, nil
+	return ssarray, diags
+}
+
+func consentMessage(diags *diag.Diagnostics) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	userConsentOnce.Do(func() {
+		isUserConsentExist = telemetry.IsUserConsentExist()
+	})
+
+	if !isUserConsentExist {
+		log.WriteInfo("User has not run bin/user_consent.sh")
+
+		*diags = append(*diags, diag.Diagnostic{
+			Severity: diag.Warning,
+			Summary:  "User consent is requested for telemetry data collection. This is optional.",
+			Detail:   config.ConfigData.UserConsentMessage + config.ConfigData.RunConsentMessage,
+		})
+	}
 }

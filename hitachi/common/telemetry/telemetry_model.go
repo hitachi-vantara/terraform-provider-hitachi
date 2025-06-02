@@ -13,11 +13,30 @@ type TelemetryPayload struct {
 	Site            string  `json:"site"`
 }
 
+// usages.json file
+type UsagesTelemetry struct {
+	ExecutionStats    map[string]ExecutionStat `json:"executionStats"`
+	SanStorageSystems []SanStorageSystem       `json:"sanStorageSystems"`
+	SdsBlockSystems   []SdsBlockSystem         `json:"SdsBlockSystems"`
+}
+
 // averagetime saved to json file
-type ExecutionJsonFileStats struct {
+type ExecutionStat struct {
 	Success     int     `json:"success"`
 	Failure     int     `json:"failure"`
 	AverageTime float64 `json:"averageTimeInSec"`
+}
+
+// san/vsp
+type SanStorageSystem struct {
+	StorageModel  string `json:"storageModel"`
+	StorageSerial string `json:"storageSerial"`
+}
+
+// sds block
+type SdsBlockSystem struct {
+	ClusterAddress string `json:"clusterAddress"`
+	Version        string `json:"version"`
 }
 
 // intermediate info

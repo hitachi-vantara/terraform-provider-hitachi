@@ -54,7 +54,7 @@ func UpdateTelemetryStats(status string, elapsedTime float64, storageSettingInt 
 
 	task := getMethodTaskExecutionInfo(status, elapsedTime, storageSettingInt, outputForModelOrVersion)
 
-	err := updateLocalJsonFileStats(task)
+	err := updateLocalUsagesStat(task)
 	if err != nil {
 		log.WriteError("Error updating JSON file stats: %v", err)
 	}
@@ -91,7 +91,8 @@ func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSetti
 		storageType = "sds_block"
 		storageSetting := storageSettingInt.(vosbmodel.StorageDeviceSettings)
 		terraformResourceMethod = storageSetting.TerraformResourceMethod
-		storageSerial = getUUIDFromIP(storageSetting.ClusterAddress).String()
+		// storageSerial = getUUIDFromIP(storageSetting.ClusterAddress).String()
+		storageSerial = storageSetting.ClusterAddress
 		storageModel = getVosbStorageVersion(storageSettingInt, outputForModelOrVersion)
 	}
 
@@ -116,49 +117,89 @@ func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSetti
 	return task
 }
 
-// updateLocalJsonFileStats updates the stats for a specific method in the JSON file
-func updateLocalJsonFileStats(task MethodTaskExecution) error {
+// updateLocalUsagesStat updates the local usages.json file
+func updateLocalUsagesStat(task MethodTaskExecution) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	// Initialize json stat
-	executionJsonStat := make(map[string]*ExecutionJsonFileStats)
-
-	// First, load the existing json stats from the JSON file
-	err := loadStatsFromLocalJSONFile(&executionJsonStat)
-	if err != nil {
-		log.WriteError("Error loading json stats from file: %v", err)
+	usages := &UsagesTelemetry{
+		ExecutionStats: make(map[string]ExecutionStat),
 	}
 
-	// Retrieve json stats for the method or initialize if not present
-	moduleName := task.TerraformTfType + "." + task.GatewayMethodName
-	stats := executionJsonStat[moduleName]
-	if stats == nil {
-		stats = &ExecutionJsonFileStats{}
+	if err := loadUsagesStatFromLocalFile(usages); err != nil {
+		log.WriteError("Error loading usages telemetry stats from file: %v", err)
 	}
 
-	if task.Status == "success" {
-		stats.Success++
-	} else if task.Status == "failure" {
-		stats.Failure++
+	updateExecutionStats(usages, task)
+	updateSanStorageSystems(usages, task)
+	updateSdsBlockSystems(usages, task)
+
+	if err := saveUsagesToLocalFile(usages); err != nil {
+		log.WriteError("Error saving usages telemetry stats to file: %v", err)
+		return fmt.Errorf("failed to save usages telemetry stats: %w", err)
 	}
 
-	averageTime := (stats.AverageTime*float64(stats.Success+stats.Failure-1) + task.ElapsedTime) / float64(stats.Success+stats.Failure)
-	stats.AverageTime = math.Round(averageTime*100) / 100
-
-	executionJsonStat[moduleName] = stats
-
-	err = saveToLocalJSONFile(executionJsonStat)
-	if err != nil {
-		log.WriteError("Error saving execution stats to file: %v", err)
-		return fmt.Errorf("failed to save execution stats: %w", err)
-	}
 	return nil
 }
 
-// loadStatsFromLocalJSONFile reads the execution stats
-func loadStatsFromLocalJSONFile(executionJsonStat *map[string]*ExecutionJsonFileStats) error {
+// updateExecutionStats updates the execution stats in the usages.json
+func updateExecutionStats(usages *UsagesTelemetry, task MethodTaskExecution) {
+	moduleName := task.TerraformTfType + "." + task.GatewayMethodName
+	stat := usages.ExecutionStats[moduleName]
+
+	if task.Status == "success" {
+		stat.Success++
+	} else if task.Status == "failure" {
+		stat.Failure++
+	}
+
+	total := stat.Success + stat.Failure
+	if total > 0 {
+		stat.AverageTime = math.Round(((stat.AverageTime*float64(total-1)+task.ElapsedTime)/float64(total))*100) / 100
+	}
+
+	usages.ExecutionStats[moduleName] = stat
+}
+
+// updateSanStorageSystems updates the list of SAN storage systems in the usages.json
+func updateSanStorageSystems(usages *UsagesTelemetry, task MethodTaskExecution) {
+	if task.ConnectionType != "san" || task.StorageSerial == "" {
+		return
+	}
+
+	for _, system := range usages.SanStorageSystems {
+		if system.StorageSerial == task.StorageSerial {
+			return
+		}
+	}
+
+	usages.SanStorageSystems = append(usages.SanStorageSystems, SanStorageSystem{
+		StorageModel:  task.StorageModel,
+		StorageSerial: task.StorageSerial,
+	})
+}
+
+// updateSdsBlockSystems updates the list of SDS block systems in the usages.json
+func updateSdsBlockSystems(usages *UsagesTelemetry, task MethodTaskExecution) {
+	if task.ConnectionType != "vosb" || task.StorageModel == "" {
+		return
+	}
+
+	for _, system := range usages.SdsBlockSystems {
+		if system.ClusterAddress == task.StorageSerial {
+			return
+		}
+	}
+
+	usages.SdsBlockSystems = append(usages.SdsBlockSystems, SdsBlockSystem{
+		ClusterAddress: task.StorageSerial,
+		Version:        task.StorageModel,
+	})
+}
+
+// loadUsagesStatFromLocalFile reads the usages telemetry stats from a JSON file.
+func loadUsagesStatFromLocalFile(usages *UsagesTelemetry) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -166,42 +207,40 @@ func loadStatsFromLocalJSONFile(executionJsonStat *map[string]*ExecutionJsonFile
 	file, err := os.Open(TERRAFORM_TELEMETRY_AVERAGE_TIME_FILE)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil // If the file doesn't exist, it's okay to continue
+			return nil // It's okay if the file doesn't exist
 		}
-		return fmt.Errorf("failed to open stats file: %w", err)
+		return fmt.Errorf("failed to open usages telemetry file: %w", err)
 	}
 	defer file.Close()
 
-	// Decode the JSON data into the executionJsonStat map
 	decoder := json.NewDecoder(file)
-	err = decoder.Decode(executionJsonStat)
+	err = decoder.Decode(usages)
 	if err != nil {
-		return fmt.Errorf("failed to decode stats from file: %w", err)
+		return fmt.Errorf("failed to decode usages telemetry JSON: %w", err)
 	}
 	return nil
 }
 
-// saveToLocalJSONFile saves the execution json stats to a JSON file
-func saveToLocalJSONFile(executionJsonStat map[string]*ExecutionJsonFileStats) error {
+// saveUsagesToLocalFile saves the UsagesTelemetry struct to a JSON file.
+func saveUsagesToLocalFile(usages *UsagesTelemetry) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	file, err := os.OpenFile(TERRAFORM_TELEMETRY_AVERAGE_TIME_FILE, os.O_CREATE|os.O_RDWR, 0644)
+	file, err := os.OpenFile(TERRAFORM_TELEMETRY_AVERAGE_TIME_FILE, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to open file: %w", err)
+		return fmt.Errorf("failed to open usages telemetry file: %w", err)
 	}
 	defer file.Close()
 
-	// Marshal the TaskStats data into JSON format
-	statsJSON, err := json.MarshalIndent(executionJsonStat, "", "  ")
+	data, err := json.MarshalIndent(usages, "", "  ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal stats to JSON: %w", err)
+		return fmt.Errorf("failed to marshal usages telemetry data: %w", err)
 	}
 
-	_, err = file.Write(statsJSON)
+	_, err = file.Write(data)
 	if err != nil {
-		return fmt.Errorf("failed to write stats to file: %w", err)
+		return fmt.Errorf("failed to write usages telemetry data: %w", err)
 	}
 
 	return nil
@@ -237,7 +276,7 @@ func sendTelemetryStatsToAWS(task MethodTaskExecution) error {
 		return fmt.Errorf("failed to save execution stats: %w", err)
 	}
 
-	if config.ConfigData.AWS_URL == "" {
+	if config.ConfigData == nil || config.ConfigData.AWS_URL == "" {
 		log.WriteDebug("AWS URL is not configured. Skipping telemetry data sending.")
 		return nil
 	}
@@ -290,9 +329,14 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 	httpBasicAuth := utils.HttpBasicAuthentication{}
 	httpBasicAuth.SetAuthHeaders(req)
 
+	awsTimeout := config.DEFAULT_AWS_TIMEOUT
+	if config.ConfigData != nil && config.ConfigData.AWSTimeout > 0 {
+		awsTimeout = config.ConfigData.AWSTimeout
+	}
+
 	// Create an HTTP client with a timeout (e.g., 30 seconds)
 	client := &http.Client{
-		Timeout: time.Duration(config.ConfigData.AWSTimeout),
+		Timeout: time.Duration(awsTimeout),
 	}
 
 	// Send the HTTP request

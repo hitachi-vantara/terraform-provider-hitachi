@@ -101,6 +101,7 @@ func Get() *Config {
 func CreateDefaultConfigFile(path string) error {
 	defaultCfg := Config{
 		UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
+		RunConsentMessage:  RUN_CONSENT_MESSAGE,
 		APITimeout:         DEFAULT_API_TIMEOUT,
 		AWSTimeout:         DEFAULT_AWS_TIMEOUT,
 		AWS_URL:            DEFAULT_AWS_URL,

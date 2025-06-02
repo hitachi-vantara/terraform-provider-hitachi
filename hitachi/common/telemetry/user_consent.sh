@@ -1,16 +1,16 @@
 #!/bin/bash
 
 ROOT_DIR="/opt/hitachi/terraform"
-CONFIG_FILE="$ROOT_DIR/config.json"
+CONFIG_FILE="$ROOT_DIR/bin/.internal_config"
 CONSENT_FILE="$ROOT_DIR/user_consent.json"
 TELEMETRY_DIR="$ROOT_DIR/telemetry"
 
 # Ensure telemetry directory exists
 mkdir -p "$TELEMETRY_DIR"
 
-# Read config.json
+# Read config
 if [ ! -f "$CONFIG_FILE" ]; then
-  echo "Error: config.json not found at $CONFIG_FILE"
+  echo "Error: $CONFIG_FILE not found"
   exit 1
 fi
 
@@ -19,6 +19,7 @@ CONSENT_MESSAGE=$(jq -r '.user_consent_message' "$CONFIG_FILE")
 echo ""
 echo "==================== USER CONSENT ===================="
 echo "$CONSENT_MESSAGE"
+echo
 echo "======================================================"
 echo ""
 

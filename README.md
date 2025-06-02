@@ -78,8 +78,8 @@ terraform init && terraform apply
 # Uninstall the old version:
 /usr/bin/rpm -e HV_Storage_Terraform
 
-# Install the new version: replace build number (40)
-/usr/bin/rpm -Uvh HV_Storage_Terraform-02.1-40.x86_64.rpm
+# Install the new version: replace build number (XX)
+/usr/bin/rpm -Uvh HV_Storage_Terraform-02.1-XX.x86_64.rpm
 ```
 
 Verify:
@@ -141,10 +141,10 @@ Under `/opt/hitachi/terraform`:
 |------------------------------|------------------------------------------|
 | `bin/terraform-provider-hitachi` | Provider binary                    |
 | `bin/user_consent.sh`        | Consent script                           |
+| `bin/.internal_config`       | For internal use (not for user)          |
 | `docs/`                      | Documentation                            |
 | `examples/`                  | Sample Terraform configs                 |
 | `telemetry/*.json`           | Telemetry Usage data                     |
-| `config.json`                | Configuration file                       |
 | `user_consent.json`          | User consent info                        |
 
 ---
@@ -164,6 +164,8 @@ Under `/opt/hitachi/terraform`:
 ```bash
 cd /opt/hitachi/terraform/examples
 cd data-sources/hitachi_vsp_storage
+export TF_LOG=DEBUG
+export TF_LOG_PATH="terraform.log"
 ./clean.sh
 
 # modify your .tf files
@@ -199,16 +201,21 @@ Example content:
 
 ## Config
 
-Located at: `/opt/hitachi/terraform/config.json`
+Located at: `/opt/hitachi/terraform/bin/.internal_config`
+
+This file is intended for internal Hitachi QA/Development use only.
+Do not modify this file unless you are part of the internal engineering or QA team.
+The contents may control internal timeouts, system behavior, or user prompts.
+End users should not rely on or edit this file.
 
 ### Fields
 
 | Field                  | Description |
 |------------------------|-------------|
-| `user_consent_message` | Message shown to the user. **Editable only by QA, developers, or other internal teams.** |
+| `user_consent_message` | Message shown to the user. |
 | `api_timeout`          | Timeout (seconds) for internal API operations. |
 | `aws_timeout`          | Timeout (seconds) for AWS-related calls. |
-| `aws_url`              | Optional URL for AWS integrations for Telemetry (can be blank). |
+| `aws_url`              | URL for AWS integrations for Telemetry. |
 
 ### Example
 

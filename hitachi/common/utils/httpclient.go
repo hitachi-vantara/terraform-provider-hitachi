@@ -26,12 +26,12 @@ func SharedClient() *http.Client {
 		log.WriteEnter()
 		defer log.WriteExit()
 
-		timeoutSeconds := config.ConfigData.APITimeout
-		if timeoutSeconds <= 0 {
-			timeoutSeconds = 300 // Fallback default if config is invalid
+		apiTimeout := config.DEFAULT_API_TIMEOUT
+		if config.ConfigData != nil && config.ConfigData.APITimeout > 0 {
+			apiTimeout = config.ConfigData.APITimeout
 		}
 
-		timeout := time.Duration(timeoutSeconds) * time.Second
+		timeout := time.Duration(apiTimeout) * time.Second
 		sharedClient = newHTTPClient(timeout, true)
 
 		log.WriteDebug("API Execution Timeout: %v", timeout)

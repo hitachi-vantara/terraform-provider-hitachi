@@ -23,6 +23,9 @@ GOVERSION = 1.22
 
 .DEFAULT_GOAL := all
 
+OPT_TERRAFORM=/opt/hitachi/terraform
+INTERNAL_CONFIG_FILE=.internal_config
+
 # called from dev environment
 .PHONY: all
 all: build install
@@ -41,17 +44,20 @@ telemetry:
 # called from dev environment
 .PHONY:  config
 config:
-	@echo "📦 creating config.json"
-	(cd hitachi/common/config/main; go run create_config.go)
-	@echo "📦 copying config.json to /opt/hitachi/terraform"
-	mkdir -p /opt/hitachi/terraform
-	mkdir -p /opt/hitachi/terraform/bin
-	mkdir -p /opt/hitachi/terraform/telemetry
-	cp hitachi/common/config/main/config.json /opt/hitachi/terraform
-	cp hitachi/common/telemetry/user_consent.sh /opt/hitachi/terraform/bin
-	cp ${BINARY} /opt/hitachi/terraform/bin
-	cp -r docs /opt/hitachi/terraform
-	cp -r examples /opt/hitachi/terraform
+	mkdir -p $(OPT_TERRAFORM)
+	mkdir -p $(OPT_TERRAFORM)/bin
+	mkdir -p $(OPT_TERRAFORM)/telemetry
+	@echo "📦 creating $(INTERNAL_CONFIG_FILE)"
+	(cd hitachi/common/config/internal_config; go run create_internal_config.go $(INTERNAL_CONFIG_FILE))
+	@echo "📦 copying $(INTERNAL_CONFIG_FILE) to $(OPT_TERRAFORM)/bin"
+	cp hitachi/common/config/internal_config/$(INTERNAL_CONFIG_FILE) $(OPT_TERRAFORM)/bin
+	cp hitachi/common/telemetry/user_consent.sh $(OPT_TERRAFORM)/bin
+	cp ${BINARY} $(OPT_TERRAFORM)/bin
+	cp -r docs $(OPT_TERRAFORM)
+	cp -r examples $(OPT_TERRAFORM)
+	# @for ex in $(OPT_TERRAFORM)/examples/data-sources/* $(OPT_TERRAFORM)/examples/resources/*; do \
+	# 	cp -f hitachi/common/telemetry/user_consent_message.tf "$$ex"; \
+	# done
 
 .PHONY: release
 release:
