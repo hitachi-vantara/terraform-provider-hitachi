@@ -157,7 +157,7 @@ func AddDrivesToStoragePool(d *schema.ResourceData) error {
 	err = reconObj.AddDrivesToStoragePool(&reconStoragePoolResource)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_ADD_DRIVES_STORAGE_POOL_FAILED))
-		log.WriteDebug("TFError| error in Updating ComputeNode - ReconcileComputeNode , err: %v", err)
+		log.WriteDebug("TFError| error in AddDrivesToStoragePool , err: %v", err)
 		return err
 	}
 

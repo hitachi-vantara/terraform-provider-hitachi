@@ -171,11 +171,32 @@ func CheckResponseAndWaitForJob(storageSetting sanmodel.StorageDeviceSettings, r
 	log.WriteDebug("TFDebug|Final JOB: %+v", job)
 
 	if state != "Succeeded" {
-		// return job, fmt.Errorf(job.Error.Message)
-		return job, CheckHttpErrorResponse(*resJSONString, err)
+		return job, CheckJobGatewayErrorResponse(job.Error, err)
 	}
 
 	return job, nil
+}
+
+func CheckJobGatewayErrorResponse(gwyError sanmodel.GatewayError, httpErr error) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	errmsg := ""
+	if httpErr != nil {
+		errmsg = fmt.Sprintf("%s\n", httpErr.Error())
+		log.WriteDebug("TFError| error in HTTP response, err: %v", httpErr)
+	}
+
+	gwyJSON, err := json.MarshalIndent(gwyError, "", "  ")
+	if err != nil {
+		gwyJSON = []byte(fmt.Sprintf("%+v", gwyError))
+	}
+	errmsg = fmt.Sprintf("%s%s", errmsg, string(gwyJSON))
+	if errmsg == "" {
+		errmsg = "Failed but got no error message in response"
+	}
+	return fmt.Errorf("%s", errmsg)
 }
 
 func CheckHttpErrorResponse(resJSONString string, httpErr error) error {
@@ -183,10 +204,14 @@ func CheckHttpErrorResponse(resJSONString string, httpErr error) error {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	if resJSONString == "" {
-		return httpErr
+	errmsg := ""
+	if httpErr != nil {
+		errmsg = fmt.Sprintf("%s\n", httpErr.Error())
+		log.WriteDebug("TFError| error in HTTP response, err: %v", httpErr)
 	}
-
-	errmsg := fmt.Sprintf("%s\n%+v", httpErr.Error(), resJSONString)
+	errmsg = fmt.Sprintf("%s%+v", errmsg, resJSONString)
+	if errmsg == "" {
+		errmsg = "Failed but got no error message in response"
+	}
 	return fmt.Errorf("%s", errmsg)
 }
