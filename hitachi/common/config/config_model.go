@@ -11,6 +11,14 @@ type Config struct {
 	AWS_URL            string `json:"aws_url"`
 }
 
+// ConfigNoAWS is a reduced version of Config without AWS_URL.
+type ConfigNoAWS struct {
+	UserConsentMessage string `json:"user_consent_message"`
+	RunConsentMessage  string `json:"run_consent_message"`
+	APITimeout         int    `json:"api_timeout"` // in seconds
+	AWSTimeout         int    `json:"aws_timeout"` // in seconds
+}
+
 const DEFAULT_CONSENT_MESSAGE = `
   Hitachi Vantara LLC collects usage data such as storage model, storage serial number, operation name, status (success or failure),
   and duration. This data is collected for product improvement purposes only. It remains confidential and it is not shared with any
