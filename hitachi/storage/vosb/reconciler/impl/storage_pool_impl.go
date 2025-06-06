@@ -145,16 +145,15 @@ func (psm *vssbStorageManager) ExpandStoragePool(storagePoolName string, driveId
 		return err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_STORAGE_POOL_BEGIN))
+	log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_STORAGE_POOL_BEGIN), storagePoolName)
 
 	err = provObj.ExpandStoragePool(storagePoolName, driveIds)
 	if err != nil {
-		log.WriteDebug("TFError| failed to call ExpandStoragePool, err: %+v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_EXPAND_STORAGE_POOL_FAILED))
+		log.WriteError(mc.GetMessage(mc.ERR_EXPAND_STORAGE_POOL_FAILED), storagePoolName)
 		return err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_STORAGE_POOL_END))
+	log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_STORAGE_POOL_END), storagePoolName)
 	return nil
 }
 
