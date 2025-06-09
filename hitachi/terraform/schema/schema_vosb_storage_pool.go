@@ -311,7 +311,7 @@ var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Computed:    true,
 		Elem:        &schema.Schema{Type: schema.TypeString},
-		Description: "List of specific drive IDs for expansion of the storage pool",
+		Description: "List of specific offline drive IDs for expansion of the storage pool",
 	},
 	// Output:
 	"status": &schema.Schema{
