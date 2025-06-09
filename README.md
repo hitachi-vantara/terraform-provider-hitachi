@@ -215,7 +215,6 @@ End users should not rely on or edit this file.
 | `user_consent_message` | Message shown to the user. |
 | `api_timeout`          | Timeout (seconds) for internal API operations. |
 | `aws_timeout`          | Timeout (seconds) for AWS-related calls. |
-| `aws_url`              | URL for AWS integrations for Telemetry. |
 
 ### Example
 
@@ -224,7 +223,6 @@ End users should not rely on or edit this file.
   "user_consent_message": "...",
   "api_timeout": 300,
   "aws_timeout": 300,
-  "aws_url": ""
 }
 ```
 

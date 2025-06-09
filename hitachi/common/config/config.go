@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 )
 
 var (
-	ConfigData *Config
+	ConfigData *Config // Final config after env var overrides
 	configOnce sync.Once
 )
 
@@ -26,62 +27,53 @@ func Load(path string) error {
 	configOnce.Do(func() {
 		log.WriteDebug("Attempting to load config from path: %s", path)
 
-		if _, statErr := os.Stat(path); statErr == nil {
-			log.WriteDebug("Config file exists, reading...")
+		var cfg Config
 
-			data, readErr := os.ReadFile(path)
-			if readErr != nil {
-				err = readErr
-				log.WriteDebug("Failed to read config file: %v", readErr)
+		file, openErr := os.Open(path)
+		if openErr != nil {
+			if os.IsNotExist(openErr) {
+				log.WriteDebug("Config file not found. Creating default config.")
+
+				if createErr := CreateDefaultConfigFile(path); createErr != nil {
+					err = fmt.Errorf("failed to create default config: %w", createErr)
+					log.WriteDebug("CreateDefaultConfigFile failed: %v", createErr)
+					return
+				}
+
+				cfg = Config{
+					UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
+					RunConsentMessage:  RUN_CONSENT_MESSAGE,
+					APITimeout:         DEFAULT_API_TIMEOUT,
+					AWSTimeout:         DEFAULT_AWS_TIMEOUT,
+					AWS_URL:            DEFAULT_AWS_URL,
+				}
+
+				log.WriteDebug("Default config created and loaded.")
+			} else {
+				err = fmt.Errorf("failed to open config file: %w", openErr)
+				log.WriteDebug("Failed to open config file: %v", openErr)
 				return
 			}
-
-			var cfg Config
-			if unmarshalErr := json.Unmarshal(data, &cfg); unmarshalErr != nil {
-				err = unmarshalErr
-				log.WriteDebug("Failed to parse config JSON: %v", unmarshalErr)
+		} else {
+			defer file.Close()
+			decoder := json.NewDecoder(file)
+			if decodeErr := decoder.Decode(&cfg); decodeErr != nil {
+				err = fmt.Errorf("failed to decode config file: %w", decodeErr)
+				log.WriteDebug("Failed to decode config file: %v", decodeErr)
 				return
 			}
-
-			ConfigData = &cfg
 			log.WriteDebug("Config successfully loaded from file.")
-			return
 		}
 
-		log.WriteDebug("Config file not found. Creating default config.")
-
-		defaultCfg := Config{
-			UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
-			APITimeout:         DEFAULT_API_TIMEOUT,
-		}
-		ConfigData = &defaultCfg
-
-		if mkdirErr := os.MkdirAll(filepath.Dir(path), 0755); mkdirErr != nil {
-			err = mkdirErr
-			log.WriteDebug("Failed to create directory: %v", mkdirErr)
-			return
-		}
-
-		jsonData, marshalErr := json.MarshalIndent(defaultCfg, "", "  ")
-		if marshalErr != nil {
-			err = marshalErr
-			log.WriteDebug("Failed to marshal default config: %v", marshalErr)
-			return
-		}
-
-		if writeErr := os.WriteFile(path, jsonData, 0644); writeErr != nil {
-			err = writeErr
-			log.WriteDebug("Failed to write default config to file: %v", writeErr)
-			return
-		}
-
-		log.WriteDebug("Default config file created at %s", path)
+		// Apply environment overrides
+		ConfigData = resolveConfigFromEnv(&cfg)
+		log.WriteDebug("Config applied with environment overrides.")
 	})
 
 	if err == nil {
 		log.WriteDebug("Config load process completed without error.")
+		log.WriteDebug("Config: %+v", ConfigData)
 	}
-
 	return err
 }
 
@@ -99,12 +91,12 @@ func Get() *Config {
 }
 
 func CreateDefaultConfigFile(path string) error {
-	defaultCfg := Config{
+	// no AWS_URL allowed in default config
+	defaultCfg := ConfigNoAWS{
 		UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
 		RunConsentMessage:  RUN_CONSENT_MESSAGE,
 		APITimeout:         DEFAULT_API_TIMEOUT,
 		AWSTimeout:         DEFAULT_AWS_TIMEOUT,
-		AWS_URL:            DEFAULT_AWS_URL,
 	}
 
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -121,4 +113,54 @@ func CreateDefaultConfigFile(path string) error {
 	}
 
 	return nil
+}
+
+func resolveConfigFromEnv(cfg *Config) *Config {
+	if cfg == nil {
+		cfg = &Config{}
+	}
+
+	apiTimeout := getEnvInt("API_TIMEOUT", cfg.APITimeout, DEFAULT_API_TIMEOUT)
+	awsTimeout := getEnvInt("AWS_TIMEOUT", cfg.AWSTimeout, DEFAULT_AWS_TIMEOUT)
+	awsUrl := getEnvStr("AWS_URL", cfg.AWS_URL, DEFAULT_AWS_URL)
+
+	userConsent := DEFAULT_CONSENT_MESSAGE
+	if cfg.UserConsentMessage != "" {
+		userConsent = cfg.UserConsentMessage
+	}
+
+	runConsent := RUN_CONSENT_MESSAGE
+	if cfg.RunConsentMessage != "" {
+		runConsent = cfg.RunConsentMessage
+	}
+
+	return &Config{
+		APITimeout:         apiTimeout,
+		AWSTimeout:         awsTimeout,
+		AWS_URL:            awsUrl,
+		UserConsentMessage: userConsent,
+		RunConsentMessage:  runConsent,
+	}
+}
+
+func getEnvStr(key, fromConfig, fallback string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	if fromConfig != "" {
+		return fromConfig
+	}
+	return fallback
+}
+
+func getEnvInt(key string, fromConfig, fallback int) int {
+	if val := os.Getenv(key); val != "" {
+		if num, err := strconv.Atoi(val); err == nil && num > 0 {
+			return num
+		}
+	}
+	if fromConfig > 0 {
+		return fromConfig
+	}
+	return fallback
 }
