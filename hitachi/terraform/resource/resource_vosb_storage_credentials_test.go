@@ -2,8 +2,8 @@ package terraform
 
 import (
 	// "fmt"
-	"testing"
 	"strings"
+	"testing"
 )
 
 // mockResourceDiff implements only the methods required by minimalDiff
@@ -13,6 +13,11 @@ type mockResourceDiff struct {
 
 func (m *mockResourceDiff) Get(key string) interface{} {
 	return m.data[key]
+}
+
+func (m *mockResourceDiff) GetOk(key string) (interface{}, bool) {
+	val, ok := m.data[key]
+	return val, ok
 }
 
 func TestValidatePasswordChangeInputs(t *testing.T) {

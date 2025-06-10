@@ -127,3 +127,27 @@ func DeleteCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, r
 	telemetry.UpdateTelemetryStats(status, elapsedTime, storageSetting, nil)
 	return result, err
 }
+
+func DownloadFileCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, toFilePath string) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if !telemetry.CheckTelemetryConsent() {
+		log.WriteInfo("Telemetry consent not given. Skipping telemetry tracking.")
+		return downloadFileCall(storageSetting, apiSuf, toFilePath)
+	}
+
+	startTime := time.Now()
+	filePath, err := downloadFileCall(storageSetting, apiSuf, toFilePath)
+	elapsedTime := time.Since(startTime).Seconds()
+
+	status := "failure"
+	if err == nil {
+		status = "success"
+	}
+
+	telemetry.UpdateTelemetryStats(status, elapsedTime, storageSetting, nil)
+	return filePath, err
+}
+

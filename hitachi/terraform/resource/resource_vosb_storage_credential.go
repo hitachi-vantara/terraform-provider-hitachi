@@ -72,6 +72,7 @@ func validatePasswordChangeInputs(ctx context.Context, d *schema.ResourceDiff, m
 
 type minimalDiff interface {
 	Get(string) interface{}
+	GetOk(string) (interface{}, bool)
 }
 
 // testable

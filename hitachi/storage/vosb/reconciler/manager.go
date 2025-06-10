@@ -51,4 +51,10 @@ type VssbStorageManager interface {
 
 	// STORAGE USER
 	ChangeUserPassword(userID string, reqBody *vssbmodel.ChangeUserPasswordReq) (*vssbmodel.User, error) 
+
+	// CONFIGURATION FILE
+	RestoreConfigurationDefinitionFile() error
+	DownloadConfigurationFile(saveDir string) (string, error)
+	ReconcileConfigurationDefinitionFile(doCreate bool, doDownload bool, downloadPath string) (string, error)
+
 }
