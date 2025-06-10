@@ -41,6 +41,7 @@ func Provider() *schema.Provider {
 			"hitachi_vosb_compute_port":         resourceimpl.ResourceVssbStorageComputePort(),
 			"hitachi_vosb_change_user_password": resourceimpl.ResourceVssbChangeUserPassword(),
 			"hitachi_vosb_add_drives_to_pool":   resourceimpl.ResourceVssbAddDrivesToPool(),
+			"hitachi_vosb_configuration_file":   resourceimpl.ResourceVssbConfigurationFile(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hitachi_vsp_storage":           datasourceimpl.DataSourceStorageSystem(),
@@ -56,7 +57,7 @@ func Provider() *schema.Provider {
 			"hitachi_vsp_dynamic_pool":      datasourceimpl.DataSourceStorageDynamicPool(),
 			"hitachi_vsp_dynamic_pools":     datasourceimpl.DataSourceStorageDynamicPools(),
 			"hitachi_vsp_parity_groups":     datasourceimpl.DataSourceStorageParityGroups(),
-			"hitachi_vsp_parity_group":     datasourceimpl.DataSourceStorageParityGroup(),
+			"hitachi_vsp_parity_group":      datasourceimpl.DataSourceStorageParityGroup(),
 			"hitachi_vosb_storage_pools":    datasourceimpl.DataSourceVssbStoragePools(),
 			"hitachi_vosb_volumes":          datasourceimpl.DataSourceVssbVolumes(),
 			"hitachi_vosb_compute_nodes":    datasourceimpl.DataSourceVssbComputeNodes(),

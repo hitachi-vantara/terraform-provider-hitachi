@@ -111,4 +111,12 @@ var MessageCatalog = map[interface{}]string{
 	ERR_CHANGE_USER_PASSWORD_FAILED: "Failed to change password for user id %s.",
 	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
 
+	//CONFIGURATION FILE
+	INFO_RESTORE_CONFIG_BEGIN:   "Restoring configuration file.",
+	ERR_RESTORE_CONFIG_FAILED:   "Failed to restore configuration file.",
+	INFO_RESTORE_CONFIG_END:     "Successfully restored configuration file.",
+	INFO_DOWNLOAD_CONFIG_BEGIN:  "Downloading configuration file.",
+	ERR_DOWNLOAD_CONFIG_FAILED:  "Failed to download configuration file.",
+	INFO_DOWNLOAD_CONFIG_END:    "Successfully downloaded configuration file.",
+
 }

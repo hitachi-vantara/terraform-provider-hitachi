@@ -237,3 +237,19 @@ func deleteCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, r
 
 	return &affRes, nil
 }
+
+func downloadFileCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, toFilePath string) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	url := GetUrl(storageSetting.ClusterAddress, apiSuf)
+
+	httpBasicAuth := utils.HttpBasicAuthentication{
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+	}
+
+	return utils.HTTPDownloadFile(url, toFilePath, nil, &httpBasicAuth)
+}
+

@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -406,6 +409,97 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 
 	log.WriteDebug("HTTP Response: %s\n", string(body))
 	return string(body), nil
+}
+
+// HTTPDownloadFile downloads a file via GET and saves it to the specified directory.
+// It uses basic authentication and optionally reads the filename from the Content-Disposition header.
+func HTTPDownloadFile(url string, toFilePath string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	// Basic auth
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
+		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
+	}
+
+	// Optional headers
+	if headers != nil {
+		for k, v := range *headers {
+			req.Header.Add(k, v)
+			log.WriteInfo("header key=[%s], value=[%s]", k, v)
+		}
+	}
+
+	logRequest(req, nil)
+
+	resp, err := SharedClient().Do(req)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if IsHttpError(resp.StatusCode) {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		log.WriteError("HTTP error: %s", string(bodyBytes))
+		return string(bodyBytes), fmt.Errorf("%v", resp.Status)
+	}
+
+	// Try to extract filename from Content-Disposition header
+	filename := "downloaded_file"
+	if cd := resp.Header.Get("Content-Disposition"); strings.Contains(cd, "filename=") {
+		parts := strings.Split(cd, "filename=")
+		if len(parts) > 1 {
+			filename = strings.Trim(parts[1], `"`)
+		}
+	}
+
+	// Determine the final file path
+	var finalPath string
+	if toFilePath == "" {
+		// Behave like curl -O
+		finalPath = filename
+	} else {
+		info, err := os.Stat(toFilePath)
+		if err == nil && info.IsDir() {
+			// It's a directory: use it + filename
+			finalPath = filepath.Join(toFilePath, filename)
+		} else if strings.HasSuffix(toFilePath, string(os.PathSeparator)) {
+			// Ends with / or \ but does not exist yet: treat as directory
+			if err := os.MkdirAll(toFilePath, 0755); err != nil {
+				log.WriteError(err)
+				return "", err
+			}
+			finalPath = filepath.Join(toFilePath, filename)
+		} else {
+			// It's a full file path
+			finalPath = toFilePath
+		}
+	}
+
+	// Write to file
+	outFile, err := os.Create(finalPath)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, resp.Body)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	log.WriteInfo("File downloaded successfully: %s", finalPath)
+	return finalPath, nil
 }
 
 func logRequest(req *http.Request, reqBodyInBytes []byte) {

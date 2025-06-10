@@ -32,6 +32,7 @@ var TerraformProviderMap = map[string]string{
 	"vosb.datasource.DataSourceVssbVolumes"        : "vosb.datasource.hitachi_vosb_volumes",
 	"vosb.resource.ResourceVssbAddDrivesToPool"    : "vosb.resource.hitachi_vosb_add_drives_to_pool",
 	"vosb.resource.ResourceVssbChangeUserPassword" : "vosb.resource.hitachi_vosb_change_user_password",
+	"vosb.resource.ResourceVssbConfigurationFile"  : "vosb.resource.hitachi_vosb_configuration_file",
 	"vosb.resource.ResourceVssbStorageChapUser"    : "vosb.resource.hitachi_vosb_iscsi_chap_user",
 	"vosb.resource.ResourceVssbStorageComputeNode" : "vosb.resource.hitachi_vosb_compute_node",
 	"vosb.resource.ResourceVssbStorageComputePort" : "vosb.resource.hitachi_vosb_compute_port",
