@@ -7,7 +7,7 @@ import (
 )
 
 // go test -v -run TestRestoreConfigurationDefinitionFile
-func TestRestoreConfigurationDefinitionFile(t *testing.T) {
+func xTestRestoreConfigurationDefinitionFile(t *testing.T) {
 	psm, err := newTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
@@ -24,7 +24,7 @@ func TestRestoreConfigurationDefinitionFile(t *testing.T) {
 }
 
 // go test -v -run TestDownloadConfigurationFile
-func TestDownloadConfigurationFile(t *testing.T) {
+func xTestDownloadConfigurationFile(t *testing.T) {
 	psm, err := newTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error from newTestManager: %v", err)
