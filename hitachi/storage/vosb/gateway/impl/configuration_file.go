@@ -2,17 +2,18 @@ package vssbstorage
 
 import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	gatewaymodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
 	httpmethod "terraform-provider-hitachi/hitachi/storage/vosb/gateway/http"
 )
 
 // Restores a configuration definition file.
-func (psm *vssbStorageManager) RestoreConfigurationDefinitionFile() error {
+func (psm *vssbStorageManager) RestoreConfigurationDefinitionFile(createConfigParam *gatewaymodel.CreateConfigurationFileParam) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	apiSuf := "objects/configuration-file/actions/create/invoke"
-	_, err := httpmethod.PostCall(psm.storageSetting, apiSuf, nil)
+	_, err := httpmethod.PostCall(psm.storageSetting, apiSuf, createConfigParam)
 	if err != nil {
 		log.WriteError(err)
 		return err

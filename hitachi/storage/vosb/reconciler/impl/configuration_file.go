@@ -1,15 +1,19 @@
 package vssbstorage
 
 import (
+	"os"
 	"path/filepath"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	provisionerimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
 	provisionermodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
 	mc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
+	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
+
+	"github.com/jinzhu/copier"
 )
 
-func (psm *vssbStorageManager) RestoreConfigurationDefinitionFile() error {
+func (psm *vssbStorageManager) RestoreConfigurationDefinitionFile(createConfigParam *reconcilermodel.CreateConfigurationFileParam) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -28,7 +32,14 @@ func (psm *vssbStorageManager) RestoreConfigurationDefinitionFile() error {
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_RESTORE_CONFIG_BEGIN))
 
-	err = provisionerObj.RestoreConfigurationDefinitionFile()
+	provConfigParam := provisionermodel.CreateConfigurationFileParam{}
+	err = copier.Copy(&provConfigParam, createConfigParam)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to provisioner structure, err: %v", err)
+		return err
+	}
+
+	err = provisionerObj.RestoreConfigurationDefinitionFile(&provConfigParam)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_RESTORE_CONFIG_FAILED))
 		return err
@@ -69,20 +80,20 @@ func (psm *vssbStorageManager) DownloadConfigurationFile(toFilePath string) (str
 	return filePath, nil
 }
 
-func (psm *vssbStorageManager) ReconcileConfigurationDefinitionFile(doCreate bool, doDownload bool, downloadPath string) (string, error) {
+func (psm *vssbStorageManager) ReconcileConfigurationDefinitionFile(doCreate bool, doDownload bool, downloadPath string, createConfigParam *reconcilermodel.CreateConfigurationFileParam) (string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	if doCreate {
-		err := psm.RestoreConfigurationDefinitionFile()
+		err := psm.RestoreConfigurationDefinitionFile(createConfigParam)
 		if err != nil {
 			return "", err
 		}
 	}
 
 	if doDownload {
-		if filepath.Ext(downloadPath) == "" {
+		if filepath.Ext(downloadPath) == "" && !isDir(downloadPath) {
 			downloadPath += ".tar.gz"
 		}
 
@@ -94,4 +105,9 @@ func (psm *vssbStorageManager) ReconcileConfigurationDefinitionFile(doCreate boo
 	}
 
 	return "", nil
+}
+
+func isDir(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
 }

@@ -56,13 +56,53 @@ func CreateDownloadConfigurationDefinitionFile(d *schema.ResourceData) (string, 
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_DOWNLOAD_CONFIG_BEGIN))
 
-	finalPath, err := reconObj.ReconcileConfigurationDefinitionFile(doCreate, doDownload, downloadPath)
+	createConfigParam := expandCreateConfigurationFileParam(d)
+
+	finalPath, err := reconObj.ReconcileConfigurationDefinitionFile(doCreate, doDownload, downloadPath, createConfigParam)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_DOWNLOAD_CONFIG_FAILED))
-		log.WriteDebug("TFError| error in Restoring configuration definitionfile, err: %v", err)
 		return "", err
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_DOWNLOAD_CONFIG_END))
 	return finalPath, nil
+}
+
+func expandAddressSetting(list []interface{}) []reconcilermodel.AddressSetting {
+	var result []reconcilermodel.AddressSetting
+	for _, v := range list {
+		m := v.(map[string]interface{})
+		addr := reconcilermodel.AddressSetting{
+			Index:                    m["index"].(int),
+			ControlPortIPv4Address:   m["control_port_ipv4_address"].(string),
+			InternodePortIPv4Address: m["internode_port_ipv4_address"].(string),
+			ComputePortIPv4Address:   m["compute_port_ipv4_address"].(string),
+		}
+		if v6, ok := m["compute_port_ipv6_address"]; ok && v6 != nil {
+			addr.ComputePortIPv6Address = v6.(string)
+		}
+		result = append(result, addr)
+	}
+	return result
+}
+
+func expandCreateConfigurationFileParam(d *schema.ResourceData) *reconcilermodel.CreateConfigurationFileParam {
+	raw := d.Get("create_configuration_file_param").([]interface{})
+	if len(raw) == 0 || raw[0] == nil {
+		return &reconcilermodel.CreateConfigurationFileParam{}
+	}
+	m := raw[0].(map[string]interface{})
+	param := &reconcilermodel.CreateConfigurationFileParam{
+		ExportFileType:        m["export_file_type"].(string),
+		MachineImageID:        m["machine_image_id"].(string),
+		NumberOfDrives:        m["number_of_drives"].(int),
+		RecoverSingleDrive:    m["recover_single_drive"].(bool),
+		DriveID:               m["drive_id"].(string),
+		RecoverSingleNode:     m["recover_single_node"].(bool),
+		NodeID:                m["node_id"].(string),
+	}
+	if v, ok := m["address_setting"]; ok && v != nil {
+		param.AddressSetting = expandAddressSetting(v.([]interface{}))
+	}
+	return param
 }
