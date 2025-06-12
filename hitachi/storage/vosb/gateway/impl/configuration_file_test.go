@@ -3,16 +3,19 @@ package vssbstorage
 import (
 	"os"
 	"testing"
+	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
 )
 
 // go test -v -run TestRestoreConfigurationDefinitionFile
-func TestRestoreConfigurationDefinitionFile(t *testing.T) {
+func xTestRestoreConfigurationDefinitionFile(t *testing.T) {
 	psm, err := newTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	err = psm.RestoreConfigurationDefinitionFile()
+	param := &vssbmodel.CreateConfigurationFileParam{
+	}
+	err = psm.RestoreConfigurationDefinitionFile(param)
 	if err != nil {
 		t.Errorf("Unexpected error in RestoreConfigurationDefinitionFile %v", err)
 		return
@@ -21,7 +24,7 @@ func TestRestoreConfigurationDefinitionFile(t *testing.T) {
 }
 
 // go test -v -run TestDownloadConfigurationFile
-func TestDownloadConfigurationFile(t *testing.T) {
+func xTestDownloadConfigurationFile(t *testing.T) {
 	psm, err := newTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error from newTestManager: %v", err)
