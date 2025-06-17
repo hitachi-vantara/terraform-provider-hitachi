@@ -56,7 +56,7 @@ func DataSourceVssbStoragePortsRead(ctx context.Context, d *schema.ResourceData,
 
 		return nil
 	} else {
-		if !utils.IsValidPortName(port_name) {
+		if !utils.IsValidName(port_name) {
 			err := errors.New("port name can not exceed 255 characters")
 			return diag.FromErr(err)
 		}

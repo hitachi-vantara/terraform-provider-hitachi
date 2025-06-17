@@ -30,6 +30,11 @@ type VssbStorageManager interface {
 	AddOfflineDrivesToStoragePool(storagePoolName string) error
 	AddDrivesToStoragePool(inputStoragePool *vssbmodel.StoragePoolResource) error
 
+	// STORAGE NODES
+	GetStorageNodes() (*vssbmodel.StorageNodes, error)
+	GetStorageNode(nodeName string) (*vssbmodel.StorageNode, error)
+	AddStorageNode(configurationFile string, setupUserPassword string) error
+
 	// STORAGE PORTS
 	GetStoragePorts() (*vssbmodel.StoragePorts, error)
 	GetPort(portName string) (*vssbmodel.StoragePort, *vssbmodel.PortAuthSettings, error)
@@ -50,11 +55,10 @@ type VssbStorageManager interface {
 	//GetIscsiPortAuthInfo(portId string) (*vssbmodel.PortDetailSettings, error)
 
 	// STORAGE USER
-	ChangeUserPassword(userID string, reqBody *vssbmodel.ChangeUserPasswordReq) (*vssbmodel.User, error) 
+	ChangeUserPassword(userID string, reqBody *vssbmodel.ChangeUserPasswordReq) (*vssbmodel.User, error)
 
 	// CONFIGURATION FILE
 	RestoreConfigurationDefinitionFile(createConfigParam *vssbmodel.CreateConfigurationFileParam) error
 	DownloadConfigurationFile(saveDir string) (string, error)
 	ReconcileConfigurationDefinitionFile(doCreate bool, doDownload bool, downloadPath string, createConfigParam *vssbmodel.CreateConfigurationFileParam) (string, error)
-
 }

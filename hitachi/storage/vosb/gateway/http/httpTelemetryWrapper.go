@@ -36,6 +36,29 @@ func GetCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, outp
 	return err
 }
 
+func PostCallForm(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if !telemetry.CheckTelemetryConsent() {
+		log.WriteInfo("Telemetry consent not given. Skipping telemetry tracking.")
+		return postCallForm(storageSetting, apiSuf, reqBody)
+	}
+
+	startTime := time.Now()
+	result, err := postCallForm(storageSetting, apiSuf, reqBody)
+	elapsedTime := time.Since(startTime).Seconds()
+
+	status := "failure"
+	if err == nil && result != nil {
+		status = "success"
+	}
+
+	telemetry.UpdateTelemetryStats(status, elapsedTime, storageSetting, nil)
+	return result, err
+}
+
 func PostCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -151,3 +174,26 @@ func DownloadFileCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf str
 	return filePath, err
 }
 
+
+func PostCallFormExt(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if !telemetry.CheckTelemetryConsent() {
+		log.WriteInfo("Telemetry consent not given. Skipping telemetry tracking.")
+		return postCallForm(storageSetting, apiSuf, reqBody)
+	}
+
+	startTime := time.Now()
+	result, err := postCallForm(storageSetting, apiSuf, reqBody)
+	elapsedTime := time.Since(startTime).Seconds()
+
+	status := "failure"
+	if err == nil && result != nil {
+		status = "success"
+	}
+
+	telemetry.UpdateTelemetryStats(status, elapsedTime, storageSetting, nil)
+	return result, err
+}

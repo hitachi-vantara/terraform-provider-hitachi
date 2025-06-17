@@ -14,6 +14,12 @@ func newTestManager() (*vssbStorageManager, error) {
 		ClusterAddress: "10.76.47.55",
 		// ClusterAddress: "172.25.58.151",
 	}
+	objStorage = vssbmodel.StorageDeviceSettings{
+		Username: "admin",
+		Password: "Hitachi1",
+		ClusterAddress: "10.76.34.110",
+	}
+
 	psm, err := newVssbStorageManagerEx(objStorage)
 	if err != nil {
 		return nil, fmt.Errorf("unexpected error while creating newVssbStorageManagerEx %v", err)

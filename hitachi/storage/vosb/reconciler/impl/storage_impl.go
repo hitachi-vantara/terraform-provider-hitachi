@@ -86,6 +86,12 @@ func (psm *vssbStorageManager) GetDashboardInfo() (*vssbmodel.Dashboard, error) 
 		return nil, err
 	}
 
+	provNodesInfo, err := provObj.GetStorageNodes()
+	if err != nil {
+		log.WriteDebug("TFError| error in GetStorageNodes provisioner call, err: %v", err)
+		return nil, err
+	}
+
 	provStoragePoolsInfo, err := provObj.GetAllStoragePools()
 	if err != nil {
 		log.WriteDebug("TFError| error in GetAllStoragePools provisioner call, err: %v", err)
@@ -100,6 +106,7 @@ func (psm *vssbStorageManager) GetDashboardInfo() (*vssbmodel.Dashboard, error) 
 	}
 	reconDashboardInfo.NumberOfDrives = len(provDrivesInfo.Data)
 	reconDashboardInfo.NumberOfComputePorts = len(provPortsInfo.Data)
+	reconDashboardInfo.NumberOfTotalStorageNodes = len(provNodesInfo.Data)
 	reconDashboardInfo.NumberOfStoragePools = len(provStoragePoolsInfo.Data)
 
 	return reconDashboardInfo, nil

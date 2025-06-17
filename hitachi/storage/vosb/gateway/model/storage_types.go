@@ -5,6 +5,7 @@ type StorageDeviceSettings struct {
 	Password                string `json:"password"`
 	ClusterAddress          string `json:"clusterAddress"`
 	TerraformResourceMethod string `json:"terraformResourceMethod"`
+	ContentType 			string `json:"contentType"`
 }
 
 type StorageVersionInfo struct {

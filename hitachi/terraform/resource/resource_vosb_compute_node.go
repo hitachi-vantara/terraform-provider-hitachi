@@ -155,7 +155,7 @@ func resourceVssbStorageComputeNodeCreate(ctx context.Context, d *schema.Resourc
 	cpnList := []map[string]interface{}{
 		*cpn,
 	}
-	if err := d.Set("compute_nodes", cpnList); err != nil {
+	if err := d.Set("storage_nodes", cpnList); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}

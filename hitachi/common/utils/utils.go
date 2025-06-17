@@ -306,7 +306,7 @@ func IsValidUUID(uuid string) bool {
 	return r.MatchString(uuid)
 }
 
-func IsValidPortName(name string) bool {
+func IsValidName(name string) bool {
 	if len(name) > 255 {
 		return false
 	}
