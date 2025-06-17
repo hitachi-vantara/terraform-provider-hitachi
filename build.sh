@@ -52,6 +52,7 @@ cp ${TERRAFORM_DIR}/spec/*.spec ${RPMBUILD_DIR}/SPECS
 cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
+cp -f ${TERRAFORM_DIR}/scripts/logbundle.sh ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
 cp -f ${TERRAFORM_DIR}/hitachi/common/telemetry/user_consent.sh ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin
 # for ex in ${RPMBUILD_DIR}/${TERRAFORM_PKG}/examples/{data-sources,resources}/*; do
 #     cp -f ${TERRAFORM_DIR}/hitachi/common/telemetry/user_consent_message.tf $ex

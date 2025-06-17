@@ -52,6 +52,7 @@ config:
 	@echo "📦 copying $(INTERNAL_CONFIG_FILE) to $(OPT_TERRAFORM)/bin"
 	cp hitachi/common/config/internal_config/$(INTERNAL_CONFIG_FILE) $(OPT_TERRAFORM)/bin
 	cp hitachi/common/telemetry/user_consent.sh $(OPT_TERRAFORM)/bin
+	cp scripts/logbundle.sh $(OPT_TERRAFORM)/bin
 	cp ${BINARY} $(OPT_TERRAFORM)/bin
 	cp -r docs $(OPT_TERRAFORM)
 	cp -r examples $(OPT_TERRAFORM)
