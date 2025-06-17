@@ -212,3 +212,52 @@ func CheckHttpErrorResponse(resJSONString string, httpErr error) error {
 	}
 	return fmt.Errorf("%s", errmsg)
 }
+
+func CheckResponseAndWaitForJobExt(storageSetting vssbmodel.StorageDeviceSettings, resJSONString *string) (*vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	pjobResponse, err := CheckGwyAsyncResponse(resJSONString)
+	if err != nil {
+		log.WriteDebug("TFError| error in CheckGwyAsyncResponse call, err: %v", err)
+		return pjobResponse, err
+	}
+
+	if pjobResponse.JobID == "" {
+		// job didn't start
+		return pjobResponse, fmt.Errorf(pjobResponse.Error.Message)
+	}
+
+	state, job, err := WaitForJobToComplete(storageSetting, pjobResponse)
+	if err != nil {
+		log.WriteDebug("TFError| error in WaitForJobToComplete call, err: %v", err)
+		return job, err
+	}
+
+	log.WriteDebug("TFDebug|Final JOB: %+v", job)
+
+	if state != "Succeeded" {
+		return job, CheckHttpErrorResponseExt(*resJSONString, err)
+	}
+
+	return job, nil
+}
+
+func CheckHttpErrorResponseExt(resJSONString string, httpErr error) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if resJSONString == "" {
+		return httpErr
+	}
+
+	msg := "No http error in response"
+	msg = ""
+	if httpErr != nil {
+		msg = httpErr.Error()
+	}
+
+	return fmt.Errorf("%s", msg)
+}

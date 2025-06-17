@@ -26,6 +26,7 @@ var TerraformProviderMap = map[string]string{
 	"vosb.datasource.DataSourceVssbComputePort"    : "vosb.datasource.hitachi_vosb_iscsi_port_auth",
 	"vosb.datasource.DataSourceVssbDashboard"      : "vosb.datasource.hitachi_vosb_dashboard",
 	"vosb.datasource.DataSourceVssbStorageDrives"  : "vosb.datasource.hitachi_vosb_storage_drives",
+	"vosb.datasource.DataSourceVssbStorageNodes"   : "vosb.datasource.hitachi_vosb_storage_nodes",
 	"vosb.datasource.DataSourceVssbStoragePools"   : "vosb.datasource.hitachi_vosb_storage_pools",
 	"vosb.datasource.DataSourceVssbStoragePorts"   : "vosb.datasource.hitachi_vosb_storage_ports",
 	"vosb.datasource.DataSourceVssbVolumeNodes"    : "vosb.datasource.hitachi_vosb_volume",
@@ -37,5 +38,6 @@ var TerraformProviderMap = map[string]string{
 	"vosb.resource.ResourceVssbStorageComputeNode" : "vosb.resource.hitachi_vosb_compute_node",
 	"vosb.resource.ResourceVssbStorageComputePort" : "vosb.resource.hitachi_vosb_compute_port",
 	"vosb.resource.ResourceVssbStorageCreateVolume": "vosb.resource.hitachi_vosb_volume",
+	"vosb.resource.ResourceVssbStorageNode"        : "vosb.resource.hitachi_vosb_storage_node",
 	"vosb.terraform.ProviderConfigure"             : "vosb.terraform.providerConfigure",
 }

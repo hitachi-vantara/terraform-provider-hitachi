@@ -46,6 +46,11 @@ type VssbStorageManager interface {
 	GetStoragePoolsByPoolNames(poolNames []string) (*vssbmodel.StoragePools, error)
 	ExpandStoragePool(poolId string, reqBody *vssbmodel.ExpandStoragePoolReq) error
 
+	// STORAGE NODES
+	GetStorageNodes() (*vssbmodel.StorageNodes, error)
+	GetStorageNode(node string) (*vssbmodel.StorageNode, error)
+	AddStorageNode(configurationFile string, setupUserPassword string) error
+
 	// STORAGE PORTS
 	GetStoragePorts() (*vssbmodel.StoragePorts, error)
 	GetPort(portId string) (*vssbmodel.StoragePort, error)

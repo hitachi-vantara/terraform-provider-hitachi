@@ -45,6 +45,11 @@ type VssbStorageManager interface {
 	ExpandStoragePool(storagePoolName string, driveIds []string) error
 	AddOfflineDrivesToStoragePool(storagePoolName string) error
 
+	// STORAGE NODES
+	GetStorageNodes() (*vssbmodel.StorageNodes, error)
+	GetStorageNode(node string) (*vssbmodel.StorageNode, error)
+	AddStorageNode(configurationFile string, setupUserPassword string) error
+
 	// STORAGE PORTS
 	GetStoragePorts() (*vssbmodel.StoragePorts, error)
 	GetPort(portId string) (*vssbmodel.StoragePort, error)
@@ -71,5 +76,4 @@ type VssbStorageManager interface {
 	// CONFIGURATION FILE
 	RestoreConfigurationDefinitionFile(createConfigParam *vssbmodel.CreateConfigurationFileParam) error
 	DownloadConfigurationFile(saveDir string) (string, error)
-
 }

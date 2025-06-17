@@ -153,6 +153,15 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_PORT_FAILED: "Failed to read port information for port id %s",
 	INFO_GET_PORT_END:   "Successfully read port information for port id %s",
 
+	// STORAGE NODES
+	INFO_GET_ALL_STORAGE_NODES_BEGIN: "Reading all storage nodes information.",
+	ERR_GET_ALL_STORAGE_NODES_FAILED: "Failed to read all storage nodes information.",
+	INFO_GET_ALL_STORAGE_NODES_END:   "Successfully read storage nodes information.",
+
+	INFO_GET_NODE_BEGIN:               "Reading node information for node id %s",
+	ERR_GET_NODE_FAILED:               "Failed to read node information for node id %s",
+	INFO_GET_NODE_END:                 "Successfully read node information for node id %s",
+
 	//CHAP USERS
 	INFO_GET_ALL_CHAPUSERS_BEGIN: "Reading all chap users information.",
 	ERR_GET_ALL_CHAPUSERS_FAILED: "Failed to read all chp users information.",

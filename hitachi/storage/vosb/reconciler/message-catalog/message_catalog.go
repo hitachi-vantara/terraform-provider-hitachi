@@ -103,4 +103,13 @@ var MessageCatalog = map[interface{}]string{
 	ERR_DOWNLOAD_CONFIG_FAILED:  "Failed to download configuration file.",
 	INFO_DOWNLOAD_CONFIG_END:    "Successfully downloaded configuration file.",
 
+	// STORAGE NODES
+	INFO_GET_ALL_STORAGE_NODES_BEGIN: "Reading all storage nodes information.",
+	ERR_GET_ALL_STORAGE_NODES_FAILED: "Failed to read all storage nodes information.",
+	INFO_GET_ALL_STORAGE_NODES_END:   "Successfully read storage nodes information.",
+
+	INFO_GET_NODE_BEGIN:               "Reading node information for node id %s",
+	ERR_GET_NODE_FAILED:               "Failed to read node information for node id %s",
+	INFO_GET_NODE_END:                 "Successfully read node information for node id %s",
+
 }

@@ -532,3 +532,76 @@ func logRequest(req *http.Request, reqBodyInBytes []byte) {
 	log.WriteDebug("Host: %s", req.Host)
 	log.WriteDebug("RequestURI: %s", req.RequestURI)
 }
+
+func HTTPPostForm(
+		url string, headers *map[string]string, httpBody []byte,
+		form bytes.Buffer,
+		basicAuthentication ...*HttpBasicAuthentication,
+	) (string, error) {
+
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(httpBody))
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	// Add auth
+	if basicAuthentication != nil {
+		/*
+
+			usernameDecoded, err := DecodeBase64EncodedString(basicAuthentication[0].Username)
+			if err != nil {
+				return "", GetFormatedError(err, "DecodeBase64EncodedString:", "Failed")
+			}
+
+			passwordDecoded, err := DecodeBase64EncodedString(basicAuthentication[0].Password)
+			if err != nil {
+				return "", GetFormatedError(err, "DecodeBase64EncodedString:", "Failed")
+			}
+
+			req.SetBasicAuth(usernameDecoded, passwordDecoded)
+		*/
+		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
+	}
+
+	if headers != nil {
+		for k, v := range *headers {
+			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
+			log.WriteInfo(strValue)
+			req.Header.Add(k, v)
+		}
+	}else{
+		// the above is doing Add, so we need to set the content type here
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	logRequest(req, httpBody)
+
+	resp, err := SharedClient().Do(req)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	log.WriteDebug("HTTP Response: %s\n", string(body))
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
+	}
+
+	return string(body), nil
+}
