@@ -17,7 +17,7 @@
 #       default dirs = "." "/opt/hitachi/terraform/examples"
 #
 # Environment Variable:
-#   MAX_LOGBUNDLES - Maximum number of log bundles to keep (default: 3)
+#   TF_MAX_LOGBUNDLES - Maximum number of log bundles to keep (default: 3)
 #
 # Note:
 #   If you're running this inside a Terraform directory and do not specify any
@@ -32,8 +32,8 @@ SCRIPT_LOG="/tmp/logbundle_output_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$SCRIPT_LOG") 2>&1
 
 # === Config ===
-MAX_LOGBUNDLES="${MAX_LOGBUNDLES:-3}"
-echo "Max log bundles: $MAX_LOGBUNDLES (can be set via environment variable MAX_LOGBUNDLES)"
+TF_MAX_LOGBUNDLES="${TF_MAX_LOGBUNDLES:-3}"
+echo "Max log bundles: $TF_MAX_LOGBUNDLES (can be set via environment variable TF_MAX_LOGBUNDLES)"
 
 DEFAULT_TF_DIRS=("." "/opt/hitachi/terraform/examples")
 
@@ -64,7 +64,7 @@ usage() {
     echo "  -h, --help      Show this help message and exit"
     echo
     echo "Environment Variables:"
-    echo "  MAX_LOGBUNDLES  Maximum number of log bundles to keep (default: 3)"
+    echo "  TF_MAX_LOGBUNDLES  Maximum number of log bundles to keep (default: 3)"
     exit 1
 }
 
@@ -148,10 +148,13 @@ collect_terraform_info_global() {
 
 collect_plugin_info() {
     echo "📦 Collecting hitachi terraform plugin version..."
+
+    rpm -qa --qf 'Hitachi Terraform Provider RPM: %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep HV_Storage_Terraform > "$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
+
     if [[ -x "$PLUGIN_PATH" ]]; then
-        "$PLUGIN_PATH" -v >"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt" 2>&1 || echo "Failed to get plugin version" >"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
+        "$PLUGIN_PATH" -v >>"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt" 2>&1 || echo "Failed to get plugin version" >>"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
     else
-        echo "Plugin binary not found at $PLUGIN_PATH" >"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
+        echo "Plugin binary not found at $PLUGIN_PATH" >>"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
     fi
 }
 
@@ -341,21 +344,28 @@ flatten_path() {
     local path="$1"
     IFS='/' read -r -a parts <<<"$path"
 
-    # Take only the last 4 non-empty parts
-    local last4=()
-    for ((i = ${#parts[@]} - 4; i < ${#parts[@]}; i++)); do
-        [[ -n "${parts[i]}" ]] && last4+=("${parts[i]}")
+    # Filter out empty parts (due to leading '/')
+    local non_empty_parts=()
+    for part in "${parts[@]}"; do
+        [[ -n "$part" ]] && non_empty_parts+=("$part")
     done
 
-    IFS='_'
-    echo "${last4[*]}"
+    # Take the last 4 parts or fewer
+    local last_parts=()
+    local start=$(( ${#non_empty_parts[@]} > 4 ? ${#non_empty_parts[@]} - 4 : 0 ))
+    for ((i = start; i < ${#non_empty_parts[@]}; i++)); do
+        last_parts+=("${non_empty_parts[i]}")
+    done
+
+    # Join with underscore
+    (IFS=_; echo "${last_parts[*]}")
 }
 
 cleanup_old_logbundles() {
-    echo "🧹 Cleaning up old logbundles, keeping only the last $MAX_LOGBUNDLES..."
+    echo "🧹 Cleaning up old logbundles, keeping only the last $TF_MAX_LOGBUNDLES..."
     find "$ARCHIVE_OUTPUT_DIR" -maxdepth 1 -type f -name 'hitachi_terraform_logbundle-*.tar.gz' |
         sort -r |
-        awk "NR>$MAX_LOGBUNDLES" |
+        awk "NR>$TF_MAX_LOGBUNDLES" |
         while read -r old_file; do
             echo "🗑️  Removing old bundle: $old_file"
             rm -f "$old_file"

@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_storage_nodes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Storage Port:Obtains a list of storage nodes information.
+  VOS Block Storage Node:Obtains a list of storage nodes information.
 ---
 
 # hitachi_vosb_storage_nodes (Data Source)
 
-VOS Block Storage Port:Obtains a list of storage nodes information.
+VOS Block Storage Node:Obtains a list of storage nodes information.
 
 ## Example Usage
 

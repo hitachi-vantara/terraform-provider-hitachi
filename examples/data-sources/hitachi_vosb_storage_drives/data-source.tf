@@ -12,12 +12,12 @@
 # environment, enabling you to retrieve information about the desired storage drives.
 #
 # Optional Input:
-# - status: Filter the drives by their status. Allowed values are:
+# - status: Filters drives by their status. Allowed values (case-insensitive): 
 #   "", "Offline", "Normal", "TemporaryBlockage", "Blockage"
 
 data "hitachi_vosb_storage_drives" "my_drives" {
   vosb_address = "10.10.12.13"
-  status       = "Normal"
+  status       = "normal"
 }
 
 output "my_drives_output" {

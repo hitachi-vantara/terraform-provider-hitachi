@@ -44,7 +44,17 @@ func GetAllDrives(d *schema.ResourceData) (*[]terraformmodel.Drive, error) {
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_DRIVES_BEGIN))
 
 	// Retrieve all drives from the reconciler (this is the key action)
-	status := d.Get("status").(string)
+	var canonicalStatusValues = map[string]string{
+		"offline":           "Offline",
+		"normal":            "Normal",
+		"blockage":          "Blockage",
+		"temporaryblockage": "TemporaryBlockage",
+		"":                  "",
+	}
+
+	rawStatus := d.Get("status").(string)
+	status := canonicalStatusValues[strings.ToLower(rawStatus)]
+
 	driveInfo, err := reconObj.GetDrivesInfo(status)
 	if err != nil {
 		log.WriteError("Error fetching drives from reconciler", err)
