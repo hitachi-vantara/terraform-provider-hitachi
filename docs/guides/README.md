@@ -14,11 +14,10 @@
 9. [Log Bundle Collection](#log-bundle-collection)
 10. [Bundled TF Examples](#bundled-tf-examples)
 11. [User Consent Script](#user-consent-script)
-12. [Config](#config)
-13. [Terraform Compatibility](#terraform-compatibility)
-14. [Linux Compatibility](#linux-compatibility)
-15. [Privacy Notice](#privacy-notice)
-16. [License](#license)
+12. [Terraform Compatibility](#terraform-compatibility)
+13. [Linux Compatibility](#linux-compatibility)
+14. [Privacy Notice](#privacy-notice)
+15. [License](#license)
 
 ---
 
@@ -208,7 +207,7 @@ The `logbundle.sh` script collects a support log bundle containing Terraform con
       + Default TF dirs: "." "/opt/hitachi/terraform/examples"
 
 ### Environment Variables
-- `MAX_LOGBUNDLES`.  
+- `TF_MAX_LOGBUNDLES`.  
   Controls how many log bundles to retain. Older bundles beyond this limit will be deleted.  
   **Default: `3`
 
@@ -225,7 +224,7 @@ The `logbundle.sh` script collects a support log bundle containing Terraform con
 
 ### Sample Output
 ```
-Max log bundles: 3 (can be set via environment variable MAX_LOGBUNDLES)
+Max log bundles: 3 (can be set via environment variable TF_MAX_LOGBUNDLES)
 📦 Collecting Terraform version info...
 🔍 Searching Terraform directories under: .../examples/data-sources/hitachi_vosb_storage_pools
 📦 Copying hitachi terraform plugin logs...
@@ -299,35 +298,6 @@ Saves to:
   "user_consent_accepted": true,
   "time": "...",
   "consent_history": [...]
-}
-```
-
----
-
-## Config
-
-Located at: `/opt/hitachi/terraform/bin/.internal_config`
-
-This file is intended for internal Hitachi QA/Development use only.
-Do not modify this file unless you are part of the internal engineering or QA team.
-The contents may control internal timeouts, system behavior, or user prompts.
-End users should not rely on or edit this file.
-
-### Fields
-
-| Field                  | Description |
-|------------------------|-------------|
-| `user_consent_message` | Message shown to the user. |
-| `api_timeout`          | Timeout (seconds) for internal API operations. |
-| `aws_timeout`          | Timeout (seconds) for AWS-related calls. |
-
-### Example
-
-```json
-{
-  "user_consent_message": "...",
-  "api_timeout": 300,
-  "aws_timeout": 300,
 }
 ```
 

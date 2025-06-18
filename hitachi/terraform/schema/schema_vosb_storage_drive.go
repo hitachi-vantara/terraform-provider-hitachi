@@ -85,8 +85,8 @@ var ResourceVssbStorageDriveSchema = map[string]*schema.Schema{
 	"status": &schema.Schema{
 		Type:         schema.TypeString,
 		Optional:     true,
-		ValidateFunc: validation.StringInSlice([]string{"", "Offline", "Normal", "TemporaryBlockage", "Blockage"}, false),
-		Description:  "Filter the drives by their status. Allowed values are: empty string, Offline, Normal, TemporaryBlockage, Blockage",
+		ValidateFunc: validation.StringInSlice([]string{"", "Offline", "Normal", "TemporaryBlockage", "Blockage"}, true),
+		Description:  "Filter the drives by their status. Allowed values (case-insensitive): empty string, Offline, Normal, TemporaryBlockage, Blockage.",
 	},
 	// Output
 	"drives": &schema.Schema{
