@@ -2,8 +2,10 @@ package telemetry
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"net/http"
 	"os"
@@ -310,7 +312,7 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 	// Define the headers for the request
 	headers := map[string]string{
 		"Content-Type": "application/json",
-		"user-agent":   "terraform",
+		"User-Agent":   "terraform",
 	}
 
 	// Create a new HTTP request with the specified URL, method, and body
@@ -329,26 +331,51 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 	httpBasicAuth := utils.HttpBasicAuthentication{}
 	httpBasicAuth.SetAuthHeaders(req)
 
-	awsTimeout := config.DEFAULT_AWS_TIMEOUT
+	awsTimeout := time.Duration(config.DEFAULT_AWS_TIMEOUT) * time.Second
 	if config.ConfigData != nil && config.ConfigData.AWSTimeout > 0 {
-		awsTimeout = config.ConfigData.AWSTimeout
+		awsTimeout = time.Duration(config.ConfigData.AWSTimeout) * time.Second
 	}
 
-	// Create an HTTP client with a timeout (e.g., 30 seconds)
+	// HTTP client with timeout, no proxy, and cert verification skipped (like validate_certs=False)
+	tr := &http.Transport{
+		Proxy: nil, // disables proxy
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true, // WARNING: disable in production!
+		},
+	}
 	client := &http.Client{
-		Timeout: time.Duration(awsTimeout),
+		Timeout:   awsTimeout,
+		Transport: tr,
 	}
 
-	// Send the HTTP request
+	log.WriteDebug("Sending POST request to AWS")
+	log.WriteDebug("URL: %s", url)
+
+	prettyBody := &bytes.Buffer{}
+	if err := json.Indent(prettyBody, reqBodyInBytes, "", "  "); err != nil {
+		log.WriteDebug("Raw request body: %s", string(reqBodyInBytes))
+	} else {
+		log.WriteDebug("Request Body:\n%s", prettyBody.String())
+	}
+
+	log.WriteDebug("Request Headers:")
+	for key, values := range req.Header {
+		for _, value := range values {
+			log.WriteDebug("  %s: %s", key, value)
+		}
+	}
+
+	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
-		log.WriteError("Error sending HTTP request to telemetry AWS: %v", err)
+		log.WriteError("Error sending HTTP request to telemetry AWS:\n  URL: %s\n  Error: %+v", url, err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.WriteError("Received non-OK response from telemetry AWS: %d %s", resp.StatusCode, resp.Status)
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		log.WriteError("Received non-OK response from telemetry AWS: %d %s - %s", resp.StatusCode, resp.Status, string(bodyBytes))
 		return fmt.Errorf("received non-OK response from telemetry AWS: %d %s", resp.StatusCode, resp.Status)
 	}
 

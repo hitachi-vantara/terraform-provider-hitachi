@@ -2,14 +2,14 @@ package telemetry
 
 // for sending to AWS api
 type TelemetryPayload struct {
-	ModuleName      string  `json:"moduleName"`
-	OperationName   string  `json:"operationName"`
-	OperationStatus int     `json:"operationStatus"`
-	ConnectionType  string  `json:"connectionType"`
-	ProcessTime     float64 `json:"processTime"`
-	StorageModel    string  `json:"storageModel"`
-	StorageSerial   string  `json:"storageSerial"`
-	StorageType     string  `json:"storageType"`
+	ModuleName      string  `json:"module_name"`
+	OperationName   string  `json:"operation_name"`
+	OperationStatus int     `json:"operation_status"`
+	ConnectionType  string  `json:"connection_type"`
+	ProcessTime     float64 `json:"process_time"`
+	StorageModel    string  `json:"storage_model"`
+	StorageSerial   string  `json:"storage_serial"`
+	StorageType     string  `json:"storage_type"`
 	Site            string  `json:"site"`
 }
 

@@ -11,7 +11,7 @@ logger.setLevel(logging.INFO)
 
 OPENSEARCH_ENDPOINT = os.getenv("OPENSEARCH_ENDPOINT", "")
 REGION = "us-west-2"
-INDEX = "terraform_telemetry_v2"
+INDEX = "terraform_telemetry"
 DOCUMENT_ID = "terraform_doc_id1"
 SQS_QUEUE_URL = os.getenv("SQS_QUEUE_URL", "")
 
@@ -60,16 +60,16 @@ def update_or_create_document(site_id, body, max_retries=3, retry_delay=1):
     if (storage[params.connection_type] == null) {
         storage[params.connection_type] = [];
     }
-    def existing = storage[params.connection_type].find(t -> t.name == params.task_key_name);
-    if (existing == null) {
-        def newTask = ['name': params.task_key_name, 'metrics': ['success': params.success, 'failure': params.failure, 'averageTimeInSec': params.process_time]];
-        storage[params.connection_type].add(newTask);
+    def task = storage[params.connection_type].find(t -> t.containsKey(params.task_key_name));
+    if (task == null) {
+        task = [params.task_key_name: ['success': params.success, 'failure': params.failure, 'averageTimeInSec': params.process_time]];
+        storage[params.connection_type].add(task);
     } else {
-        def metrics = existing.metrics;
-        metrics.success += params.success;
-        metrics.failure += params.failure;
-        def total = metrics.success + metrics.failure;
-        metrics.averageTimeInSec = Math.round(((metrics.averageTimeInSec * (total - 1)) + params.process_time) / total * 100.0) / 100.0;
+        def existing = task[params.task_key_name];
+        existing.success += params.success;
+        existing.failure += params.failure;
+        def total = existing.success + existing.failure;
+        existing.averageTimeInSec = Math.round(((existing.averageTimeInSec * (total - 1)) + params.process_time) / total * 100.0) / 100.0;
     }
     ctx._source.lastUpdate = params.current_time;
     """
@@ -100,8 +100,7 @@ def update_or_create_document(site_id, body, max_retries=3, retry_delay=1):
                 "serial": storage_serial,
                 connection_type: [
                     {
-                        "name": task_key_name,
-                        "metrics": {
+                        task_key_name: {
                             "success": success,
                             "failure": failure,
                             "averageTimeInSec": process_time,

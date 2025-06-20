@@ -15,6 +15,11 @@ RESPONSE_MSG = {
     "body": json.dumps({"message": "Request received, processing asynchronously."}),
 }
 
+RESPONSE_MSG_ERR = {
+    "status": 400,
+    "body": json.dumps({"message": "Validation failed"}),
+}
+
 def lambda_handler(event, context):
     try:
         # Parse request body
@@ -29,7 +34,7 @@ def lambda_handler(event, context):
 
         if not validate_input(body):
             logger.error(f"body data validation failed: {body}")
-            return RESPONSE_MSG
+            return RESPONSE_MSG_ERR
 
         # Send message to SQS
         response = sqs.send_message(
@@ -57,18 +62,23 @@ def validate_input(data):
         "storage_serial": str,
         "connection_type": str,
         "storage_type": str,
+        "process_time": ((int, float), lambda x: x > 0),  # Must be positive
+        "site": (str, lambda x: len(x) < 121),
     }
 
     for key, expected in schema.items():
         if key not in data:
+            logger.error(f"key not in data: {key}")
             return False
         value = data[key]
         if isinstance(expected, tuple):
             expected_type, validator = expected
             if not isinstance(value, expected_type) or not validator(value):
+                logger.error(f"value not instance: {key} : {value}")
                 return False
         else:
             if not isinstance(value, expected):
+                logger.error(f"type not instance: {key} : {value} : {expected}")
                 return False
 
     return True

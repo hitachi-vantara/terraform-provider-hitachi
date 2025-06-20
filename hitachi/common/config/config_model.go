@@ -29,6 +29,6 @@ const RUN_CONSENT_MESSAGE = "To provide your consent, run bin/user_consent.sh fr
 const (
 	DEFAULT_API_TIMEOUT = 300 // seconds
 	DEFAULT_AWS_TIMEOUT = 300 // seconds
-	// DEFAULT_AWS_URL     = "https://5v56roefvl.execute-api.us-west-2.amazonaws.com/api/update_telemetry/ZZZ"
-	DEFAULT_AWS_URL = "" // TODO: set this to the actual AWS URL if needed, or leave it empty for local testing purposes.
+	// DEFAULT_AWS_URL     = "https://5v56roefvl.execute-api.us-west-2.amazonaws.com/api/update_telemetry"
+	DEFAULT_AWS_URL = "https://guuc07ks4j.execute-api.us-west-2.amazonaws.com/api/update_telemetry"
 )
