@@ -77,6 +77,30 @@ GET terraform_telemetry_v2/_search
 
 GET terraform_telemetry_v2/_search
 {
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "vsp.san",
+      "query": {
+        "wildcard": {
+          "vsp.san.name": "*GetParityGroups"
+        }
+      },
+      "inner_hits": {
+        "size": 10,
+        "_source": {
+          "includes": [
+            "vsp.san.name",
+            "vsp.san.metrics"
+          ]
+        }
+      }
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
   "query": {
     "nested": {
       "path": "vsp.san",
