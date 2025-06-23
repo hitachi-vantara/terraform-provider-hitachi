@@ -16,7 +16,7 @@ GET terraform_telemetry/_search
 {
   "query": {
     "term": {
-      "site": "68bac816-cc10-428b-a87e-adfb40db026e"
+      "siteId": "68bac816-cc10-428b-a87e-adfb40db026e"
     }
   }
 }

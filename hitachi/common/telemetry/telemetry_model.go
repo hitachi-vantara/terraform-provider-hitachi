@@ -10,7 +10,7 @@ type TelemetryPayload struct {
 	StorageModel    string  `json:"storage_model"`
 	StorageSerial   string  `json:"storage_serial"`
 	StorageType     string  `json:"storage_type"`
-	Site            string  `json:"site"`
+	Site            string  `json:"site_id"`
 }
 
 // usages.json file
