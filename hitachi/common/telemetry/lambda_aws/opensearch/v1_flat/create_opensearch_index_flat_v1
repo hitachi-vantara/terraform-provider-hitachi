@@ -2,7 +2,7 @@ PUT terraform_telemetry
 {
   "mappings": {
     "properties": {
-      "site": { "type": "keyword" },
+      "siteId": { "type": "keyword" },
       "createDate": { "type": "date" },
       "lastUpdate": { "type": "date" },
 

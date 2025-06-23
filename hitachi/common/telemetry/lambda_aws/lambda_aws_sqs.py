@@ -24,7 +24,7 @@ def lambda_handler(event, context):
     try:
         # Parse request body
         body = event
-        site_id = body.get("site")
+        site_id = body.get("site_id")
 
         if not site_id:
             return {"status": 400, "body": json.dumps({"error": "Missing 'site_id'"})}
@@ -63,7 +63,7 @@ def validate_input(data):
         "connection_type": str,
         "storage_type": str,
         "process_time": ((int, float), lambda x: x > 0),  # Must be positive
-        "site": (str, lambda x: len(x) < 121),
+        "site_id": (str, lambda x: len(x) < 121),
     }
 
     for key, expected in schema.items():

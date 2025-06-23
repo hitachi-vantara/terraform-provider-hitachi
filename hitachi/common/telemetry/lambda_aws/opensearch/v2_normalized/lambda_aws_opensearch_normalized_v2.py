@@ -91,7 +91,7 @@ def update_or_create_document(site_id, body, max_retries=3, retry_delay=1):
     }
 
     upsert_doc = {
-        "site": site_id,
+        "siteId": site_id,
         "createDate": current_time,
         "lastUpdate": current_time,
         storage_type: [
@@ -126,12 +126,12 @@ def update_or_create_document(site_id, body, max_retries=3, retry_delay=1):
             logger.info("OpenSearch payload: %s", response.request.body)
 
             if response.status_code in (200, 201):
-                logger.info(f"Successfully processed site {site_id}")
+                logger.info(f"Successfully processed site_id {site_id}")
                 return response.json()
 
             elif response.status_code == 409:
                 logger.warning(
-                    f"Version conflict on attempt {attempt + 1} for site {site_id}. Retrying..."
+                    f"Version conflict on attempt {attempt + 1} for site_id {site_id}. Retrying..."
                 )
                 time.sleep(retry_delay)
                 retry_delay *= 2
@@ -139,18 +139,18 @@ def update_or_create_document(site_id, body, max_retries=3, retry_delay=1):
                 raise Exception(f"OpenSearch error ({response.status_code}): {response.text}")
 
         except Exception as e:
-            logger.error(f"Attempt {attempt + 1} failed for site {site_id}: {str(e)}")
+            logger.error(f"Attempt {attempt + 1} failed for site_id {site_id}: {str(e)}")
             time.sleep(retry_delay)
             retry_delay *= 2
 
-    raise Exception(f"Failed to update site {site_id} after {max_retries} attempts.")
+    raise Exception(f"Failed to update site_id {site_id} after {max_retries} attempts.")
 
 def lambda_handler(event, context):
     sqs_client = get_sqs_client()
     for record in event["Records"]:
         try:
             body = json.loads(record["body"])
-            site_id = body.get("site")
+            site_id = body.get("site_id")
             logger.info(f"Processing record: {body}")
 
             update_or_create_document(site_id, body)
