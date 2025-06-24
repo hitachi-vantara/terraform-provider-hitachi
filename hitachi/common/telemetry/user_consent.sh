@@ -8,43 +8,62 @@ TELEMETRY_DIR="$ROOT_DIR/telemetry"
 # Ensure telemetry directory exists
 mkdir -p "$TELEMETRY_DIR"
 
-function install_jq() {
-    if ! command -v jq &>/dev/null; then
-        echo "❗ jq not found. Attempting to install jq..."
-        if [ -f /etc/os-release ] && grep -q "Oracle Linux Server 8" /etc/os-release; then
-            if sudo dnf install -y jq &>/dev/null; then
-                echo "✅ jq installed successfully."
-            else
-                echo "❌ Failed to install jq."
-                exit 1
-            fi
+install_jq() {
+  if ! command -v jq &>/dev/null; then
+    echo "❗ jq not found. Attempting to install jq..."
+
+    if [ -f /etc/os-release ]; then
+      if grep -Eq "Oracle Linux|Red Hat Enterprise Linux|CentOS" /etc/os-release; then
+        # Use dnf for version 8+, otherwise yum
+        if grep -q "VERSION_ID=\"8" /etc/os-release || grep -q "VERSION_ID=8" /etc/os-release; then
+          PKG_CMD="dnf"
         else
-            echo "⚠️ Unsupported OS for auto jq install. Please install jq manually and rerun."
-            exit 1
+          PKG_CMD="yum"
         fi
+
+        if sudo "$PKG_CMD" install -y jq &>/dev/null; then
+          echo "✅ jq installed successfully."
+        else
+          echo "❌ Failed to install jq using $PKG_CMD."
+          exit 1
+        fi
+      else
+        echo "⚠️ Unsupported OS for automatic jq installation. Please install jq manually and rerun."
+        exit 1
+      fi
     fi
+  fi
 }
 
-function install_uuidgen() {
-    if ! command -v uuidgen &>/dev/null; then
-        echo "❗ uuidgen not found. Attempting to install util-linux..."
-        if [ -f /etc/os-release ] && grep -q "Oracle Linux Server 8" /etc/os-release; then
-            if sudo dnf install -y util-linux &>/dev/null; then
-                echo "✅ uuidgen installed successfully."
-            else
-                echo "❌ Failed to install util-linux."
-                exit 1
-            fi
+install_uuidgen() {
+  if ! command -v uuidgen &>/dev/null; then
+    echo "❗ uuidgen not found. Attempting to install util-linux..."
+
+    if [ -f /etc/os-release ]; then
+      if grep -Eq "Oracle Linux|Red Hat Enterprise Linux|CentOS" /etc/os-release; then
+        # Use dnf for version 8+, otherwise yum
+        if grep -q "VERSION_ID=\"8" /etc/os-release || grep -q "VERSION_ID=8" /etc/os-release; then
+          PKG_CMD="dnf"
         else
-            echo "⚠️ Unsupported OS for auto uuidgen install. Please install util-linux manually and rerun."
-            exit 1
+          PKG_CMD="yum"
         fi
+
+        if sudo "$PKG_CMD" install -y util-linux &>/dev/null; then
+          echo "✅ uuidgen installed successfully."
+        else
+          echo "❌ Failed to install util-linux using $PKG_CMD."
+          exit 1
+        fi
+      else
+        echo "⚠️ Unsupported OS for automatic util-linux installation. Please install it manually and rerun."
+        exit 1
+      fi
     fi
+  fi
 }
 
 install_jq
 install_uuidgen
-
 
 # Read config
 if [ ! -f "$CONFIG_FILE" ]; then
@@ -110,7 +129,7 @@ jq -n \
     user_consent_accepted: $user_consent_accepted,
     time: $time,
     consent_history: $consent_history
-  }' > "$CONSENT_FILE"
+  }' >"$CONSENT_FILE"
 
 echo ""
 echo "✅ User consent has been recorded successfully."
