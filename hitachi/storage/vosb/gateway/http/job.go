@@ -143,6 +143,59 @@ func WaitForJobToComplete(storageSetting vssbmodel.StorageDeviceSettings, jobRes
 	return jobResult.State, jobResult, nil
 }
 
+// WaitForJobToCompleteExt is an extended version of WaitForJobToComplete with a constant wait time.
+// It is intended for long running jobs like add storage node with much longer wait time
+func WaitForJobToCompleteExt(storageSetting vssbmodel.StorageDeviceSettings, jobResponse *vssbmodel.JobResponse) (string, *vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var FIRST_WAIT_TIME time.Duration = 1 // in sec
+
+	// maximum number of retries to wait for job completion
+	MAX_RETRY_COUNT := 30
+
+	var jobResult *vssbmodel.JobResponse
+	var err error
+	status := "Initializing"
+	retryCount := 1
+	waitTime := FIRST_WAIT_TIME
+
+	for status != "Completed" {
+		if retryCount > MAX_RETRY_COUNT {
+			err = fmt.Errorf("Exception: %v", "Timeout Error! Operation was not completed.")
+			log.WriteError(err)
+			log.WriteDebug("TFError| error in MAX RETRY COUNT condition, err: %v", err)
+			return "", nil, err
+		}
+
+		time.Sleep(waitTime * time.Second)
+
+		jobResult, err = CheckJobStatus(storageSetting, jobResponse.JobID)
+		if err != nil {
+			log.WriteDebug("TFError| error in CheckJobStatus call, err: %v", err)
+			return "", nil, err
+		}
+
+		status = jobResult.Status
+		waitTime = 60 // constant wait time of 60 seconds for long running jobs
+		retryCount += 1
+	}
+
+	// at this point, job status is completed
+
+	if jobResult.State == "Failed" {
+		log.WriteDebug("TFDebug|Error! SSB code : %+v", jobResult.Error.ErrorCode)
+		//	fmt.Errorf("Exception: %v, %v", "Job Error!", jobResult.text))
+		return jobResult.State, jobResult, nil
+	}
+
+	// otherwise state is Succeeded
+	// log.WriteDebug("Async job was succeeded. affected resource : %v" + jobResult.AffectedResources[0])
+	log.WriteDebug("TFDebug|Async job %v succeeded.", jobResponse.JobID)
+	return jobResult.State, jobResult, nil
+}
+
 func CheckResponseAndWaitForJob(storageSetting vssbmodel.StorageDeviceSettings, resJSONString *string) (*vssbmodel.JobResponse, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -229,9 +282,9 @@ func CheckResponseAndWaitForJobExt(storageSetting vssbmodel.StorageDeviceSetting
 		return pjobResponse, fmt.Errorf(pjobResponse.Error.Message)
 	}
 
-	state, job, err := WaitForJobToComplete(storageSetting, pjobResponse)
+	state, job, err := WaitForJobToCompleteExt(storageSetting, pjobResponse)
 	if err != nil {
-		log.WriteDebug("TFError| error in WaitForJobToComplete call, err: %v", err)
+		log.WriteDebug("TFError| error in WaitForJobToCompleteExt call, err: %v", err)
 		return job, err
 	}
 
