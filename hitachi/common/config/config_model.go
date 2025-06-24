@@ -4,17 +4,15 @@ const CONFIG_FILE = "/opt/hitachi/terraform/bin/.internal_config"
 
 // Package config provides functionality to load and manage configuration settings for the Hitachi Terraform provider.
 type Config struct {
-	UserConsentMessage string `json:"user_consent_message"`
-	RunConsentMessage  string `json:"run_consent_message"`
-	APITimeout         int    `json:"api_timeout"` // in seconds
-	AWSTimeout         int    `json:"aws_timeout"` // in seconds
-	AWS_URL            string `json:"aws_url"`
+	ConfigNoAWS // Embedding ConfigNoAWS to include its fields
+	AWS_URL               string `json:"aws_url"`
 }
 
 // ConfigNoAWS is a reduced version of Config without AWS_URL.
 type ConfigNoAWS struct {
 	UserConsentMessage string `json:"user_consent_message"`
 	RunConsentMessage  string `json:"run_consent_message"`
+	AddStorageNodePollMax int    `json:"add_storage_node_poll_max"`
 	APITimeout         int    `json:"api_timeout"` // in seconds
 	AWSTimeout         int    `json:"aws_timeout"` // in seconds
 }
@@ -27,8 +25,9 @@ const DEFAULT_CONSENT_MESSAGE = `
 const RUN_CONSENT_MESSAGE = "To provide your consent, run bin/user_consent.sh from /opt/hitachi/terraform."
 
 const (
-	DEFAULT_API_TIMEOUT = 300 // seconds
-	DEFAULT_AWS_TIMEOUT = 300 // seconds
+	DEFAULT_ASN_POLL_MAX = 60  // minutes for adding storage node
+	DEFAULT_API_TIMEOUT  = 300 // seconds
+	DEFAULT_AWS_TIMEOUT  = 300 // seconds
 	// DEFAULT_AWS_URL     = "https://5v56roefvl.execute-api.us-west-2.amazonaws.com/api/update_telemetry"
 	DEFAULT_AWS_URL = "https://guuc07ks4j.execute-api.us-west-2.amazonaws.com/api/update_telemetry"
 )

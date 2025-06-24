@@ -6,6 +6,7 @@ import (
 	"time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	config "terraform-provider-hitachi/hitachi/common/config"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
 )
@@ -152,8 +153,14 @@ func WaitForJobToCompleteExt(storageSetting vssbmodel.StorageDeviceSettings, job
 
 	var FIRST_WAIT_TIME time.Duration = 1 // in sec
 
-	// maximum number of retries to wait for job completion
-	MAX_RETRY_COUNT := 30
+	pollmax := config.DEFAULT_ASN_POLL_MAX
+	if config.ConfigData != nil && config.ConfigData.AddStorageNodePollMax > 0 {
+		pollmax = config.ConfigData.AddStorageNodePollMax
+	}
+	log.WriteDebug("maximum number of polling to wait for job completion: %v", pollmax)
+
+	// maximum number of polling to wait for job completion
+	MAX_RETRY_COUNT := pollmax
 
 	var jobResult *vssbmodel.JobResponse
 	var err error
