@@ -41,11 +41,14 @@ func Load(path string) error {
 				}
 
 				cfg = Config{
-					UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
-					RunConsentMessage:  RUN_CONSENT_MESSAGE,
-					APITimeout:         DEFAULT_API_TIMEOUT,
-					AWSTimeout:         DEFAULT_AWS_TIMEOUT,
-					AWS_URL:            DEFAULT_AWS_URL,
+					ConfigNoAWS: ConfigNoAWS{
+						UserConsentMessage:    DEFAULT_CONSENT_MESSAGE,
+						RunConsentMessage:     RUN_CONSENT_MESSAGE,
+						AddStorageNodePollMax: DEFAULT_ASN_POLL_MAX,
+						APITimeout:            DEFAULT_API_TIMEOUT,
+						AWSTimeout:            DEFAULT_AWS_TIMEOUT,
+					},
+					AWS_URL: DEFAULT_AWS_URL,
 				}
 
 				log.WriteDebug("Default config created and loaded.")
@@ -93,10 +96,11 @@ func Get() *Config {
 func CreateDefaultConfigFile(path string) error {
 	// no AWS_URL allowed in default config
 	defaultCfg := ConfigNoAWS{
-		UserConsentMessage: DEFAULT_CONSENT_MESSAGE,
-		RunConsentMessage:  RUN_CONSENT_MESSAGE,
-		APITimeout:         DEFAULT_API_TIMEOUT,
-		AWSTimeout:         DEFAULT_AWS_TIMEOUT,
+		UserConsentMessage:    DEFAULT_CONSENT_MESSAGE,
+		RunConsentMessage:     RUN_CONSENT_MESSAGE,
+		AddStorageNodePollMax: DEFAULT_ASN_POLL_MAX,
+		APITimeout:            DEFAULT_API_TIMEOUT,
+		AWSTimeout:            DEFAULT_AWS_TIMEOUT,
 	}
 
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -120,6 +124,7 @@ func resolveConfigFromEnv(cfg *Config) *Config {
 		cfg = &Config{}
 	}
 
+	addStorageNodePollMax := getEnvInt("ASN_TIMEOUT", cfg.AddStorageNodePollMax, DEFAULT_ASN_POLL_MAX)
 	apiTimeout := getEnvInt("API_TIMEOUT", cfg.APITimeout, DEFAULT_API_TIMEOUT)
 	awsTimeout := getEnvInt("AWS_TIMEOUT", cfg.AWSTimeout, DEFAULT_AWS_TIMEOUT)
 	awsUrl := getEnvStr("AWS_URL", cfg.AWS_URL, DEFAULT_AWS_URL)
@@ -135,11 +140,14 @@ func resolveConfigFromEnv(cfg *Config) *Config {
 	}
 
 	return &Config{
-		APITimeout:         apiTimeout,
-		AWSTimeout:         awsTimeout,
-		AWS_URL:            awsUrl,
-		UserConsentMessage: userConsent,
-		RunConsentMessage:  runConsent,
+		ConfigNoAWS: ConfigNoAWS{
+			AddStorageNodePollMax: addStorageNodePollMax,
+			APITimeout:            apiTimeout,
+			AWSTimeout:            awsTimeout,
+			UserConsentMessage:    userConsent,
+			RunConsentMessage:     runConsent,
+		},
+		AWS_URL: awsUrl,
 	}
 }
 
