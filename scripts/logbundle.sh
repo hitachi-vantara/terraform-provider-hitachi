@@ -105,19 +105,29 @@ check_installed_terraform() {
     fi
 }
 
-install_jq() {
+function install_jq() {
     if ! command -v jq &>/dev/null; then
         echo "❗ jq not found. Attempting to install jq..."
-        if [ -f /etc/os-release ] && grep -q "Oracle Linux Server 8" /etc/os-release; then
-            if sudo dnf install -y jq &>/dev/null; then
-                echo "✅ jq installed successfully."
+
+        if [ -f /etc/os-release ]; then
+            if grep -Eq "Oracle Linux|Red Hat Enterprise Linux|CentOS" /etc/os-release; then
+                # Use dnf for version 8+, otherwise yum
+                if grep -q "VERSION_ID=\"8" /etc/os-release || grep -q "VERSION_ID=8" /etc/os-release; then
+                    PKG_CMD="dnf"
+                else
+                    PKG_CMD="yum"
+                fi
+
+                if sudo "$PKG_CMD" install -y jq &>/dev/null; then
+                    echo "✅ jq installed successfully."
+                else
+                    echo "❌ Failed to install jq using $PKG_CMD."
+                    exit 1
+                fi
             else
-                echo "❌ Failed to install jq."
+                echo "⚠️ Unsupported OS for automatic jq installation. Please install jq manually and rerun."
                 exit 1
             fi
-        else
-            echo "⚠️ Unsupported OS for auto jq install. Please install jq manually and rerun."
-            exit 1
         fi
     fi
 }
@@ -149,7 +159,7 @@ collect_terraform_info_global() {
 collect_plugin_info() {
     echo "📦 Collecting hitachi terraform plugin version..."
 
-    rpm -qa --qf 'Hitachi Terraform Provider RPM: %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep HV_Storage_Terraform > "$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
+    rpm -qa --qf 'Hitachi Terraform Provider RPM: %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep HV_Storage_Terraform >"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
 
     if [[ -x "$PLUGIN_PATH" ]]; then
         "$PLUGIN_PATH" -v >>"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt" 2>&1 || echo "Failed to get plugin version" >>"$BUNDLE_DIR/hitachi_terraform_plugin_version.txt"
@@ -352,13 +362,16 @@ flatten_path() {
 
     # Take the last 4 parts or fewer
     local last_parts=()
-    local start=$(( ${#non_empty_parts[@]} > 4 ? ${#non_empty_parts[@]} - 4 : 0 ))
+    local start=$((${#non_empty_parts[@]} > 4 ? ${#non_empty_parts[@]} - 4 : 0))
     for ((i = start; i < ${#non_empty_parts[@]}; i++)); do
         last_parts+=("${non_empty_parts[i]}")
     done
 
     # Join with underscore
-    (IFS=_; echo "${last_parts[*]}")
+    (
+        IFS=_
+        echo "${last_parts[*]}"
+    )
 }
 
 cleanup_old_logbundles() {
