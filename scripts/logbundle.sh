@@ -105,7 +105,7 @@ check_installed_terraform() {
     fi
 }
 
-function install_jq() {
+install_jq() {
     if ! command -v jq &>/dev/null; then
         echo "❗ jq not found. Attempting to install jq..."
 

@@ -8,7 +8,7 @@ TELEMETRY_DIR="$ROOT_DIR/telemetry"
 # Ensure telemetry directory exists
 mkdir -p "$TELEMETRY_DIR"
 
-function install_jq() {
+install_jq() {
   if ! command -v jq &>/dev/null; then
     echo "❗ jq not found. Attempting to install jq..."
 
@@ -35,7 +35,7 @@ function install_jq() {
   fi
 }
 
-function install_uuidgen() {
+install_uuidgen() {
   if ! command -v uuidgen &>/dev/null; then
     echo "❗ uuidgen not found. Attempting to install util-linux..."
 
