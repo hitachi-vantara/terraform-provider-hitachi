@@ -32,9 +32,9 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 	"download_path": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
+		ForceNew: true,
 		Description: "Path to save the downloaded configuration file. Ignored if no download occurs. Can be a directory or a specific file path.",
 	},
-
 	"create_configuration_file_param": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
