@@ -292,7 +292,7 @@ func sendTelemetryStatsToAWS(task MethodTaskExecution) error {
 		return err
 	}
 
-	log.WriteDebug("Telemetry stat details sent successfully to API.")
+	log.WriteDebug("Telemetry stat details sent successfully to AWS: %v %v", telemetryPayload.ModuleName, telemetryPayload.OperationName)
 	return nil
 }
 
@@ -379,7 +379,7 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 		return fmt.Errorf("received non-OK response from telemetry AWS: %d %s", resp.StatusCode, resp.Status)
 	}
 
-	log.WriteDebug("Request sent successfully to telemetry AWS.")
+	// log.WriteDebug("Request sent successfully to telemetry AWS.")
 
 	return nil
 }

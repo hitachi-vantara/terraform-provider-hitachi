@@ -35,7 +35,12 @@
 # - `vosb_address`: **(Required)** IP or hostname of the VOSB system's REST API.
 # - `download_existconfig_only`: **(Optional)** If `true`, skips creation and only downloads the latest file.
 # - `create_only`: **(Optional)** If `true`, creates the file but skips downloading it.
-# - `download_path`: **(Optional)** Path to store the downloaded file. If omitted, default name is used in the current directory.
+# - `download_path`: **(Optional)** Path to save the downloaded file. Ignored if no download occurs.
+#      Can be either:
+#      - A directory: File is saved there with a default name (e.g. ConfigurationFiles_20250625_171510.tar.gz)
+#      - A full file path: File is saved using the given name; `.tar.gz` is added if no extension is given.
+#        Despite the name, this can be a directory or full file path.
+#
 # - `create_configuration_file_param`: **(Optional)** A block of parameters used only for Google Cloud and Azure to generate the configuration file:
 #
 #   - `expected_cloud_provider`: **(Required)** One of `"google"`, `"azure"`, `"aws"`, or `"baremetal"`. Controls behavior of other fields.
