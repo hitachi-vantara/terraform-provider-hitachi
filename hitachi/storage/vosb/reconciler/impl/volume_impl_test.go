@@ -9,9 +9,9 @@ import (
 func newVolumeTestManager() (*vssbStorageManager, error) {
 
 	objStorage := vssbmodel.StorageDeviceSettings{
-		Username:       "admin",    //"YWRtaW4=",
-		Password:       "vssb-789", //"dnNzYi03ODk=",
-		ClusterAddress: "10.76.47.55",
+		Username:       "user1",
+		Password:       "mypswd",
+		ClusterAddress: "10.10.12.13",
 	}
 	psm, err := newVssbStorageManagerEx(objStorage)
 	if err != nil {

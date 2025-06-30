@@ -10,10 +10,10 @@ import (
 func newResourceTestManager() (*sanStorageManager, error) {
 
 	objStorageIscsi := sanmodel.StorageDeviceSettings{
-		Serial:   30078,
-		Username: "ms_vmware",
-		Password: "Hitachi1",
-		MgmtIP:   "172.25.47.120",
+		Serial:   12345,
+		Username: "user1",
+		Password: "mypswd",
+		MgmtIP:   "10.10.11.12",
 	}
 	psm, err := newSanStorageManagerEx(objStorageIscsi)
 	if err != nil {
@@ -23,7 +23,7 @@ func newResourceTestManager() (*sanStorageManager, error) {
 }
 
 // go test -v -run TestLockResources
-func TestLockResources(t *testing.T) {
+func xTestLockResources(t *testing.T) {
 	psm, err := newResourceTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
@@ -39,7 +39,7 @@ func TestLockResources(t *testing.T) {
 }
 
 // go test -v -run TestUnlockResources
-func TestUnlockResources(t *testing.T) {
+func xTestUnlockResources(t *testing.T) {
 	psm, err := newResourceTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)

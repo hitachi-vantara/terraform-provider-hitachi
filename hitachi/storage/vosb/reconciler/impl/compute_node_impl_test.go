@@ -9,15 +9,15 @@ import (
 func newTestManager() (*vssbStorageManager, error) {
 
 	objStorage := vssbmodel.StorageDeviceSettings{
-		Username:       "admin",
-		Password:       "vssb-789",
-		ClusterAddress: "10.76.47.55",
-		// ClusterAddress: "172.25.58.151",
+		Username:       "user1",
+		Password:       "mypswd",
+		ClusterAddress: "10.10.12.13",
+		// ClusterAddress: "10.10.12.13",
 	}
 	// objStorage = vssbmodel.StorageDeviceSettings{
-	// 	Username: "admin",
-	// 	Password: "Hitachi1",
-	// 	ClusterAddress: "10.76.34.110",
+	// 	Username: "user1",
+	// 	Password: "mypswd",
+	// 	ClusterAddress: "10.10.12.13",
 	// }
 
 	psm, err := newVssbStorageManagerEx(objStorage)

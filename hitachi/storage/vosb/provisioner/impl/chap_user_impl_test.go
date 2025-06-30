@@ -9,9 +9,9 @@ import (
 func newChapUserTestManager() (*vssbStorageManager, error) {
 
 	objStorage := vssbmodel.StorageDeviceSettings{
-		Username:       "admin",    // admin
-		Password:       "vssb-789", // vssb-789
-		ClusterAddress: "10.76.47.55",
+		Username:       "user1",
+		Password:       "mypswd",
+		ClusterAddress: "10.10.12.13",
 	}
 	psm, err := newVssbStorageManagerEx(objStorage)
 	if err != nil {
@@ -42,8 +42,8 @@ func xTestCreateChapUser(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 	req := vssbmodel.ChapUserReq{
-		TargetChapUserName: "rahul",
-		TargetChapSecret:   "HitachiVantara",
+		TargetChapUserName: "chapuser1",
+		TargetChapSecret:   "chapsecrt1",
 	}
 
 	err1 := psm.CreateChapUser(&req)

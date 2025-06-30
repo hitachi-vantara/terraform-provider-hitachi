@@ -36,7 +36,7 @@ func xTestGetOne(t *testing.T) {
 }
 
 // go test -v -run TestAddStorageNode
-func TestAddStorageNode(t *testing.T) {
+func xTestAddStorageNode(t *testing.T) {
 	psm, err := newTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
