@@ -27,13 +27,13 @@ var MessageCatalog = map[interface{}]string{
 	INFO_UPDATE_LUN_BEGIN:    "Updating lun with id %d on storage serial %d.",
 	INFO_UPDATE_LUN_END:      "Successfully updated lun with id %d on storage serial %d.",
 
-	// VSSB - VOLUME
+	// VOSB - VOLUME
 	INFO_GET_ALL_VOLUME_INFO_BEGIN: "Reading all volume information.",
 	ERR_GET_ALL_VOLUME_INFO_FAILED: "Failed to read all volume information.",
 	INFO_GET_ALL_VOLUME_INFO_END:   "Successfully read all volume information.",
 	ERR_DELETE_VOLUME_FAILED_MSG:   `"The specified volume cannot be deleted because it is connected to the compute node.","Disconnect the compute node from the specified volume, and then retry the operation.`,
 
-	//VSSB - COMPUTE
+	//VOSB - COMPUTE
 	INFO_GET_ALL_SERVERS_BEGIN:     "Reading all compute node information.",
 	ERR_GET_ALL_SERVERS_FAILED:     "Failed to read all compute node information.",
 	INFO_GET_ALL_SERVERS_END:       "Successfully read compute node information.",
@@ -131,7 +131,20 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_STORAGE_POOL_FAILED:      "Failed to read storage pool information for pool names %s.",
 	INFO_GET_STORAGE_POOL_END:        "Successfully read storage pool information for pool names %s.",
 
-	// VSSB - STORAGE PORTS
+	INFO_EXPAND_STORAGE_POOL_BEGIN: "Expanding storage pool %s.",
+	ERR_EXPAND_STORAGE_POOL_FAILED: "Failed to expand storage pool %s.",
+	INFO_EXPAND_STORAGE_POOL_END:   "Successfully expanded storage pool %s.",
+
+	INFO_GET_DRIVES_BEGIN: "Reading drives info %s.",
+	ERR_GET_DRIVES_FAILED: "Failed to read drives info %s.",
+	INFO_GET_DRIVES_END:   "Successfully read drives info %s.",
+	ERR_NO_OFFLINE_DRIVES: "No offline drives available.",
+
+	INFO_ADD_DRIVES_STORAGE_POOL_BEGIN: "Adding offline drives to storage pool.",
+	ERR_ADD_DRIVES_STORAGE_POOL_FAILED: "Failed adding offline drives to storage pool.",
+	INFO_ADD_DRIVES_STORAGE_POOL_END:   "Successfully added offline drives to storage pool.",
+
+	// VOSB - STORAGE PORTS
 	INFO_GET_ALL_STORAGE_PORTS_BEGIN: "Reading all storage ports information.",
 	ERR_GET_ALL_STORAGE_PORTS_FAILED: "Failed to read all storage ports information.",
 	INFO_GET_ALL_STORAGE_PORTS_END:   "Successfully read storage ports information.",
@@ -139,6 +152,15 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_PORT_BEGIN: "Reading port information for port id %s",
 	ERR_GET_PORT_FAILED: "Failed to read port information for port id %s",
 	INFO_GET_PORT_END:   "Successfully read port information for port id %s",
+
+	// STORAGE NODES
+	INFO_GET_ALL_STORAGE_NODES_BEGIN: "Reading all storage nodes information.",
+	ERR_GET_ALL_STORAGE_NODES_FAILED: "Failed to read all storage nodes information.",
+	INFO_GET_ALL_STORAGE_NODES_END:   "Successfully read storage nodes information.",
+
+	INFO_GET_NODE_BEGIN:               "Reading node information for node id %s",
+	ERR_GET_NODE_FAILED:               "Failed to read node information for node id %s",
+	INFO_GET_NODE_END:                 "Successfully read node information for node id %s",
 
 	//CHAP USERS
 	INFO_GET_ALL_CHAPUSERS_BEGIN: "Reading all chap users information.",
@@ -167,52 +189,21 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_DASHBOARD_FAILED: "Failed to read dashboard information.",
 	INFO_GET_DASHBOARD_END:   "Successfully read dashboard information.",
 
-	// Infrastucture Gateway Message Ids
-	INFO_INFRA_GET_HOST_GROUPS_BEGIN: "Reading all hostgroups information for infrastructure %s.",
-	ERR_INFRA_GET_HOST_GROUPS_FAILED: "Failed to read all hostgroups information for infrastructure %s.",
-	INFO_INFRA_GET_HOST_GROUPS_END:   "Successfully read all hostgroups information for infrastructure %s.",
+	//STORAGE CREDENTIAL
+	INFO_CHANGE_USER_PASSWORD_BEGIN: "Changing password for user id %s.",
+	ERR_CHANGE_USER_PASSWORD_FAILED: "Failed to change password for user id %s.",
+	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
 
-	INFO_INFRA_GET_ISCSI_TARGETS_BEGIN: "Reading all iscsi targets information for infrastructure %s.",
-	ERR_INFRA_GET_ISCSI_TARGETS_FAILED: "Failed to read all iscsi targets information for infrastructure %s.",
-	INFO_INFRA_GET_ISCSI_TARGETS_END:   "Successfully read all iscsi targets information for infrastructure %s.",
+	// CONFIGURATION FILE
+	INFO_RESTORE_CONFIG_BEGIN:   "Restoring configuration file.",
+	ERR_RESTORE_CONFIG_FAILED:   "Failed to restore configuration file.",
+	INFO_RESTORE_CONFIG_END:     "Successfully restored configuration file.",
+	INFO_DOWNLOAD_CONFIG_BEGIN:  "Downloading configuration file.",
+	ERR_DOWNLOAD_CONFIG_FAILED:  "Failed to download configuration file.",
+	INFO_DOWNLOAD_CONFIG_END:    "Successfully downloaded configuration file.",
+	
+	INFO_CREATE_DOWNLOAD_CONFIG_BEGIN:  "Creating and/or downloading configuration file.",
+	ERR_CREATE_DOWNLOAD_CONFIG_FAILED:  "Failed to create or download configuration file.",
+	INFO_CREATE_DOWNLOAD_CONFIG_END:    "Successfully created or downloaded configuration file.",
 
-	INFO_INFRA_GET_PARITY_GROUPS_BEGIN: "Reading all parity groups information for infrastructure %s.",
-	ERR_INFRA_GET_PARITY_GROUPS_FAILED: "Failed to read all parity groups information for infrastructure %s.",
-	INFO_INFRA_GET_PARITY_GROUPS_END:   "Successfully read all parity groups information for infrastructure %s.",
-
-	INFO_INFRA_GET_STORAGE_DEVICES_BEGIN: "Reading all storage devices information for infrastructure %s.",
-	ERR_INFRA_GET_STORAGE_DEVICES_FAILED: "Failed to read all storage devices information for infrastructure %s.",
-	INFO_INFRA_GET_STORAGE_DEVICES_END:   "Successfully read all storage devices information for infrastructure %s.",
-
-	INFO_INFRA_GET_STORAGE_POOLS_BEGIN: "Reading all storage pools information for infrastructure %s.",
-	ERR_INFRA_GET_STORAGE_POOLS_FAILED: "Failed to read all storage pools information for infrastructure %s.",
-	INFO_INFRA_GET_STORAGE_POOLS_END:   "Successfully read all storage pools information for infrastructure %s.",
-
-	INFO_INFRA_GET_STORAGE_PORTS_BEGIN: "Reading all storage ports information for infrastructure %s.",
-	ERR_INFRA_GET_STORAGE_PORTS_FAILED: "Failed to read all storage ports information for infrastructure %s.",
-	INFO_INFRA_GET_STORAGE_PORTS_END:   "Successfully read all storage ports information for infrastructure %s.",
-
-	INFO_INFRA_GET_VOLUMES_BEGIN: "Reading volumes information for infrastructure %s.",
-	ERR_INFRA_GET_VOLUMES_FAILED: "Failed to read volumes information for infrastructure %s.",
-	INFO_INFRA_GET_VOLUMES_END:   "Successfully read volumes information for infrastructure %s.",
-
-	INFO_INFRA_GET_UCP_SYSTEMS_BEGIN: "Reading ucp systems information for infrastructure %s.",
-	ERR_INFRA_GET_UCP_SYSTEMS_FAILED: "Failed to read ucp systems information for infrastructure %s.",
-	INFO_INFRA_GET_UCP_SYSTEMS_END:   "Successfully read ucp systems information for infrastructure %s.",
-
-	INFO_CREATE_INFRA_STORAGE_DEVICE_BEGIN: "Adding storage device with serial number %s and management IP %s.",
-	ERR_CREATE_INFRA_STORAGE_DEVICE_FAILED: "Failed to add storage device with serial number %s and management IP %s.",
-	INFO_CREATE_INFRA_STORAGE_DEVICE_END:   "Successfully added storage device with serial number %s and management IP %s.",
-
-	INFO_UPDATE_INFRA_STORAGE_DEVICE_BEGIN: "Updating storage device with serial number %s and management IP %s.",
-	ERR_UPDATE_INFRA_STORAGE_DEVICE_FAILED: "Failed to update storage device with serial number %s and management IP %s.",
-	INFO_UPDATE_INFRA_STORAGE_DEVICE_END:   "Successfully updated storage device with serial number %s and management IP %s.",
-
-	INFO_CREATE_INFRA_ISCSI_TARGET_BEGIN: "Creating iscsi target on port %s and name %s.",
-	ERR_CREATE_INFRA_ISCSI_TARGET_FAILED: "Failed to create iscsi target on port %s and name %s.",
-	INFO_CREATE_INFRA_ISCSI_TARGET_END:   "Successfully created iscsi target on port %s and name %s.",
-
-	INFO_UPDATE_INFRA_ISCSI_TARGET_BEGIN: "Updating iscsi target on port %s and name %s.",
-	ERR_UPDATE_INFRA_ISCSI_TARGET_FAILED: "Failed to update iscsi target on port %s and name %s.",
-	INFO_UPDATE_INFRA_ISCSI_TARGET_END:   "Successfully updated iscsi target on port %s and name %s.",
 }

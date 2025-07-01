@@ -6,9 +6,7 @@ import (
 	// "context"
 	// "fmt"
 	// "io/ioutil"
-	"fmt"
 	"strconv"
-
 	// "time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -18,12 +16,10 @@ import (
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 
-	infragwmodel "terraform-provider-hitachi/hitachi/infra_gw/model"
-	reconimplinfragw "terraform-provider-hitachi/hitachi/infra_gw/reconciler/impl"
 	reconimpl "terraform-provider-hitachi/hitachi/storage/san/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
-	reconimplvssb "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/impl"
-	reconcilermodelvssb "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/model"
+	reconimplvssb "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
+	reconcilermodelvssb "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -47,29 +43,13 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 	}
 
 	vssbList := []*terraformmodel.StorageVersionInfo{}
-	ss_vssb_items := d.Get("hitachi_vss_block_provider").([]interface{})
-
-	if len(ss_vssb_items) > 0 {
-		vssbList, err = GetVssbStorageSystem(ss_vssb_items)
+	ss_vosb_items := d.Get("hitachi_vosb_provider").([]interface{})
+	if len(ss_vosb_items) > 0 {
+		vssbList, err = GetVssbStorageSystem(ss_vosb_items)
 		if err != nil {
 			log.WriteDebug("TFError| error in GetVssbStorageSystem, err: %v", err)
 			return nil, err
 		}
-	}
-
-	infra_gw_list := []*terraformmodel.InfraGwSettings{}
-	ss_ingra_gw_items := d.Get("hitachi_infrastructure_gateway_provider").([]interface{})
-
-	if len(ss_ingra_gw_items) == 1 {
-
-		infra_gw_list, err = GetInfraGwSystem(ss_ingra_gw_items)
-		if err != nil {
-			log.WriteDebug("TFError| error in GetVssbStorageSystem, err: %v", err)
-			return nil, err
-		}
-	} else if len(ss_ingra_gw_items) > 1 {
-		err := fmt.Errorf("multiple gateway provider's are not allowed")
-		return nil, err
 	}
 
 	allStorageTypes := terraformmodel.AllStorageTypes{}
@@ -79,9 +59,7 @@ func RegisterStorageSystem(d *schema.ResourceData) (*terraformmodel.AllStorageTy
 	if vssbList != nil {
 		allStorageTypes.VssbStorageVersionInfo = append(allStorageTypes.VssbStorageVersionInfo, vssbList...)
 	}
-	if infra_gw_list != nil {
-		allStorageTypes.InfraGwInfo = append(allStorageTypes.InfraGwInfo, infra_gw_list...)
-	}
+
 	return &allStorageTypes, nil
 }
 
@@ -111,9 +89,8 @@ func GetSanStorageSystem(ssItems []interface{}) (ssList []*terraformmodel.Storag
 			return nil, err
 		}
 
-		storageSystem, err := reconObj.GetStorageSystem()
+		storageSystem, err := reconObj.GetStorageSystemInfo()
 		if err != nil {
-			log.WriteDebug("TFError| error getting storage system, err: %v", err)
 			return nil, err
 		}
 
@@ -137,98 +114,6 @@ func GetSanStorageSystem(ssItems []interface{}) (ssList []*terraformmodel.Storag
 	return
 }
 
-func GetInfraGwSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.InfraGwSettings, err error) {
-	log := commonlog.GetLogger()
-	log.WriteEnter()
-	defer log.WriteExit()
-
-	for _, item := range ssVssbItems {
-		i := item.(map[string]interface{})
-
-		address := i["address"].(string)
-		username := i["username"].(string)
-		password := i["password"].(string)
-
-		setting := infragwmodel.InfraGwSettings{
-			Username: username,
-			Password: password,
-			Address:  address,
-		}
-
-		reconObj, err := reconimplinfragw.NewEx(setting)
-		if err != nil {
-			log.WriteDebug("TFError| error in NewEx, err: %v", err)
-			return nil, err
-		}
-
-		mtDetails, err := reconObj.GetPartnerAndSubscriberId(username)
-
-		if err == nil {
-			setting.PartnerId = mtDetails.PartnerId
-			setting.SubscriberId = mtDetails.SubscriberId
-		} else {
-			log.WriteDebug("TFError| error in GetPartnerAndSubscriberId, err: %v", err)
-			return nil, err
-		}
-
-		storageDevices, err := reconObj.GetStorageDevices()
-		if err != nil {
-			log.WriteDebug("TFError| error in NewEx, err: %v", err)
-			return nil, err
-		}
-
-		m := make(map[string]string)
-		mm := make(map[string]string)
-		for _, x := range storageDevices.Data {
-			m[x.SerialNumber] = x.ResourceId
-			mm[x.ResourceId] = x.SerialNumber
-		}
-
-		if err != nil {
-			log.WriteDebug("TFError| error getting storage system, err: %v", err)
-			return nil, err
-		}
-
-		iscsiMap := make(map[string]map[string]string)
-		for _, val := range m {
-			iscsiTargets, err := reconObj.GetIscsiTargets(val, "")
-			if err != nil {
-				log.WriteDebug("TFError| error getting iscsi targets, err: %v", err)
-				return nil, err
-			}
-			m2 := make(map[string]string)
-			for _, x := range iscsiTargets.Data {
-				key := x.PortId + "_" + strconv.Itoa(x.ISCSIId)
-				m2[key] = x.ResourceId
-			}
-			iscsiMap[val] = m2
-		}
-
-		settingAndInfo := infragwmodel.InfraGwStorageSettingsAndInfo{
-			Settings:          setting,
-			SerialToStorageId: m,
-			StorageIdToSerial: mm,
-			IscsiTargetIdMap:  iscsiMap,
-		}
-
-		// log.WriteDebug("TFDebug| Infra GW Info: %v", settingAndInfo)
-
-		// save this to a cache
-		cache.SetCurrentAddress(address)
-		cache.WriteToInfraGwCache(address, settingAndInfo)
-
-		terraformInfo := terraformmodel.InfraGwSettings{}
-		err = copier.Copy(&terraformInfo, setting)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-			return nil, err
-		}
-
-		ssList = append(ssList, &terraformInfo)
-	}
-	return
-}
-
 func GetVssbStorageSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.StorageVersionInfo, err error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -237,7 +122,7 @@ func GetVssbStorageSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.S
 	for _, item := range ssVssbItems {
 		i := item.(map[string]interface{})
 
-		mgmtIP := i["vss_block_address"].(string)
+		mgmtIP := i["vosb_address"].(string)
 		usernameEncoded := i["username"].(string)
 		passwordEncoded := i["password"].(string)
 
@@ -255,7 +140,7 @@ func GetVssbStorageSystem(ssVssbItems []interface{}) (ssList []*terraformmodel.S
 
 		versionInfo, err := reconObj.GetStorageVersionInfo()
 		if err != nil {
-			log.WriteDebug("TFError| error getting storage system, err: %v", err)
+			// log.WriteDebug("TFError| error getting storage system, err: %v", err)
 			return nil, err
 		}
 

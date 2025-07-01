@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     hitachi = {
-      version = "2.5"
+      version = "2.1"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -14,9 +14,5 @@ provider "hitachi" {
     username      = var.hitachi_storage_user
     password      = var.hitachi_storage_password
   }
-  hitachi_infrastructure_gateway_provider {
-    address = "172.25.22.81"
-    username      = var.hitachi_gateway_user
-    password      = var.hitachi_gateway_password
-  }
+
 }

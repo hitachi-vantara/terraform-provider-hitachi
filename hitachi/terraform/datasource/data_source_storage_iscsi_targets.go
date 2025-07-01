@@ -20,7 +20,7 @@ import (
 
 func DataSourceStorageIscsiTargets() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the ports.",
+		Description: "VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the ports.",
 		ReadContext: DataSourceStorageIscsiTargetsRead,
 		Schema:      schemaimpl.DataIscsiTargetsSchema,
 	}
@@ -53,6 +53,10 @@ func DataSourceStorageIscsiTargetsRead(ctx context.Context, d *schema.ResourceDa
 		err = copier.Copy(&iscsiTargets, iscsiTargetsSource)
 		if err != nil {
 			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+			return diag.FromErr(err)
+		}
+
+		if err := d.Set("port_ids", []string{}); err != nil {
 			return diag.FromErr(err)
 		}
 

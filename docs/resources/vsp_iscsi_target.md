@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_iscsi_target Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.
+  VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.
 ---
 
 # hitachi_vsp_iscsi_target (Resource)
 
-:meta:subcategory:VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.
+VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.
 
 ## Example Usage
 
@@ -32,7 +32,7 @@ resource "hitachi_vsp_iscsi_target" "myiscsi" {
   port_id             = "CL4-C"  
 
   // For detailed information about host_mode_options and host_mode, refer to:
-  // https://knowledge.hitachivantara.com/Documents/Management_Software/SVOS/9.8.6/Volume_Management_-_VSP_E_Series/Host_Attachment/14_Host_modes_and_host_mode_options
+  // https://docs.hitachivantara.com/r/en-us/svos/9.8.7/mk-97hm85026/managing-logical-volumes/configuring-hosts/host-modes-and-host-mode-options-for-host-facing-host-ports
   host_mode_options = [90]
   host_mode         = "VMware"
 }
@@ -45,21 +45,16 @@ resource "hitachi_vsp_iscsi_target" "myiscsi" {
 
 - `iscsi_target_alias` (String) iSCSI target alias
 - `port_id` (String) Port ID in which the resource to be created
+- `serial` (Number) Serial number of storage is required
 
 ### Optional
 
-- `authentication_mode` (String) Authentication Mode
-- `chap_users` (List of String) CHAP Users
 - `host_mode` (String) Host mode value to be given to create the resource
 - `host_mode_options` (List of Number) Host mode options can be passed to create the resource
 - `initiator` (Block Set) Initiator input for the resource (see [below for nested schema](#nestedblock--initiator))
-- `is_mutual_auth` (Boolean) Is Mutual Auth
 - `iscsi_target_name` (String) iSCSI target name
 - `iscsi_target_number` (Number) Resource will be created based on iSCSI target number
 - `lun` (Block Set) Lun input for the resource (see [below for nested schema](#nestedblock--lun))
-- `serial` (Number) Serial number of storage is required
-- `storage_id` (String) Unique ID of the storage device
-- `system` (String) The serial number of the preferred UCP system
 
 ### Read-Only
 
@@ -118,5 +113,3 @@ Read-Only:
 
 - `ldev_id` (Number) Ldev ID of lun
 - `lun_id` (Number) Lun ID of lun
-
-

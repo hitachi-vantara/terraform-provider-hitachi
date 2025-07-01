@@ -166,7 +166,7 @@ func (psm *sanStorageManager) GetUndefinedLun(numberOfUndefineLun int) ([]int, e
 }
 
 // CreateLunInDynamicPoolWithLDevId creates lun in dynamic pool with ldevId
-func (psm *sanStorageManager) CreateLunInDynamicPoolWithLDevId(ldevId int, sizeInGB float64, dynamicPool uint, dataReductionMode string) (*int, error) {
+func (psm *sanStorageManager) CreateLunInDynamicPoolWithLDevId(ldevId int, sizeInGB uint, dynamicPool uint, dataReductionMode string) (*int, error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -186,7 +186,7 @@ func (psm *sanStorageManager) CreateLunInDynamicPoolWithLDevId(ldevId int, sizeI
 	}
 
 	dpool := int(dynamicPool)
-	size := fmt.Sprintf("%dM", uint(sizeInGB*1024))
+	size := fmt.Sprintf("%dG", sizeInGB)
 	reqBody := sangatewaymodel.CreateLunRequestGwy{
 		LdevID:             &ldevId,
 		PoolID:             &dpool,
@@ -207,7 +207,7 @@ func (psm *sanStorageManager) CreateLunInDynamicPoolWithLDevId(ldevId int, sizeI
 }
 
 // CreateLunInParityGroupWithLDevId creates lun in parity group with ldevId
-func (psm *sanStorageManager) CreateLunInParityGroupWithLDevId(ldevId int, sizeInGB float64, parityGroup string, dataReductionMode string) (*int, error) {
+func (psm *sanStorageManager) CreateLunInParityGroupWithLDevId(ldevId int, sizeInGB uint, parityGroup string, dataReductionMode string) (*int, error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -226,7 +226,7 @@ func (psm *sanStorageManager) CreateLunInParityGroupWithLDevId(ldevId int, sizeI
 		return nil, err
 	}
 
-	size := fmt.Sprintf("%dM", uint(sizeInGB*1024))
+	size := fmt.Sprintf("%dG", sizeInGB)
 	reqBody := sangatewaymodel.CreateLunRequestGwy{
 		LdevID:             &ldevId,
 		ParityGroupID:      &parityGroup,
@@ -247,7 +247,7 @@ func (psm *sanStorageManager) CreateLunInParityGroupWithLDevId(ldevId int, sizeI
 }
 
 // CreateLunInDynamicPool creates lun in dynamic
-func (psm *sanStorageManager) CreateLunInDynamicPool(sizeInGB float64, dynamicPool uint, dataReductionMode string) (*int, error) {
+func (psm *sanStorageManager) CreateLunInDynamicPool(sizeInGB uint, dynamicPool uint, dataReductionMode string) (*int, error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -267,7 +267,7 @@ func (psm *sanStorageManager) CreateLunInDynamicPool(sizeInGB float64, dynamicPo
 	}
 
 	dpool := int(dynamicPool)
-	size := fmt.Sprintf("%dM", uint(sizeInGB*1024))
+	size := fmt.Sprintf("%dG", sizeInGB)
 	reqBody := sangatewaymodel.CreateLunRequestGwy{
 		PoolID:             &dpool,
 		ByteFormatCapacity: size,
@@ -287,7 +287,7 @@ func (psm *sanStorageManager) CreateLunInDynamicPool(sizeInGB float64, dynamicPo
 }
 
 // CreateLunInParityGroup creates lun in parity group
-func (psm *sanStorageManager) CreateLunInParityGroup(sizeInGB float64, parityGroup string, dataReductionMode string) (*int, error) {
+func (psm *sanStorageManager) CreateLunInParityGroup(sizeInGB uint, parityGroup string, dataReductionMode string) (*int, error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -306,7 +306,7 @@ func (psm *sanStorageManager) CreateLunInParityGroup(sizeInGB float64, parityGro
 		return nil, err
 	}
 
-	size := fmt.Sprintf("%dM", uint(sizeInGB*1024))
+	size := fmt.Sprintf("%dG", sizeInGB)
 	reqBody := sangatewaymodel.CreateLunRequestGwy{
 		ParityGroupID:      &parityGroup,
 		ByteFormatCapacity: size,
@@ -326,7 +326,7 @@ func (psm *sanStorageManager) CreateLunInParityGroup(sizeInGB float64, parityGro
 }
 
 // ExpandLun expands a lun by newSize
-func (psm *sanStorageManager) ExpandLun(ldevId int, newSize float64) (*int, error) {
+func (psm *sanStorageManager) ExpandLun(ldevId int, newSize uint64) (*int, error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -345,7 +345,7 @@ func (psm *sanStorageManager) ExpandLun(ldevId int, newSize float64) (*int, erro
 		return nil, err
 	}
 
-	size := fmt.Sprintf("%dM", uint(newSize*1024))
+	size := fmt.Sprintf("%dG", newSize)
 	reqBody := sangatewaymodel.ExpandLunRequestGwy{
 		Parameters: sangatewaymodel.ExpandLunParameters{
 			AdditionalByteFormatCapacity: size,

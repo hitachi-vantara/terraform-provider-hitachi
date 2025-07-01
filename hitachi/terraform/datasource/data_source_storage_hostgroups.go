@@ -21,7 +21,7 @@ import (
 
 func DataSourceStorageHostGroups() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage Host Group:The following request gets information about host groups of the ports.",
+		Description: "VSP Storage Host Group:The following request gets information about host groups of the ports.",
 		ReadContext: DataSourceStorageHostGroupsRead,
 		Schema:      schemaimpl.DataHostGroupsSchema,
 	}
@@ -68,6 +68,10 @@ func DataSourceStorageHostGroupsRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err := d.Set("hostgroups", hgList); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("total_hostgroup_count", len(hgList)); err != nil {
 		return diag.FromErr(err)
 	}
 

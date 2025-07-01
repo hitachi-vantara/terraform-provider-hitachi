@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_storage Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage System:It returns the storage device related information.
+  VSP Storage System:It returns the storage device related information.
 ---
 
 # hitachi_vsp_storage (Data Source)
 
-:meta:subcategory:VSP Storage System:It returns the storage device related information.
+VSP Storage System:It returns the storage device related information.
 
 ## Example Usage
 
@@ -31,8 +31,6 @@ description: |-
 data "hitachi_vsp_storage" "s12345" {
   serial = 12345
 }
-
-
 
 output "s12345" {
   value = data.hitachi_vsp_storage.s12345
@@ -67,5 +65,3 @@ Read-Only:
 - `svp_ip` (String) Storage svp IP
 - `total_capacity_in_mb` (Number) Total capacity in MB
 - `used_capacity_in_mb` (Number) Used capacity in MB
-
-

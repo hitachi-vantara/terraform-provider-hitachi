@@ -1,21 +1,21 @@
 #
-# Hitachi VSP Dynamic Pool Data Retrieval
+# Hitachi VSP Dynamic Pools Data Retrieval
 #
-# This section defines a data source block to fetch information about a specific
-# dynamic pool from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
-# Configuration Language (HCL).
+# This data source block fetches information about all dynamic pools
+# from a Hitachi Virtual Storage Platform (VSP) using
+# HashiCorp Configuration Language (HCL).
 #
-# The data source block "hitachi_vsp_dynamic_pools" retrieves details about a
-# particular dynamic pool based on the provided parameters.
+# The "hitachi_vsp_dynamic_pools" data source retrieves details such as
+# pool status, usage rate, and threshold settings.
 #
-# Customize the values of the parameters (serial, pool_id) to align with your
-# environment, allowing you to retrieve information about the desired dynamic pool.
+# Customize the values of the parameters (serial) to align with your
+# environment, allowing you to retrieve information about all dynamic pools.
 #
-data "hitachi_vsp_dynamic_pools" "dynamicpool" {
+
+data "hitachi_vsp_dynamic_pools" "dynamicpools" {
   serial  = 12345
-  pool_id = 45
 }
 
-output "dynamicpool" {
-  value = data.hitachi_vsp_dynamic_pools.dynamicpool
+output "dynamicpools" {
+  value = data.hitachi_vsp_dynamic_pools.dynamicpools
 }

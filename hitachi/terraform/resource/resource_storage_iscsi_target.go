@@ -26,7 +26,7 @@ var syncIscsiTargetOperation = &sync.Mutex{}
 
 func ResourceStorageIscsiTarget() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.",
+		Description: "VSP Storage iSCSI Target:The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.",
 
 		CreateContext: resourceStorageIscsiTargetCreate,
 		ReadContext:   resourceStorageIscsiTargetRead,

@@ -132,28 +132,28 @@ func (psm *sanStorageManager) SetLun(lunRequest *sanmodel.LunRequest) (*sanmodel
 		// create lun
 		log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_LUN_BEGIN), objStorage.Serial)
 		if lunRequest.LdevID != nil && lunRequest.PoolID != nil {
-			ldev, err = provObj.CreateLunInDynamicPoolWithLDevId(*lunRequest.LdevID, lunRequest.CapacityInGB, uint(*lunRequest.PoolID), *lunRequest.DataReductionMode)
+			ldev, err = provObj.CreateLunInDynamicPoolWithLDevId(*lunRequest.LdevID, uint(lunRequest.CapacityInGB), uint(*lunRequest.PoolID), *lunRequest.DataReductionMode)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateLunInDynamicPoolWithLDevId reconciler call, err: %v", err)
 				log.WriteError(mc.GetMessage(mc.ERR_CREATE_LUN_FAILED), objStorage.Serial)
 				return nil, err
 			}
 		} else if lunRequest.LdevID != nil && lunRequest.ParityGroupID != nil {
-			ldev, err = provObj.CreateLunInParityGroupWithLDevId(*lunRequest.LdevID, lunRequest.CapacityInGB, *lunRequest.ParityGroupID, *lunRequest.DataReductionMode)
+			ldev, err = provObj.CreateLunInParityGroupWithLDevId(*lunRequest.LdevID, uint(lunRequest.CapacityInGB), *lunRequest.ParityGroupID, *lunRequest.DataReductionMode)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateLunInParityGroupWithLDevId reconciler call, err: %v", err)
 				log.WriteError(mc.GetMessage(mc.ERR_CREATE_LUN_FAILED), objStorage.Serial)
 				return nil, err
 			}
 		} else if lunRequest.LdevID == nil && lunRequest.PoolID != nil {
-			ldev, err = provObj.CreateLunInDynamicPool(lunRequest.CapacityInGB, uint(*lunRequest.PoolID), *lunRequest.DataReductionMode)
+			ldev, err = provObj.CreateLunInDynamicPool(uint(lunRequest.CapacityInGB), uint(*lunRequest.PoolID), *lunRequest.DataReductionMode)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateLunInDynamicPool reconciler call, err: %v", err)
 				log.WriteError(mc.GetMessage(mc.ERR_CREATE_LUN_FAILED), objStorage.Serial)
 				return nil, err
 			}
 		} else if lunRequest.LdevID == nil && lunRequest.ParityGroupID != nil {
-			ldev, err = provObj.CreateLunInParityGroup(lunRequest.CapacityInGB, *lunRequest.ParityGroupID, *lunRequest.DataReductionMode)
+			ldev, err = provObj.CreateLunInParityGroup(uint(lunRequest.CapacityInGB), *lunRequest.ParityGroupID, *lunRequest.DataReductionMode)
 			if err != nil {
 				log.WriteDebug("TFError| error in CreateLunInParityGroup reconciler call, err: %v", err)
 				log.WriteError(mc.GetMessage(mc.ERR_CREATE_LUN_FAILED), objStorage.Serial)
@@ -165,18 +165,18 @@ func (psm *sanStorageManager) SetLun(lunRequest *sanmodel.LunRequest) (*sanmodel
 		// expand lun
 		ldev = lunRequest.LdevID
 
-		if uint64(lunRequest.CapacityInGB*1024) < provLogicalUnit.TotalCapacityInMB {
-			msg := "cannot shrink the capacity of lun. Please enter more capacity than current one."
+		if (lunRequest.CapacityInGB * 1024) < provLogicalUnit.TotalCapacityInMB {
+			msg := "Cannot shrink the capacity of lun. Please enter more capacity than current one."
 			return nil, fmt.Errorf(msg)
 		}
 
-		if uint64(lunRequest.CapacityInGB*1024) == provLogicalUnit.TotalCapacityInMB {
-			msg := "cannot expand the lun as current and desired capacity is same."
+		if (lunRequest.CapacityInGB * 1024) == provLogicalUnit.TotalCapacityInMB {
+			msg := "Cannot expand the lun as current and desired capacity is same."
 			return nil, fmt.Errorf(msg)
 		}
 
 		if lunRequest.PoolID != nil && provLogicalUnit.PoolID != *lunRequest.PoolID {
-			msg := "pool_id cannot be changed."
+			msg := "Pool_id cannot be changed."
 			return nil, fmt.Errorf(msg)
 		}
 
@@ -187,11 +187,11 @@ func (psm *sanStorageManager) SetLun(lunRequest *sanmodel.LunRequest) (*sanmodel
 			}
 		}
 
-		additionalCapacityInMB := uint64(lunRequest.CapacityInGB*1024) - (provLogicalUnit.TotalCapacityInMB)
+		additionalCapacityInMB := (lunRequest.CapacityInGB * 1024) - (provLogicalUnit.TotalCapacityInMB)
 		log.WriteDebug("TFDebug| additionalCapacityInMB %d: ", additionalCapacityInMB)
 
 		log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_LUN_BEGIN), *ldev, objStorage.Serial)
-		_, err := provObj.ExpandLun(*ldev, float64(additionalCapacityInMB/1024))
+		_, err := provObj.ExpandLun(*ldev, additionalCapacityInMB/1024)
 		if err != nil {
 			log.WriteDebug("TFError| error in ExpandLun reconciler call, err: %v", err)
 			log.WriteError(mc.GetMessage(mc.ERR_EXPAND_LUN_FAILED), *ldev, objStorage.Serial)
@@ -292,7 +292,6 @@ func (psm *sanStorageManager) UpdateLun(lunUpdateRequest *sanmodel.UpdateLunRequ
 
 	if lunUpdateRequest.CapacityInGB != nil {
 		log.WriteInfo(mc.GetMessage(mc.INFO_EXPAND_LUN_BEGIN), lunUpdateRequest.LdevID, objStorage.Serial)
-
 		_, err := provObj.ExpandLun(*lunUpdateRequest.LdevID, *lunUpdateRequest.CapacityInGB)
 		if err != nil {
 			log.WriteDebug("TFError| error in ExpandLun call, err: %v", err)

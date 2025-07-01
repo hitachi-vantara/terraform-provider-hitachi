@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_hostgroups Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Host Group:The following request gets information about host groups of the ports.
+  VSP Storage Host Group:The following request gets information about host groups of the ports.
 ---
 
 # hitachi_vsp_hostgroups (Data Source)
 
-:meta:subcategory:VSP Storage Host Group:The following request gets information about host groups of the ports.
+VSP Storage Host Group:The following request gets information about host groups of the ports.
 
 
 
@@ -39,5 +39,3 @@ Read-Only:
 - `hostgroup_number` (Number) HostGroup number
 - `port_id` (String) Port ID on storage
 - `storage_serial_number` (Number) Serial number of storage
-
-

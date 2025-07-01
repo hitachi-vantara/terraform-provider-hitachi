@@ -27,7 +27,7 @@ var syncLunOperation = &sync.Mutex{}
 
 func ResourceStorageLun() *schema.Resource {
 	return &schema.Resource{
-		Description:   ":meta:subcategory:VSP Storage Volume:The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.",
+		Description:   `The following request creates a volume by using the specified parity groups or pools. Specify a parity group or pool id for creating a basic volume.`,
 		CreateContext: resourceStorageLunCreate,
 		ReadContext:   resourceStorageLunRead,
 		UpdateContext: resourceStorageLunUpdate,
@@ -152,48 +152,38 @@ func validateSizeDiff() schema.CustomizeDiffFunc {
 	})
 }
 
-func ValidateSanStorageVolumeDIff(d *schema.ResourceDiff) error {
+func validateSerialDiff() schema.CustomizeDiffFunc {
+	return customdiff.ValidateChange("serial", func(ctx context.Context, old, new, meta any) error {
+		if new.(int) != old.(int) {
+			return fmt.Errorf("serial should not change: old value: %d", old.(int))
+		}
+		return nil
+	})
+}
 
-	log := commonlog.GetLogger()
-	log.WriteEnter()
-	defer log.WriteExit()
+func validateLdevDiff() schema.CustomizeDiffFunc {
+	return customdiff.ValidateChange("ldev_id", func(ctx context.Context, old, new, meta any) error {
+		if new.(int) != old.(int) {
+			return fmt.Errorf("ldev_id should not change: old value: %d", old.(int))
+		}
+		return nil
+	})
+}
 
-	_, ok := d.GetOk("size_gb")
-	if !ok {
-		return fmt.Errorf("size_gb must be greater than 0 for create")
-	}
+func validatePoolDiff() schema.CustomizeDiffFunc {
+	return customdiff.ValidateChange("pool_id", func(ctx context.Context, old, new, meta any) error {
+		if new.(int) != old.(int) {
+			return fmt.Errorf("pool_id should not change: old value: %d", old.(int))
+		}
+		return nil
+	})
+}
 
-	var pool_name = ""
-	var paritygroup_id = ""
-	pool_id, exists := d.GetOk("pool_id")
-	okPO := exists || (pool_id.(int) == 0)
-
-	pool_name = d.Get("pool_name").(string)
-	paritygroup_id = d.Get("paritygroup_id").(string)
-	log.WriteDebug("Pool ID=%v Pool Name=%v PG=%v\n", pool_id, pool_name, paritygroup_id)
-
-	log.WriteDebug("ok=%v \n", ok)
-
-	count := 0
-	if okPO && pool_id != -1 {
-		count++
-	}
-	if pool_name != "" {
-		count++
-	}
-	if paritygroup_id != "" {
-		count++
-	}
-	log.WriteDebug("count=%v\n", count)
-	if count != 1 {
-		return fmt.Errorf("either pool_id or pool_name or paritygroup_id is required to create volume")
-	}
-
-	// if pool_name != "" {
-	// 	ppid, err := GetPoolIdFromPoolName(d, pool_name)
-	// 	if err != nil {
-	// 		return fmt.Errorf("could not find a pool with name %v", pool_name)
-	// 	}
-	// }
-	return nil
+func validateParitygroupDiff() schema.CustomizeDiffFunc {
+	return customdiff.ValidateChange("paritygroup_id", func(ctx context.Context, old, new, meta any) error {
+		if new.(string) != old.(string) {
+			return fmt.Errorf("paritygroup_id should not change: old value: %s", old.(string))
+		}
+		return nil
+	})
 }

@@ -2,7 +2,9 @@ package terraform
 
 import (
 	"context"
+	// "fmt"
 	"strconv"
+	// "time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 
@@ -15,7 +17,7 @@ import (
 
 func DataSourceStorageHostGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage Host Group:The following request gets information about host group of the port.",
+		Description: "VSP Storage Host Group:The following request gets information about host group of the port.",
 		ReadContext: DataSourceStorageHostGroupRead,
 		Schema:      schemaimpl.DataHostGroupSchema,
 	}

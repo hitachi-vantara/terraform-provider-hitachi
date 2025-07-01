@@ -1,0 +1,38 @@
+PUT terraform_telemetry
+{
+  "mappings": {
+    "properties": {
+      "siteId": { "type": "keyword" },
+      "createDate": { "type": "date" },
+      "lastUpdate": { "type": "date" },
+
+      "vsp": {
+        "type": "nested",
+        "dynamic": "true",
+        "properties": {
+          "model": { "type": "keyword" },
+          "serial": { "type": "keyword" },
+          "san": {
+            "type": "nested",
+            "dynamic": true,
+            "properties": {}
+          }
+        }
+      },
+
+      "sds_block": {
+        "type": "nested",
+        "dynamic": "true",
+        "properties": {
+          "model": { "type": "keyword" },
+          "serial": { "type": "keyword" },
+          "vosb": {
+            "type": "nested",
+            "dynamic": true,
+            "properties": {}
+          }
+        }
+      }
+    }
+  }
+}

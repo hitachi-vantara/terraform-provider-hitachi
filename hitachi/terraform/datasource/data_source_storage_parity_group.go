@@ -18,15 +18,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func DataSourceStorageParityGroups() *schema.Resource {
+func DataSourceStorageParityGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage Parity Group:The following request obtains information about all parity groups.",
-		ReadContext: DataSourceStorageParityGroupsRead,
-		Schema:      schemaimpl.DataParityGroupsSchema,
+		Description: "VSP Storage Parity Group:The following request obtains information about all parity groups.",
+		ReadContext: DataSourceStorageParityGroupRead,
+		Schema:      schemaimpl.DataParityGroupSchema,
 	}
 }
 
-func DataSourceStorageParityGroupsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func DataSourceStorageParityGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -53,6 +53,13 @@ func DataSourceStorageParityGroupsRead(ctx context.Context, d *schema.ResourceDa
 
 	if err := d.Set("parity_groups", pgList); err != nil {
 		return diag.FromErr(err)
+	}
+
+	_, ok := d.GetOk("parity_group_ids")
+	if !ok {
+		if err := d.Set("parity_group_ids", []string{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))

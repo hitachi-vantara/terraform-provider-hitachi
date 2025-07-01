@@ -3,36 +3,36 @@
 page_title: "hitachi_vsp_dynamic_pools Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.
+  VSP Storage Dynamic Pools: returns all dynamic pools information
 ---
 
 # hitachi_vsp_dynamic_pools (Data Source)
 
-:meta:subcategory:VSP Storage Dynamic Pool:The following request gets information items such as the pool status, the pool usage rate, and the pool threshold.
+VSP Storage Dynamic Pools: returns all dynamic pools information
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VSP Dynamic Pool Data Retrieval
+# Hitachi VSP Dynamic Pools Data Retrieval
 #
-# This section defines a data source block to fetch information about a specific
-# dynamic pool from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
-# Configuration Language (HCL).
+# This data source block fetches information about all dynamic pools
+# from a Hitachi Virtual Storage Platform (VSP) using
+# HashiCorp Configuration Language (HCL).
 #
-# The data source block "hitachi_vsp_dynamic_pools" retrieves details about a
-# particular dynamic pool based on the provided parameters.
+# The "hitachi_vsp_dynamic_pools" data source retrieves details such as
+# pool status, usage rate, and threshold settings.
 #
-# Customize the values of the parameters (serial, pool_id) to align with your
-# environment, allowing you to retrieve information about the desired dynamic pool.
+# Customize the values of the parameters (serial) to align with your
+# environment, allowing you to retrieve information about all dynamic pools.
 #
-data "hitachi_vsp_dynamic_pools" "dynamicpool" {
+
+data "hitachi_vsp_dynamic_pools" "dynamicpools" {
   serial  = 12345
-  pool_id = 45
 }
 
-output "dynamicpool" {
-  value = data.hitachi_vsp_dynamic_pools.dynamicpool
+output "dynamicpools" {
+  value = data.hitachi_vsp_dynamic_pools.dynamicpools
 }
 ```
 
@@ -43,14 +43,9 @@ output "dynamicpool" {
 
 - `serial` (Number) Serial number of storage
 
-### Optional
-
-- `pool_id` (Number) Pool ID of the storage
-- `pool_name` (String) Pool Name of the storage
-
 ### Read-Only
 
-- `dynamic_pools` (Block List) This is dynamic pools output (see [below for nested schema](#nestedblock--dynamic_pools))
+- `dynamic_pools` (Block List) List of all dynamic pools retrieved from the storage system. (see [below for nested schema](#nestedblock--dynamic_pools))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--dynamic_pools"></a>
@@ -87,5 +82,3 @@ Read-Only:
 - `used_physical_capacity_rate` (Number) Used physical capacity rate
 - `virtual_volume_capacity_rate` (Number) Virtual volume capacity rate
 - `warning_threshold` (Number) Warning threshold
-
-

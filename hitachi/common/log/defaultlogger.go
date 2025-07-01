@@ -20,6 +20,13 @@ const (
 	ERRORT
 )
 
+const (
+	LOGDIR        = "/var/log/hitachi/terraform/"
+	LOGFILENAME   = "hitachi-terraform.log"
+	LOGMAXSIZE    = 10 // MB
+	LOGMAXBACKUPS = 10
+)
+
 // currentLogLevel holds the global log level for the application.
 var currentLogLevel = INFOT
 
@@ -31,17 +38,18 @@ var logWriterFile *log.Logger
 
 // init initializes the logger with log file and log level from environment.
 func init() {
-	path := "/var/log/hitachi/terraform/"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			fmt.Println("Error creating log directory:", err)
+	// Ensure log directory exists
+	if _, err := os.Stat(LOGDIR); os.IsNotExist(err) {
+		if err := os.MkdirAll(LOGDIR, os.ModePerm); err != nil {
+			fmt.Println("Failed to create log directory:", err)
 			return
 		}
 	}
 
-	finalPath := fmt.Sprintf("%s%s", path, "hitachi-terraform.log")
-	setNewLogFile(finalPath, 1, 1)
+	finalPath := LOGDIR + LOGFILENAME
+	if err := setNewLogFile(finalPath, LOGMAXSIZE, LOGMAXBACKUPS); err != nil {
+		fmt.Println("Log setup failed:", err)
+	}
 
 	// Set log level from environment variable.
 	setLogLevelFromEnv()
@@ -59,7 +67,7 @@ func SetLogLevel(level LogLevel) {
 
 // setLogLevelFromEnv sets the log level based on an environment variable.
 func setLogLevelFromEnv() {
-	envLogLevel := os.Getenv("TF_LOG_LEVEL")
+	envLogLevel := os.Getenv("TF_LOG")
 	switch envLogLevel {
 	case "DEBUG":
 		SetLogLevel(DEBUGT)
@@ -91,10 +99,11 @@ func setNewLogFile(fname string, maxSize int, maxBackups int) error {
 	logWriterFile = log.New(newLogFile, "", 0)
 	logWriterFile.SetOutput(&lumberjack.Logger{
 		Filename:   fname,
-		MaxSize:    maxSize,    // megabytes
-		MaxBackups: maxBackups, // number of backups
+		MaxSize:    maxSize,
+		MaxBackups: maxBackups,
+		// MaxAge:     28, // Optionally uncomment to limit log age
 	})
-	logWriterFile.Print("Starting new log file")
+	logWriterFile.Printf("Starting new log file. MaxSize:%dMB MaxBackups:%d", maxSize, maxBackups)
 	return nil
 }
 
@@ -102,7 +111,7 @@ func setNewLogFile(fname string, maxSize int, maxBackups int) error {
 func formatLog(severity string, message string) string {
 	_, funcname, filename, lineno := getSourceFileInfo(3)
 	filesource := fmt.Sprintf("%s:%s:%d", funcname, filename, lineno)
-	logStatement := fmt.Sprintf("%s\t%s\t%s\t%s", time.Now().Format("15:04:05"), severity, filesource, message)
+	logStatement := fmt.Sprintf("%s\t%s\t%s\t%s", time.Now().Format("2006-01-02 15:04:05 MST"), severity, filesource, message)
 	return logStatement
 }
 

@@ -6,66 +6,30 @@ import (
 
 var ProviderSchema = map[string]*schema.Schema{
 
-	"hitachi_infrastructure_gateway_provider": &schema.Schema{
+	"hitachi_vosb_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Hitachi Unified Compute Platform (UCP) Advisor is a comprehensive cloud infrastructure management and automation software tool that enables IT agility and simplifies day 0-N operations for edge, core, and cloud environments.",
+		Description: "Hitachi VSP One SDS Block (VOSB) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
-				"address": &schema.Schema{
+				"vosb_address": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Host name or the IP address (IPv4) of Virtual Storage Software block.",
+					Description: "Host name or the IP address (IPv4) of VSP One SDS Block.",
 				},
 				"username": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Username of the Hitachi UCP Advisor",
+					Description: "Username of the VSP One SDS Block",
 				},
 				"password": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Password of the Hitachi UCP Advisor",
-				},
-				"partner_id": &schema.Schema{
-					Type:        schema.TypeString,
-					Optional:    true,
-					Description: "Partner Id of the Hitachi UCP Advisor",
-				},
-				"subscriber_id": &schema.Schema{
-					Type:        schema.TypeString,
-					Optional:    true,
-					Description: "Subscriber Id of the Hitachi UCP Advisor",
+					Description: "Password of the VSP One SDS Block",
 				},
 			},
 		},
-		DefaultFunc: schema.EnvDefaultFunc("HITACHI_UCP_ADVISOR_PROVIDER", nil),
-	},
-
-	"hitachi_vss_block_provider": &schema.Schema{
-		Type:        schema.TypeList,
-		Optional:    true,
-		Description: "Hitachi Virtual Storage Software Block (VSS block) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability.",
-		Elem: &schema.Resource{
-			Schema: map[string]*schema.Schema{
-				"vss_block_address": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    true,
-					Description: "Host name or the IP address (IPv4) of Virtual Storage Software block.",
-				},
-				"username": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    true,
-					Description: "Username of the Virtual Storage Software block",
-				},
-				"password": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    true,
-					Description: "Password of the Virtual Storage Software block",
-				},
-			},
-		},
-		DefaultFunc: schema.EnvDefaultFunc("HITACHI_VSS_BLOCK_PROVIDER", nil),
+		DefaultFunc: schema.EnvDefaultFunc("HITACHI_VOSB_PROVIDER", nil),
 	},
 	"san_storage_system": &schema.Schema{
 		Type:        schema.TypeList,

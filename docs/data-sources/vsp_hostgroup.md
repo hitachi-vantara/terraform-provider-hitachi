@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_hostgroup Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  :meta:subcategory:VSP Storage Host Group:The following request gets information about host group of the port.
+  VSP Storage Host Group:The following request gets information about host group of the port.
 ---
 
 # hitachi_vsp_hostgroup (Data Source)
 
-:meta:subcategory:VSP Storage Host Group:The following request gets information about host group of the port.
+VSP Storage Host Group:The following request gets information about host group of the port.
 
 ## Example Usage
 
@@ -102,5 +102,3 @@ Read-Only:
 
 - `name` (String) Name of the WWN resource
 - `wwn` (String) ID of the WWN resource
-
-

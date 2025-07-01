@@ -1,9 +1,9 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"log"
+	"fmt"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
@@ -11,32 +11,24 @@ import (
 	"terraform-provider-hitachi/hitachi/terraform"
 )
 
-// Generate the Terraform provider documentation using `tfplugindocs`:
-//
-//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+var version = "2.1" // Will be overridden with -ldflags during build
+
+// main.go is only used for plugin startup via plugin.Serve(...). 
+// It runs once when Terraform loads the provider binary, and it's not meant for handling provider-specific configuration logic.
 func main() {
+	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "-v") {
+		fmt.Printf("Hitachi Terraform Provider version: %s\n", version)
+		os.Exit(0)
+	}
 
 	var debugMode bool
-	flag.BoolVar(&debugMode, "debug", false, "set to true to run the provider with support for debuggers like delve")
+	flag.BoolVar(&debugMode, "debug", false, "Enable plugin debug mode (for use with delve)")
 	flag.Parse()
 
-	opts := &plugin.ServeOpts{
+	plugin.Serve(&plugin.ServeOpts{
 		ProviderFunc: func() *schema.Provider {
 			return terraform.Provider()
 		},
-	}
-
-	if debugMode {
-		// TODO: update this string with the full name of your provider as used in your configs
-		userPluginDir := "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.5/linux_amd64/terraform-provider-hitachi"
-		// userPluginDir := "/root/.terraform.d/plugins/20-95.sie.hds.com/hv/hitachi/1.0/linux_amd64/terraform-provider-hitachi"
-		err := plugin.Debug(context.Background(), userPluginDir, opts)
-
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		return
-	}
-
-	plugin.Serve(opts)
+		Debug: debugMode,
+	})
 }

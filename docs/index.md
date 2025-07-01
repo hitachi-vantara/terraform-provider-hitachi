@@ -13,48 +13,20 @@ description: |-
 ## Example Usage
 
 ```terraform
-/*
-** Terraform Configuration for Hitachi Provider and VSS Block / SAN Storage System / hitachi_infrastructure_gateway_provider
-**
-** This Terraform configuration defines the required provider blocks for interacting with Hitachi
-** resources, specifically for VSS block and SAN storage system.
-**
-** The "required_providers" block specifies the version and source of the Hitachi provider to be used.
-** You can customize the version and source accordingly.
-**
-** The "provider" block configures the Hitachi provider with necessary authentication details for the
-** VSS block and SAN storage system.
-** Customize the values of "vss_block_address", "management_ip", "username", and "password" to match your
-** environment's configuration.
-**
-*/
-
 terraform {
   required_providers {
     hitachi = {
-      version = "2.5"
+      version = "2.1"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }
 }
 
 provider "hitachi" {
-  hitachi_vss_block_provider {
-    vss_block_address = "10.10.12.13"
-    username          = "username"
-    password          = "password"
-  }
-  
-  san_storage_system {
-    serial        = 12345
-    management_ip = "10.10.11.12"
-    username      = "username"
-    password      = "password"
-  }
- hitachi_infrastructure_gateway_provider {
-    address = "10.12.13.14"
-    username      = var.hitachi_gateway_user
-    password      = var.hitachi_gateway_password
+  hitachi_vosb_provider {
+    vosb_address = "10.10.12.13"
+    username     = var.hitachi_storage_user
+    password     = var.hitachi_storage_password
   }
 
 }
@@ -65,33 +37,17 @@ provider "hitachi" {
 
 ### Optional
 
-- `hitachi_infrastructure_gateway_provider` (Block List) Hitachi Unified Compute Platform (UCP) Advisor is a comprehensive cloud infrastructure management and automation software tool that enables IT agility and simplifies day 0-N operations for edge, core, and cloud environments. (see [below for nested schema](#nestedblock--hitachi_infrastructure_gateway_provider))
-- `hitachi_vss_block_provider` (Block List) Hitachi Virtual Storage Software Block (VSS block) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vss_block_provider))
+- `hitachi_vosb_provider` (Block List) Hitachi VSP One SDS Block (VOSB) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vosb_provider))
 - `san_storage_system` (Block List) Hitachi VSP 5000 series reliably delivers more data faster than ever for open systems and mainframe applications. VSP 5000 series provides response times as low as 39 microseconds and can be configured with up to 69 PB of raw capacity, with scalability to handle up to 33 million IOPS. All VSP 5000 models are backed by the industry’s most comprehensive 100% data availability guarantee to ensure that your operations are always up and running. (see [below for nested schema](#nestedblock--san_storage_system))
 
-<a id="nestedblock--hitachi_infrastructure_gateway_provider"></a>
-### Nested Schema for `hitachi_infrastructure_gateway_provider`
+<a id="nestedblock--hitachi_vosb_provider"></a>
+### Nested Schema for `hitachi_vosb_provider`
 
 Required:
 
-- `address` (String) Host name or the IP address (IPv4) of Virtual Storage Software block.
-- `password` (String) Password of the Hitachi UCP Advisor
-- `username` (String) Username of the Hitachi UCP Advisor
-
-Optional:
-
-- `partner_id` (String) Partner Id of the Hitachi UCP Advisor
-- `subscriber_id` (String) Subscriber Id of the Hitachi UCP Advisor
-
-
-<a id="nestedblock--hitachi_vss_block_provider"></a>
-### Nested Schema for `hitachi_vss_block_provider`
-
-Required:
-
-- `password` (String) Password of the Virtual Storage Software block
-- `username` (String) Username of the Virtual Storage Software block
-- `vss_block_address` (String) Host name or the IP address (IPv4) of Virtual Storage Software block.
+- `password` (String) Password of the VSP One SDS Block
+- `username` (String) Username of the VSP One SDS Block
+- `vosb_address` (String) Host name or the IP address (IPv4) of VSP One SDS Block.
 
 
 <a id="nestedblock--san_storage_system"></a>

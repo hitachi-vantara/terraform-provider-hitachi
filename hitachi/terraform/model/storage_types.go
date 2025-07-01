@@ -29,12 +29,6 @@ type StorageSettingsAndInfo struct {
 	Info     *StorageSystem        `json:"info"`
 }
 
-type InfraGwSettings struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Address  string `json:"address"`
-}
-
 type StorageVersionInfo struct {
 	ApiVersion  string `json:"apiVersion"`
 	ProductName string `json:"productName"`
@@ -43,7 +37,24 @@ type StorageVersionInfo struct {
 type AllStorageTypes struct {
 	VspStorageSystem       []*StorageSystem
 	VssbStorageVersionInfo []*StorageVersionInfo
-	InfraGwInfo            []*InfraGwSettings
 }
 
-type ProviderType string
+type Drive struct {
+	Id               string `json:"id"`
+	WwId             string `json:"wwid"`
+	StatusSummary    string `json:"statusSummary"`
+	Status           string `json:"status"`
+	TypeCode         string `json:"typeCode"`
+	SerialNumber     string `json:"serialNumber"`
+	StorageNodeId    string `json:"storageNodeId"`
+	DeviceFileName   string `json:"deviceFileName"`
+	VendorName       string `json:"vendorName"`
+	FirmwareRevision string `json:"firmwareRevision"`
+	LocatorLedStatus string `json:"locatorLedStatus"`
+	DriveType        string `json:"driveType"`
+	DriveCapacity    int    `json:"driveCapacity"`
+}
+
+type Drives struct {
+	Data []Drive `json:"data"`
+}

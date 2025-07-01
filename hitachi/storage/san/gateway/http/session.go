@@ -38,8 +38,7 @@ func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
 	url := GetUrl(mgmtIP, "objects/sessions/")
 	resJSONString, err := utils.HTTPPostWithCreds(url, &creds, nil, nil) // no additional headers, no request body
 	if err != nil {
-		log.WriteError(err)
-		log.WriteDebug("TFError| error in HTTPPostWithCreds call, err: %v", err)
+		err := CheckHttpErrorResponse(resJSONString, err)
 		return "", err
 	}
 
@@ -79,7 +78,6 @@ func GetAuthToken(mgmtIP, username, password string) (string, error) {
 
 	token, err := GetAuthTokenNoCache(mgmtIP, username, password)
 	if err != nil {
-		log.WriteDebug("TFError| error in GetAuthTokenNoCache call, err: %v", err)
 		return "", err
 	}
 
@@ -97,7 +95,6 @@ func GetAuthTokenHeader(mgmtIP, username, password string) (headers map[string]s
 
 	token, err := GetAuthToken(mgmtIP, username, password)
 	if err != nil {
-		log.WriteDebug("TFError| error in GetAuthToken call, err: %v", err)
 		return nil, err
 	}
 

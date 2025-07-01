@@ -31,7 +31,6 @@ func (psm *sanStorageManager) GetStorageSystemInfo() (*sanmodel.StorageSystem, e
 	}
 	ssInfo, err := gatewayObj.GetStorageSystemInfo()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageSystemInfo gateway call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_STORAGE_SYSTEM_FAILED), objStorage.MgmtIP)
 		return nil, err
 	}
@@ -80,7 +79,6 @@ func (psm *sanStorageManager) GetStorageSystem() (*sanmodel.StorageSystem, error
 	}
 	ssInfo, err := gatewayObj.GetStorageSystemInfo()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetStorageSystemInfo gateway call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_STORAGE_SYSTEM_FAILED), objStorage.MgmtIP)
 		return nil, err
 	}
@@ -98,8 +96,8 @@ func (psm *sanStorageManager) GetStorageSystem() (*sanmodel.StorageSystem, error
 		mgmtIP = ssInfo.Ctl1IP
 	}
 
-	totalCapInMB := utils.ConvertSizeFromBytesToMb(ssCapacity.Total.TotalCapacity)
-	freeCapInMB := utils.ConvertSizeFromBytesToMb(ssCapacity.Total.FreeSpace)
+	totalCapInMB := utils.ConvertSizeFromKbToMb(ssCapacity.Total.TotalCapacity)
+	freeCapInMB := utils.ConvertSizeFromKbToMb(ssCapacity.Total.FreeSpace)
 	usedCapInMB := totalCapInMB - freeCapInMB
 
 	ss := sanmodel.StorageSystem{

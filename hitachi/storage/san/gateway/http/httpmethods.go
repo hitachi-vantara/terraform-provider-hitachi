@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 )
 
-func GetCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
+func getCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -18,7 +17,6 @@ func GetCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, outpu
 	headers, err := GetAuthTokenHeader(storageSetting.MgmtIP, storageSetting.Username, storageSetting.Password)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return err
 	}
 
@@ -26,14 +24,12 @@ func GetCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, outpu
 	resJSONString, err := utils.HTTPGet(url, &headers)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPGet call, err: %v", err)
 		return err
 	}
 
-	log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
 	err2 := json.Unmarshal([]byte(resJSONString), output)
 	if err2 != nil {
-		log.WriteDebug("TFError| error in Unmarshal, err: %v", err2)
+		log.WriteError(err)
 		return fmt.Errorf("failed to unmarshal json response: %+v", err2)
 	}
 
@@ -48,18 +44,15 @@ func PostCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string,
 	headers, err := GetAuthTokenHeader(storageSetting.MgmtIP, storageSetting.Username, storageSetting.Password)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return nil, err
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	url := GetUrl(storageSetting.MgmtIP, apiSuf)
 
 	// TODO: uncomment following when you need to work on lock and unlock resources
@@ -70,27 +63,26 @@ func PostCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string,
 	jobString, err := utils.HTTPPost(url, &headers, reqBodyInBytes)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPPost call, err: %v", err)
 		return nil, err
 	}
 
 	return &jobString, err
 }
 
-func PostCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func postCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	jobString, err := PostCallAsync(storageSetting, apiSuf, reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in PostCallAsync call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForJob call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
@@ -109,44 +101,40 @@ func PatchCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string
 	headers, err := GetAuthTokenHeader(storageSetting.MgmtIP, storageSetting.Username, storageSetting.Password)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return nil, err
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	url := GetUrl(storageSetting.MgmtIP, apiSuf)
 
 	jobString, err := utils.HTTPPatch(url, &headers, reqBodyInBytes)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPPatch call, err: %v", err)
 		return nil, err
 	}
 
 	return &jobString, err
 }
 
-func PatchCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func patchCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	jobString, err := PatchCallAsync(storageSetting, apiSuf, reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in PatchCallAsync call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForJob call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
@@ -165,44 +153,40 @@ func DeleteCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf strin
 	headers, err := GetAuthTokenHeader(storageSetting.MgmtIP, storageSetting.Username, storageSetting.Password)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in GetAuthTokenHeader call, err: %v", err)
 		return nil, err
 	}
 
 	reqBodyInBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in Marshal call, err: %v", err)
 		return nil, err
 	}
 
-	log.WriteDebug("TFDebug|reqBodyInBytes: %s\n", string(reqBodyInBytes))
 	url := GetUrl(storageSetting.MgmtIP, apiSuf)
 
 	jobString, err := utils.HTTPDeleteWithBody(url, &headers, reqBodyInBytes)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in utils.HTTPDeleteWithBody call, err: %v", err)
 		return nil, err
 	}
 
 	return &jobString, err
 }
 
-func DeleteCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+func deleteCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	jobString, err := DeleteCallAsync(storageSetting, apiSuf, reqBody)
 	if err != nil {
-		log.WriteDebug("TFError| error in DeleteCallAsync call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
-		log.WriteDebug("TFError| error in CheckResponseAndWaitForJob call, err: %v", err)
+		log.WriteError(err)
 		return nil, err
 	}
 
