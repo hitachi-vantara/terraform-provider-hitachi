@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -469,15 +470,23 @@ func HTTPDownloadFile(url string, toFilePath string, headers *map[string]string,
 	} else {
 		info, err := os.Stat(toFilePath)
 		if err == nil && info.IsDir() {
-			// It's a directory: use it + filename
-			finalPath = filepath.Join(toFilePath, filename)
+			// It's an existing directory: secure join
+			finalPath, err = secureJoin(toFilePath, filename)
+			if err != nil {
+				log.WriteError(err)
+				return "", err
+			}
 		} else if strings.HasSuffix(toFilePath, string(os.PathSeparator)) {
 			// Ends with / or \ but does not exist yet: treat as directory
 			if err := os.MkdirAll(toFilePath, 0755); err != nil {
 				log.WriteError(err)
 				return "", err
 			}
-			finalPath = filepath.Join(toFilePath, filename)
+			finalPath, err = secureJoin(toFilePath, filename)
+			if err != nil {
+				log.WriteError(err)
+				return "", err
+			}
 		} else {
 			// It's a full file path
 			finalPath = toFilePath
@@ -534,10 +543,10 @@ func logRequest(req *http.Request, reqBodyInBytes []byte) {
 }
 
 func HTTPPostForm(
-		url string, headers *map[string]string, httpBody []byte,
-		form bytes.Buffer,
-		basicAuthentication ...*HttpBasicAuthentication,
-	) (string, error) {
+	url string, headers *map[string]string, httpBody []byte,
+	form bytes.Buffer,
+	basicAuthentication ...*HttpBasicAuthentication,
+) (string, error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -576,7 +585,7 @@ func HTTPPostForm(
 			log.WriteInfo(strValue)
 			req.Header.Add(k, v)
 		}
-	}else{
+	} else {
 		// the above is doing Add, so we need to set the content type here
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -604,4 +613,25 @@ func HTTPPostForm(
 	}
 
 	return string(body), nil
+}
+
+// secureJoin ensures finalPath is inside baseDir to prevent path traversal
+func secureJoin(baseDir, filename string) (string, error) {
+	baseAbs, err := filepath.Abs(baseDir)
+	if err != nil {
+		return "", err
+	}
+
+	targetPath := filepath.Join(baseAbs, filename)
+	targetAbs, err := filepath.Abs(targetPath)
+	if err != nil {
+		return "", err
+	}
+
+	// Ensure the target path is within the base directory
+	if !strings.HasPrefix(targetAbs, baseAbs+string(os.PathSeparator)) && targetAbs != baseAbs {
+		return "", errors.New("path traversal detected in filename")
+	}
+
+	return targetAbs, nil
 }
