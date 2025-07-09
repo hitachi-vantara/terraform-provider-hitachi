@@ -135,9 +135,9 @@ var MessageCatalog = map[interface{}]string{
 	ERR_EXPAND_STORAGE_POOL_FAILED: "Failed to expand storage pool %s.",
 	INFO_EXPAND_STORAGE_POOL_END:   "Successfully expanded storage pool %s.",
 
-	INFO_GET_DRIVES_BEGIN: "Reading drives info %s.",
-	ERR_GET_DRIVES_FAILED: "Failed to read drives info %s.",
-	INFO_GET_DRIVES_END:   "Successfully read drives info %s.",
+	INFO_GET_DRIVES_BEGIN: "Reading drives info.",
+	ERR_GET_DRIVES_FAILED: "Failed to read drives info.",
+	INFO_GET_DRIVES_END:   "Successfully read drives info.",
 	ERR_NO_OFFLINE_DRIVES: "No offline drives available.",
 
 	INFO_ADD_DRIVES_STORAGE_POOL_BEGIN: "Adding offline drives to storage pool.",
