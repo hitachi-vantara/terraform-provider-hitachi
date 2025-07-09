@@ -22,8 +22,7 @@
 
 resource "hitachi_vosb_storage_node" "storageNode" {
   vosb_address = var.vosb_address
-  node_name = "SDSB-NODE6"
-  configuration_file = "/root/configuration.csv"
+  configuration_file = "/tmp/configuration.csv"
   setup_user_password = "password"
 }
 

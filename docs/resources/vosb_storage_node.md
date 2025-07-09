@@ -37,8 +37,7 @@ VOS Block Storage Node:Registers the information of the storage node.
 
 resource "hitachi_vosb_storage_node" "storageNode" {
   vosb_address = var.vosb_address
-  node_name = "SDSB-NODE6"
-  configuration_file = "/root/configuration.csv"
+  configuration_file = "/tmp/configuration.csv"
   setup_user_password = "password"
 }
 
@@ -53,7 +52,6 @@ output "node_output" {
 ### Required
 
 - `configuration_file` (String) configuration File
-- `node_name` (String) Storage node name to be added
 - `setup_user_password` (String) Setup User Password
 - `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
 

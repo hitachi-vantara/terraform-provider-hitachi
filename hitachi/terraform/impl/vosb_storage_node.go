@@ -183,11 +183,11 @@ func CreateVssbStorageNode(d *schema.ResourceData) error {
 	}
 
 	// FIXME: do we need to check if the node is already added, it is handled by the backend
-	storageNodeName := d.Get("node_name").(string)
-	if storageNodeName == "" {
-		log.WriteDebug("TFError| node_name cannot be empty")
-		return nil
-	}
+	// storageNodeName := d.Get("node_name").(string)
+	// if storageNodeName == "" {
+	// 	log.WriteDebug("TFError| node_name cannot be empty")
+	// 	return nil
+	// }
 	configurationFile := d.Get("configuration_file").(string)
 	if configurationFile == "" {
 		log.WriteDebug("TFError| configuration_file cannot be empty")
