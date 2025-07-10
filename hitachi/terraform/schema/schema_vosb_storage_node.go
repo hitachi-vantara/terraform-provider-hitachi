@@ -169,11 +169,11 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "Setup User Password",
 	},
-	"node_name": &schema.Schema{
-		Type:        schema.TypeString,
-		Required:    true,
-		Description: "Storage node name to be added",
-	},		
+	// "node_name": &schema.Schema{
+	// 	Type:        schema.TypeString,
+	// 	Required:    false,
+	// 	Description: "Storage node name to be added",
+	// },		
 	// output
 	"storage_nodes": &schema.Schema{
 		Type:        schema.TypeList,

@@ -185,8 +185,12 @@ func WaitForJobToCompleteExt(storageSetting vssbmodel.StorageDeviceSettings, job
 		}
 
 		status = jobResult.Status
-		waitTime = 60 // constant wait time of 60 seconds for long running jobs
 		retryCount += 1
+		if retryCount > 9 {
+			// if no fast-fail within 10 seconds, make adjustment 
+			retryCount = 1
+			waitTime = 60 // constant wait time of 60 seconds for long running jobs
+		}
 	}
 
 	// at this point, job status is completed
