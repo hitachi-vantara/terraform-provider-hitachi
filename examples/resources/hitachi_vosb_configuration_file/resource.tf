@@ -132,6 +132,13 @@ output "download_output" {
 #       compute_port_ipv4_address   = "192.168.0.3"
 #       compute_port_ipv6_address   = "2001:db8:85a3::8a2e:370:7334" // only for Azure
 #     }
+#     address_setting {
+#       index                       = 2
+#       control_port_ipv4_address   = "192.168.0.4"
+#       internode_port_ipv4_address = "192.168.0.5"
+#       compute_port_ipv4_address   = "192.168.0.6"
+#       compute_port_ipv6_address   = "2001:db8:85a3::8a2e:370:7334" // only for Azure
+#     }
 #   }
 # }
 
