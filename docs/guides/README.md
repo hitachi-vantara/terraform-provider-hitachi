@@ -137,7 +137,7 @@ provider[localhost/hitachi-vantara/hitachi] ~> 2.1
 
 ## Uninstall RPM Package
 
-**Warning:** Will delete `/opt/hitachi/terraform/`. Back up important data before continuing.
+**Warning:** Will delete dirs and files (except user_consent.json) under `/opt/hitachi/terraform/`. Back up important data before continuing.
 
 
 ```bash

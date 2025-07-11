@@ -131,11 +131,11 @@ chmod 755 "$logdir"
 echo "[$(date)] Starting uninstallation of HV_Storage_Terraform" | tee -a "$logfile"
 
 if [[ $1 -eq 0 ]]; then
-  echo "[$(date)] WARN: Deleting %{terraform} and contents" | tee -a "$logfile" >&2
+  echo "[$(date)] WARN: Removing terraform plugins and files except user_consent.json" | tee -a "$logfile" >&2
 
   tuser=$(logname)
   if [[ $tuser != root ]]; then
-    echo "[$(date)] Erasing : terraform plugin %{_DISPLAY_VERSION} for ${tuser}" | tee -a "$logfile"
+    echo "[$(date)] Erasing terraform plugin %{_DISPLAY_VERSION} for ${tuser}" | tee -a "$logfile"
     home=$(getent passwd "$tuser" | cut -d: -f6)
     rm -rf "${home}/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}" >> "$logfile" 2>&1 | tee -a "$logfile" || true
     rmdir --ignore-fail-on-non-empty "${home}/.terraform.d/plugins/localhost/hitachi-vantara/hitachi" >> "$logfile" 2>&1 | tee -a "$logfile" || true
@@ -145,10 +145,12 @@ if [[ $1 -eq 0 ]]; then
   rm -rf "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/%{_DISPLAY_VERSION}" >> "$logfile" 2>&1 | tee -a "$logfile" || true
   rmdir --ignore-fail-on-non-empty "/root/.terraform.d/plugins/localhost/hitachi-vantara/hitachi" >> "$logfile" 2>&1 | tee -a "$logfile" || true
 
-  echo "[$(date)] Removing install directory %{terraform}" | tee -a "$logfile"
-  rm -rf %{terraform} >> "$logfile" 2>&1 | tee -a "$logfile" || true
-  rmdir --ignore-fail-on-non-empty %{hitachi_base} >> "$logfile" 2>&1 | tee -a "$logfile" || true
+  # Selectively remove files inside %{terraform} except user_consent.json
+  if [ -d %{terraform} ]; then
+    find %{terraform} -mindepth 1 -maxdepth 1 ! -name 'user_consent.json' -exec rm -rf {} + >> "$logfile" 2>&1 | tee -a "$logfile" || true
+  fi
 
-  echo "[$(date)] Erase complete" | tee -a "$logfile"
+  # Do not delete %{terraform} or %{hitachi_base}
+  echo "[$(date)] Retained %{terraform} and user_consent.json" | tee -a "$logfile"
   echo "[$(date)] Uninstallation complete" | tee -a "$logfile"
 fi

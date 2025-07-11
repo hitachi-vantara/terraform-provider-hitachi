@@ -94,7 +94,7 @@ func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSetti
 		storageSetting := storageSettingInt.(vosbmodel.StorageDeviceSettings)
 		terraformResourceMethod = storageSetting.TerraformResourceMethod
 		// storageSerial = getUUIDFromIP(storageSetting.ClusterAddress).String()
-		storageSerial = storageSetting.ClusterAddress
+		// storageSerial = storageSetting.ClusterAddress
 		storageModel = getVosbStorageVersion(storageSettingInt, outputForModelOrVersion)
 	}
 
