@@ -2,19 +2,19 @@ package vssbstorage
 
 type AddressSetting struct {
 	Index                    int    `json:"index"`
-	ControlPortIPv4Address   string `json:"control_port_ipv4_address"`
-	InternodePortIPv4Address string `json:"internode_port_ipv4_address"`
-	ComputePortIPv4Address   string `json:"compute_port_ipv4_address"`
-	ComputePortIPv6Address   string `json:"compute_port_ipv6_address,omitempty"`
+	ControlPortIPv4Address   string `json:"controlPortIpv4Address"`
+	InternodePortIPv4Address string `json:"internodePortIpv4Address"`
+	ComputePortIPv4Address   string `json:"computePortIpv4Address"`
+	ComputePortIPv6Address   string `json:"computePortIpv6Address,omitempty"`
 }
 
 type CreateConfigurationFileParam struct {
-	ExportFileType        string           `json:"export_file_type,omitempty"`
-	MachineImageID        string           `json:"machine_image_id,omitempty"`
-	NumberOfDrives        int              `json:"number_of_drives,omitempty"`
-	RecoverSingleDrive    bool             `json:"recover_single_drive,omitempty"`
-	DriveID               string           `json:"drive_id,omitempty"`
-	RecoverSingleNode     bool             `json:"recover_single_node,omitempty"`
-	NodeID                string           `json:"node_id,omitempty"`
-	AddressSetting        []AddressSetting `json:"address_setting,omitempty"`
+	ExportFileType        string           `json:"exportFileType,omitempty"`
+	MachineImageID        string           `json:"machineImageId,omitempty"`
+	NumberOfDrives        int              `json:"numberOfDrives,omitempty"`
+	RecoverSingleDrive    bool             `json:"recoverSingleDrive,omitempty"`
+	DriveID               string           `json:"driveId,omitempty"`
+	RecoverSingleNode     bool             `json:"recoverSingleNode,omitempty"`
+	NodeID                string           `json:"nodeId,omitempty"`
+	AddressSetting        []AddressSetting `json:"addressSetting,omitempty"`
 }
