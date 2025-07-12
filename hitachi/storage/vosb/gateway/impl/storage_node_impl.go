@@ -78,21 +78,25 @@ func (psm *vssbStorageManager) doAddStorageNode(
 	formField, err := writer.CreateFormField("setupUserPassword")
 	if err != nil {
 		log.WriteError(err)
+		return
 	}
 	formField.Write([]byte(setupUserPassword))
 
 	fw, err := writer.CreateFormFile("configurationFile", filepath.Base(configurationFile))
 	if err != nil {
 		log.WriteError(err)
+		return
 	}
 	fd, err := os.Open(configurationFile)
 	if err != nil {
 		log.WriteError(err)
+		return
 	}
 	defer fd.Close()
 	_, err = io.Copy(fw, fd)
 	if err != nil {
 		log.WriteError(err)
+		return
 	}
 
 	writer.Close()
