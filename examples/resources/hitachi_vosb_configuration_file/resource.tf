@@ -7,14 +7,14 @@
 # The `hitachi_vosb_configuration_file` resource interfaces with the VOSB system’s REST API and can be used
 # in HashiCorp Configuration Language (HCL) to automate generation and optional download of system configuration files.
 #
-# ## Usage Modes
+### Usage Modes
 # Choose one of the modes below to control how the file is generated or downloaded:
 #
 # - Set `download_existconfig_only = true` to **only download** the most recent existing configuration file.
 # - Set `create_only = true` to **only create** a new configuration file without downloading.
 # - By default, both `create_only` and `download_existconfig_only` are `false`, which means the file will be **created and downloaded**.
 #
-# ## Cloud Provider Behavior
+### Expected Cloud Provider Behavior
 # The `expected_cloud_provider` parameter is used only to validate input combinations based on the expected cloud environment.
 # If there is a mismatch between the given 'expected_cloud_provider' and the VOSB environment, the request will still proceed.
 # The VOSB system will apply its actual cloud provider behavior regardless of this value.
@@ -22,7 +22,7 @@
 # - **google / azure**: Additional input parameters are required based on the selected maintenance operation (`export_file_type`).
 # - **aws / baremetal**: All additional parameters are ignored — only basic creation/download will occur.
 #
-# ## Maintenance Operation Types (`export_file_type`)
+### Maintenance Operation Types (`export_file_type`)
 # The type of maintenance operation determines what additional parameters are required:
 #
 # - `"Normal"` *(default)*: No additional parameters are needed.
@@ -31,7 +31,7 @@
 # - `"AddDrives"`: Requires `number_of_drives` (between 6 and 24).
 # - `"ReplaceDrive"`: Requires either `drive_id` (UUID) or `recover_single_drive = true`.
 #
-# ## Parameters
+### Parameters
 # - `vosb_address`: **(Required)** IP or hostname of the VOSB system's REST API.
 # - `download_existconfig_only`: **(Optional)** If `true`, skips creation and only downloads the latest file.
 # - `create_only`: **(Optional)** If `true`, creates the file but skips downloading it.
@@ -53,15 +53,15 @@
 #   - `node_id`: **(Optional)** UUID of the node to replace. Required for `ReplaceStorageNode`.
 #   - `address_setting`: **(Optional)** A list (1–6 items) of storage node IP settings for `AddStorageNodes`.
 #
-# ## Outputs
+### Outputs
 # - `status`: Operation status returned from the VOSB system.
 # - `output_file_path`: The full local path to the resulting downloaded configuration file.
 #
-# ## Notes
+### Notes
 # - Fields not applicable to the selected `expected_cloud_provider` or `export_file_type` are ignored.
 # - Input combinations are validated at runtime.
 #
-# ## Examples
+### Examples
 
 resource "hitachi_vosb_configuration_file" "download" {
   vosb_address              = var.vosb_address

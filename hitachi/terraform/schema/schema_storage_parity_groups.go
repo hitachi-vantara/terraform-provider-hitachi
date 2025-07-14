@@ -73,7 +73,7 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"is_accelerated_compression_enabled": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "Checks if is acclerated compression enabled of parity group",
+		Description: "Indicates whether accelerated compression is enabled for the parity group",
 	},
 	"available_volume_capacity_in_kb": &schema.Schema{
 		Type:        schema.TypeInt,

@@ -16,7 +16,7 @@ VOS Block Storage Node:Registers the information of the storage node.
 // Hitachi VOS Block Storage Node Resource
 //
 // This section defines a Terraform resource block for managing storage node
-// on a Hitachi VSP One SDS Block (VOSB) using using HashiCorp Configuration Language (HCL).
+// on a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 //
 // The resource "hitachi_vosb_storage_node" represents the storage node on a Hitachi VSP One SDS Block
 // (VOSB) using its block interface and allows you to manage its configuration

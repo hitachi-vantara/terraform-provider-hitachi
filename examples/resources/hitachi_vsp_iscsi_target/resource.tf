@@ -21,3 +21,7 @@ resource "hitachi_vsp_iscsi_target" "myiscsi" {
   host_mode_options = [90]
   host_mode         = "VMware"
 }
+
+output "iscsioutput" {
+  value = resource.hitachi_vsp_iscsi_target.myiscsi
+}

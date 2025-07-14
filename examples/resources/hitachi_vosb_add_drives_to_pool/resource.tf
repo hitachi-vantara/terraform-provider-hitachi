@@ -6,7 +6,7 @@
 # The `hitachi_vosb_add_drives_to_pool` resource interfaces with the VOSB block API
 # and enables drive additions via Terraform using HashiCorp Configuration Language (HCL).
 #
-# ## Usage
+### Usage
 # Configure one of the following options to add drives:
 #
 # - Set `add_all_offline_drives = true` to add all available offline drives to the pool.
@@ -15,7 +15,7 @@
 # **Important:** You must choose one method — do not set both `add_all_offline_drives` and `drive_ids`.
 # If `add_all_offline_drives` is `true`, `drive_ids` must not be provided, and vice versa.
 #
-# ## Parameters
+### Parameters
 # - `vosb_address`: The address (IP or hostname) of the VOSB system's REST API.
 # - `storage_pool_name`: The name of the storage pool to be expanded.
 # - `add_all_offline_drives`: Boolean flag to add all offline drives. Mutually exclusive with `drive_ids`.

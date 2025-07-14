@@ -1,7 +1,7 @@
 // Hitachi VOS Block Storage Credentials Resource
 //
 // This section defines a Terraform resource block for changing the password of a registered storage user 
-// on a Hitachi VSP One SDS Block (VOSB) using using HashiCorp Configuration Language (HCL).
+// on a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 //
 // The resource "hitachi_vosb_change_user_password" allows you to change the password of a registered
 // storage user on the VOSB.

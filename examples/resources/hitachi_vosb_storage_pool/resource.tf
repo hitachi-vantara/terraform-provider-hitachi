@@ -1,7 +1,7 @@
 // Hitachi VOS Block Storage Pool Resource
 //
 // This section defines a Terraform resource block for managing storage pool
-// on a Hitachi VSP One SDS Block (VOSB) using using HashiCorp Configuration Language (HCL).
+// on a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
 //
 // The resource "hitachi_vosb_storage_pool" represents the storage pool on a Hitachi VSP One SDS Block
 // (VOSB) using its block interface and allows you to manage its configuration

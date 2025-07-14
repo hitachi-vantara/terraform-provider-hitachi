@@ -48,7 +48,7 @@ output "mycomputeport" {
 
 ### Read-Only
 
-- `compute_port` (Block List) Outputs information about the computr port (see [below for nested schema](#nestedblock--compute_port))
+- `compute_port` (Block List) Outputs information about the compute port (see [below for nested schema](#nestedblock--compute_port))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--compute_port"></a>
