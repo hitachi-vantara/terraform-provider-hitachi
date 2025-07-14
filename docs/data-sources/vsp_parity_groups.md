@@ -29,13 +29,13 @@ VSP Storage Parity Group:The following request obtains information about all par
 # parity groups.
 #
 
-data "hitachi_vsp_parity_groups" "myparitygroup" {
+data "hitachi_vsp_parity_groups" "myparitygroups" {
   serial = 12345
   parity_group_ids = ["1-2","1-3"]
 }
 
-output "myparitygroup" {
-  value = data.hitachi_vsp_parity_groups.myparitygroup
+output "myparitygroups" {
+  value = data.hitachi_vsp_parity_groups.myparitygroups
 }
 ```
 
@@ -66,7 +66,7 @@ Read-Only:
 - `clpr_id` (Number) Clpr ID of parity group
 - `drive_type` (String) Drive type of parity group
 - `drive_type_name` (String) Drive type name of parity group
-- `is_accelerated_compression_enabled` (Boolean) Checks if is acclerated compression enabled of parity group
+- `is_accelerated_compression_enabled` (Boolean) Indicates whether accelerated compression is enabled for the parity group
 - `num_of_ldevs` (Number) Total number of ldevs in parity group
 - `parity_group_id` (String) Parity group ID
 - `physical_capacity` (Number) Physical capacity of parity group

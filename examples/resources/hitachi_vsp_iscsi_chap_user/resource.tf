@@ -23,3 +23,7 @@ resource "hitachi_vsp_iscsi_chap_user" "my_iscsi_initiator_chap_user3" {
   chap_user_name      = "chapuser"           
   chap_user_password  = "TopSecretForMyChap" 
 }
+
+output "chapuseroutput" {
+  value = resource.hitachi_vsp_iscsi_chap_user.my_iscsi_initiator_chap_user3
+}

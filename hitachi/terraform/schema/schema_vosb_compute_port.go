@@ -89,7 +89,7 @@ var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
 		Optional:    true,
-		Description: "Outputs information about the computr port",
+		Description: "Outputs information about the compute port",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiPortAuthInfoSchema,
 		},

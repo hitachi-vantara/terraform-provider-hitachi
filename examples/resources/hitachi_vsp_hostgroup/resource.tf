@@ -29,3 +29,7 @@ resource "hitachi_vsp_hostgroup" "myhg" {
     lun     = 12
   }
 }
+
+output "hgoutput" {
+  value = resource.hitachi_vsp_hostgroup.myhg
+}

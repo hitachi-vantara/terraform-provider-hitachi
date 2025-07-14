@@ -19,8 +19,7 @@ VSP Storage Host Group:The following request gets information about host group o
 # This section defines a data source block and an output block to fetch
 # and expose information about a specific hostgroup from a Hitachi Virtual
 # Storage Platform (VSP) using HashiCorp Configuration Language (HCL).
-
-
+#
 # The data source block "hitachi_vsp_hostgroup" retrieves details about a
 # particular hostgroup based on the provided parameters. The output block
 # "hostgroup" exports the retrieved hostgroup information for further use.
@@ -36,22 +35,6 @@ data "hitachi_vsp_hostgroup" "hostgroup" {
 
 output "hostgroup" {
   value = data.hitachi_vsp_hostgroup.hostgroup
-}
-
-# The data source block "hitachi_vsp_hostgroups" fetches details about hostgroups
-# based on the provided parameters. The output block "hostgroups" exports the
-# retrieved hostgroup information for later use.
-#
-# Modify the values of the parameters (serial, port_ids) to suit your environment,
-# allowing you to retrieve information about the desired hostgroups.
-#
-data "hitachi_vsp_hostgroups" "hostgroups" {
-  serial   = 12345
-  port_ids = ["CL7-C", "CL7-A", "CL8-B", "CL9-C"]
-}
-
-output "hostgroups" {
-  value = data.hitachi_vsp_hostgroups.hostgroups
 }
 ```
 

@@ -45,7 +45,7 @@ Refer to the below table for more information
 
 
 - Not supported
-** Either or one of the parameter required(optional Mandotary)
+** Either or one of the parameter required(optional Mandatory)
 * Required parameters
 
 Note : Not marked are optional parameters
@@ -61,6 +61,10 @@ resource "hitachi_vsp_volume" "mylun" {
   //Optional parameters in both the provider
   name = "hitachi_vsp_volume"
   ldev_id = 0
+}
+
+output "voloutput" {
+  value = resource.hitachi_vsp_volume.mylun
 }
 ```
 

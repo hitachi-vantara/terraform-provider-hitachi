@@ -66,7 +66,7 @@ Read-Only:
 - `clpr_id` (Number) Clpr ID of parity group
 - `drive_type` (String) Drive type of parity group
 - `drive_type_name` (String) Drive type name of parity group
-- `is_accelerated_compression_enabled` (Boolean) Checks if is acclerated compression enabled of parity group
+- `is_accelerated_compression_enabled` (Boolean) Indicates whether accelerated compression is enabled for the parity group
 - `num_of_ldevs` (Number) Total number of ldevs in parity group
 - `parity_group_id` (String) Parity group ID
 - `physical_capacity` (Number) Physical capacity of parity group
