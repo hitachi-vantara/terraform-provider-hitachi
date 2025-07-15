@@ -12,11 +12,11 @@
 # environment, enabling you to retrieve information about the desired volume.
 #
 
-data "hitachi_vosb_volume" "vosbvolumes" {
+data "hitachi_vosb_volume" "vosbvolume" {
   vosb_address = "10.10.12.13"
   volume_name  = "Mongonode3_vol4dd"
 }
 
 output "volumeoutput" {
-  value = data.hitachi_vosb_volume.vosbvolumes
+  value = data.hitachi_vosb_volume.vosbvolume
 }
