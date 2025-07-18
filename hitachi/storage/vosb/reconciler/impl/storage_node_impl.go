@@ -15,7 +15,9 @@ import (
 // Add Storage Node
 func (psm *vssbStorageManager) AddStorageNode(
 	configurationFile string,
-	setupUserPassword string) (err error) {
+	exportedConfigurationFile string,
+	setupUserPassword string,
+	expectedCloudProvider string) (err error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -33,7 +35,7 @@ func (psm *vssbStorageManager) AddStorageNode(
 		return
 	}
 
-	err = provObj.AddStorageNode(configurationFile, setupUserPassword)
+	err = provObj.AddStorageNode(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetStorageNodes provisioner call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_STORAGE_NODES_FAILED))

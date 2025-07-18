@@ -193,15 +193,19 @@ func CreateVssbStorageNode(d *schema.ResourceData) error {
 		log.WriteDebug("TFError| configuration_file cannot be empty")
 		return nil
 	}
+	exportedConfigurationFile := d.Get("exported_configuration_file").(string)
 	setupUserPassword := d.Get("setup_user_password").(string)
 	if setupUserPassword == "" {
 		log.WriteDebug("TFError| setup_user_password cannot be empty")
 		return nil
 	}
+	expectedCloudProvider := d.Get("expected_cloud_provider").(string)
 
 	err = reconObj.AddStorageNode(
 		configurationFile,
+		exportedConfigurationFile,
 		setupUserPassword,
+		expectedCloudProvider,
 	)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetStoragenodes, err: %v", err)

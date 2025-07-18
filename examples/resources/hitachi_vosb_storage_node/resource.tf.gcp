@@ -1,0 +1,29 @@
+// Hitachi VOS Block Storage Node Resource
+//
+// This section defines a Terraform resource block for managing storage node
+// on a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+//
+// The resource "hitachi_vosb_storage_node" represents the storage node on a Hitachi VSP One SDS Block
+// (VOSB) using its block interface and allows you to manage its configuration
+// using Terraform.
+//
+// Customize the values of the parameters (vosb_address, exported_configuration_file, expected_cloud_provider) 
+// as needed to match your desired storage node configuration.
+//
+// - Set "exported_configuration_file" to be used to add the storage node.
+// - Set "expected_cloud_provider" to be used to add the storage node.
+//
+// Parameters:
+// - exported_configuration_file: configuration file to be used to add the storage node.
+// - expected_cloud_provider: cloud platform.
+
+
+resource "hitachi_vosb_storage_node" "storageNode" {
+  vosb_address = var.vosb_address
+  exported_configuration_file = "/tmp/configuration.csv"
+  expected_cloud_provider = "google"
+}
+
+output "node_output" {
+  value = resource.hitachi_vosb_storage_node.storageNode
+}
