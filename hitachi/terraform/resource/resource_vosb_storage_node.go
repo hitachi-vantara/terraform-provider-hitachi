@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -17,7 +18,7 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	// "github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	//resourceimpl "terraform-provider-hitachi/hitachi/terraform/resource"
 	// utils "terraform-provider-hitachi/hitachi/common/utils"
@@ -31,6 +32,40 @@ import (
 
 var syncHStorageNodeOperation = &sync.Mutex{}
 
+// validateVosbStorageNodeConfiguration validates the configuration based on cloud provider
+func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
+	cloudProvider := diff.Get("expected_cloud_provider").(string)
+	configFile := diff.Get("configuration_file").(string)
+	exportedConfigFile := diff.Get("exported_configuration_file").(string)
+	setupUserPassword := diff.Get("setup_user_password").(string)
+
+	if cloudProvider != "baremetal" {
+		// For non-baremetal cloud providers: exported_configuration_file is required, others should not be given
+		if exportedConfigFile == "" {
+			return fmt.Errorf("exported_configuration_file is required when expected_cloud_provider is '%s'", cloudProvider)
+		}
+		if setupUserPassword != "" {
+			return fmt.Errorf("setup_user_password should not be provided when expected_cloud_provider is '%s'", cloudProvider)
+		}
+		if configFile != "" {
+			return fmt.Errorf("configuration_file should not be provided when expected_cloud_provider is '%s'", cloudProvider)
+		}
+	} else {
+		// For baremetal: exported_configuration_file must not be given, others are required
+		if exportedConfigFile != "" {
+			return fmt.Errorf("exported_configuration_file should not be provided when expected_cloud_provider is 'baremetal'")
+		}
+		if setupUserPassword == "" {
+			return fmt.Errorf("setup_user_password is required when expected_cloud_provider is 'baremetal'")
+		}
+		if configFile == "" {
+			return fmt.Errorf("configuration_file is required when expected_cloud_provider is 'baremetal'")
+		}
+	}
+
+	return nil
+}
+
 func ResourceVssbStorageNode() *schema.Resource {
 	return &schema.Resource{
 		Description:   "VOS Block Storage Node:Registers the information of the storage node.",
@@ -39,7 +74,9 @@ func ResourceVssbStorageNode() *schema.Resource {
 		UpdateContext: resourceVssbStorageNodeUpdate,
 		DeleteContext: resourceVssbStorageNodeDelete,
 		Schema:        schemaimpl.ResourceVssbStorageNodeSchema,
-		// CustomizeDiff: resourceStorageNodeCustomDiff,
+		CustomizeDiff: customdiff.All(
+			validateVosbStorageNodeConfiguration,
+		),
 	}
 }
 

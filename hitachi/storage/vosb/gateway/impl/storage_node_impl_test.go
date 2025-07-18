@@ -45,7 +45,9 @@ func xTestAddStorageNode(t *testing.T) {
 	if true {
 		err := psm.doAddStorageNode(
 			"/root/huitest2.csv",
+			"",
 			"vssb-789",
+			"baremetal",
 		)
 		if err != nil {
 			t.Errorf("Unexpected error in GetStorageNodes %v", err)

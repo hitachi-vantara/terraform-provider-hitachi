@@ -2,7 +2,9 @@ package terraform
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
 
 var DataVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
@@ -161,13 +163,33 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	},
 	"configuration_file": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "configuration File",
+		Optional:    true,
+		Description: "Configuration File",
+	},
+	"exported_configuration_file": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Configuration file exported to add storagenodes",
 	},
 	"setup_user_password": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
+		Optional:    true,
 		Description: "Setup User Password",
+	},
+	"expected_cloud_provider": &schema.Schema{
+		Type:     schema.TypeString,
+		Optional: true,
+		Default:  "baremetal",
+		Description: `Specifies the expected cloud provider type. Valid values: "google", "azure", "aws", "baremetal".
+
+	- Used to validate combinations of inputs based on the deployment environment.
+	- If set to "google" or "azure", specific parameters may be required for certain operations.
+	- If set to "aws" or "baremetal" (default), other cloud-specific inputs are ignored. These behave identically.
+	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
+	If there's a mismatch, the request still proceeds and behaves according to the actual environment.`,
+		ValidateFunc: validation.StringInSlice([]string{
+			"google", "azure", "aws", "baremetal",
+		}, false),
 	},
 	// "node_name": &schema.Schema{
 	// 	Type:        schema.TypeString,

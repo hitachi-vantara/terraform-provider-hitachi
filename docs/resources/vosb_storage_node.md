@@ -51,9 +51,20 @@ output "node_output" {
 
 ### Required
 
-- `configuration_file` (String) configuration File
-- `setup_user_password` (String) Setup User Password
 - `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+
+### Optional
+
+- `configuration_file` (String) Configuration File
+- `expected_cloud_provider` (String) Specifies the expected cloud provider type. Valid values: "google", "azure", "aws", "baremetal".
+
+	- Used to validate combinations of inputs based on the deployment environment.
+	- If set to "google" or "azure", specific parameters may be required for certain operations.
+	- If set to "aws" or "baremetal" (default), other cloud-specific inputs are ignored. These behave identically.
+	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
+	If there's a mismatch, the request still proceeds and behaves according to the actual environment.
+- `exported_configuration_file` (String) Configuration file exported to add storagenodes
+- `setup_user_password` (String) Setup User Password
 
 ### Read-Only
 
