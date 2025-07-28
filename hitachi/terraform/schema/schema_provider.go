@@ -34,7 +34,7 @@ var ProviderSchema = map[string]*schema.Schema{
 	"san_storage_system": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Hitachi VSP 5000 series reliably delivers more data faster than ever for open systems and mainframe applications. VSP 5000 series provides response times as low as 39 microseconds and can be configured with up to 69 PB of raw capacity, with scalability to handle up to 33 million IOPS. All VSP 5000 models are backed by the industry’s most comprehensive 100% data availability guarantee to ensure that your operations are always up and running.",
+		Description: "Hitachi VSP One series and Hitachi VSP 5000 series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. Both systems focus on simplifying data storage management while ensuring high availability and data integrity.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"serial": &schema.Schema{
