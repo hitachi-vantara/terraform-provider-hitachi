@@ -59,8 +59,8 @@ func GetIscsiTarget(d *schema.ResourceData) (*terraformmodel.IscsiTarget, error)
 	it, err := reconObj.GetIscsiTarget(portID, itNum)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_GET_ISCSITARGET_FAILED), portID, itNum)
-		err = fmt.Errorf(mc.GetMessage(mc.ERR_GET_ISCSITARGET_FAILED), portID, itNum)
-		return nil, err
+		newerr := fmt.Errorf(mc.GetMessage(mc.ERR_GET_ISCSITARGET_FAILED) + "\n%s", portID, itNum, err.Error())
+		return nil, newerr
 	}
 
 	terraformModelIscsiTarget := terraformmodel.IscsiTarget{}

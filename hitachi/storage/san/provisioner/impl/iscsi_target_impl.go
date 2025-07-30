@@ -40,15 +40,23 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 	wga.Add(1)
 	go func(n int) {
 		defer wga.Done()
-		it, err := gatewayObj.GetIscsiTarget(portID, iscsiTargetNumber)
+		it, getErr := gatewayObj.GetIscsiTarget(portID, iscsiTargetNumber)
+		if getErr != nil {
+			log.WriteDebug("TFError| error in GetIscsiTarget, err: %v", getErr)
+			errMap.Store(n, getErr)
+			return
+		}
 
 		provIscsiTarget := sanmodel.IscsiTargetGwy{}
-		err = copier.Copy(&provIscsiTarget, it)
-		errMap.Store(n, err)
-		outMap.Store(n, provIscsiTarget)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		copyErr := copier.Copy(&provIscsiTarget, it)
+		if copyErr != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", copyErr)
+			errMap.Store(n, copyErr)
+			return
 		}
+
+		errMap.Store(n, nil)
+		outMap.Store(n, provIscsiTarget)
 		return
 	}(n)
 
@@ -56,15 +64,23 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 	wga.Add(1)
 	go func(n int) {
 		defer wga.Done()
-		itNameInfo, err := gatewayObj.GetIscsiNameInformation(portID, iscsiTargetNumber)
+		itNameInfo, getErr := gatewayObj.GetIscsiNameInformation(portID, iscsiTargetNumber)
+		if getErr != nil {
+			log.WriteDebug("TFError| error in GetIscsiNameInformation, err: %v", getErr)
+			errMap.Store(n, getErr)
+			return
+		}
 
 		provIscsiNameInfo := []sanmodel.IscsiNameInformation{}
-		err = copier.Copy(&provIscsiNameInfo, itNameInfo)
-		errMap.Store(n, err)
-		outMap.Store(n, provIscsiNameInfo)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		copyErr := copier.Copy(&provIscsiNameInfo, itNameInfo)
+		if copyErr != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", copyErr)
+			errMap.Store(n, copyErr)
+			return
 		}
+
+		errMap.Store(n, nil)
+		outMap.Store(n, provIscsiNameInfo)
 		return
 	}(n)
 
@@ -72,15 +88,23 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 	wga.Add(1)
 	go func(n int) {
 		defer wga.Done()
-		itLuPaths, err := gatewayObj.GetIscsiTargetGroupLuPaths(portID, iscsiTargetNumber)
+		itLuPaths, getErr := gatewayObj.GetIscsiTargetGroupLuPaths(portID, iscsiTargetNumber)
+		if getErr != nil {
+			log.WriteDebug("TFError| error in GetIscsiTargetGroupLuPaths, err: %v", getErr)
+			errMap.Store(n, getErr)
+			return
+		}
 
 		provIscsiTargetLupaths := []sanmodel.IscsiTargetLuPath{}
-		err = copier.Copy(&provIscsiTargetLupaths, itLuPaths)
-		errMap.Store(n, err)
-		outMap.Store(n, provIscsiTargetLupaths)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		copyErr := copier.Copy(&provIscsiTargetLupaths, itLuPaths)
+		if copyErr != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", copyErr)
+			errMap.Store(n, copyErr)
+			return
 		}
+		
+		errMap.Store(n, nil)
+		outMap.Store(n, provIscsiTargetLupaths)
 		return
 	}(n)
 
