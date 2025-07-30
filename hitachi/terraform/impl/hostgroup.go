@@ -83,7 +83,8 @@ func GetHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) {
 	hg, err := reconObj.GetHostGroup(portID, hgNum)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_GET_HOSTGROUP_FAILED), portID, hgNum)
-		return nil, err
+		newerr := fmt.Errorf(mc.GetMessage(mc.ERR_GET_HOSTGROUP_FAILED) + "\n%s", portID, hgNum, err.Error())
+		return nil, newerr
 	}
 
 	terraformModelHostGroup := terraformmodel.HostGroup{}

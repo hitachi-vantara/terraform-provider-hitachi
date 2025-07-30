@@ -40,16 +40,22 @@ func (psm *sanStorageManager) GetHostGroup(portID string, hostGroupNumber int) (
 	wga.Add(1)
 	go func(n int) {
 		defer wga.Done()
-		hg, err := gatewayObj.GetHostGroup(portID, hostGroupNumber)
-
-		provHostGroup := sanmodel.HostGroupGwy{}
-		err = copier.Copy(&provHostGroup, hg)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		hg, getErr := gatewayObj.GetHostGroup(portID, hostGroupNumber)
+		if getErr != nil {
+			log.WriteDebug("TFError| error in GetHostGroup, err: %v", getErr)
+			errMap.Store(n, getErr)
 			return
 		}
 
-		errMap.Store(n, err)
+		provHostGroup := sanmodel.HostGroupGwy{}
+		copyErr := copier.Copy(&provHostGroup, hg)
+		if copyErr != nil {
+			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", copyErr)
+			errMap.Store(n, copyErr)
+			return
+		}
+
+		errMap.Store(n, nil)
 		outMap.Store(n, provHostGroup)
 		return
 	}(n)
@@ -58,16 +64,21 @@ func (psm *sanStorageManager) GetHostGroup(portID string, hostGroupNumber int) (
 	wga.Add(1)
 	go func(n int) {
 		defer wga.Done()
-		hgwwns, err := gatewayObj.GetHostGroupWwns(portID, hostGroupNumber)
-
-		provHostGroupWwnDetail := []sanmodel.HostWwnDetail{}
-		err = copier.Copy(&provHostGroupWwnDetail, hgwwns)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		hgwwns, getErr := gatewayObj.GetHostGroupWwns(portID, hostGroupNumber)
+		if getErr != nil {
+			log.WriteDebug("TFError| error in GetHostGroupWwns, err: %v", getErr)
+			errMap.Store(n, getErr)
 			return
 		}
 
-		errMap.Store(n, err)
+		provHostGroupWwnDetail := []sanmodel.HostWwnDetail{}
+		copyErr := copier.Copy(&provHostGroupWwnDetail, hgwwns)
+		if copyErr != nil {
+			log.WriteDebug("TFError| error in Copy wwns, err: %v", copyErr)
+			errMap.Store(n, copyErr)
+			return
+		}
+		errMap.Store(n, nil)
 		outMap.Store(n, provHostGroupWwnDetail)
 		return
 	}(n)
@@ -76,16 +87,22 @@ func (psm *sanStorageManager) GetHostGroup(portID string, hostGroupNumber int) (
 	wga.Add(1)
 	go func(n int) {
 		defer wga.Done()
-		hglupaths, err := gatewayObj.GetHostGroupLuPaths(portID, hostGroupNumber)
-
-		provHostGroupLupaths := []sanmodel.HostLuPath{}
-		err = copier.Copy(&provHostGroupLupaths, hglupaths)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		hglupaths, getErr := gatewayObj.GetHostGroupLuPaths(portID, hostGroupNumber)
+		if getErr != nil {
+			log.WriteDebug("TFError| error in GetHostGroupLuPaths, err: %v", getErr)
+			errMap.Store(n, getErr)
 			return
 		}
 
-		errMap.Store(n, err)
+		provHostGroupLupaths := []sanmodel.HostLuPath{}
+		copyErr := copier.Copy(&provHostGroupLupaths, hglupaths)
+		if copyErr != nil {
+			log.WriteDebug("TFError| error in Copy LUNs, err: %v", copyErr)
+			errMap.Store(n, copyErr)
+			return
+		}
+
+		errMap.Store(n, nil)
 		outMap.Store(n, provHostGroupLupaths)
 		return
 	}(n)
