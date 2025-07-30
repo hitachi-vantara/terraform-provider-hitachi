@@ -32,7 +32,7 @@ Terraform provider for Hitachi Vantara storage systems 2.1.
 
 Ensure the following are installed:
 - `jq`
-- `terraform` (>= 1.11.4)
+- `terraform` (>= 1.11.3)
 - `uuidgen`
 - Standard runtime libraries (`glibc`, etc.)
 
@@ -306,7 +306,7 @@ Saves to:
 ## Terraform Compatibility
 
 Tested with:
-- Terraform >= 1.11.4 and <= 1.12.2
+- Terraform >= 1.11.3 and <= 1.12.2
 
 ---
 
