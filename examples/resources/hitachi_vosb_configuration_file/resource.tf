@@ -20,14 +20,14 @@
 # The VOSB system will apply its actual cloud provider behavior regardless of this value.
 #
 # - **google / azure**: Additional input parameters are required based on the selected maintenance operation (`export_file_type`).
-# - **aws / baremetal**: All additional parameters are ignored — only basic creation/download will occur.
+# - If not provided: All additional parameters are ignored — only basic creation/download will occur.
 #
 ### Maintenance Operation Types (`export_file_type`)
 # The type of maintenance operation determines what additional parameters are required:
 #
 # - `"Normal"` *(default)*: No additional parameters are needed.
 # - `"AddStorageNodes"`: Requires `machine_image_id` and `address_setting`.
-# - `"ReplaceStorageNode"`: Requires `machine_image_id` and `node_id`.
+# - `"ReplaceStorageNode"`: Requires `machine_image_id` and `node_id`. Optional `recoverSingleNode`
 # - `"AddDrives"`: Requires `number_of_drives` (between 6 and 24).
 # - `"ReplaceDrive"`: Requires either `drive_id` (UUID) or `recover_single_drive = true`.
 #
@@ -43,7 +43,7 @@
 #
 # - `create_configuration_file_param`: **(Optional)** A block of parameters used only for Google Cloud and Azure to generate the configuration file:
 #
-#   - `expected_cloud_provider`: **(Required)** One of `"google"`, `"azure"`, `"aws"`, or `"baremetal"`. Controls behavior of other fields.
+#   - `expected_cloud_provider`: **(Optional)** `"google"` or `"azure"`. Controls behavior of other fields. If not provided, ignores other fields below.
 #   - `export_file_type`: **(Optional)** One of `"Normal"`, `"AddStorageNodes"`, `"ReplaceStorageNode"`, `"AddDrives"`, `"ReplaceDrive"`. Defaults to `"Normal"`.
 #   - `machine_image_id`: **(Optional)** Required for node operations.
 #   - `number_of_drives`: **(Optional)** Must be between 6 and 24 for `AddDrives`.
@@ -63,10 +63,11 @@
 #
 ### Examples
 
+# example "Download existing configuration file. For baremetal or any cloud provider (default export_file_type Normal)" 
 resource "hitachi_vosb_configuration_file" "download" {
   vosb_address              = var.vosb_address
   download_existconfig_only = true
-  download_path             = "/tmp/myDownloadConfig"
+  download_path             = "."
   create_only               = false
 }
 
@@ -74,6 +75,7 @@ output "download_output" {
   value = resource.hitachi_vosb_configuration_file.download
 }
 
+# example "Create and download configuration file. For baremetal or any cloud provider (default export_file_type Normal)" 
 # resource "hitachi_vosb_configuration_file" "create_download" {
 #   vosb_address              = var.vosb_address
 #   download_existconfig_only = false
@@ -85,10 +87,9 @@ output "download_output" {
 #   value = resource.hitachi_vosb_configuration_file.create_download
 # }
 
+# example "Create configuration file only. For baremetal or any cloud provider (default export_file_type Normal)" 
 # resource "hitachi_vosb_configuration_file" "create" {
 #   vosb_address = var.vosb_address
-#   # download_existconfig_only = false
-#   # download_path             = "/tmp/myDownloadConfig"
 #   create_only = true
 # }
 
@@ -96,20 +97,13 @@ output "download_output" {
 #   value = resource.hitachi_vosb_configuration_file.create
 # }
 
+# example "Create and download configuration file. For google or azure cloud provider (export_file_type Normal specified)" 
 # resource "hitachi_vosb_configuration_file" "normal" {
 #   vosb_address  = var.vosb_address
 #   download_path = "/tmp/myDownloadConfig"
-#   # create_only  = true
 #   create_configuration_file_param {
-#     expected_cloud_provider = "google"
+#     expected_cloud_provider = "google" # or azure
 #     export_file_type        = "Normal"
-#     machine_image_id        = "ami-0123456789abcdef0"
-#     address_setting {
-#       index                       = 1
-#       control_port_ipv4_address   = "192.168.0.1"
-#       internode_port_ipv4_address = "192.168.0.2"
-#       compute_port_ipv4_address   = "192.168.0.3"
-#     }
 #   }
 # }
 
@@ -117,12 +111,12 @@ output "download_output" {
 #   value = resource.hitachi_vosb_configuration_file.normal
 # }
 
+# example "AddStorageNodes export_file_type: Create and download configuration file. For google or azure cloud provider" 
 # resource "hitachi_vosb_configuration_file" "add_storage_node" {
 #   vosb_address  = var.vosb_address
-#   download_path = "/tmp/myDownloadConfig"
-#   # create_only  = true
+#   download_path = "."
 #   create_configuration_file_param {
-#     expected_cloud_provider = "azure"
+#     expected_cloud_provider = "google" # or azure
 #     export_file_type        = "AddStorageNodes"
 #     machine_image_id        = "ami-0123456789abcdef0"
 #     address_setting {
@@ -146,9 +140,10 @@ output "download_output" {
 #   value = resource.hitachi_vosb_configuration_file.add_storage_node
 # }
 
+# example "ReplaceDrive export_file_type: Create and download configuration file. Only for google cloud provider" 
 # resource "hitachi_vosb_configuration_file" "replace_drive" {
 #   vosb_address = var.vosb_address
-#   create_only  = true
+#   download_path = "."
 #   create_configuration_file_param {
 #     expected_cloud_provider = "google"
 #     export_file_type        = "ReplaceDrive"
@@ -162,11 +157,12 @@ output "download_output" {
 #   value = resource.hitachi_vosb_configuration_file.replace_drive
 # }
 
+# example "AddDrives export_file_type: Create and download configuration file. For google or azure cloud provider" 
 # resource "hitachi_vosb_configuration_file" "add_drives" {
 #   vosb_address = var.vosb_address
-#   create_only  = true
+#   download_path = "."
 #   create_configuration_file_param {
-#     expected_cloud_provider = "google"
+#     expected_cloud_provider = "google" # or azure
 #     export_file_type        = "AddDrives"
 #     number_of_drives        = 6
 #   }
@@ -176,15 +172,16 @@ output "download_output" {
 #   value = resource.hitachi_vosb_configuration_file.add_drives
 # }
 
+# example "ReplaceStorageNode export_file_type: Create and download configuration file. For google or azure cloud provider" 
 # resource "hitachi_vosb_configuration_file" "replace_storage_node" {
 #   vosb_address = var.vosb_address
-#   create_only  = true
+#   download_path = "."
 #   create_configuration_file_param {
-#     expected_cloud_provider = "google"
+#     expected_cloud_provider = "google" # or azure
 #     export_file_type        = "ReplaceStorageNode"
 #     machine_image_id        = "ami-0123456789abcdef0"
-#     node_id                 = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9"
-#     recover_single_node     = false
+#     node_id                 = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9" // ignored for azure
+#     recover_single_node     = false // ignored for azure
 #   }
 # }
 
