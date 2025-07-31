@@ -230,7 +230,7 @@ func CreateHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) 
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), createInput.PortID, createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), *createInput.PortID, *createInput.HostGroupNumber)
 	reconcilerCreateHostGroupRequest := reconcilermodel.CreateHostGroupRequest{}
 	err = copier.Copy(&reconcilerCreateHostGroupRequest, createInput)
 	if err != nil {
@@ -240,7 +240,7 @@ func CreateHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) 
 
 	hg, err := reconObj.ReconcileHostGroup(&reconcilerCreateHostGroupRequest)
 	if err != nil {
-		log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), createInput.PortID, createInput.HostGroupNumber)
+		log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), *createInput.PortID, *createInput.HostGroupNumber)
 		log.WriteDebug("TFError| error in Creating Hostgroup - ReconcileHostGroup , err: %v", err)
 		return nil, err
 	}
@@ -337,7 +337,7 @@ func CreateHostGroupRequestFromSchema(d *schema.ResourceData) (*terraformmodel.C
 		createInput.Wwns = inpws
 	}
 
-	log.WriteDebug("createInput: %+v", createInput)
+	// log.WriteDebug("createInput: %#v", createInput)
 	return &createInput, nil
 }
 
@@ -526,7 +526,7 @@ func UpdateHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) 
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_HOSTGROUP_BEGIN), updateInput.PortID, updateInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_HOSTGROUP_BEGIN), *updateInput.PortID, *updateInput.HostGroupNumber)
 	reconcilerUpdateHostGroupRequest := reconcilermodel.CreateHostGroupRequest{}
 	err = copier.Copy(&reconcilerUpdateHostGroupRequest, updateInput)
 	if err != nil {
@@ -536,7 +536,7 @@ func UpdateHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) 
 
 	hg, err := reconObj.ReconcileHostGroup(&reconcilerUpdateHostGroupRequest)
 	if err != nil {
-		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_HOSTGROUP_FAILED), updateInput.PortID, updateInput.HostGroupNumber)
+		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_HOSTGROUP_FAILED), *updateInput.PortID, *updateInput.HostGroupNumber)
 		log.WriteDebug("TFError| error in Updating Hostgroup - ReconcileHostGroup , err: %v", err)
 		return nil, err
 	}
@@ -548,6 +548,6 @@ func UpdateHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) 
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_HOSTGROUP_END), updateInput.PortID, updateInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_HOSTGROUP_END), *updateInput.PortID, *updateInput.HostGroupNumber)
 	return &terraformModelHostGroup, nil
 }
