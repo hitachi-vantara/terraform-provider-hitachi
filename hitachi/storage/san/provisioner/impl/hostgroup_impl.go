@@ -229,7 +229,7 @@ func (psm *sanStorageManager) CreateHostGroup(hgBody sanmodel.CreateHostGroupReq
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
-	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), hgBody.PortID, hgBody.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), *hgBody.PortID, *hgBody.HostGroupNumber)
 	objStorage := sangatewaymodel.StorageDeviceSettings{
 		Serial:   psm.storageSetting.Serial,
 		Username: psm.storageSetting.Username,
@@ -248,7 +248,7 @@ func (psm *sanStorageManager) CreateHostGroup(hgBody sanmodel.CreateHostGroupReq
 		HostModeOptions: hgBody.HostModeOptions,
 		HostMode:        hgBody.HostMode,
 	}
-	log.WriteDebug("TFDebug| CreateHostGroupReqGwy: %+v", objHostgroup)
+	// log.WriteDebug("TFDebug| CreateHostGroupReqGwy: %#v", objHostgroup)
 	if objHostgroup.HostGroupName != nil {
 		log.WriteDebug("TFDebug| HostGroupName: %v", *objHostgroup.HostGroupName)
 	}
@@ -281,7 +281,7 @@ func (psm *sanStorageManager) CreateHostGroup(hgBody sanmodel.CreateHostGroupReq
 	if doCreate {
 		_, phgNum, err = gatewayObj.CreateHostGroup(objHostgroup)
 		if err != nil || phgNum == nil {
-			log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), hgBody.PortID, hgBody.HostGroupNumber)
+			log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), *hgBody.PortID, *hgBody.HostGroupNumber)
 			log.WriteDebug("TFError| failed to call CreateHostGroup err: %+v", err)
 			return nil, err
 		}
@@ -314,7 +314,7 @@ func (psm *sanStorageManager) CreateHostGroup(hgBody sanmodel.CreateHostGroupReq
 		log.WriteError(mc.GetMessage(mc.ERR_GET_HOSTGROUP_FAILED), *hgBody.PortID, *phgNum)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_END), hgBody.PortID, hgBody.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_END), *hgBody.PortID, *hgBody.HostGroupNumber)
 	return hg, nil
 }
 
