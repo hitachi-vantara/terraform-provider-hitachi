@@ -46,6 +46,12 @@ func GetVssbNode(d *schema.ResourceData) (*terraformmodel.StorageNodeVssb, error
 		return nil, err
 	}
 
+	terraformStorageNode := terraformmodel.StorageNodeVssb{}
+
+	if  d.Get("node_name") == nil {
+		return &terraformStorageNode, nil
+	}
+
 	nodeName := d.Get("node_name").(string)
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_NODE_BEGIN), nodeName)
 
@@ -57,7 +63,6 @@ func GetVssbNode(d *schema.ResourceData) (*terraformmodel.StorageNodeVssb, error
 	}
 
 	// Converting reconciler to terraform
-	terraformStorageNode := terraformmodel.StorageNodeVssb{}
 	err = copier.Copy(&terraformStorageNode, reconStorageNode)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)

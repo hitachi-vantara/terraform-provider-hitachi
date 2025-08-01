@@ -31,7 +31,10 @@ func DataSourceVssbStorageNodesRead(ctx context.Context, d *schema.ResourceData,
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	node_name := d.Get("node_name").(string)
+	node_name := ""
+	if  d.Get("node_name") != nil {
+		node_name = d.Get("node_name").(string)
+	}
 
 	if node_name == "" {
 
