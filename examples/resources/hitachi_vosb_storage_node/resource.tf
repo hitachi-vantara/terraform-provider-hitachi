@@ -7,18 +7,61 @@
 // (VOSB) using its block interface and allows you to manage its configuration
 // using Terraform.
 //
-// Customize the values of the parameters (vosb_address, node_name, configuration_file, setup_user_password) 
-// as needed to match your desired storage node configuration.
+
+// Expected Cloud Provider Behavior
+// The `expected_cloud_provider` (String) parameter specifies the expected cloud provider type. Valid values: "google", "azure", "aws", "baremetal".
+//	- Used to validate combinations of inputs based on the deployment environment.
+//	- If set to "google" or "azure", specific parameters may be required for certain operations.
+//	- If set to "aws" or "baremetal" (default), other cloud-specific inputs are ignored. These behave identically.
+//	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
+//	If there's a mismatch, the request still proceeds and behaves according to the actual environment.
+
+/////////////////////////////// Azure /////////////////////////////////
+// Customize the values of the parameters (vosb_address, exported_configuration_file, expected_cloud_provider) 
+// as needed to match your desired Azure storage node configuration.
 //
-// - Set "node_name" to the name of the storage node to be added to the cluster.
+// - Set "exported_configuration_file" to be used to add the storage node.
+// - Set "expected_cloud_provider" to be used to add the storage node.
+//
+// Parameters:
+// - exported_configuration_file: configuration file to be used to add the storage node.
+// - expected_cloud_provider: cloud platform.
+//
+// Example:
+// resource "hitachi_vosb_storage_node" "storageNode" {
+//   vosb_address = var.vosb_address
+//   exported_configuration_file = "/tmp/configuration.csv"
+//   expected_cloud_provider = "azure"
+// }
+
+/////////////////////////// Google Cloud Platfor (GCP) /////////////////////////////
+// Customize the values of the parameters (vosb_address, exported_configuration_file, expected_cloud_provider) 
+// as needed to match your desired GCP storage node configuration.
+//
+// - Set "exported_configuration_file" to be used to add the storage node.
+// - Set "expected_cloud_provider" to be used to add the storage node.
+//
+// Parameters:
+// - exported_configuration_file: configuration file to be used to add the storage node.
+// - expected_cloud_provider: cloud platform.
+//
+// Example:
+// resource "hitachi_vosb_storage_node" "storageNode" {
+//   vosb_address = var.vosb_address
+//   exported_configuration_file = "/tmp/configuration.csv"
+//   expected_cloud_provider = "google"
+// }
+
+//////////////////////////////// Baremetal /////////////////////////////////
+// Customize the values of the parameters (vosb_address, configuration_file, setup_user_password) 
+// as needed to match your desired baremetal storage node configuration.
+//
 // - Set "configuration_file" to be used to add the storage node.
 // - Set "setup_user_password" to be used to add the storage node.
 //
 // Parameters:
-// - node_name: name of the storage node to be added to the cluster.
 // - configuration_file: configuration file to be used to add the storage node.
 // - setup_user_password: password to use to log into the storage node to be added.
-
 
 resource "hitachi_vosb_storage_node" "storageNode" {
   vosb_address = var.vosb_address
