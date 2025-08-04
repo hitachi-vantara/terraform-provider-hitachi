@@ -324,11 +324,15 @@ func (psm *vssbStorageManager) ReconcileChapUser(inputChapUser *vssbmodel.ChapUs
 	}
 
 	// Read resource after all operations
-	provisionerResource, err := psm.GetChapUserInfoById(existingResource.ID)
+	provisionerResource, err := psm.GetExistingChapUserInformation(inputChapUser.TargetChapUserName, inputChapUser.ID)
 	if err != nil {
-		log.WriteDebug("TFError| error in GetChapUserInfoByName provisioner call, err: %v", err)
-		return nil, err
+		// The chap user does not exist
+		log.WriteDebug("TFError| error in GetExistingChapUserInformation provisioner call, err: %v", err)
+		existingResource = nil
+
 	}
+	log.WriteDebug("TFDebug| chapuser: %v", existingResource)
+
 	// Converting Prov to Reconciler
 	reconcilerResource := vssbmodel.ChapUser{}
 	err = copier.Copy(&reconcilerResource, provisionerResource)

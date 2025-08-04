@@ -261,8 +261,6 @@ func CreateVssbChapUser(d *schema.ResourceData) (*terraformmodel.ChapUser, error
 		return nil, err
 	}
 
-	log.WriteDebug("TFError| error in Creating Chap User - ReconcileChapUser : %v", reconcilerCreateChapUser)
-
 	chapUser, err := reconObj.ReconcileChapUser(&reconcilerCreateChapUser)
 	if err != nil {
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_CHAP_USER_FAILED), createInput.TargetChapUserName)
@@ -319,7 +317,6 @@ func CreateVssbChapUserFromSchema(d *schema.ResourceData) (*terraformmodel.ChapU
 		createInput.InitiatorChapSecret = is
 	}
 
-	log.WriteDebug("createInput: %+v", createInput)
 	return &createInput, nil
 }
 
