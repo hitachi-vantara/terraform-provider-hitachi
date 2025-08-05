@@ -39,12 +39,12 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 	"storage_pool": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Storage pool name of the storage server",
+		Description: "Storage pool name of the storage server. Required for create operation.",
 	},
 	"capacity_gb": &schema.Schema{
 		Type:        schema.TypeFloat,
 		Optional:    true,
-		Description: "Capacity of the volume to be created in Gigabytes",
+		Description: "Capacity of the volume to be created in Gigabytes. Required for create operation.",
 	},
 	"compute_nodes": &schema.Schema{
 		Type:     schema.TypeList,
@@ -63,7 +63,6 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 	"volume": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Optional:    true,
 		Description: "Outputs information about the volume",
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,

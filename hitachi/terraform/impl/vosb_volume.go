@@ -16,7 +16,6 @@ import (
 	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
-	rmc "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/message-catalog"
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
@@ -213,7 +212,7 @@ func CreateVolume(d *schema.ResourceData) (*terraformmodel.Volume, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.WriteInfo(rmc.GetMessage(mc.INFO_CREATE_VOLUME_BEGIN), volumeSchema.Name)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_VOLUME_BEGIN), volumeSchema.Name)
 	terraformCreateVolume := reconcilermodel.CreateVolume{}
 	err = copier.Copy(&terraformCreateVolume, volumeSchema)
 	if err != nil {
@@ -224,9 +223,10 @@ func CreateVolume(d *schema.ResourceData) (*terraformmodel.Volume, error) {
 	reconVolumeResponse, err := reconObj.ReconcileVolume(&terraformCreateVolume)
 	if err != nil {
 		log.WriteDebug("TFError| error creating volume, err: %v", err)
-		log.WriteError(rmc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), volumeSchema.Name)
+		log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), volumeSchema.Name)
 		return nil, err
 	}
+	log.WriteDebug("Terraform Volume created/updated: %#v", *reconVolumeResponse)
 
 	// Converting reconciler to terraform
 	terraformVolumeRes := terraformmodel.Volume{}
@@ -235,7 +235,7 @@ func CreateVolume(d *schema.ResourceData) (*terraformmodel.Volume, error) {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return nil, err
 	}
-	log.WriteInfo(rmc.GetMessage(mc.INFO_CREATE_VOLUME_END), volumeSchema.Name)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_VOLUME_END), volumeSchema.Name, terraformVolumeRes.ID)
 
 	return &terraformVolumeRes, nil
 }
@@ -268,18 +268,18 @@ func DeleteVolume(d *schema.ResourceData) error {
 		return fmt.Errorf("name is the mandatory field")
 	}
 
-	log.WriteInfo(rmc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN), name)
+	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN), name)
 
 	id := d.State().ID
 	err = reconObj.DeleteVolumeResource(&id)
 	if err != nil {
 
 		log.WriteDebug("TFError| error deleting volume, err: %v", err)
-		log.WriteError(rmc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED), name)
+		log.WriteError(mc.GetMessage(mc.ERR_DELETE_VOLUME_FAILED), name)
 		return err
 	}
 
-	log.WriteInfo(rmc.GetMessage(mc.INFO_DELETE_VOLUME_END), name)
+	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_END), name)
 
 	return nil
 }

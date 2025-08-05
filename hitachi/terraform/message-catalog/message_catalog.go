@@ -33,6 +33,13 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_ALL_VOLUME_INFO_END:   "Successfully read all volume information.",
 	ERR_DELETE_VOLUME_FAILED_MSG:   `"The specified volume cannot be deleted because it is connected to the compute node.","Disconnect the compute node from the specified volume, and then retry the operation.`,
 
+	INFO_CREATE_VOLUME_BEGIN: "Creating a volume %s.",
+	ERR_CREATE_VOLUME_FAILED: "Failed to create a volume %s.",
+	INFO_CREATE_VOLUME_END:   "Successfully created volume %s (id=%s).",
+	INFO_DELETE_VOLUME_BEGIN: "Deleting volume %s.",
+	ERR_DELETE_VOLUME_FAILED: "Failed to delete volume %s.",
+	INFO_DELETE_VOLUME_END:   "Successfully deleted volume %s.",
+
 	//VOSB - COMPUTE
 	INFO_GET_ALL_SERVERS_BEGIN:     "Reading all compute node information.",
 	ERR_GET_ALL_SERVERS_FAILED:     "Failed to read all compute node information.",
@@ -158,9 +165,9 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_ALL_STORAGE_NODES_FAILED: "Failed to read all storage nodes information.",
 	INFO_GET_ALL_STORAGE_NODES_END:   "Successfully read storage nodes information.",
 
-	INFO_GET_NODE_BEGIN:               "Reading node information for node id %s",
-	ERR_GET_NODE_FAILED:               "Failed to read node information for node id %s",
-	INFO_GET_NODE_END:                 "Successfully read node information for node id %s",
+	INFO_GET_NODE_BEGIN: "Reading node information for node id %s",
+	ERR_GET_NODE_FAILED: "Failed to read node information for node id %s",
+	INFO_GET_NODE_END:   "Successfully read node information for node id %s",
 
 	//CHAP USERS
 	INFO_GET_ALL_CHAPUSERS_BEGIN: "Reading all chap users information.",
@@ -195,15 +202,14 @@ var MessageCatalog = map[interface{}]string{
 	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
 
 	// CONFIGURATION FILE
-	INFO_RESTORE_CONFIG_BEGIN:   "Restoring configuration file.",
-	ERR_RESTORE_CONFIG_FAILED:   "Failed to restore configuration file.",
-	INFO_RESTORE_CONFIG_END:     "Successfully restored configuration file.",
-	INFO_DOWNLOAD_CONFIG_BEGIN:  "Downloading configuration file.",
-	ERR_DOWNLOAD_CONFIG_FAILED:  "Failed to download configuration file.",
-	INFO_DOWNLOAD_CONFIG_END:    "Successfully downloaded configuration file.",
-	
-	INFO_CREATE_DOWNLOAD_CONFIG_BEGIN:  "Creating and/or downloading configuration file.",
-	ERR_CREATE_DOWNLOAD_CONFIG_FAILED:  "Failed to create or download configuration file.",
-	INFO_CREATE_DOWNLOAD_CONFIG_END:    "Successfully created or downloaded configuration file.",
+	INFO_RESTORE_CONFIG_BEGIN:  "Restoring configuration file.",
+	ERR_RESTORE_CONFIG_FAILED:  "Failed to restore configuration file.",
+	INFO_RESTORE_CONFIG_END:    "Successfully restored configuration file.",
+	INFO_DOWNLOAD_CONFIG_BEGIN: "Downloading configuration file.",
+	ERR_DOWNLOAD_CONFIG_FAILED: "Failed to download configuration file.",
+	INFO_DOWNLOAD_CONFIG_END:   "Successfully downloaded configuration file.",
 
+	INFO_CREATE_DOWNLOAD_CONFIG_BEGIN: "Creating and/or downloading configuration file.",
+	ERR_CREATE_DOWNLOAD_CONFIG_FAILED: "Failed to create or download configuration file.",
+	INFO_CREATE_DOWNLOAD_CONFIG_END:   "Successfully created or downloaded configuration file.",
 }
