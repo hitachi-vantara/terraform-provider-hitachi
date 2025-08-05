@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"encoding/json"
 
 	// "time"
 	// "errors"
@@ -58,13 +59,35 @@ func resourceCreateVolume(ctx context.Context, d *schema.ResourceData, m interfa
 	volList := []map[string]interface{}{
 		*volume,
 	}
+
+	_, ok := d.GetOk("compute_nodes")
+	if !ok {
+		if err := d.Set("compute_nodes", []string{}); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	d.Set("volume", nil) // clear old state first
 	if err := d.Set("volume", volList); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
 
+	// verify
+	volData := d.Get("volume")
+	volJSON, err := json.MarshalIndent(volData, "", "  ")
+	if err != nil {
+		log.WriteDebug("[ERROR] Failed to marshal volume data: %s", err)
+	} else {
+		log.WriteDebug("[DEBUG] Volume data: %s", string(volJSON))
+	}
+
+	d.SetId("")
 	d.SetId(volumeData.ID)
 	log.WriteInfo("volume created successfully")
+
+	// // Always refresh the resource state
+	// resourceReadVolume(ctx, d, m)
 
 	return nil
 }
@@ -134,44 +157,7 @@ func resourceMyResourceCustomDiff(ctx context.Context, d *schema.ResourceDiff, m
 		log.WriteDebug("name: %s", name.(string))
 		return fmt.Errorf("name is required")
 	}
-	capacity, capacityOk := d.GetOk("capacity_gb")
-	var capacityMB int
-	if capacityOk {
-		capacityMB = int(capacity.(float64) * 1024)
-	}
-	poolName, storagePoolOk := d.GetOk("storage_pool")
-	volname := name.(string)
-	volData, volOk := reconObj.GetVolumeDetails(volname)
-	fmt.Printf("Existing volume found, going for update functionality: %s\n", volname)
-	if volOk != nil {
-		notpresent := []string{}
-		if !capacityOk {
-			notpresent = append(notpresent, "capacity_gb")
-		}
-		if !storagePoolOk {
-			notpresent = append(notpresent, "storage_pool")
-		}
 
-		if len(notpresent) > 0 {
-			return fmt.Errorf("parameters are required for the new volume creation:  %v", strings.Join(notpresent, ", "))
-
-		}
-
-	}
-
-	poolDetails, err := reconObj.GetStoragePoolByPoolName(poolName.(string))
-	if err != nil {
-		return fmt.Errorf("storage_pool is details not found. Provide correct pool name")
-	}
-	if volOk == nil {
-		if poolDetails.ID != volData.PoolId {
-			return fmt.Errorf("can't change the pool once volume is created, Provide the correct pool name which volume was created with")
-		}
-		if capacityMB < volData.TotalCapacity {
-			return fmt.Errorf("volume capacity can't be less than existing volume capacity")
-
-		}
-	}
 	computeNodes := d.Get("compute_nodes")
 	computeNodeCheck := d.GetRawConfig().GetAttr("compute_nodes").IsNull()
 	if !computeNodeCheck {
@@ -187,6 +173,8 @@ func resourceMyResourceCustomDiff(ctx context.Context, d *schema.ResourceDiff, m
 		}
 	}
 
-	log.WriteDebug("T: %v", volData)
+	// fix for 'volume' not updated in console output
+	d.SetNewComputed("volume")
+
 	return nil
 }

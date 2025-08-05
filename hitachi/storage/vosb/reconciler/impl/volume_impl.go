@@ -1,6 +1,7 @@
 package vssbstorage
 
 import (
+	"fmt"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	utils "terraform-provider-hitachi/hitachi/common/utils"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
@@ -110,6 +111,13 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 
 	}
 	if provVolume == nil {
+		// create a new volume
+		log.WriteDebug("No existing volume found, creating a new volume: %#v", *postData)
+
+		if *postData.CapacityInGB <= 0 || *postData.PoolName == "" {
+			return nil, fmt.Errorf("parameters are required for the new volume creation: capacity_gb, storage_pool")
+		}
+
 		var nickname string = ""
 		if *postData.NickName == "" {
 			nickname = *postData.Name
@@ -131,6 +139,9 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 		}
 		log.WriteDebug("Volume created on this ID: %v", *volumeAdd)
 	} else {
+		// update the existing volume
+		log.WriteDebug("Existing volume found, going for update functionality: %s", *postData.Name)
+
 		if *postData.NickName != "" {
 			if provVolume.NickName != *postData.NickName {
 				err := provObj.UpdateVolumeNickName(provVolume.ID, *postData.NickName)
@@ -139,6 +150,7 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 					log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
 					return nil, err
 				}
+				log.WriteInfo("Volume nickname updated successfully: %s", *postData.NickName)
 			}
 		}
 
@@ -151,42 +163,46 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 				log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
 				return nil, err
 			}
-
+			log.WriteInfo("Volume %s expanded successfully to %v GB", *postData.Name, *postData.CapacityInGB)
 		}
 	}
-	provNodesAfterCreate, err := provObj.GetVolumeDetails(*postData.Name)
+
+	provVolAfterCreatUpdate, err := provObj.GetVolumeDetails(*postData.Name)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetVolumeDetails provisioner call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
 		return nil, err
 	}
+	log.WriteDebug("Volume created/updated: %#v", *provVolAfterCreatUpdate)
+
 	if postData.ComputeNodes != nil {
+		err = psm.AddRemoveVolumeToComputeNodes(provVolAfterCreatUpdate, &postData.ComputeNodes)
+		if err != nil {
+			log.WriteDebug("TFError| error in Add compute node psm call, err: %v", err)
+			log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
+			return nil, err
+		}
+		log.WriteInfo("Volume %s compute nodes updated successfully", *postData.Name)
 
-		err = psm.AddRemoveVolumeToComputeNodes(provNodesAfterCreate, &postData.ComputeNodes)
-	}
-	if err != nil {
-		log.WriteDebug("TFError| error in Add compute node psm call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
-		return nil, err
+		//Fetch the final volume details after creating/updating the the volume
+		provVolAfterCreatUpdate, err = provObj.GetVolumeDetails(*postData.Name)
+		if err != nil {
+			log.WriteDebug("TFError| error in GetVolumeDetails provisioner call, err: %v", err)
+			log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
+			return nil, err
+		}
 	}
 
-	//Fetch the final volume details after creating/updating the the volume
-	provNodesAfterAddCN, err := provObj.GetVolumeDetails(*postData.Name)
-	if err != nil {
-		log.WriteDebug("TFError| error in GetVolumeDetails provisioner call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
-		return nil, err
-	}
 	// Converting Prov to Reconciler
 	reconcileNodes := vssbmodel.Volume{}
-	err = copier.Copy(&reconcileNodes, provNodesAfterAddCN)
+	err = copier.Copy(&reconcileNodes, provVolAfterCreatUpdate)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from prov to reconciler structure, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_VOLUME_END), *postData.Name)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_VOLUME_END), *postData.Name, provVolAfterCreatUpdate.ID)
 	return &reconcileNodes, nil
 }
 

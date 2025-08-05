@@ -29,7 +29,7 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_ALL_VOLUME_INFO_END:               "Successfully read all volume information.",
 	INFO_CREATE_VOLUME_BEGIN:                   "Creating a volume %s.",
 	ERR_CREATE_VOLUME_FAILED:                   "Failed to create a volume %s.",
-	INFO_CREATE_VOLUME_END:                     "Successfully created volume %s.",
+	INFO_CREATE_VOLUME_END:                     "Successfully created volume %s (id=%s).",
 	INFO_DELETE_VOLUME_BEGIN:                   "Deleting volume %s.",
 	ERR_DELETE_VOLUME_FAILED:                   "Failed to delete volume %s.",
 	INFO_DELETE_VOLUME_END:                     "Successfully deleted volume %s.",
