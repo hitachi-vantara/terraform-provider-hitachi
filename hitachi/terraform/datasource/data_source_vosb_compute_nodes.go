@@ -44,7 +44,13 @@ func DataSourceVssbComputeNodesRead(ctx context.Context, d *schema.ResourceData,
 
 		compNodeList := []map[string]interface{}{}
 		for _, comNode := range *computeNodes {
-			eachNode := impl.ConvertVssbComputeNodeToSchema(&comNode)
+
+			computeNode, err := impl.GetVssbComputeNode(d, comNode.ID)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			eachNode := impl.ConvertVssbComputeNodeWithPathDetailsToSchema(computeNode)
 			log.WriteDebug("compute node: %+v\n", *eachNode)
 			compNodeList = append(compNodeList, *eachNode)
 		}
