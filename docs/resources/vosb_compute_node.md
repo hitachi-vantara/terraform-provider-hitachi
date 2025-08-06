@@ -59,7 +59,7 @@ output "computenodecreate" {
 
 - `fc_connection` (Block Set) Details of Fiber channel connections (see [below for nested schema](#nestedblock--fc_connection))
 - `iscsi_connection` (Block Set) Details of iSCSI connection to the compute node (see [below for nested schema](#nestedblock--iscsi_connection))
-- `os_type` (String) Type of the OS to be selected while creating the compute node like Linux, Windows,VmWare, etc.
+- `os_type` (String) Type of the OS to be selected like Linux, Windows, VmWare, etc., it is required while creating compute node.
 
 ### Read-Only
 

@@ -110,7 +110,11 @@ func (psm *vssbStorageManager) ReconcileComputeNode(inputCompute *vssbmodel.Comp
 	if existingResource == nil {
 		log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_SERVER_BEGIN), inputCompute.Name)
 
-		if (inputCompute.OsType == "") || (!strings.EqualFold(inputCompute.OsType, "Linux") && !strings.EqualFold(inputCompute.OsType, "VMware") && !strings.EqualFold(inputCompute.OsType, "Windows")) {
+		if (inputCompute.OsType == "") {
+			return nil, fmt.Errorf("OsType is required when adding compute node")
+		}
+
+		if (!strings.EqualFold(inputCompute.OsType, "Linux") && !strings.EqualFold(inputCompute.OsType, "VMware") && !strings.EqualFold(inputCompute.OsType, "Windows")) {
 			return nil, fmt.Errorf("OsType is invalid")
 		}
 		// Converting Reconciler to Prov

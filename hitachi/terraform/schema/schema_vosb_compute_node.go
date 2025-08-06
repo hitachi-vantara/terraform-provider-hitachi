@@ -135,7 +135,7 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"os_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Type of the OS to be selected while creating the compute node like Linux, Windows,VmWare, etc.",
+		Description: "Type of the OS to be selected like Linux, Windows, VmWare, etc., it is required while creating compute node.",
 	},
 	"iscsi_connection": &schema.Schema{
 		Type:        schema.TypeSet,
