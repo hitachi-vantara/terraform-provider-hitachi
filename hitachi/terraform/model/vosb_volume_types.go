@@ -41,6 +41,7 @@ type Volumes struct {
 }
 
 type CreateVolume struct {
+	ID           string   `json:"id,omitempty"`
 	Name         string   `json:"name"`
 	PoolName     string   `json:"poolName,omitempty"`
 	CapacityInGB float32  `json:"capacityInGB,omitempty"`

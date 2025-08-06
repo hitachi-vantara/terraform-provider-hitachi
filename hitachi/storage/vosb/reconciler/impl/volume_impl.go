@@ -105,7 +105,8 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
-	provVolume, err := provObj.GetVolumeDetailsByName(*postData.Name)
+	// provVolume, err := provObj.GetVolumeDetailsByName(*postData.Name)
+	provVolume, err := provObj.GetVolumeDetailsByIdOrName(*postData.ID, *postData.Name)
 	if err != nil {
 		log.WriteInfo("TFError| No Volume found so creating a new volume, err: %v", err)
 
@@ -144,14 +145,24 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 
 		if *postData.NickName != "" {
 			if provVolume.NickName != *postData.NickName {
-				err := provObj.UpdateVolumeNickName(provVolume.ID, *postData.NickName)
+				err := provObj.UpdateVolume(provVolume.ID, "", *postData.NickName)
 				if err != nil {
-					log.WriteDebug("TFError| error in UpdateVolumeNickName provisioner call, err: %v", err)
+					log.WriteDebug("TFError| error in UpdateVolume provisioner call, err: %v", err)
 					log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
 					return nil, err
 				}
 				log.WriteInfo("Volume nickname updated successfully: %s", *postData.NickName)
 			}
+		}
+
+		if provVolume.Name != *postData.Name {
+			err := provObj.UpdateVolume(provVolume.ID, *postData.Name, "")
+			if err != nil {
+				log.WriteDebug("TFError| error in UpdateVolume provisioner call, err: %v", err)
+				log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)
+				return nil, err
+			}
+			log.WriteInfo("Volume name updated successfully: %s", *postData.Name)
 		}
 
 		var capacityMB int32 = int32(*postData.CapacityInGB * 1024)

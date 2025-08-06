@@ -31,7 +31,7 @@ type VssbStorageManager interface {
 	GetAllVolumes() (*vssbmodel.Volumes, error)
 	CreateVolume(reqBody *vssbmodel.CreateVolumeRequestGwy) (*int, error)
 	AddVolumeToComputeNode(reqBody *vssbmodel.AddVolumeToComputeNodeReq) (*int, error)
-	UpdateVolumeNickName(volumeId *string, nickName *vssbmodel.UpdateVolumeNickNameReq) error
+	UpdateVolume(volumeId *string, reqbody *vssbmodel.UpdateVolumeReq) error
 	ExtendVolumeSize(volumeId *string, capacity *vssbmodel.UpdateVolumeSizeReq) error
 	RemoveVolumeFromComputeNode(volumeId *string, serverId *string) error
 	DeleteVolume(volumeId *string) error
@@ -75,5 +75,4 @@ type VssbStorageManager interface {
 	// CONFIGURATION FILE
 	RestoreConfigurationDefinitionFile(createConfigParam *vssbmodel.CreateConfigurationFileParam) error
 	DownloadConfigurationFile(saveDir string) (string, error)
-
 }

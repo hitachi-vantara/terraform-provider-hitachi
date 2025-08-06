@@ -266,6 +266,57 @@ func (psm *vssbStorageManager) GetVolumeDetailsByName(volumeName string) (*vssbm
 
 }
 
+// Get volume information based on the volume id or name
+func (psm *vssbStorageManager) GetVolumeDetailsByIdOrName(id, volumeName string) (*vssbmodel.Volume, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := vssbgatewaymodel.StorageDeviceSettings{
+		Username:       psm.storageSetting.Username,
+		Password:       psm.storageSetting.Password,
+		ClusterAddress: psm.storageSetting.ClusterAddress,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_VOLUME_INFO_BEGIN))
+	volumesData, err := gatewayObj.GetAllVolumes()
+	if err != nil {
+		log.WriteDebug("TFError| failed to call GetAllVolumes err: %+v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_VOLUME_INFO_FAILED))
+		return nil, err
+	}
+
+	var volumeId string = ""
+	provVolume := vssbmodel.Volume{}
+
+	// Assign Volume based on condition
+	for _, volume := range volumesData.Data {
+		if volume.Name == volumeName || volume.ID == id {
+			volumeId = volume.ID
+			err = copier.Copy(&provVolume, volume)
+			if err != nil {
+				log.WriteDebug("Copy Error: %v", err)
+				return nil, err
+			}
+			break
+		}
+	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_VOLUME_INFO_END))
+
+	if volumeId == "" {
+		return nil, fmt.Errorf("volume not found")
+	} else {
+		return &provVolume, nil
+	}
+
+}
+
 // get the array of compute nodes by filtering the volume id
 func (psm *vssbStorageManager) GetComputeNodesIDsByVolumeId(volumeID *string) (*[]map[string]interface{}, error) {
 
@@ -430,7 +481,7 @@ func (psm *vssbStorageManager) AddVolumeToComputeNode(volumeId string, serverId 
 	return nodeAdditions, nil
 }
 
-func (psm *vssbStorageManager) UpdateVolumeNickName(serverId string, nickName string) error {
+func (psm *vssbStorageManager) UpdateVolume(serverId string, name, nickName string) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -446,13 +497,14 @@ func (psm *vssbStorageManager) UpdateVolumeNickName(serverId string, nickName st
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return err
 	}
-	NickNameodel := vssbgatewaymodel.UpdateVolumeNickNameReq{
+	reqbody := vssbgatewaymodel.UpdateVolumeReq{
+		Name: name,
 		NickName: nickName,
 	}
-	err = gatewayObj.UpdateVolumeNickName(&serverId, &NickNameodel)
+	err = gatewayObj.UpdateVolume(&serverId, &reqbody)
 	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_VOLUME_NICKNAME_BEGIN), serverId)
 	if err != nil {
-		log.WriteDebug("TFError| error in UpdateVolumeNickName call, err: %v", err)
+		log.WriteDebug("TFError| error in UpdateVolume call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_VOLUME_NICKNAME_FAILED), serverId)
 		return err
 	}

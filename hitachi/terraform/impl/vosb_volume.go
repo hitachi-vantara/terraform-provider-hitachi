@@ -291,6 +291,8 @@ func CreateVolumeReqFromSchema(d *schema.ResourceData) (*terraformmodel.CreateVo
 
 	createInput := terraformmodel.CreateVolume{}
 
+	createInput.ID = d.Id()
+
 	name, ok := d.GetOk("name")
 	if !ok {
 		return nil, fmt.Errorf("name is the mandatory field")
