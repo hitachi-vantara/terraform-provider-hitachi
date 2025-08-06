@@ -9,10 +9,10 @@
 //
 
 // Expected Cloud Provider Behavior
-// The `expected_cloud_provider` (String) parameter specifies the expected cloud provider type. Valid values: "google", "azure", "aws", "baremetal".
+// The `expected_cloud_provider` (String) parameter specifies the expected cloud provider type. Valid values: "google", "azure", "baremetal".
 //	- Used to validate combinations of inputs based on the deployment environment.
 //	- If set to "google" or "azure", specific parameters may be required for certain operations.
-//	- If set to "aws" or "baremetal" (default), other cloud-specific inputs are ignored. These behave identically.
+//	- If set to "baremetal" (default), other cloud-specific inputs are ignored.
 //	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
 //	If there's a mismatch, the request still proceeds and behaves according to the actual environment.
 
