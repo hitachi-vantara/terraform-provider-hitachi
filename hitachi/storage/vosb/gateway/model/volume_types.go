@@ -57,13 +57,15 @@ type AddVolumeToComputeNodeReq struct {
 	ServerID string `json:"serverId"`
 }
 
-type UpdateVolumeNickNameReq struct {
-	NickName string `json:"nickname"`
+type UpdateVolumeReq struct {
+	Name     string `json:"name,omitempty"`
+	NickName string `json:"nickname,omitempty"`
 }
 
 type UpdateVolumeSizeReq struct {
 	AdditionalCapacity *int32 `json:"additionalCapacity"`
 }
+
 // {
 // 	"capacity": 52,
 // 	"number": 1,

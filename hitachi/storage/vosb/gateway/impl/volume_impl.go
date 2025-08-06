@@ -84,8 +84,8 @@ func (psm *vssbStorageManager) RemoveVolumeFromComputeNode(volumeId *string, ser
 	return nil
 }
 
-// UpdateVolumeNickName
-func (psm *vssbStorageManager) UpdateVolumeNickName(volumeId *string, nickName *vssbmodel.UpdateVolumeNickNameReq) error {
+// UpdateVolume
+func (psm *vssbStorageManager) UpdateVolume(volumeId *string, reqbody *vssbmodel.UpdateVolumeReq) error {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -94,7 +94,7 @@ func (psm *vssbStorageManager) UpdateVolumeNickName(volumeId *string, nickName *
 		return fmt.Errorf("volumeId is nil")
 	}
 	apiSuf := fmt.Sprintf("objects/volumes/%s", *volumeId)
-	_, err := httpmethod.PatchCall(psm.storageSetting, apiSuf, nickName)
+	_, err := httpmethod.PatchCall(psm.storageSetting, apiSuf, reqbody)
 	if err != nil {
 		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
 		return err
