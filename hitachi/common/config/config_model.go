@@ -25,7 +25,7 @@ const DEFAULT_CONSENT_MESSAGE = `
 const RUN_CONSENT_MESSAGE = "To provide your consent, run bin/user_consent.sh from /opt/hitachi/terraform."
 
 const (
-	DEFAULT_ASN_POLL_MAX = 60  // minutes for adding storage node
+	DEFAULT_ASN_POLL_MAX = 90  // minutes for adding storage node
 	DEFAULT_API_TIMEOUT  = 300 // seconds
 	DEFAULT_AWS_TIMEOUT  = 300 // seconds
 	// DEFAULT_AWS_URL     = "https://5v56roefvl.execute-api.us-west-2.amazonaws.com/api/update_telemetry"
