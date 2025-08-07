@@ -13,13 +13,12 @@ VOS Block: Change Storage User Password.
 ## Example Usage
 
 ```terraform
-// Hitachi VOS Block Storage Credentials Resource
+// Hitachi VSP One SDS Block Storage Credentials Resource
 //
-// This section defines a Terraform resource block for changing the password of a registered storage user 
-// on a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+// This section defines a Terraform resource block for changing the password of a registered user
+// on a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
 //
-// The resource "hitachi_vosb_change_user_password" allows you to change the password of a registered
-// storage user on the VOSB.
+// The resource "hitachi_vosb_change_user_password" allows you to change the password of a registered user.
 //
 // Customize the values of the parameters (vosb_address, user_id, current_password, and new_password) 
 // as needed to match your environment, reflecting the appropriate settings for the registered storage user
@@ -33,8 +32,13 @@ resource "hitachi_vosb_change_user_password" "my_user" {
 }
 
 output "user_output" {
-  value = resource.hitachi_vosb_change_user_password.my_user
-  sensitive = true
+  # Explicitly specify 'user_info' since it does not contain sensitive data.
+  value = resource.hitachi_vosb_change_user_password.my_user.user_info
+
+  # If you don't explicitly list output parameters, Terraform will display all inputs and outputs by default.
+  # Since some input fields contain sensitive data, they must be marked as sensitive to avoid exposing them.
+  # value     = resource.hitachi_vosb_change_user_password.my_user
+  # sensitive = true
 }
 ```
 
@@ -48,48 +52,42 @@ output "user_output" {
 - `user_id` (String) The user ID for the password change.
 - `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
 
-### Optional
-
-- `storage_user` (Block List) This is the user output information (see [below for nested schema](#nestedblock--storage_user))
-
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `status` (String) The status of the password change operation.
+- `user_info` (List of Object) This is the user output information (see [below for nested schema](#nestedatt--user_info))
 
-<a id="nestedblock--storage_user"></a>
-### Nested Schema for `storage_user`
+<a id="nestedatt--user_info"></a>
+### Nested Schema for `user_info`
 
-Required:
+Read-Only:
 
-- `authentication` (String) The authentication method for the user.
-- `is_built_in` (Boolean) Indicates if the user is a built-in user.
-- `is_enabled` (Boolean) Whether the user is enabled.
-- `password_expiration_time` (String) The password expiration time for the user.
-- `privileges` (Block List, Min: 1) List of privileges assigned to the user. (see [below for nested schema](#nestedblock--storage_user--privileges))
-- `role_names` (List of String) List of role names assigned to the user.
-- `user_groups` (Block List, Min: 1) List of user groups associated with the user. (see [below for nested schema](#nestedblock--storage_user--user_groups))
-- `user_id` (String) The user ID.
-- `user_object_id` (String) The object ID of the user.
-- `vps_id` (String) The virtual private server ID associated with the user.
+- `authentication` (String)
+- `is_built_in` (Boolean)
+- `is_enabled` (Boolean)
+- `is_enabled_console_login` (Boolean)
+- `password_expiration_time` (String)
+- `privileges` (List of Object) (see [below for nested schema](#nestedobjatt--user_info--privileges))
+- `role_names` (List of String)
+- `user_groups` (List of Object) (see [below for nested schema](#nestedobjatt--user_info--user_groups))
+- `user_id` (String)
+- `user_object_id` (String)
+- `vps_id` (String)
 
-Optional:
+<a id="nestedobjatt--user_info--privileges"></a>
+### Nested Schema for `user_info.privileges`
 
-- `is_enabled_console_login` (Boolean) Whether the user is enabled for console login. Can be null.
+Read-Only:
 
-<a id="nestedblock--storage_user--privileges"></a>
-### Nested Schema for `storage_user.privileges`
-
-Required:
-
-- `role_names` (List of String) List of role names associated with the privilege.
-- `scope` (String) The scope of the privilege.
+- `role_names` (List of String)
+- `scope` (String)
 
 
-<a id="nestedblock--storage_user--user_groups"></a>
-### Nested Schema for `storage_user.user_groups`
+<a id="nestedobjatt--user_info--user_groups"></a>
+### Nested Schema for `user_info.user_groups`
 
-Required:
+Read-Only:
 
-- `user_group_id` (String) The ID of the user group.
-- `user_group_object_id` (String) The object ID of the user group.
+- `user_group_id` (String)
+- `user_group_object_id` (String)

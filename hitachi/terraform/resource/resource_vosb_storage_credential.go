@@ -3,13 +3,14 @@ package terraform
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"regexp"
 	"sync"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var syncChangeUserPasswordOperation = &sync.Mutex{}
@@ -42,7 +43,7 @@ func resourceVssbChangeUserPasswordCreate(ctx context.Context, d *schema.Resourc
 	}
 
 	userInfoMap := impl.ConvertVssbStorageUserToSchema(userInfo)
-	if err := d.Set("storage_user", []interface{}{userInfoMap}); err != nil {
+	if err := d.Set("user_info", []interface{}{userInfoMap}); err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
