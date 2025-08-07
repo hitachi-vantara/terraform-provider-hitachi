@@ -121,10 +121,9 @@ var ResourceVssbChangeUserPasswordSchema = map[string]*schema.Schema{
 		Sensitive:   true,
 	},
 	// Output field for User
-	"storage_user": &schema.Schema{
+	"user_info": &schema.Schema{
 		Type:        schema.TypeList, // Changed from TypeMap to TypeList
 		Computed:    true,
-		Optional:    true,
 		Description: "This is the user output information",
 		Elem: &schema.Resource{
 			Schema: VssbStorageUserInfoSchema,

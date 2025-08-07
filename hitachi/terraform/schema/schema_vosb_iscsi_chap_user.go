@@ -95,6 +95,7 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"target_chap_user_secret": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
+		Sensitive:   true,
 		Description: `CHAP secret used for CHAP authentication on the compute port (i.e., target side).
 		(12 to 32 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\/\[\]~ ]{12,32}$/`,
 	},
@@ -107,6 +108,7 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"initiator_chap_user_secret": &schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
+		Sensitive:   true,
 		Description: `CHAP secret used for CHAP authentication on the initiator port of the compute node in mutual CHAP authentication.
 		(12 to 32 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\/\[\]~ ]{12,32}$/`,
 	},
@@ -115,7 +117,6 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"chap_users": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Optional:    true,
 		Description: "This is chap users output",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
