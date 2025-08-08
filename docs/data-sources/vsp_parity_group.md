@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_parity_group Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage Parity Group:The following request obtains information about all parity groups.
+  VSP Storage Parity Group: The following request obtains information about all parity groups.
 ---
 
 # hitachi_vsp_parity_group (Data Source)
 
-VSP Storage Parity Group:The following request obtains information about all parity groups.
+VSP Storage Parity Group: The following request obtains information about all parity groups.
 
 ## Example Usage
 

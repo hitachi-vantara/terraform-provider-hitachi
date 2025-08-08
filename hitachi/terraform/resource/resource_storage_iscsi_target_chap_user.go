@@ -23,7 +23,7 @@ var syncIscsiChapUserOperation = &sync.Mutex{}
 
 func ResourceStorageIscsiChapUser() *schema.Resource {
 	return &schema.Resource{
-		Description:   `VOS Block iSCSI Target CHAP User:The following request sets the CHAP user name for the iSCSI target. Two types of CHAP user names can be set: the CHAP user name of the iSCSI target side and the CHAP user name of the host (iSCSI initiator) that connects to the iSCSI target.`,
+		Description:   `VSP Storage iSCSI Target CHAP User: Sets the CHAP user name for the iSCSI target. Two types of CHAP user names can be set: the CHAP user name of the iSCSI target side and the CHAP user name of the host (iSCSI initiator) that connects to the iSCSI target.`,
 		CreateContext: resourceStorageIscsiChapUserCreate,
 		ReadContext:   resourceStorageIscsiChapUserRead,
 		UpdateContext: resourceStorageIscsiChapUserUpdate,

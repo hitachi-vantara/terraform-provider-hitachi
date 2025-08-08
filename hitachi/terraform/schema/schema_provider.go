@@ -9,13 +9,13 @@ var ProviderSchema = map[string]*schema.Schema{
 	"hitachi_vosb_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Hitachi VSP One SDS Block (VOSB) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability.",
+		Description: "Hitachi VSP One SDS Block is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"vosb_address": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Host name or the IP address (IPv4) of VSP One SDS Block.",
+					Description: "Host name or the IP address (IPv4) of the VSP One SDS Block.",
 				},
 				"username": &schema.Schema{
 					Type:        schema.TypeString,

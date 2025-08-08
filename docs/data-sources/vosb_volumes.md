@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_volumes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Storage Volume:Obtains a list of volumes information.
+  VSP One SDS Block Storage Volume: Obtains a list of volumes information.
 ---
 
 # hitachi_vosb_volumes (Data Source)
 
-VOS Block Storage Volume:Obtains a list of volumes information.
+VSP One SDS Block Storage Volume: Obtains a list of volumes information.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VOS Block Volumes Data Retrieval
+# Hitachi VSP One SDS Block Volumes Data Retrieval
 #
 # This section defines a data source block to fetch information about multiple volumes
-# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_volumes" retrieves details about volumes
 # associated with the provided parameters. This allows you to access configuration
@@ -41,7 +41,7 @@ output "volumeoutput" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 

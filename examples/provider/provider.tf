@@ -4,7 +4,7 @@
 # The Hitachi Terraform provider enables automation and infrastructure-as-code
 # management of Hitachi storage systems, including:
 #
-# - Hitachi VSP One SDS Block (VOSB)
+# - Hitachi VSP One SDS Block
 # - Hitachi VSP One B20 series
 # - Hitachi VSP 5000 series
 #
@@ -18,7 +18,7 @@
 # - `hitachi_vosb_provider`: For VSP One SDS Block systems.
 # - `san_storage_system`: For VSP One B20 series and VSP 5000 series.
 #
-# Example configuration for VOSB:
+# Example configuration for VSP One SDS Block:
 #
 # provider "hitachi" {
 #   hitachi_vosb_provider {

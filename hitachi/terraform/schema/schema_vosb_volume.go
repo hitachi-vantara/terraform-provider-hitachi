@@ -8,7 +8,7 @@ var DataVolumeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:     schema.TypeString,
@@ -29,7 +29,7 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Blockk.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -74,7 +74,7 @@ var VolumeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"volume_name": &schema.Schema{
 		Type:     schema.TypeString,

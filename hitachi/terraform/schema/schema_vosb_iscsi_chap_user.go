@@ -29,7 +29,7 @@ var DataVssbIscsiChapUsersSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"target_chap_user": &schema.Schema{
 		Type:        schema.TypeString,
@@ -54,7 +54,7 @@ var DataVssbIscsiChapUserSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"target_chap_user_name": &schema.Schema{
 		Type:     schema.TypeString,
@@ -78,7 +78,7 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"chap_user_id": &schema.Schema{
 		Type:        schema.TypeString,

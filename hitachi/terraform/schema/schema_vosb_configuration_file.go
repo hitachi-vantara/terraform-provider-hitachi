@@ -14,7 +14,7 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The address (IP or hostname) of the VOSB system's REST API.",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 
 	"download_existconfig_only": &schema.Schema{
@@ -52,7 +52,7 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 	- Used to validate combinations of inputs based on the deployment environment.
 	- If set to "google" or "azure", specific parameters may be required for certain operations.
 	- If not specified, other cloud-specific inputs below are ignored.
-	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
+	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
 	If there's a mismatch, the request still proceeds and behaves according to the actual environment.`,
 					ValidateFunc: validation.StringInSlice([]string{
 						"google", "azure", "aws", "baremetal",

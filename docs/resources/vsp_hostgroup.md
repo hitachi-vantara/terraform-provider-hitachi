@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_hostgroup Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.
+  VSP Storage Host Group: The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.
 ---
 
 # hitachi_vsp_hostgroup (Resource)
 
-VSP Storage Host Group:The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.
+VSP Storage Host Group: The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.
 
 ## Example Usage
 

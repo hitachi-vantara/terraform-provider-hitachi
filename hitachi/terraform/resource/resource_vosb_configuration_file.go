@@ -21,7 +21,7 @@ var syncRestoreConfigFileOperation = &sync.Mutex{}
 
 func ResourceVssbConfigurationFile() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VOS Block: Create and/or download configuration definition file of the storage system.",
+		Description:   "VSP One SDS Block: Create and/or download configuration definition file of the storage system.",
 		CreateContext: resourceVssbConfigurationFileCreate,
 		ReadContext:   resourceVssbConfigurationFileRead,
 		UpdateContext: resourceVssbConfigurationFileUpdate,

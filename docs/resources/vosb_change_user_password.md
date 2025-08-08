@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_change_user_password Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block: Change Storage User Password.
+  VSP One SDS Block: Change Storage User Password.
 ---
 
 # hitachi_vosb_change_user_password (Resource)
 
-VOS Block: Change Storage User Password.
+VSP One SDS Block: Change Storage User Password.
 
 ## Example Usage
 
@@ -50,7 +50,7 @@ output "user_output" {
 - `current_password` (String, Sensitive) The current password of the user.
 - `new_password` (String, Sensitive) The new password for the user.
 - `user_id` (String) The user ID for the password change.
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
 
 ### Read-Only
 

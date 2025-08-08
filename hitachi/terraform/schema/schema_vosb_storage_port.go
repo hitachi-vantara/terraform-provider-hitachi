@@ -8,7 +8,7 @@ var DataVssbStoragePortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"port_name": &schema.Schema{
 		Type:        schema.TypeString,

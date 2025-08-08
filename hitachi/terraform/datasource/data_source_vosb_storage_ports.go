@@ -20,7 +20,7 @@ import (
 
 func DataSourceVssbStoragePorts() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Port:Obtains a list of storage ports information.",
+		Description: "VSP One SDS Block Storage Port: Obtains a list of storage ports information.",
 		ReadContext: DataSourceVssbStoragePortsRead,
 		Schema:      schemaimpl.DataVssbStoragePortSchema,
 	}

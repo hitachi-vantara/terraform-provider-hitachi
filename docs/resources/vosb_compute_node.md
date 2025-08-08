@@ -3,22 +3,22 @@
 page_title: "hitachi_vosb_compute_node Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Compute Node:Registers the information of the compute node.
+  VSP One SDS Block Compute Node: Registers the information of the compute node.
 ---
 
 # hitachi_vosb_compute_node (Resource)
 
-VOS Block Compute Node:Registers the information of the compute node.
+VSP One SDS Block Compute Node: Registers the information of the compute node.
 
 ## Example Usage
 
 ```terraform
 //
-// Hitachi VOS Block Compute Node Resource
+// Hitachi VSP One SDS Block Compute Node Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VOS Block compute node.
+// This section defines a Terraform resource block to create a Hitachi VSP One SDS Block compute node.
 // The resource "hitachi_vosb_compute_node" represents a compute node on a Hitachi VSP One SDS Block
-// (VOSB) using its block interface and allows you to manage its configuration
+// using its block interface and allows you to manage its configuration
 // using Terraform.
 //
 // Customize the values of the parameters (vosb_address, compute_node_name, os_type),
@@ -53,7 +53,7 @@ output "computenodecreate" {
 ### Required
 
 - `compute_node_name` (String) Name to be created
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
 
 ### Optional
 

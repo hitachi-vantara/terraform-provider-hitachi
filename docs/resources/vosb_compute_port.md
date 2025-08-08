@@ -3,22 +3,22 @@
 page_title: "hitachi_vosb_compute_port Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+  VSP One SDS Block Compute Port: Allows CHAP users to access the compute port.
 ---
 
 # hitachi_vosb_compute_port (Resource)
 
-VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+VSP One SDS Block Compute Port: Allows CHAP users to access the compute port.
 
 ## Example Usage
 
 ```terraform
 //
-// Hitachi VOS Block Compute Port Resource
+// Hitachi VSP One SDS Block Compute Port Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VOS Block compute port.
+// This section defines a Terraform resource block to create a Hitachi VSP One SDS Block compute port.
 // The resource "hitachi_vosb_compute_port" represents a compute port on a Hitachi VSP One SDS Block
-// (VOSB) using its block interface and allows you to manage its configuration
+// using its block interface and allows you to manage its configuration
 // using Terraform.
 //
 // Customize the values of the parameters (vosb_address, name, authentication_settings,
@@ -45,14 +45,14 @@ output "chapuser_association_with_computeport" {
 
 ### Required
 
-- `authentication_settings` (String) x ∈ { "CHAP" , "CHAPComplyingWithInitiatorSetting" , "None" }
-		Authentication scheme of the compute port.
-		o CHAP: CHAP authentication.
-		o CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
-		o None: No authentication is performed.
+- `authentication_settings` (String) Authentication scheme of the compute port.
+
+	- CHAP: CHAP authentication.
+	- CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
+	- None: No authentication is performed.
 - `name` (String) Name of the port
-- `target_chap_users` (List of String) List of compute nodes to be attached to the volume. To remove all the nodes from the volume declare compute_nodes = []
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `target_chap_users` (List of String) List of chap users to be attached to the compute port.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Read-Only
 

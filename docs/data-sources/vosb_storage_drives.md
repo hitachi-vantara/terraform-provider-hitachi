@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_storage_drives Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Storage Drives: Obtains a list of drive information.
+  VSP One SDS Block Storage Drives: Obtains a list of drive information.
 ---
 
 # hitachi_vosb_storage_drives (Data Source)
 
-VOS Block Storage Drives: Obtains a list of drive information.
+VSP One SDS Block Storage Drives: Obtains a list of drive information.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VOS Block Storage Drives Data Retrieval
+# Hitachi VSP One SDS Block Storage Drives Data Retrieval
 #
 # This section defines a data source block to fetch information about storage drives
-# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_storage_drives" retrieves details about storage drives
 # associated with the provided parameters. This allows you to access configuration and property
@@ -45,7 +45,7 @@ output "my_drives_output" {
 
 ### Required
 
-- `vosb_address` (String) The VOSB address.
+- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
 
 ### Optional
 

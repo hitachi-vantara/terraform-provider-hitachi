@@ -17,9 +17,11 @@ import (
 	// cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 
+	impl "terraform-provider-hitachi/hitachi/terraform/impl"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
-	impl "terraform-provider-hitachi/hitachi/terraform/impl"
+
 	//resourceimpl "terraform-provider-hitachi/hitachi/terraform/resource"
 	// utils "terraform-provider-hitachi/hitachi/common/utils"
 	// reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
@@ -68,7 +70,7 @@ func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.Reso
 
 func ResourceVssbStorageNode() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VOS Block Storage Node:Registers the information of the storage node.",
+		Description:   "VSP One SDS Block Storage Node: Registers the information of the storage node.",
 		CreateContext: resourceVssbStorageNodeCreate,
 		ReadContext:   resourceVssbStorageNodeRead,
 		UpdateContext: resourceVssbStorageNodeUpdate,
@@ -79,7 +81,6 @@ func ResourceVssbStorageNode() *schema.Resource {
 		),
 	}
 }
-
 
 func resourceVssbStorageNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log := commonlog.GetLogger()
@@ -118,25 +119,24 @@ func resourceVssbStorageNodeCreate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func setOutput(d *schema.ResourceData) {
-		storageNodes, err := impl.GetVssbStorageNodes(d)
-		if err != nil {
-			return 
-		}
+	storageNodes, err := impl.GetVssbStorageNodes(d)
+	if err != nil {
+		return
+	}
 
-		spList := []map[string]interface{}{}
-		for _, sp := range *storageNodes {
-			eachSp := impl.ConvertVssbStorageNodeToSchema(&sp)
-			// log.WriteDebug("storage node: %+v\n", *eachSp)
-			spList = append(spList, *eachSp)
-		}
+	spList := []map[string]interface{}{}
+	for _, sp := range *storageNodes {
+		eachSp := impl.ConvertVssbStorageNodeToSchema(&sp)
+		// log.WriteDebug("storage node: %+v\n", *eachSp)
+		spList = append(spList, *eachSp)
+	}
 
-		if err := d.Set("storage_nodes", spList); err != nil {
-			return 
-		}
+	if err := d.Set("storage_nodes", spList); err != nil {
+		return
+	}
 
-		d.SetId(strconv.FormatInt(time.Now().Unix(), 10))	
+	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 }
-
 
 func resourceVssbStorageNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return datasourceimpl.DataSourceVssbStorageNodesRead(ctx, d, m)

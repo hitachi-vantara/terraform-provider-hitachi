@@ -3,24 +3,23 @@
 page_title: "hitachi_vosb_configuration_file Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block: Create and/or download configuration definition file of the storage system.
+  VSP One SDS Block: Create and/or download configuration definition file of the storage system.
 ---
 
 # hitachi_vosb_configuration_file (Resource)
 
-VOS Block: Create and/or download configuration definition file of the storage system.
+VSP One SDS Block: Create and/or download configuration definition file of the storage system.
 
 ## Example Usage
 
 ```terraform
-# Hitachi VOS Block: Generate and Download Configuration File
+# Hitachi VSP One SDS Block: Generate and Download Configuration File
 #
-# This resource allows you to create or retrieve configuration files for a Hitachi VSP One SDS Block (VOSB) system
+# This resource allows you to create or retrieve configuration files for a Hitachi VSP One SDS Block system
 # in cloud or bare-metal environments. It supports different cloud providers and maintenance operations such as
 # adding or replacing storage nodes and drives.
 #
-# The `hitachi_vosb_configuration_file` resource interfaces with the VOSB system’s REST API and can be used
-# in HashiCorp Configuration Language (HCL) to automate generation and optional download of system configuration files.
+# The `hitachi_vosb_configuration_file` resource automates generation and optional download of system configuration files.
 #
 ### Usage Modes
 # Choose one of the modes below to control how the file is generated or downloaded:
@@ -31,8 +30,8 @@ VOS Block: Create and/or download configuration definition file of the storage s
 #
 ### Expected Cloud Provider Behavior
 # The `expected_cloud_provider` parameter is used only to validate input combinations based on the expected cloud environment.
-# If there is a mismatch between the given 'expected_cloud_provider' and the VOSB environment, the request will still proceed.
-# The VOSB system will apply its actual cloud provider behavior regardless of this value.
+# If there is a mismatch between the given 'expected_cloud_provider' and the VSP One SDS Block environment, the request will still proceed.
+# VSP One SDS Block will apply its actual cloud provider behavior regardless of this value.
 #
 # - **google / azure**: Additional input parameters are required based on the selected maintenance operation (`export_file_type`).
 # - If not provided: All additional parameters are ignored — only basic creation/download will occur.
@@ -47,7 +46,7 @@ VOS Block: Create and/or download configuration definition file of the storage s
 # - `"ReplaceDrive"`: Requires either `drive_id` (UUID) or `recover_single_drive = true`.
 #
 ### Parameters
-# - `vosb_address`: **(Required)** IP or hostname of the VOSB system's REST API.
+# - `vosb_address`: **(Required)** IP or hostname of VSP One SDS Block.
 # - `download_existconfig_only`: **(Optional)** If `true`, skips creation and only downloads the latest file.
 # - `create_only`: **(Optional)** If `true`, creates the file but skips downloading it.
 # - `download_path`: **(Optional)** Path to save the downloaded file. Ignored if no download occurs.
@@ -69,7 +68,7 @@ VOS Block: Create and/or download configuration definition file of the storage s
 #   - `address_setting`: **(Optional)** A list (1–6 items) of storage node IP settings for `AddStorageNodes`.
 #
 ### Outputs
-# - `status`: Operation status returned from the VOSB system.
+# - `status`: Operation status returned from the VSP One SDS Block.
 # - `output_file_path`: The full local path to the resulting downloaded configuration file.
 #
 ### Notes
@@ -210,7 +209,7 @@ output "download_output" {
 
 ### Required
 
-- `vosb_address` (String) The address (IP or hostname) of the VOSB system's REST API.
+- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
 
 ### Optional
 
@@ -237,7 +236,7 @@ Optional:
 	- Used to validate combinations of inputs based on the deployment environment.
 	- If set to "google" or "azure", specific parameters may be required for certain operations.
 	- If not specified, other cloud-specific inputs below are ignored.
-	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
+	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
 	If there's a mismatch, the request still proceeds and behaves according to the actual environment.
 - `export_file_type` (String) Specifies the type of configuration file to generate. Default: 'Normal'.
 	Valid values: Normal, AddStorageNodes, ReplaceStorageNode, AddDrives, ReplaceDrive.

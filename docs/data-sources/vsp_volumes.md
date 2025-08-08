@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_volumes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage Volume:It returns all luns information from given storage device.
+  VSP Storage Volume: It returns all luns information from given storage device.
 ---
 
 # hitachi_vsp_volumes (Data Source)
 
-VSP Storage Volume:It returns all luns information from given storage device.
+VSP Storage Volume: It returns all luns information from given storage device.
 
 ## Example Usage
 

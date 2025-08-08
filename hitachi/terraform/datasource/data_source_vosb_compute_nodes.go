@@ -19,7 +19,7 @@ import (
 
 func DataSourceVssbComputeNodes() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Compute Node:Obtains a list of compute node information.",
+		Description: "VSP One SDS Block Compute Node: Obtains a list of compute node information.",
 		ReadContext: DataSourceVssbComputeNodesRead,
 		Schema:      schemaimpl.DataComputeNodeSchema,
 	}
