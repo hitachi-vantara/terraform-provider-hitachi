@@ -11,6 +11,6 @@ variable "hitachi_storage_password" {
 }
 
 variable "vosb_address" {
-  description = "VOSB block address"
+  description = "VSP One SDS Block address"
   type        = string
 }

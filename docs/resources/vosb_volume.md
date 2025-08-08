@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_volume Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Compute Node:Creates a volume.
+  VSP One SDS Block Volume: CRUD operations of a volume.
 ---
 
 # hitachi_vosb_volume (Resource)
 
-VOS Block Compute Node:Creates a volume.
+VSP One SDS Block Volume: CRUD operations of a volume.
 
 ## Example Usage
 
 ```terraform
 //
-// Hitachi VOS Block Volume Resource
+// Hitachi VSP One SDS Block Volume Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VOS Block volume.
-// The resource "hitachi_vosb_volume" represents a volume on a Hitachi VSP One SDS Block (VOSB)
+// This section defines a Terraform resource block to create a Hitachi VSP One SDS Block volume.
+// The resource "hitachi_vosb_volume" represents a volume on a Hitachi VSP One SDS Block
 // using its block interface and allows you to manage its configuration using Terraform.
 //
 // Customize the values of the parameters (vosb_address, name, capacity_gb, storage_pool, compute_nodes,
@@ -44,7 +44,7 @@ output "volumecreateData" {
 ### Required
 
 - `name` (String) Name of the volume server
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Blockk.
 
 ### Optional
 

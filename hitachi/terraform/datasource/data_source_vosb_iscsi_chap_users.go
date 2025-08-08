@@ -18,7 +18,7 @@ import (
 
 func DataSourceVssbChapUsers() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block iSCSI Target CHAP User:Obtains the information about chap users.",
+		Description: "VSP One SDS Block iSCSI Target CHAP User: Obtains the information about chap users.",
 		ReadContext: DataSourceVssbChapUsersRead,
 		Schema:      schemaimpl.DataVssbIscsiChapUsersSchema,
 	}

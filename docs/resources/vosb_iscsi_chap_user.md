@@ -3,12 +3,12 @@
 page_title: "hitachi_vosb_iscsi_chap_user Resource - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+  VSP One SDS Block iSCSI Target CHAP User: The following request sets the CHAP user.
 ---
 
 # hitachi_vosb_iscsi_chap_user (Resource)
 
-VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
+VSP One SDS Block iSCSI Target CHAP User: The following request sets the CHAP user.
 
 ## Example Usage
 
@@ -17,9 +17,8 @@ VOS Block iSCSI Target CHAP User:The following request sets the CHAP user.
 // Hitachi VSP One SDS Block iSCSI CHAP User Resource
 //
 // This section defines a Terraform resource block to create a Hitachi VSP One SDS Block iSCSI CHAP user.
-// The resource "hitachi_vosb_iscsi_chap_user" represents an iSCSI CHAP user on a Hitachi
-// Virtual (VOSB) using its block interface and allows you to manage its configuration
-// using Terraform.
+// The resource "hitachi_vosb_iscsi_chap_user" represents an iSCSI CHAP user on a Hitachi VSP One SDS Block
+// using its block interface and allows you to manage its configuration using Terraform.
 //
 // Customize the values of the parameters (vosb_address, target_chap_user_name,
 // target_chap_user_secret) to match your desired iSCSI CHAP user configuration.
@@ -55,7 +54,7 @@ output "chap_user_output" {
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/
 - `target_chap_user_secret` (String, Sensitive) CHAP secret used for CHAP authentication on the compute port (i.e., target side).
 		(12 to 32 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\/\[\]~ ]{12,32}$/
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 

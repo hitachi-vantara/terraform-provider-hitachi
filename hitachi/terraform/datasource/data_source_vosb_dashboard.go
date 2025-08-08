@@ -18,7 +18,7 @@ import (
 
 func DataSourceVssbDashboard() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Dashboard:Obtains the information about Dashboard Information.",
+		Description: "VSP One SDS Block Dashboard: Obtains the information about Dashboard.",
 		ReadContext: DataSourceVssbDashboardRead,
 		Schema:      schemaimpl.DataVssbDashboardSchema,
 	}

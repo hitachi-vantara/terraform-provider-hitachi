@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_storage Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage System:It returns the storage device related information.
+  VSP Storage System: It returns the storage device related information.
 ---
 
 # hitachi_vsp_storage (Data Source)
 
-VSP Storage System:It returns the storage device related information.
+VSP Storage System: It returns the storage device related information.
 
 ## Example Usage
 

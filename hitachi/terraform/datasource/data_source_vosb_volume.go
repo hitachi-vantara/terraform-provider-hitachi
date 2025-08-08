@@ -17,7 +17,7 @@ import (
 
 func DataSourceVssbVolumes() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Volume:Obtains a list of volumes information.",
+		Description: "VSP One SDS Block Storage Volume: Obtains a list of volumes information.",
 		ReadContext: dataSourceVssbVolumesRead,
 		Schema:      schemaimpl.DataVolumeSchema,
 	}
@@ -53,7 +53,7 @@ func dataSourceVssbVolumesRead(ctx context.Context, d *schema.ResourceData, m in
 
 func DataSourceVssbVolumeNodes() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Volume:Obtains a list of volume information.",
+		Description: "VSP One SDS Block Storage Volume: Obtains a volume information.",
 		ReadContext: DataSourceVssbVolumeNodesRead,
 		Schema:      schemaimpl.VolumeNodeSchema,
 	}

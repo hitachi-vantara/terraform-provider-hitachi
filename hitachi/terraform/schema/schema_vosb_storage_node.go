@@ -10,7 +10,7 @@ var DataVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"node_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -159,7 +159,7 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"configuration_file": &schema.Schema{
 		Type:        schema.TypeString,
@@ -185,7 +185,7 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	- Used to validate combinations of inputs based on the deployment environment.
 	- If set to "google" or "azure", specific parameters may be required for certain operations.
 	- If set to "baremetal" (default), other cloud-specific inputs are ignored.
-	- Note: The actual cloud provider is determined by the VOSB system at the "vosb_address" endpoint.
+	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
 	If there's a mismatch, the request still proceeds and behaves according to the actual environment.`,
 		ValidateFunc: validation.StringInSlice([]string{
 			"google", "azure", "aws", "baremetal",

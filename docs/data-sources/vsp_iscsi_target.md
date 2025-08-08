@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_iscsi_target Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.
+  VSP Storage ISCSI Targets: The following request gets information about iSCSI targets of the port.
 ---
 
 # hitachi_vsp_iscsi_target (Data Source)
 
-VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.
+VSP Storage ISCSI Targets: The following request gets information about iSCSI targets of the port.
 
 ## Example Usage
 

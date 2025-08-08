@@ -1,8 +1,8 @@
 #
-# Hitachi VOS Block Storage Pools Data Retrieval
+# Hitachi VSP One SDS Block Storage Pools Data Retrieval
 #
 # This section defines a data source block to fetch information about specific storage pools
-# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_storage_pools" retrieves details about storage pools
 # associated with the provided parameters. This allows you to access configuration and property

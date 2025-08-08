@@ -13,11 +13,11 @@ var VssbComputePortInfoSchema = map[string]*schema.Schema{
 	"authentication_settings": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
-		Description: ` x ∈ { "CHAP" , "CHAPComplyingWithInitiatorSetting" , "None" }
-		Authentication scheme of the compute port.
-		o CHAP: CHAP authentication.
-		o CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
-		o None: No authentication is performed.`,
+		Description: `Authentication scheme of the compute port.
+
+	- CHAP: CHAP authentication.
+	- CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
+	- None: No authentication is performed.`,
 	},
 	"target_chap_users": &schema.Schema{
 		Type:     schema.TypeList,
@@ -34,7 +34,7 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -45,11 +45,11 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 		ForceNew: true,
-		Description: ` x ∈ { "CHAP" , "CHAPComplyingWithInitiatorSetting" , "None" }
-		Authentication scheme of the compute port.
-		o CHAP: CHAP authentication.
-		o CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
-		o None: No authentication is performed.`,
+		Description: `Authentication scheme of the compute port.
+
+	- CHAP: CHAP authentication.
+	- CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
+	- None: No authentication is performed.`,
 	},
 	"target_chap_users": &schema.Schema{
 		Type:     schema.TypeList,
@@ -58,7 +58,7 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
-		Description: "List of compute nodes to be attached to the volume. To remove all the nodes from the volume declare compute_nodes = []",
+		Description: "List of chap users to be attached to the compute port.",
 	},
 	// output
 	"compute_port": &schema.Schema{
@@ -76,7 +76,7 @@ var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -106,11 +106,11 @@ var VssbIscsiPortAuthInfoSchema = map[string]*schema.Schema{
 				"auth_mode": &schema.Schema{
 					Computed: true,
 					Type:     schema.TypeString,
-					Description: ` x ∈ { "CHAP" , "CHAPComplyingWithInitiatorSetting" , "None" }
-					Authentication scheme of the compute port.
-					o CHAP: CHAP authentication.
-					o CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
-					o None: No authentication is performed.`,
+					Description: `Authentication scheme of the compute port.
+
+	- CHAP: CHAP authentication.
+	- CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
+	- None: No authentication is performed.`,
 				},
 				"is_discovery_chap_auth": &schema.Schema{
 					Computed:    true,

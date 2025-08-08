@@ -17,7 +17,7 @@ import (
 
 func DataSourceStorageSystem() *schema.Resource {
 	return &schema.Resource{
-		Description: "VSP Storage System:It returns the storage device related information.",
+		Description: "VSP Storage System: It returns the storage device related information.",
 		ReadContext: dataSourceStorageSystemRead,
 		Schema:      schemaimpl.StorageSystemSchema,
 	}

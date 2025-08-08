@@ -21,7 +21,7 @@ import (
 
 func DataSourceStorageHostGroups() *schema.Resource {
 	return &schema.Resource{
-		Description: "VSP Storage Host Group:The following request gets information about host groups of the ports.",
+		Description: "VSP Storage Host Group: The following request gets information about host groups of the ports.",
 		ReadContext: DataSourceStorageHostGroupsRead,
 		Schema:      schemaimpl.DataHostGroupsSchema,
 	}

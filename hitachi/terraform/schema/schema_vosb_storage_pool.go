@@ -266,7 +266,7 @@ var DatasourceVssbStoragePoolsSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "VOSB block address of the storage device",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 	"storage_pool_names": &schema.Schema{
 		Type:        schema.TypeList,
@@ -293,7 +293,7 @@ var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "VOS block address of the storage device",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 	"storage_pool_name": &schema.Schema{
 		Type:        schema.TypeString,

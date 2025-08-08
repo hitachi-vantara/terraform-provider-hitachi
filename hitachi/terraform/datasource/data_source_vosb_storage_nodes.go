@@ -20,7 +20,7 @@ import (
 
 func DataSourceVssbStorageNodes() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Node:Obtains a list of storage nodes information.",
+		Description: "VSP One SDS Block Storage Node: Obtains a list of storage nodes information.",
 		ReadContext: DataSourceVssbStorageNodesRead,
 		Schema:      schemaimpl.DataVssbStorageNodeSchema,
 	}
@@ -32,7 +32,7 @@ func DataSourceVssbStorageNodesRead(ctx context.Context, d *schema.ResourceData,
 	defer log.WriteExit()
 
 	node_name := ""
-	if  d.Get("node_name") != nil {
+	if d.Get("node_name") != nil {
 		node_name = d.Get("node_name").(string)
 	}
 

@@ -19,7 +19,7 @@ import (
 
 func DataSourceStorageLuns() *schema.Resource {
 	return &schema.Resource{
-		Description: "VSP Storage Volume:It returns all luns information from given storage device.",
+		Description: "VSP Storage Volume: It returns all luns information from given storage device.",
 		ReadContext: DataSourceStorageLunsRead,
 		Schema:      schemaimpl.DataLunsSchema,
 	}

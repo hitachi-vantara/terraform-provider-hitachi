@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_iscsi_chap_users Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
+  VSP One SDS Block iSCSI Target CHAP User: Obtains the information about chap users.
 ---
 
 # hitachi_vosb_iscsi_chap_users (Data Source)
 
-VOS Block iSCSI Target CHAP User:Obtains the information about chap users.
+VSP One SDS Block iSCSI Target CHAP User: Obtains the information about chap users.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VOS Block iSCSI CHAP Users Data Retrieval
+# Hitachi VSP One SDS Block iSCSI CHAP Users Data Retrieval
 #
 # This section defines multiple data source blocks to fetch iSCSI CHAP user information
-# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
 #
 # Each data source block in this configuration retrieves details about iSCSI CHAP users
 # associated with the provided parameters. This enables you to access authentication
@@ -62,7 +62,7 @@ output "my_iscsi_chap_users_output" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 

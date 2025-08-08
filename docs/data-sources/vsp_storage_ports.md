@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_storage_ports Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage Ports:The following request obtains information about ports.
+  VSP Storage Ports: The following request obtains information about ports.
 ---
 
 # hitachi_vsp_storage_ports (Data Source)
 
-VSP Storage Ports:The following request obtains information about ports.
+VSP Storage Ports: The following request obtains information about ports.
 
 ## Example Usage
 

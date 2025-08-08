@@ -17,7 +17,7 @@ import (
 
 func DataSourceStoragePorts() *schema.Resource {
 	return &schema.Resource{
-		Description: "VSP Storage Ports:The following request obtains information about ports.",
+		Description: "VSP Storage Ports: The following request obtains information about ports.",
 		ReadContext: dataSourceStoragePortsRead,
 		Schema:      schemaimpl.StoragePortsSchema,
 	}

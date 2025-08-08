@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_iscsi_port_auth Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Storage Port:Obtains a list of ports information.
+  VSP One SDS Block Storage Port: Obtains a list of ports information.
 ---
 
 # hitachi_vosb_iscsi_port_auth (Data Source)
 
-VOS Block Storage Port:Obtains a list of ports information.
+VSP One SDS Block Storage Port: Obtains a list of ports information.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VOS Block iSCSI Port Authentication Data Retrieval
+# Hitachi VSP One SDS Block iSCSI Port Authentication Data Retrieval
 #
 # This section defines a data source block to fetch authentication information for
-# a specific iSCSI port from a Hitachi VSP One SDS Block (VOSB) using HashiCorp
+# a specific iSCSI port from a Hitachi VSP One SDS Block using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_iscsi_port_auth" retrieves authentication
@@ -44,7 +44,7 @@ output "mycomputeport" {
 ### Required
 
 - `name` (String) Name of the port
-- `vosb_address` (String) The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Read-Only
 

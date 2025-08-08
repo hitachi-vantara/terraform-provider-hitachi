@@ -8,7 +8,7 @@ var DataComputeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The  VOSB address of the storage server",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -125,7 +125,7 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,

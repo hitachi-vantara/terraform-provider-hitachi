@@ -1,8 +1,8 @@
 #
-# Hitachi VOS Block Storage Nodes Data Retrieval
+# Hitachi VSP One SDS Block Storage Nodes Data Retrieval
 #
 # This section defines a data source block to fetch information about a storage nodes
-# from a Hitachi VSP One SDS Block (VOSB) using HashiCorp Configuration Language (HCL).
+# from a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_storage_nodes" retrieves details about storage nodes
 # associated with the provided parameters. This allows you to access configuration and property

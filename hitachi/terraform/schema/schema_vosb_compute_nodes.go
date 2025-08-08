@@ -8,7 +8,7 @@ var ComputeNodesSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the REST API server on Virtual Storage Software block.",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 	// output
 	"compute_node": &schema.Schema{

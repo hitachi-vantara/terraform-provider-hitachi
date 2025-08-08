@@ -2,9 +2,9 @@ package terraform
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
-	"encoding/json"
 
 	// "time"
 	// "errors"
@@ -28,7 +28,7 @@ var syncCreateVolOpertation = &sync.Mutex{}
 
 func ResourceVssbStorageCreateVolume() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VOS Block Compute Node:Creates a volume.",
+		Description:   "VSP One SDS Block Volume: CRUD operations of a volume.",
 		CreateContext: resourceCreateVolume,
 		Schema:        schemaimpl.ResourceVolumeSchema,
 		ReadContext:   resourceReadVolume,

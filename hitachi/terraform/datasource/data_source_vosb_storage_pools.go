@@ -2,18 +2,19 @@ package terraform
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"strconv"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func DataSourceVssbStoragePools() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Pools: Obtains a list of storage pool information.",
+		Description: "VSP One SDS Block Storage Pools: Obtains a list of storage pool information.",
 		ReadContext: DataSourceVssbStoragePoolsRead,
 		Schema:      schemaimpl.DatasourceVssbStoragePoolsSchema,
 	}

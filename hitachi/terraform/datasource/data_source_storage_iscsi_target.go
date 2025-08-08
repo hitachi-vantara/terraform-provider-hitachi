@@ -19,7 +19,7 @@ import (
 
 func DataSourceStorageIscsiTarget() *schema.Resource {
 	return &schema.Resource{
-		Description: "VSP Storage ISCSI Targets:The following request gets information about iSCSI targets of the port.",
+		Description: "VSP Storage ISCSI Targets: The following request gets information about iSCSI targets of the port.",
 		ReadContext: DataSourceStorageIscsiTargetRead,
 		Schema:      schemaimpl.DataIscsiTargetSchema,
 	}

@@ -3,21 +3,21 @@
 page_title: "hitachi_vosb_compute_nodes Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VOS Block Compute Node:Obtains a list of compute node information.
+  VSP One SDS Block Compute Node: Obtains a list of compute node information.
 ---
 
 # hitachi_vosb_compute_nodes (Data Source)
 
-VOS Block Compute Node:Obtains a list of compute node information.
+VSP One SDS Block Compute Node: Obtains a list of compute node information.
 
 ## Example Usage
 
 ```terraform
 #
-# Hitachi VOS Block Compute Nodes Data Retrieval
+# Hitachi VSP One SDS Block Compute Nodes Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# compute node from a Hitachi VSP One SDS Block (VOSB) using HashiCorp
+# compute node from a Hitachi VSP One SDS Block using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_compute_nodes" retrieves details
@@ -44,7 +44,7 @@ output "nodeoutput" {
 
 ### Required
 
-- `vosb_address` (String) The  VOSB address of the storage server
+- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
 
 ### Optional
 

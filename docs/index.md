@@ -19,7 +19,7 @@ description: |-
 # The Hitachi Terraform provider enables automation and infrastructure-as-code
 # management of Hitachi storage systems, including:
 #
-# - Hitachi VSP One SDS Block (VOSB)
+# - Hitachi VSP One SDS Block
 # - Hitachi VSP One B20 series
 # - Hitachi VSP 5000 series
 #
@@ -33,7 +33,7 @@ description: |-
 # - `hitachi_vosb_provider`: For VSP One SDS Block systems.
 # - `san_storage_system`: For VSP One B20 series and VSP 5000 series.
 #
-# Example configuration for VOSB:
+# Example configuration for VSP One SDS Block:
 #
 # provider "hitachi" {
 #   hitachi_vosb_provider {
@@ -78,7 +78,7 @@ provider "hitachi" {
 
 ### Optional
 
-- `hitachi_vosb_provider` (Block List) Hitachi VSP One SDS Block (VOSB) is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vosb_provider))
+- `hitachi_vosb_provider` (Block List) Hitachi VSP One SDS Block is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability. (see [below for nested schema](#nestedblock--hitachi_vosb_provider))
 - `san_storage_system` (Block List) Hitachi VSP One series and Hitachi VSP 5000 series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. Both systems focus on simplifying data storage management while ensuring high availability and data integrity. (see [below for nested schema](#nestedblock--san_storage_system))
 
 <a id="nestedblock--hitachi_vosb_provider"></a>
@@ -88,7 +88,7 @@ Required:
 
 - `password` (String) Password of the VSP One SDS Block
 - `username` (String) Username of the VSP One SDS Block
-- `vosb_address` (String) Host name or the IP address (IPv4) of VSP One SDS Block.
+- `vosb_address` (String) Host name or the IP address (IPv4) of the VSP One SDS Block.
 
 
 <a id="nestedblock--san_storage_system"></a>

@@ -16,7 +16,7 @@ import (
 // DataSourceVssbStorageDrives defines the Terraform data source for retrieving drives
 func DataSourceVssbStorageDrives() *schema.Resource {
 	return &schema.Resource{
-		Description: "VOS Block Storage Drives: Obtains a list of drive information.",
+		Description: "VSP One SDS Block Storage Drives: Obtains a list of drive information.",
 		ReadContext: DataSourceVssbStorageDrivesRead,
 		Schema:      schemaimpl.ResourceVssbStorageDriveSchema, // Use the schema we defined for the drives
 	}

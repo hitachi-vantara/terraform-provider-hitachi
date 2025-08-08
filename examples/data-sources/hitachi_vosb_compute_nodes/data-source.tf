@@ -1,8 +1,8 @@
 #
-# Hitachi VOS Block Compute Nodes Data Retrieval
+# Hitachi VSP One SDS Block Compute Nodes Data Retrieval
 #
 # This section defines a data source block to fetch information about a specific
-# compute node from a Hitachi VSP One SDS Block (VOSB) using HashiCorp
+# compute node from a Hitachi VSP One SDS Block using HashiCorp
 # Configuration Language (HCL).
 #
 # The data source block "hitachi_vosb_compute_nodes" retrieves details

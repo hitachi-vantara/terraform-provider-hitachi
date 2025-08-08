@@ -3,19 +3,20 @@ package terraform
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sync"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var syncAddDrivesToPoolOperation = &sync.Mutex{}
 
 func ResourceVssbAddDrivesToPool() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VOS Block: Add drives to a storage pool.",
+		Description:   "VSP One SDS Block: Add drives to a storage pool.",
 		CreateContext: resourceVssbAddDrivesToPoolCreate,
 		ReadContext:   resourceVssbAddDrivesToPoolRead,
 		UpdateContext: resourceVssbAddDrivesToPoolUpdate,
