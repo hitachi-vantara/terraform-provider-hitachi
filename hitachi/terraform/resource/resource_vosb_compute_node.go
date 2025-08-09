@@ -116,6 +116,10 @@ func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, 
 			}
 		}
 	}
+
+	// fix for ResourceVssbStorageComputeNodeSchema 'compute_nodes' not updated in console output
+	d.SetNewComputed("compute_nodes")
+
 	return nil
 }
 
