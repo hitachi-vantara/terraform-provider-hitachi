@@ -193,17 +193,11 @@ func CreateVssbStorageNode(d *schema.ResourceData) error {
 	// 	log.WriteDebug("TFError| node_name cannot be empty")
 	// 	return nil
 	// }
+
+	// see validateStorageNodeParameters for validate parameter combinations
 	configurationFile := d.Get("configuration_file").(string)
-	if configurationFile == "" {
-		log.WriteDebug("TFError| configuration_file cannot be empty")
-		return nil
-	}
 	exportedConfigurationFile := d.Get("exported_configuration_file").(string)
 	setupUserPassword := d.Get("setup_user_password").(string)
-	if setupUserPassword == "" {
-		log.WriteDebug("TFError| setup_user_password cannot be empty")
-		return nil
-	}
 	expectedCloudProvider := d.Get("expected_cloud_provider").(string)
 
 	err = reconObj.AddStorageNode(
