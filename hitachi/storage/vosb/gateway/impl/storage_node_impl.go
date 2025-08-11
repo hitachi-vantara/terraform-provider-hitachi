@@ -1,7 +1,6 @@
 package vssbstorage
 
 import (
-
 	"bytes"
 	"io"
 	"mime/multipart"
@@ -24,6 +23,14 @@ func (psm *vssbStorageManager) AddStorageNode(
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
+
+	if expectedCloudProvider == "azure" {
+		err = psm.doAddStorageNodeAzure(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider)
+		if err != nil {
+			log.WriteDebug("TFError| error from doAddStorageNodeAzure, err: %v", err)
+		}
+		return
+	}
 
 	err = psm.doAddStorageNode(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider)
 	if err != nil {
@@ -99,22 +106,22 @@ func (psm *vssbStorageManager) doAddStorageNode(
 	configurationFile string,
 	exportedConfigurationFile string,
 	setupUserPassword string,
-	expectedCloudProvider string) (err error){
+	expectedCloudProvider string) (err error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
-	
+
 	// Validate parameter combinations based on cloud provider
 	err = validateStorageNodeParameters(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider)
 	if err != nil {
 		log.WriteError(err)
 		return
 	}
-	
+
 	form := new(bytes.Buffer)
 	writer := multipart.NewWriter(form)
-	
+
 	// Add expected cloud provider field
 	// cloudProviderField, err := writer.CreateFormField("expectedCloudProvider")
 	// if err != nil {
@@ -192,6 +199,82 @@ func (psm *vssbStorageManager) doAddStorageNode(
 		return
 	}
 	log.WriteDebug("affRes= %v", affRes)
+	return
+
+}
+
+func (psm *vssbStorageManager) doAddStorageNodeAzure(
+	configurationFile string,
+	exportedConfigurationFile string,
+	setupUserPassword string,
+	expectedCloudProvider string) (err error) {
+
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	// Validate parameter combinations based on cloud provider
+	err = validateStorageNodeParameters(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider)
+	if err != nil {
+		log.WriteError(err)
+		return
+	}
+
+	form := new(bytes.Buffer)
+	writer := multipart.NewWriter(form)
+
+	if expectedCloudProvider == "azure" {
+		var exportedConfigField io.Writer
+		exportedConfigField, err = writer.CreateFormFile("exportedConfigurationFile", filepath.Base(exportedConfigurationFile))
+		if err != nil {
+			log.WriteError(err)
+			return err
+		}
+		var exportedFd *os.File
+		exportedFd, err = os.OpenFile(exportedConfigurationFile, os.O_RDONLY, 0)
+		if err != nil {
+			log.WriteError(err)
+			return err
+		}
+		defer exportedFd.Close()
+
+		// Read binary file in 32KB chunks to handle large files efficiently
+		buffer := make([]byte, 32*1024)
+		for {
+			n, readErr := exportedFd.Read(buffer)
+			if n > 0 {
+				_, writeErr := exportedConfigField.Write(buffer[:n])
+				if writeErr != nil {
+					log.WriteError(writeErr)
+					return writeErr
+				}
+			}
+			if readErr == io.EOF {
+				break
+			}
+			if readErr != nil {
+				log.WriteError(readErr)
+				return readErr
+			}
+		}
+	}
+
+	writer.Close()
+
+	////////////////////////////////////////////////////////////////
+
+	log.WriteDebug("Binary form data prepared, size: %d bytes", form.Len())
+
+	psm.storageSetting.ContentType = writer.FormDataContentType()
+
+	apiSuf := "objects/storage-nodes"
+	affRes, err := httpmethod.PostCallFormExt(psm.storageSetting, apiSuf, form)
+	if err != nil {
+		log.WriteDebug("TFError| error in %s API call, err: %v\n", apiSuf, err)
+		return
+	}
+	log.WriteDebug("affRes= %v", affRes)
+
 	return
 
 }
