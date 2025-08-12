@@ -30,7 +30,7 @@
 // Example:
 // resource "hitachi_vosb_storage_node" "storageNode" {
 //   vosb_address = var.vosb_address
-//   exported_configuration_file = "/tmp/configuration.csv"
+//   exported_configuration_file = "/tmp/configuration.tar.gz"
 //   expected_cloud_provider = "azure"
 // }
 
