@@ -185,7 +185,7 @@ func (psm *sanStorageManager) createHostGroup(createInput *sanmodel.CreateHostGr
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
-	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_BEGIN), createInput.PortID, createInput.HostGroupNumber)
 	objStorage := provisonermodel.StorageDeviceSettings{
 		Serial:   psm.storageSetting.Serial,
 		Username: psm.storageSetting.Username,
@@ -208,7 +208,7 @@ func (psm *sanStorageManager) createHostGroup(createInput *sanmodel.CreateHostGr
 	provHostGroup, err := provObj.CreateHostGroup(provisionerCreate)
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateHostGroup  call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), *createInput.PortID, *createInput.HostGroupNumber)
+		log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), createInput.PortID, createInput.HostGroupNumber)
 		return nil, err
 	}
 	// Converting  Reconciler to Provisioner
@@ -219,7 +219,7 @@ func (psm *sanStorageManager) createHostGroup(createInput *sanmodel.CreateHostGr
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_END), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_CREATE_HOSTGROUP_END), createInput.PortID, createInput.HostGroupNumber)
 	return &reconcilerHg, nil
 }
 
@@ -230,34 +230,34 @@ func (psm *sanStorageManager) updateHostgroup(existingHostgroup *sanmodel.HostGr
 	defer log.WriteExit()
 
 	// HOSTGROUP MODE
-	log.WriteInfo(mc.GetMessage(mc.INFO_SET_MODE_OPTION_HOSTGROUP_BEGIN), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_SET_MODE_OPTION_HOSTGROUP_BEGIN), createInput.PortID, createInput.HostGroupNumber)
 	err := psm.reconcileHostGroupMode(existingHostgroup, createInput)
 	if err != nil {
 		log.WriteDebug("TFError| error in reconcileHostGroupMode, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_SET_MODE_OPTION_HOSTGROUP_FAILED), *createInput.PortID, *createInput.HostGroupNumber)
+		log.WriteError(mc.GetMessage(mc.ERR_SET_MODE_OPTION_HOSTGROUP_FAILED), createInput.PortID, createInput.HostGroupNumber)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_SET_MODE_OPTION_HOSTGROUP_END), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_SET_MODE_OPTION_HOSTGROUP_END), createInput.PortID, createInput.HostGroupNumber)
 
 	// HOSTGROUP WWN
-	log.WriteInfo(mc.GetMessage(mc.INFO_SET_WWN_HOSTGROUP_BEGIN), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_SET_WWN_HOSTGROUP_BEGIN), createInput.PortID, createInput.HostGroupNumber)
 	err = psm.reconcileHostGroupWwns(existingHostgroup, createInput)
 	if err != nil {
 		log.WriteDebug("TFError| error in reconcileHostGroupWwns, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_SET_WWN_HOSTGROUP_FAILED), *createInput.PortID, *createInput.HostGroupNumber)
+		log.WriteError(mc.GetMessage(mc.ERR_SET_WWN_HOSTGROUP_FAILED), createInput.PortID, createInput.HostGroupNumber)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_SET_WWN_HOSTGROUP_END), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_SET_WWN_HOSTGROUP_END), createInput.PortID, createInput.HostGroupNumber)
 
 	// HOSTGROUP LUN
-	log.WriteInfo(mc.GetMessage(mc.INFO_SET_LUN_HOSTGROUP_BEGIN), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_SET_LUN_HOSTGROUP_BEGIN), createInput.PortID, createInput.HostGroupNumber)
 	err = psm.reconcileHostGroupLuns(existingHostgroup, createInput)
 	if err != nil {
 		log.WriteDebug("TFError| error in reconcileHostGroupWwns, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_SET_LUN_HOSTGROUP_FAILED), *createInput.PortID, *createInput.HostGroupNumber)
+		log.WriteError(mc.GetMessage(mc.ERR_SET_LUN_HOSTGROUP_FAILED), createInput.PortID, createInput.HostGroupNumber)
 		return nil, err
 	}
-	log.WriteInfo(mc.GetMessage(mc.INFO_SET_LUN_HOSTGROUP_END), *createInput.PortID, *createInput.HostGroupNumber)
+	log.WriteInfo(mc.GetMessage(mc.INFO_SET_LUN_HOSTGROUP_END), createInput.PortID, createInput.HostGroupNumber)
 
 	// After Update - Get Hostgroup
 	hostGroup, err := psm.GetHostGroup(*createInput.PortID, *createInput.HostGroupNumber)
