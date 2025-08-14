@@ -174,11 +174,6 @@ var DataHostGroupsSchema = map[string]*schema.Schema{
 		},
 		Description: "A list of port IDs on storage",
 	},
-	"total_hostgroup_count": &schema.Schema{
-		Type:        schema.TypeInt,
-		Computed:    true,
-		Description: "Total number of hostGroups in storage",
-	},
 	// output
 	"hostgroups": &schema.Schema{
 		Type:        schema.TypeList,
@@ -188,6 +183,11 @@ var DataHostGroupsSchema = map[string]*schema.Schema{
 		Elem: &schema.Resource{
 			Schema: HostGroupsInfoSchema,
 		},
+	},
+	"total_hostgroup_count": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total number of hostGroups in storage",
 	},
 }
 

@@ -18,7 +18,7 @@ import (
 
 func DataSourceStorageChapUser() *schema.Resource {
 	return &schema.Resource{
-		Description: ":meta:subcategory:VSP Storage ISCSI Targets:Using the specified port and iSCSI target, the following request gets the CHAP user information that is specified for the iSCSI target.",
+		Description: "VSP Storage ISCSI Targets: Using the specified port and iSCSI target, the following request gets the CHAP user information that is specified for the iSCSI target.",
 		ReadContext: DataSourceStorageChapUserRead,
 		Schema:      schemaimpl.DataIscsiChapUserSchema,
 	}
@@ -29,7 +29,7 @@ func DataSourceStorageChapUserRead(ctx context.Context, d *schema.ResourceData, 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteDebug("Resource Data = %v", *d)
+	log.WriteDebug("Resource Data = %v", d)
 
 	serial := d.Get("serial").(int)
 

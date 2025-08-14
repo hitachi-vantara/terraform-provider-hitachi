@@ -1,6 +1,7 @@
 package sanstorage
 
 import (
+	diskcache "terraform-provider-hitachi/hitachi/common/diskcache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	httpmethod "terraform-provider-hitachi/hitachi/storage/san/gateway/http"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
@@ -14,13 +15,24 @@ func (psm *sanStorageManager) GetStorageSystemInfo() (*sanmodel.StorageSystemInf
 	defer log.WriteExit()
 
 	var storageInfo sanmodel.StorageSystemInfo
+
+	// read from disk cache
+	key := psm.storageSetting.MgmtIP + ":StorageSystemInfo"
+	found, _ := diskcache.Get(key, &storageInfo)
+	if found {
+		return &storageInfo, nil
+	}
+
 	apiSuf := "objects/storages/instance"
 	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &storageInfo)
 	if err != nil {
 		log.WriteError(err)
-		log.WriteDebug("TFError| error in objects/storages/instance API call, err: %v", err)
 		return nil, err
 	}
+
+	// save this to disk cache
+	diskcache.Set(key, storageInfo)
+
 	return &storageInfo, nil
 }
 

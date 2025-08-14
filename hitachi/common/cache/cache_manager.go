@@ -5,7 +5,7 @@ import (
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
-	vssbmodel "terraform-provider-hitachi/hitachi/storage/vssb/reconciler/model"
+	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 )
 
 var SanSettingsMap map[string]sanmodel.StorageSettingsAndInfo
@@ -16,7 +16,7 @@ func init() {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	log.WriteDebug("cache init function has been called")
+	log.WriteDebug("memory cache init function has been called")
 
 	SanSettingsMap = make(map[string]sanmodel.StorageSettingsAndInfo)
 	VssbSettingsMap = make(map[string]vssbmodel.StorageSettingsAndInfo)
@@ -57,7 +57,7 @@ func ReadFromSanCache(key string) (sanmodel.StorageSettingsAndInfo, error) {
 	}
 	// DO NOT UMCOMMENT THIS LINE, it prints username/password in the log file
 	//log.WriteDebug("key: %+v  data: %v", key, value)
-	return value, fmt.Errorf("%s not found in the cache", key)
+	return value, fmt.Errorf("storage serial number %v not found", key)
 }
 
 func ReadFromVssbCache(key string) (vssbmodel.StorageSettingsAndInfo, error) {
@@ -73,7 +73,7 @@ func ReadFromVssbCache(key string) (vssbmodel.StorageSettingsAndInfo, error) {
 	}
 	// DO NOT UMCOMMENT THIS LINE, it prints username/password in the log file
 	//log.WriteDebug("key: %+v  data: %v", key, value)
-	return value, fmt.Errorf("%s not found in the cache", key)
+	return value, fmt.Errorf("vosb address %v not found", key)
 }
 
 func GetSanSettingsFromCache(serialNumber string) (*sanmodel.StorageDeviceSettings, error) {

@@ -10,10 +10,10 @@ import (
 func newiScsiChapUserTestManager() (*sanStorageManager, error) {
 
 	objStorage := sanmodel.StorageDeviceSettings{
-		Serial:   40014,
-		Username: "bXNfdm13YXJl",
-		Password: "SGl0YWNoaTE=",
-		MgmtIP:   "172.25.47.115",
+		Serial:   12345,
+		Username: "user1",
+		Password: "mypswd",
+		MgmtIP:   "10.10.11.12",
 	}
 	psm, err := newSanStorageManagerEx(objStorage)
 	if err != nil {

@@ -10,10 +10,10 @@ import (
 func newDynamicPoolTestManager() (*sanStorageManager, error) {
 
 	objStorage := sanmodel.StorageDeviceSettings{
-		Serial:   30078,
-		Username: "ms_vmware",
-		Password: "Hitachi1",
-		MgmtIP:   "172.25.47.120",
+		Serial:   12345,
+		Username: "user1",
+		Password: "mypswd",
+		MgmtIP:   "10.10.11.12",
 	}
 	psm, err := newSanStorageManagerEx(objStorage)
 	if err != nil {

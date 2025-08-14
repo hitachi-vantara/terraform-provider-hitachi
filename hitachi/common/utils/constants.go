@@ -7,4 +7,4 @@ const KILOBYTES = 1024
 const BLOCKSIZE = 512
 
 const SAN_SETTINGS_DIR = "./san_settings"
-const VSSB_SETTINGS_DIR = "./vssb_settings"
+const VOSB_SETTINGS_DIR = "./vosb_settings"

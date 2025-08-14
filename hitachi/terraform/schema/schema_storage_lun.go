@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 var LunInfoSchema = map[string]*schema.Schema{
@@ -153,6 +154,7 @@ var DataLunSchema = map[string]*schema.Schema{
 	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
+		ValidateFunc: validation.IntBetween(0, 65535),
 		Description: "Ldev ID of lun",
 	},
 	// output
@@ -176,11 +178,13 @@ var DataLunsSchema = map[string]*schema.Schema{
 	"start_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
+		ValidateFunc: validation.IntBetween(0, 65535),
 		Description: "Start ldev ID of lun",
 	},
 	"end_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
+		ValidateFunc: validation.IntBetween(0, 65535),
 		Description: "End ldev ID of lun",
 	},
 	"undefined_ldev": &schema.Schema{
@@ -215,17 +219,17 @@ var ResourceLunSchema = map[string]*schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Default: -1 ,
-		Description: "Pool ID in which volume is to be created",
+		Description: "Pool ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**",
 	},
 	"pool_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Pool Name in which volume is to be created",
+		Description: "Pool Name in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**",
 	},
 	"paritygroup_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Parity group ID in which volume is to be created",
+		Description: "Parity group ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**",
 	},
 	"size_gb": &schema.Schema{
 		Type:        schema.TypeInt,

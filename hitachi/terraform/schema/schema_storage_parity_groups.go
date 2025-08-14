@@ -73,12 +73,39 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"is_accelerated_compression_enabled": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "Checks if is acclerated compression enabled of parity group",
+		Description: "Indicates whether accelerated compression is enabled for the parity group",
 	},
 	"available_volume_capacity_in_kb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
 		Description: "Available volume capacity of parity group in kb",
+	},
+}
+
+var DataParityGroupSchema = map[string]*schema.Schema{
+	"serial": &schema.Schema{
+		Type:        schema.TypeInt,
+		Required:    true,
+		Description: "Serial number of storage",
+	},
+	"parity_group_ids": &schema.Schema{
+		Type:        schema.TypeList,
+		Optional:    true,
+		Computed:    true,
+		Description: "List of parity group IDs to fetch",
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
+	// output
+	"parity_groups": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "This is parity groups output",
+		Elem: &schema.Resource{
+			Schema: ParityGroupsInfoSchema,
+		},
 	},
 }
 
@@ -91,6 +118,7 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 	"parity_group_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
+		Computed:    true,
 		Description: "List of parity group IDs to fetch",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,

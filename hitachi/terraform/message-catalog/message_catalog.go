@@ -27,13 +27,20 @@ var MessageCatalog = map[interface{}]string{
 	INFO_UPDATE_LUN_BEGIN:    "Updating lun with id %d on storage serial %d.",
 	INFO_UPDATE_LUN_END:      "Successfully updated lun with id %d on storage serial %d.",
 
-	// VSSB - VOLUME
+	// VOSB - VOLUME
 	INFO_GET_ALL_VOLUME_INFO_BEGIN: "Reading all volume information.",
 	ERR_GET_ALL_VOLUME_INFO_FAILED: "Failed to read all volume information.",
 	INFO_GET_ALL_VOLUME_INFO_END:   "Successfully read all volume information.",
 	ERR_DELETE_VOLUME_FAILED_MSG:   `"The specified volume cannot be deleted because it is connected to the compute node.","Disconnect the compute node from the specified volume, and then retry the operation.`,
 
-	//VSSB - COMPUTE
+	INFO_CREATE_VOLUME_BEGIN: "Creating a volume %s.",
+	ERR_CREATE_VOLUME_FAILED: "Failed to create a volume %s.",
+	INFO_CREATE_VOLUME_END:   "Successfully created volume %s (id=%s).",
+	INFO_DELETE_VOLUME_BEGIN: "Deleting volume %s.",
+	ERR_DELETE_VOLUME_FAILED: "Failed to delete volume %s.",
+	INFO_DELETE_VOLUME_END:   "Successfully deleted volume %s.",
+
+	//VOSB - COMPUTE
 	INFO_GET_ALL_SERVERS_BEGIN:     "Reading all compute node information.",
 	ERR_GET_ALL_SERVERS_FAILED:     "Failed to read all compute node information.",
 	INFO_GET_ALL_SERVERS_END:       "Successfully read compute node information.",
@@ -131,7 +138,20 @@ var MessageCatalog = map[interface{}]string{
 	ERR_GET_STORAGE_POOL_FAILED:      "Failed to read storage pool information for pool names %s.",
 	INFO_GET_STORAGE_POOL_END:        "Successfully read storage pool information for pool names %s.",
 
-	// VSSB - STORAGE PORTS
+	INFO_EXPAND_STORAGE_POOL_BEGIN: "Expanding storage pool %s.",
+	ERR_EXPAND_STORAGE_POOL_FAILED: "Failed to expand storage pool %s.",
+	INFO_EXPAND_STORAGE_POOL_END:   "Successfully expanded storage pool %s.",
+
+	INFO_GET_DRIVES_BEGIN: "Reading drives info.",
+	ERR_GET_DRIVES_FAILED: "Failed to read drives info.",
+	INFO_GET_DRIVES_END:   "Successfully read drives info.",
+	ERR_NO_OFFLINE_DRIVES: "No offline drives available.",
+
+	INFO_ADD_DRIVES_STORAGE_POOL_BEGIN: "Adding offline drives to storage pool.",
+	ERR_ADD_DRIVES_STORAGE_POOL_FAILED: "Failed adding offline drives to storage pool.",
+	INFO_ADD_DRIVES_STORAGE_POOL_END:   "Successfully added offline drives to storage pool.",
+
+	// VOSB - STORAGE PORTS
 	INFO_GET_ALL_STORAGE_PORTS_BEGIN: "Reading all storage ports information.",
 	ERR_GET_ALL_STORAGE_PORTS_FAILED: "Failed to read all storage ports information.",
 	INFO_GET_ALL_STORAGE_PORTS_END:   "Successfully read storage ports information.",
@@ -139,6 +159,15 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_PORT_BEGIN: "Reading port information for port id %s",
 	ERR_GET_PORT_FAILED: "Failed to read port information for port id %s",
 	INFO_GET_PORT_END:   "Successfully read port information for port id %s",
+
+	// STORAGE NODES
+	INFO_GET_ALL_STORAGE_NODES_BEGIN: "Reading all storage nodes information.",
+	ERR_GET_ALL_STORAGE_NODES_FAILED: "Failed to read all storage nodes information.",
+	INFO_GET_ALL_STORAGE_NODES_END:   "Successfully read storage nodes information.",
+
+	INFO_GET_NODE_BEGIN: "Reading node information for node id %s",
+	ERR_GET_NODE_FAILED: "Failed to read node information for node id %s",
+	INFO_GET_NODE_END:   "Successfully read node information for node id %s",
 
 	//CHAP USERS
 	INFO_GET_ALL_CHAPUSERS_BEGIN: "Reading all chap users information.",
@@ -166,4 +195,21 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_DASHBOARD_BEGIN: "Reading dashboard information.",
 	ERR_GET_DASHBOARD_FAILED: "Failed to read dashboard information.",
 	INFO_GET_DASHBOARD_END:   "Successfully read dashboard information.",
+
+	//STORAGE CREDENTIAL
+	INFO_CHANGE_USER_PASSWORD_BEGIN: "Changing password for user id %s.",
+	ERR_CHANGE_USER_PASSWORD_FAILED: "Failed to change password for user id %s.",
+	INFO_CHANGE_USER_PASSWORD_END:   "Successfully changed password for user id %s.",
+
+	// CONFIGURATION FILE
+	INFO_RESTORE_CONFIG_BEGIN:  "Restoring configuration file.",
+	ERR_RESTORE_CONFIG_FAILED:  "Failed to restore configuration file.",
+	INFO_RESTORE_CONFIG_END:    "Successfully restored configuration file.",
+	INFO_DOWNLOAD_CONFIG_BEGIN: "Downloading configuration file.",
+	ERR_DOWNLOAD_CONFIG_FAILED: "Failed to download configuration file.",
+	INFO_DOWNLOAD_CONFIG_END:   "Successfully downloaded configuration file.",
+
+	INFO_CREATE_DOWNLOAD_CONFIG_BEGIN: "Creating and/or downloading configuration file.",
+	ERR_CREATE_DOWNLOAD_CONFIG_FAILED: "Failed to create or download configuration file.",
+	INFO_CREATE_DOWNLOAD_CONFIG_END:   "Successfully created or downloaded configuration file.",
 }
