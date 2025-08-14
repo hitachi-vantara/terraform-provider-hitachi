@@ -11,16 +11,17 @@ before:
     # this is just an example and not a requirement for provider building/publishing
     - go mod tidy
 builds:
-  - env:
+  - skip: true
+    env:
       # goreleaser does not work with CGO, it could also complicate
       # usage by users in CI/CD systems like Terraform Cloud where
       # they are unable to install libraries.
       - CGO_ENABLED=0
     mod_timestamp: "{{ .CommitTimestamp }}"
-    flags:
-      - -trimpath
-    ldflags:
-      - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
+  #   flags:
+  #     - -trimpath
+  #   ldflags:
+  #     - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
     goos:
       - linux
     goarch:
@@ -30,8 +31,10 @@ archives:
   - formats: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
-      - "{{ .ProjectName }}_v{{ .Version }}"
+      # - "{{ .ProjectName }}_v{{ .Version }}"
       - "terraform-registry-manifest.json"
+      - "LICENSE"
+      - "README.md"
 checksum:
   extra_files:
     - glob: "terraform-registry-manifest.json"
