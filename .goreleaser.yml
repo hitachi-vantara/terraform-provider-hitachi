@@ -10,6 +10,9 @@ before:
   hooks:
     # this is just an example and not a requirement for provider building/publishing
     - go mod tidy
+    # create dummy binary for Terraform registry
+    - touch {{ .ProjectName }}_v{{ .Version }}
+    - chmod +x {{ .ProjectName }}_v{{ .Version }}
 builds:
   - skip: true
     env:
@@ -18,10 +21,6 @@ builds:
       # they are unable to install libraries.
       - CGO_ENABLED=0
     mod_timestamp: "{{ .CommitTimestamp }}"
-  #   flags:
-  #     - -trimpath
-  #   ldflags:
-  #     - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
     goos:
       - linux
     goarch:
@@ -31,7 +30,7 @@ archives:
   - formats: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
-      # - "{{ .ProjectName }}_v{{ .Version }}"
+      - "{{ .ProjectName }}_v{{ .Version }}"
       - "terraform-registry-manifest.json"
       - "LICENSE"
       - "README.md"
