@@ -8,14 +8,13 @@ version: 2
 
 before:
   hooks:
-    # this is just an example and not a requirement for provider building/publishing
-    - go mod tidy
-    # create dummy binary for Terraform registry
+    - mkdir -p dist
+    - cp README.md LICENSE terraform-registry-manifest.json dist/
     - touch {{ .ProjectName }}_v{{ .Version }}
     - chmod +x {{ .ProjectName }}_v{{ .Version }}
 builds:
   - id: dummy
-    skip: false
+    skip: true
     main: "./{{ .ProjectName }}_v{{ .Version }}"
     binary: "{{ .ProjectName }}_v{{ .Version }}"
     goos:
@@ -26,10 +25,7 @@ archives:
   - formats: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
-      - "{{ .ProjectName }}_v{{ .Version }}"
-      - "terraform-registry-manifest.json"
-      - "LICENSE"
-      - "README.md"
+      - "dist/*"
 checksum:
   extra_files:
     - glob: "terraform-registry-manifest.json"
