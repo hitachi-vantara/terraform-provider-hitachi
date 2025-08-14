@@ -14,18 +14,14 @@ before:
     - touch {{ .ProjectName }}_v{{ .Version }}
     - chmod +x {{ .ProjectName }}_v{{ .Version }}
 builds:
-  - skip: true
-    env:
-      # goreleaser does not work with CGO, it could also complicate
-      # usage by users in CI/CD systems like Terraform Cloud where
-      # they are unable to install libraries.
-      - CGO_ENABLED=0
-    mod_timestamp: "{{ .CommitTimestamp }}"
+  - id: dummy
+    skip: false
+    main: "./{{ .ProjectName }}_v{{ .Version }}"
+    binary: "{{ .ProjectName }}_v{{ .Version }}"
     goos:
       - linux
     goarch:
       - amd64
-    binary: "{{ .ProjectName }}_v{{ .Version }}"
 archives:
   - formats: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
