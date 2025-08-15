@@ -4,6 +4,8 @@
 # Visit https://goreleaser.com for documentation on how to customize this
 # behavior.
 
+version: 2
+
 before:
   hooks:
     - go mod tidy
@@ -15,8 +17,8 @@ builds:
     flags: [ -trimpath ]
     ldflags:
       - '-s -w -X main.version={{ .Version }} -X main.commit={{ .Commit }}'
-    goos: [ linux ]              # Linux only
-    goarch: [ amd64, arm64 ]     # 64-bit only
+    goos: [ linux ]                 # Linux only
+    goarch: [ amd64, arm64 ]        # RHEL/OL targets
     binary: '{{ .ProjectName }}_v{{ .Version }}'
 
 archives:
@@ -27,7 +29,8 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
   extra_files:
-    - glob: 'terraform-registry-manifest.json'   # keep this exact filename
+    - glob: 'terraform-registry-manifest.json'
+      name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
 
 signs:
   - artifacts: checksum
@@ -42,7 +45,8 @@ signs:
 
 release:
   extra_files:
-    - glob: 'terraform-registry-manifest.json'   # keep this exact filename
+    - glob: 'terraform-registry-manifest.json'
+      name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
   # draft: true
 
 changelog:
