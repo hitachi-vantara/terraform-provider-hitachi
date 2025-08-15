@@ -4,51 +4,47 @@
 # Visit https://goreleaser.com for documentation on how to customize this
 # behavior.
 
-version: 2
-
 before:
   hooks:
     - go mod tidy
+
 builds:
-  - id: dummy
-    skip: true
-    main: "./{{ .ProjectName }}_v{{ .Version }}"
-    binary: "{{ .ProjectName }}_v{{ .Version }}"
-    goos:
-      - linux
-    goarch:
-      - amd64
+  - env:
+      - CGO_ENABLED=0
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    flags: [ -trimpath ]
+    ldflags:
+      - '-s -w -X main.version={{ .Version }} -X main.commit={{ .Commit }}'
+    goos: [ linux ]              # Linux only
+    goarch: [ amd64, arm64 ]     # 64-bit only
+    binary: '{{ .ProjectName }}_v{{ .Version }}'
+
 archives:
-  - formats: zip
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    files:
-      - "{{ .ProjectName }}_v{{ .Version }}"
-      - "terraform-registry-manifest.json"
-      - "LICENSE"
-      - "README.md"
+  - format: zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+
 checksum:
-  extra_files:
-    - glob: "terraform-registry-manifest.json"
-      name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
-  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
+  extra_files:
+    - glob: 'terraform-registry-manifest.json'   # keep this exact filename
+
 signs:
   - artifacts: checksum
     args:
-      # if you are using this in a GitHub action or some other automated pipeline, you
-      # need to pass the batch flag to indicate its not interactive.
       - "--batch"
       - "--local-user"
-      - "{{ .Env.GPG_FINGERPRINT }}" # set this environment variable for your signing key
+      - "{{ .Env.GPG_FINGERPRINT }}"
       - "--output"
       - "${signature}"
       - "--detach-sign"
       - "${artifact}"
+
 release:
   extra_files:
-    - glob: "terraform-registry-manifest.json"
-      name_template: "{{ .ProjectName }}_{{ .Version }}_manifest.json"
-  # If you want to manually examine the release before its live, uncomment this line:
+    - glob: 'terraform-registry-manifest.json'   # keep this exact filename
   # draft: true
+
 changelog:
-  disable: true
+  skip: true
+
