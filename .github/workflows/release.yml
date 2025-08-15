@@ -31,18 +31,19 @@ jobs:
           # when manual or release, checkout the right tag
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || (github.event_name == 'release' && github.event.release.tag_name) || '' }}
 
-      # QUICK HIDE: temporarily exclude vssb sources from the build
-      - name: Hide vssb sources
+      # EXCLUDE vssb via sparse-checkout (keeps repo clean; avoids GoReleaser "dirty" error)
+      - name: Exclude vssb via sparse-checkout
         shell: bash
         run: |
           set -euo pipefail
-          if [ -d hitachi/storage/vssb ]; then
-            # move tracked/untracked go files out of the way for this job
-            find hitachi/storage/vssb -type f -name '*.go' -print > /tmp/vssb.list || true
-            while read -r f; do
-              [ -f "$f" ] && mv "$f" "$f.__skip"
-            done < /tmp/vssb.list
-          fi
+          git sparse-checkout init --no-cone
+          {
+            echo "/*"                      # include everything
+            echo "!/hitachi/storage/vssb/" # exclude this folder
+          } > .git/info/sparse-checkout
+          git read-tree -mu HEAD
+          # sanity: should be no changes
+          git status --porcelain
 
       # (optional) schema check catches config typos fast
       - name: GoReleaser config check
@@ -70,14 +71,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-
-      # restore workspace so future jobs/reads see the original tree
-      - name: Restore vssb sources
-        if: always()
-        shell: bash
-        run: |
-          if [ -f /tmp/vssb.list ]; then
-            while read -r f; do
-              [ -f "$f.__skip" ] && mv "$f.__skip" "$f"
-            done < /tmp/vssb.list
-          fi
