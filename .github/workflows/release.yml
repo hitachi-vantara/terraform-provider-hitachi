@@ -1,17 +1,15 @@
 # Terraform Provider release workflow.
 name: Release
 
-# This GitHub action creates a release when a tag that matches the pattern
-# "v*" (e.g. v0.1.0) is created.
 on:
   push:
-    tags: ['v*']                  # fires on NEW tag pushes
+    tags: ['v*']                  # NEW tag pushes
   release:
-    types: [published]            # also fires when you publish a GitHub Release
-  workflow_dispatch:              # manual fallback: run from Actions tab
+    types: [published]            # Publishing a GitHub Release
+  workflow_dispatch:              # Manual run with a tag input
     inputs:
       tag:
-        description: 'Tag to build (e.g., v2.1.0)'
+        description: 'Tag to build (e.g., v2.1.1)'
         required: true
 
 permissions:
@@ -24,14 +22,33 @@ concurrency:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
-    # allow manual runs OR tag-based runs; block random branch runs
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+    # allow manual runs, release events, or tag-push; block random branch runs
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # when manually triggered, checkout the selected tag
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || '' }}
+          # when manual or release, checkout the right tag
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || (github.event_name == 'release' && github.event.release.tag_name) || '' }}
+
+      # QUICK HIDE: temporarily exclude vssb sources from the build
+      - name: Hide vssb sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d hitachi/storage/vssb ]; then
+            # move tracked/untracked go files out of the way for this job
+            find hitachi/storage/vssb -type f -name '*.go' -print > /tmp/vssb.list || true
+            while read -r f; do
+              [ -f "$f" ] && mv "$f" "$f.__skip"
+            done < /tmp/vssb.list
+          fi
+
+      # (optional) schema check catches config typos fast
+      - name: GoReleaser config check
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          args: check
 
       - uses: actions/setup-go@v4
         with:
@@ -49,8 +66,18 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          # version: "~> v2"        # ← removed on purpose
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+
+      # restore workspace so future jobs/reads see the original tree
+      - name: Restore vssb sources
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/vssb.list ]; then
+            while read -r f; do
+              [ -f "$f.__skip" ] && mv "$f.__skip" "$f"
+            done < /tmp/vssb.list
+          fi
