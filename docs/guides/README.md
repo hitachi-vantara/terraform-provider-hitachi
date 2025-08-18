@@ -25,6 +25,8 @@
 
 Terraform provider for Hitachi Vantara storage systems 2.1.
 
+See [User Guide and Release Notes](https://docs.hitachivantara.com/search/all?query=terraform&value-filters=Option~%2522Terraform%2522*Product_custom~%2522Adapters+and+Drivers%2522&content-lang=en-US)
+
 
 ---
 
