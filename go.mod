@@ -1,8 +1,6 @@
 module terraform-provider-hitachi
 
-go 1.22.7
-
-toolchain go1.22.12
+go 1.23.0
 
 require (
 	github.com/google/uuid v1.4.0
@@ -11,7 +9,7 @@ require (
 	github.com/jinzhu/copier v0.3.5
 	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/stretchr/testify v1.8.2
-	golang.org/x/crypto v0.32.0
+	golang.org/x/crypto v0.41.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
@@ -77,9 +75,9 @@ require (
 	github.com/yuin/goldmark-meta v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.16.2 // indirect
 	go.abhg.dev/goldmark/frontmatter v0.2.0 // indirect
-	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/mod v0.26.0 // indirect
+	golang.org/x/net v0.42.0 // indirect
+	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231106174013-bbf56f31fb17 // indirect
 	google.golang.org/grpc v1.61.1 // indirect
@@ -90,5 +88,5 @@ require (
 
 require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
 )
