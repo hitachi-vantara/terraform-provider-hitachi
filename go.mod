@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.33.0
 	github.com/jinzhu/copier v0.3.5
 	github.com/peterbourgon/diskv v2.0.1+incompatible
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/crypto v0.32.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
