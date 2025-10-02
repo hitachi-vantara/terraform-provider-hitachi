@@ -171,6 +171,11 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Description: "Configuration file exported to add storagenodes",
 	},
+	"vm_configuration_file_s3_uri": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "S3 URI for VM configuration file (required for AWS deployments)",
+	},
 	"setup_user_password": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,

@@ -36,13 +36,44 @@ var syncHStorageNodeOperation = &sync.Mutex{}
 
 // validateVosbStorageNodeConfiguration validates the configuration based on cloud provider
 func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
-	cloudProvider := diff.Get("expected_cloud_provider").(string)
-	configFile := diff.Get("configuration_file").(string)
-	exportedConfigFile := diff.Get("exported_configuration_file").(string)
-	setupUserPassword := diff.Get("setup_user_password").(string)
+	var cloudProvider string
+	var configFile string
+	var exportedConfigFile string
+	var setupUserPassword string
+	var vmConfigFileS3URI string
 
-	if cloudProvider != "baremetal" {
-		// For non-baremetal cloud providers: exported_configuration_file is required, others should not be given
+	if v, ok := diff.GetOk("expected_cloud_provider"); ok {
+		cloudProvider = v.(string)
+	}
+	if v, ok := diff.GetOk("configuration_file"); ok {
+		configFile = v.(string)
+	}
+	if v, ok := diff.GetOk("exported_configuration_file"); ok {
+		exportedConfigFile = v.(string)
+	}
+	if v, ok := diff.GetOk("setup_user_password"); ok {
+		setupUserPassword = v.(string)
+	}
+	if v, ok := diff.GetOk("vm_configuration_file_s3_uri"); ok {
+		vmConfigFileS3URI = v.(string)
+	}
+
+	if cloudProvider == "aws" {
+		// For AWS: configuration_file and vm_configuration_file_s3_uri are required, others should not be given
+		if configFile == "" {
+			return fmt.Errorf("configuration_file is required when expected_cloud_provider is 'aws'")
+		}
+		if vmConfigFileS3URI == "" {
+			return fmt.Errorf("vm_configuration_file_s3_uri is required when expected_cloud_provider is 'aws'")
+		}
+		if setupUserPassword != "" {
+			return fmt.Errorf("setup_user_password should not be provided when expected_cloud_provider is 'aws'")
+		}
+		if exportedConfigFile != "" {
+			return fmt.Errorf("exported_configuration_file should not be provided when expected_cloud_provider is 'aws'")
+		}
+	} else if cloudProvider == "azure" {
+		// For azure: exported_configuration_file is required, others should not be given
 		if exportedConfigFile == "" {
 			return fmt.Errorf("exported_configuration_file is required when expected_cloud_provider is '%s'", cloudProvider)
 		}
@@ -52,16 +83,36 @@ func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.Reso
 		if configFile != "" {
 			return fmt.Errorf("configuration_file should not be provided when expected_cloud_provider is '%s'", cloudProvider)
 		}
-	} else {
-		// For baremetal: exported_configuration_file must not be given, others are required
+		if vmConfigFileS3URI != "" {
+			return fmt.Errorf("vm_configuration_file_s3_uri should not be provided when expected_cloud_provider is '%s'", cloudProvider)
+		}
+	} else if cloudProvider == "baremetal" {
+		// For baremetal: exported_configuration_file and vm_configuration_file_s3_uri must not be given, others are required
 		if exportedConfigFile != "" {
 			return fmt.Errorf("exported_configuration_file should not be provided when expected_cloud_provider is 'baremetal'")
+		}
+		if vmConfigFileS3URI != "" {
+			return fmt.Errorf("vm_configuration_file_s3_uri should not be provided when expected_cloud_provider is 'baremetal'")
 		}
 		if setupUserPassword == "" {
 			return fmt.Errorf("setup_user_password is required when expected_cloud_provider is 'baremetal'")
 		}
 		if configFile == "" {
 			return fmt.Errorf("configuration_file is required when expected_cloud_provider is 'baremetal'")
+		}
+	} else 	if cloudProvider == "google" {
+		// For GPC: no additional parameters are required
+		if configFile != "" {
+			return fmt.Errorf("configuration_file should not be provided when expected_cloud_provider is 'google'")
+		}
+		if exportedConfigFile != "" {
+			return fmt.Errorf("exported_configuration_file should not be provided when expected_cloud_provider is 'google'")
+		}
+		if setupUserPassword != "" {
+			return fmt.Errorf("setup_user_password should not be provided when expected_cloud_provider is google")
+		}
+		if vmConfigFileS3URI != "" {
+			return fmt.Errorf("vm_configuration_file_s3_uri should not be provided when expected_cloud_provider is 'google'")
 		}
 	}
 

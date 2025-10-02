@@ -33,7 +33,7 @@ type VssbStorageManager interface {
 	// STORAGE NODES
 	GetStorageNodes() (*vssbmodel.StorageNodes, error)
 	GetStorageNode(nodeName string) (*vssbmodel.StorageNode, error)
-	AddStorageNode(configurationFile string, exportedConfigurationFile string, setupUserPassword string, expectedCloudProvider string) error
+	AddStorageNode(configurationFile string, exportedConfigurationFile string, setupUserPassword string, expectedCloudProvider string, vmConfigFileS3URI string) error
 
 	// STORAGE PORTS
 	GetStoragePorts() (*vssbmodel.StoragePorts, error)

@@ -27,7 +27,7 @@ VSP One SDS Block Volume: CRUD operations of a volume.
 resource "hitachi_vosb_volume" "volumecreate" {
   vosb_address  = "10.10.12.13"
   name          = "test-volume-newCol"
-  capacity_gb   = 1.9
+  capacity_gb   = 1
   storage_pool  = "SP01"
   compute_nodes = []
   nick_name     = "Vss_volume_changesnk"

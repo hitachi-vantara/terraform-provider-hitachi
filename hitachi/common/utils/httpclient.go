@@ -251,6 +251,69 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 	return string(body), nil
 }
 
+func HTTPPostNoBody(url string, headers *map[string]string, httpBody []byte, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var bodyReader io.Reader
+	if httpBody != nil {
+		bodyReader = bytes.NewBuffer(httpBody)
+	} else {
+		bodyReader = bytes.NewReader([]byte{}) // empty body
+	}
+
+	req, err := http.NewRequest("POST", url, bodyReader)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	if httpBody != nil {
+		req.Header.Set("Content-Type", "application/json")
+	} else {
+		req.ContentLength = 0
+	}
+
+	// Add auth
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
+		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
+	}
+
+	if headers != nil {
+		for k, v := range *headers {
+			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
+			log.WriteInfo(strValue)
+			req.Header.Add(k, v)
+		}
+	}
+
+	logRequest(req, httpBody)
+
+	resp, err := SharedClient().Do(req)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.WriteError(err)
+		return "", err
+	}
+
+	log.WriteDebug("HTTP Response: %s\n", string(body))
+
+	if IsHttpError(resp.StatusCode) {
+		return string(body), fmt.Errorf("%v", resp.Status)
+	}
+
+	return string(body), nil
+}
+
 func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*HttpBasicAuthentication) (string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()

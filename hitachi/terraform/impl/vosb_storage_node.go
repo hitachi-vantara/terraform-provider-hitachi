@@ -199,12 +199,14 @@ func CreateVssbStorageNode(d *schema.ResourceData) error {
 	exportedConfigurationFile := d.Get("exported_configuration_file").(string)
 	setupUserPassword := d.Get("setup_user_password").(string)
 	expectedCloudProvider := d.Get("expected_cloud_provider").(string)
+	vmConfigFileS3URI := d.Get("vm_configuration_file_s3_uri").(string)
 
 	err = reconObj.AddStorageNode(
 		configurationFile,
 		exportedConfigurationFile,
 		setupUserPassword,
 		expectedCloudProvider,
+		vmConfigFileS3URI,
 	)
 	if err != nil {
 		log.WriteDebug("TFError| error in GetStoragenodes, err: %v", err)

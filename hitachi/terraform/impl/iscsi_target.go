@@ -271,7 +271,9 @@ func ConvertSimpleIscsiTargetToSchema(iscsiTarget *terraformmodel.IscsiTarget, s
 		"port_id":               iscsiTarget.PortID,
 		"iscsi_target_id":       iscsiTarget.IscsiTargetID,
 		"iscsi_target_alias":    iscsiTarget.IscsiTargetName,
+		"iscsi_target_name":     iscsiTarget.IscsiTargetNameIqn,
 		"host_mode":             HostModeRestToUserConversion[iscsiTarget.HostMode],
+		"host_mode_options":     iscsiTarget.HostModeOptions,
 	}
 
 	return &hg

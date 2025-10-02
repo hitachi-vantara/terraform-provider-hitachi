@@ -197,3 +197,27 @@ func PostCallFormExt(storageSetting vssbmodel.StorageDeviceSettings, apiSuf stri
 	telemetry.UpdateTelemetryStats(status, elapsedTime, storageSetting, nil)
 	return result, err
 }
+
+func PostCallNoBodyExt(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if !telemetry.CheckTelemetryConsent() {
+		log.WriteInfo("Telemetry consent not given. Skipping telemetry tracking.")
+		return postCallNoBodyExt(storageSetting, apiSuf, reqBody)
+	}
+
+	startTime := time.Now()
+	result, err := postCallNoBodyExt(storageSetting, apiSuf, reqBody)
+	elapsedTime := time.Since(startTime).Seconds()
+
+	status := "failure"
+	if err == nil && result != nil {
+		status = "success"
+	}
+
+	telemetry.UpdateTelemetryStats(status, elapsedTime, storageSetting, nil)
+	return result, err
+}
+

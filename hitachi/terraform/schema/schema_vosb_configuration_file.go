@@ -32,14 +32,14 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 	"download_path": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		ForceNew: true,
+		ForceNew:    true,
 		Description: "Path to save the downloaded configuration file. Ignored if no download occurs. Can be a directory or a specific file path.",
 	},
 	"create_configuration_file_param": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		MaxItems:    1,
-		Description: "Parameters for creating a configuration file (relevant for Google Cloud and Azure only). Ignored for AWS and Bare Metal.",
+		Description: "Parameters for creating a configuration file (relevant for Google Cloud, Azure, and AWS). Ignored for Bare Metal.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 
@@ -47,10 +47,10 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 					Type:     schema.TypeString,
 					Optional: true,
 					Default:  "baremetal",
-					Description: `Specifies the expected cloud provider type. Valid values: "google", "azure".
+					Description: `Specifies the expected cloud provider type. Valid values: "google", "azure", "aws".
 
 	- Used to validate combinations of inputs based on the deployment environment.
-	- If set to "google" or "azure", specific parameters may be required for certain operations.
+	- If set to "google", "azure", or "aws", specific parameters may be required for certain operations.
 	- If not specified, other cloud-specific inputs below are ignored.
 	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
 	If there's a mismatch, the request still proceeds and behaves according to the actual environment.`,
@@ -68,16 +68,16 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 
 	Determines which additional parameters are needed:
 	- Normal: All other parameters are ignored.
-	- AddStorageNodes: Requires 'machine_image_id' and 'address_setting'.
+	- AddStorageNodes: Requires 'machine_image_id' and 'address_setting'. (address_setting is ignored for AWS).
 	- ReplaceStorageNode:
 		- Google Cloud: Requires 'machine_image_id' and 'node_id'. Optionally 'recover_single_node'.
-		- Azure: Requires 'machine_image_id'.
+		- Azure, AWS: Requires 'machine_image_id' only.
 	- AddDrives: Requires 'number_of_drives'.
-	- ReplaceDrive (Google Cloud only): Requires 'drive_id' or 'recover_single_drive'.
+	- ReplaceDrive (Google Cloud, and AWS only): Requires 'drive_id' or 'recover_single_drive'.
 
 	Note:
-	- Ignored in AWS and Bare Metal environments.
-	- Used only in Google Cloud or Azure to control behavior.`,
+	- Ignored in Bare Metal environments.
+	- Used in Google Cloud, Azure, or AWS to control behavior.`,
 					ValidateFunc: validation.StringInSlice([]string{
 						"Normal",
 						"AddStorageNodes",
@@ -86,13 +86,21 @@ var ResourceVssbConfigurationFileSchema = map[string]*schema.Schema{
 						"ReplaceDrive",
 					}, false),
 				},
-
-				"machine_image_id": &schema.Schema{
+				"template_s3_url": &schema.Schema{
 					Type:        schema.TypeString,
 					Optional:    true,
-					Description: "ID or URI of the VM image used in AddStorageNodes or ReplaceStorageNode operations.",
+					Description: "URL of an Amazon S3 bucket where the VM configuration file is stored. Must be in the format `https://<bucket-name>.s3.<region>.amazonaws.com/folder/`. Note the ending slash. Required for AWS, Ignored for Google and Azure.",
 				},
-
+				"machine_image_id": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Description: `Identifier of the machine image associated with the VM.
+	This argument is required only when performing AddStorageNodes or ReplaceStorageNode operations.
+	- **AWS:** AMI ID (e.g. 'ami-0abcdef1234567890'), available in the EC2 console under AMIs.
+	- **Google Cloud:** Image name (e.g. 'hsds-installed-sdsc-01180060-0587'), available in the Compute Engine Images page.
+	- **Azure:** Image reference in marketplace format 'publisher:offer:sku:version'
+	(e.g. 'hitachivantara:vsp_one_sds_block_image:01_18_00_50_byol:latest') available in the Azure Portal under Images or from Marketplace listings.`,
+				},
 				"number_of_drives": &schema.Schema{
 					Type:         schema.TypeInt,
 					Optional:     true,

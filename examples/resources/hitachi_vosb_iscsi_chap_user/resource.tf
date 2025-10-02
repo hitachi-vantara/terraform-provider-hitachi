@@ -16,10 +16,6 @@ resource "hitachi_vosb_iscsi_chap_user" "my_chap_user" {
 }
 
 output "chap_user_output" {
-  value = resource.hitachi_vosb_iscsi_chap_user.my_chap_user
-}
-
-output "chap_user_output" {
   # Explicitly specify 'chap_users' since it does not contain sensitive data.
   value = resource.hitachi_vosb_iscsi_chap_user.my_chap_user.chap_users
 

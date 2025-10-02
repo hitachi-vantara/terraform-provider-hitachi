@@ -34,33 +34,24 @@ func DataSourceStorageIscsiTargetsRead(ctx context.Context, d *schema.ResourceDa
 	serial := d.Get("serial").(int)
 	var iscsiTargets terraformmodel.IscsiTargets
 	ports := d.Get("port_ids").([]interface{})
-	if len(ports) > 0 {
-		iscsiTargetsSource, err := impl.GetIscsiTargetsByPortIds(d)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = copier.Copy(&iscsiTargets, iscsiTargetsSource)
 
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-			return diag.FromErr(err)
-		}
-	} else {
-		iscsiTargetsSource, err := impl.GetAllIscsiTargets(d)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = copier.Copy(&iscsiTargets, iscsiTargetsSource)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-			return diag.FromErr(err)
-		}
+	iscsiTargetsSource, err := impl.GetIscsiTargetsByPortIds(d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	err = copier.Copy(&iscsiTargets, iscsiTargetsSource)
 
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return diag.FromErr(err)
+	}
+
+	if len(ports) == 0 {
 		if err := d.Set("port_ids", []string{}); err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
+
 	itList := []map[string]interface{}{}
 	for _, it := range iscsiTargets.IscsiTargets {
 		eachIt := impl.ConvertSimpleIscsiTargetToSchema(&it, serial)

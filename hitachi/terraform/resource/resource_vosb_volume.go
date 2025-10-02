@@ -62,7 +62,7 @@ func resourceCreateVolume(ctx context.Context, d *schema.ResourceData, m interfa
 
 	_, ok := d.GetOk("compute_nodes")
 	if !ok {
-		if err := d.Set("compute_nodes", []string{}); err != nil {
+		if err := d.Set("compute_nodes", []string{}); err != nil { // needed to get rid of '/* of string */' in the output
 			return diag.FromErr(err)
 		}
 	}

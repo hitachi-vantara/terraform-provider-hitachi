@@ -124,7 +124,7 @@ func validateCreateParams(d minimalDiff) error {
 
 	paramList, ok := d.Get("create_configuration_file_param").([]interface{})
 	if !ok || len(paramList) == 0 {
-		log.WriteDebug("create_configuration_file_param not set, assuming baremetal or AWS")
+		log.WriteDebug("create_configuration_file_param not set, assuming baremetal")
 		return nil
 	}
 
@@ -139,7 +139,7 @@ func validateCreateParams(d minimalDiff) error {
 	}
 	expectedCloudProvider = strings.ToLower(expectedCloudProvider)
 
-	if expectedCloudProvider == "aws" || expectedCloudProvider == "baremetal" {
+	if expectedCloudProvider == "baremetal" {
 		log.WriteDebug("skipping create_configuration_file_param for %s", expectedCloudProvider)
 		return nil
 	}
@@ -156,6 +156,12 @@ func validateCreateParams(d minimalDiff) error {
 		if firstParam["machine_image_id"] == nil || firstParam["machine_image_id"] == "" {
 			return fmt.Errorf("machine_image_id must be set for AddStorageNodes")
 		}
+
+		if expectedCloudProvider == "aws" {
+			// skip address_setting validation for AWS
+			break
+		}
+
 		rawList, ok := firstParam["address_setting"]
 		if !ok {
 			return fmt.Errorf("address_setting must be set and contain at least one item for AddStorageNodes")
@@ -231,8 +237,8 @@ func validateCreateParams(d minimalDiff) error {
 		}
 
 	case "ReplaceDrive":
-		if expectedCloudProvider != "google" {
-			return fmt.Errorf("ReplaceDrive is only supported on Google Cloud")
+		if expectedCloudProvider == "azure" {
+			return fmt.Errorf("ReplaceDrive is not supported on Azure")
 		}
 		recover, _ := firstParam["recover_single_drive"].(bool)
 		driveID, _ := firstParam["drive_id"].(string)
@@ -256,6 +262,13 @@ func validateCreateParams(d minimalDiff) error {
 		return fmt.Errorf("unsupported export_file_type %q for expected_cloud_provider %q", exportType, expectedCloudProvider)
 	}
 
+	if expectedCloudProvider == "aws" {
+		templateS3Url := firstParam["template_s3_url"].(string)
+		if templateS3Url == "" {
+			return fmt.Errorf("template_s3_url must be set for AWS")
+		}
+	}
+
 	// This check is already done in the schema, but we do it here too
 	// Warn about unknown fields
 	allowed := map[string]struct{}{
@@ -268,6 +281,7 @@ func validateCreateParams(d minimalDiff) error {
 		"drive_id":                {},
 		"number_of_drives":        {},
 		"address_setting":         {},
+		"template_s3_url":         {},
 	}
 	var extras []string
 	for k := range firstParam {

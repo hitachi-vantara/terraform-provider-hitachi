@@ -184,6 +184,44 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 	return &phg, nil
 }
 
+// GetIscsiTargetsByPortId .
+func (psm *sanStorageManager) GetIscsiTargetsByPortId(portID string) (*sanmodel.IscsiTargets, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := sangatewaymodel.StorageDeviceSettings{
+		Serial:   psm.storageSetting.Serial,
+		Username: psm.storageSetting.Username,
+		Password: psm.storageSetting.Password,
+		MgmtIP:   psm.storageSetting.MgmtIP,
+	}
+
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ISCSITARGET_BY_PORTID_BEGIN), portID)
+	iscsiTargets, err := gatewayObj.GetIscsiTargetsByPortId(portID)
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_ISCSITARGET_BY_PORTID_FAILED), portID)
+		return nil, err
+	}
+
+	provIscsiTargets := sanmodel.IscsiTargets{}
+	err = copier.Copy(&provIscsiTargets, iscsiTargets)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ISCSITARGET_BY_PORTID_END), portID)
+
+	return &provIscsiTargets, nil
+}
+
 // GetAllIscsiTargets .
 func (psm *sanStorageManager) GetAllIscsiTargets() (*sanmodel.IscsiTargets, error) {
 	log := commonlog.GetLogger()

@@ -32,6 +32,7 @@ type SanStorageManager interface {
 	DeleteWwn(portID string, hostGroupNumber int, wwn string) (err error)
 	//ISCSI TARGET
 	GetIscsiTarget(portID string, iscsiTargetNumber int) (*sanmodel.IscsiTargetGwy, error)
+	GetIscsiTargetsByPortId(portID string) (*sanmodel.IscsiTargets, error)
 	GetAllIscsiTargets() (*sanmodel.IscsiTargets, error)
 	CreateIscsiTarget(reqBody sanmodel.CreateIscsiTargetReq) (portId *string, itNum *int, err error)
 	GetIscsiNameInformation(portID string, iscsiTargetNumber int) (*[]sanmodel.IscsiNameInformation, error)

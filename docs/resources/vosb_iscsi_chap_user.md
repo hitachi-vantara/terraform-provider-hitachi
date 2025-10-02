@@ -31,10 +31,6 @@ resource "hitachi_vosb_iscsi_chap_user" "my_chap_user" {
 }
 
 output "chap_user_output" {
-  value = resource.hitachi_vosb_iscsi_chap_user.my_chap_user
-}
-
-output "chap_user_output" {
   # Explicitly specify 'chap_users' since it does not contain sensitive data.
   value = resource.hitachi_vosb_iscsi_chap_user.my_chap_user.chap_users
 
@@ -58,7 +54,7 @@ output "chap_user_output" {
 
 ### Optional
 
-- `chap_user_id` (String) The ID of the CHAP user.
+- `chap_user_id` (String) The unique ID of the CHAP user associated with CHAP authentication settings.
 - `initiator_chap_user_name` (String) CHAP user name used for CHAP authentication on the initiator port of the compute node in mutual CHAP authentication.
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/
 - `initiator_chap_user_secret` (String, Sensitive) CHAP secret used for CHAP authentication on the initiator port of the compute node in mutual CHAP authentication.

@@ -100,6 +100,7 @@ func expandCreateConfigurationFileParam(d *schema.ResourceData) *reconcilermodel
 		DriveID:               m["drive_id"].(string),
 		RecoverSingleNode:     m["recover_single_node"].(bool),
 		NodeID:                m["node_id"].(string),
+		TemplateS3Url:         m["template_s3_url"].(string),
 	}
 	if v, ok := m["address_setting"]; ok && v != nil {
 		param.AddressSetting = expandAddressSetting(v.([]interface{}))

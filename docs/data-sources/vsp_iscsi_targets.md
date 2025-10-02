@@ -62,8 +62,10 @@ output "iscsitargets" {
 Read-Only:
 
 - `host_mode` (String) Type of host mode
+- `host_mode_options` (List of Number) List of host mode options
 - `iscsi_target_alias` (String) iSCSI target alias of the iSCSI target
 - `iscsi_target_id` (String) iSCSI target ID of the iSCSI target
+- `iscsi_target_name` (String) iSCSI target name
 - `iscsi_target_number` (Number) iSCSI target number
 - `port_id` (String) Port ID of the iSCSI target
 - `storage_serial_number` (Number) Serial number of storage

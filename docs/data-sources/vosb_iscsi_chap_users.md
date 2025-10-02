@@ -78,7 +78,7 @@ output "my_iscsi_chap_users_output" {
 
 Read-Only:
 
-- `chap_user_id` (String) The ID of the CHAP user.
+- `chap_user_id` (String) The unique ID of the CHAP user associated with CHAP authentication settings.
 - `initiator_chap_user_name` (String) CHAP user name used for CHAP authentication on the initiator port of the compute node in mutual CHAP authentication.
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/
 - `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (i.e., target side).

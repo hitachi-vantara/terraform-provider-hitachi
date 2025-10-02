@@ -8,7 +8,7 @@ var VssbIscsiChapUserInfoSchema = map[string]*schema.Schema{
 	"chap_user_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The ID of the CHAP user.",
+		Description: "The unique ID of the CHAP user associated with CHAP authentication settings.",
 	},
 	"target_chap_user_name": &schema.Schema{
 		Type:     schema.TypeString,
@@ -84,7 +84,7 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Computed:    true,
-		Description: "The ID of the CHAP user.",
+		Description: "The unique ID of the CHAP user associated with CHAP authentication settings.",
 	},
 	"target_chap_user_name": &schema.Schema{
 		Type:     schema.TypeString,

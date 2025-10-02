@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
 	"strings"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
+	"time"
 )
 
 func getCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, output interface{}) error {
@@ -44,7 +44,6 @@ func getCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, outp
 	return nil
 }
 
-
 func PostCallAsyncForm(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -70,7 +69,7 @@ func PostCallAsyncForm(storageSetting vssbmodel.StorageDeviceSettings, apiSuf st
 		header["Content-Type"] = storageSetting.ContentType
 		pHeader = &header
 	}
-	
+
 	// var form *bytes.Buffer
 	form, ok := reqBody.(*bytes.Buffer)
 	if ok {
@@ -85,7 +84,7 @@ func PostCallAsyncForm(storageSetting vssbmodel.StorageDeviceSettings, apiSuf st
 		log.WriteError(err)
 		return nil, err
 	}
-			fmt.Printf("jobString= %v\n", jobString)
+	fmt.Printf("jobString= %v\n", jobString)
 
 	return &jobString, err
 }
@@ -131,6 +130,72 @@ func postCall(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, req
 
 	job, err := CheckResponseAndWaitForJob(storageSetting, jobString)
 	if err != nil {
+		log.WriteError(err)
+		return nil, err
+	}
+	if len(job.AffectedResources) < 1 {
+		return nil, nil
+	}
+	sarr := strings.Split(job.AffectedResources[0], "/")
+	affRes := sarr[len(sarr)-1]
+	log.WriteDebug("TFDebug|affRes=%+v\n", affRes)
+
+	return &affRes, nil
+}
+
+func PostCallNoBodyAsync(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var reqBodyInBytes []byte
+	var err error
+	if reqBody != nil {
+		reqBodyInBytes, err = json.Marshal(reqBody) // <-- change := to =
+		if err != nil {
+			log.WriteError(err)
+			return nil, err
+		}
+	}
+
+	url := GetUrl(storageSetting.ClusterAddress, apiSuf)
+
+	httpBasicAuth := utils.HttpBasicAuthentication{
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+	}
+
+	jobString, err := utils.HTTPPostNoBody(url, nil, reqBodyInBytes, &httpBasicAuth)
+	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
+		log.WriteError(err)
+		return nil, err
+	}
+
+	return &jobString, err
+}
+
+func postCallNoBodyExt(storageSetting vssbmodel.StorageDeviceSettings, apiSuf string, reqBody interface{}) (*string, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	jobString, err := PostCallNoBodyAsync(storageSetting, apiSuf, reqBody)
+	if err != nil {
+		log.WriteError(err)
+		return nil, err
+	}
+
+	job, err := CheckResponseAndWaitForJobExt(storageSetting, jobString)
+	if err != nil {
+
+		// TODO sng: if the error msg is "" here
+		// we need handle the case where job state is "Failed"
+
+		if err.Error() == "" && job.State == "Failed" {
+			return nil, CheckJobErrorInEvents(storageSetting, job)
+		}
+
 		log.WriteError(err)
 		return nil, err
 	}
@@ -357,7 +422,7 @@ func CheckJobErrorInEvents(storageSetting vssbmodel.StorageDeviceSettings, jobRe
 	// check the events for this jobID for more details
 	type Event struct {
 		EventName string `json:"eventName"`
-		Message string `json:"message"`
+		Message   string `json:"message"`
 	}
 
 	type Events struct {
@@ -368,7 +433,7 @@ func CheckJobErrorInEvents(storageSetting vssbmodel.StorageDeviceSettings, jobRe
 	fmt.Printf("state %s\n", output.State)
 	if output.State == "Failed" {
 		// get the events
-		output2 := &Events{}	
+		output2 := &Events{}
 		apiSuf := "objects/event-logs?severity=Error"
 
 		err := getCall(storageSetting, apiSuf, output2)

@@ -49,6 +49,7 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 	"compute_nodes": &schema.Schema{
 		Type:     schema.TypeList,
 		Optional: true,
+		Computed: true, // needed to get rid of '/* of string */' in the output
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},

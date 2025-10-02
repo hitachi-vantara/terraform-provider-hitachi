@@ -6,8 +6,8 @@ display_usage() {
 }
 
 # Build versioning
-DISPLAY_VERSION="2.1"         # For plugin and Makefile
-RPM_VERSION="02.1"            # For RPM spec & filename
+DISPLAY_VERSION="2.1.1"         # For plugin and Makefile
+RPM_VERSION="02.1.1"            # For RPM spec & filename
 BUILD_NUMBER=$1
 BUILD_MODE="Release"
 
@@ -49,6 +49,9 @@ mkdir -p ${RPMBUILD_DIR}/${TERRAFORM_PKG}/{bin,examples,docs,telemetry}
 # Populate rpmbuild with terraform files
 echo; echo "Copying files to ${RPMBUILD_DIR}..."
 cp ${TERRAFORM_DIR}/spec/*.spec ${RPMBUILD_DIR}/SPECS
+chmod 0755 ${TERRAFORM_DIR}/examples/data-sources/*/clean.sh
+chmod 0755 ${TERRAFORM_DIR}/examples/resources/*/clean.sh
+cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/examples ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -rf ${TERRAFORM_DIR}/docs ${RPMBUILD_DIR}/${TERRAFORM_PKG}
 cp -f ${TERRAFORM_DIR}/terraform-provider-hitachi ${RPMBUILD_DIR}/${TERRAFORM_PKG}/bin

@@ -43,7 +43,7 @@ ARCHIVE_NAME="hitachi_terraform_logbundle-$TIMESTAMP.tar.gz"
 ARCHIVE_OUTPUT_DIR="/opt/hitachi/terraform/logbundles"
 FINAL_ARCHIVE="$ARCHIVE_OUTPUT_DIR/$ARCHIVE_NAME"
 
-PLUGIN_PATH="$HOME/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.1/linux_amd64/terraform-provider-hitachi"
+PLUGIN_PATH="$HOME/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.1.1/linux_amd64/terraform-provider-hitachi"
 INTERNAL_CONFIG="/opt/hitachi/terraform/bin/.internal_config"
 USER_CONSENT="/opt/hitachi/terraform/user_consent.json"
 TELEMETRY_DIR="/opt/hitachi/terraform/telemetry"

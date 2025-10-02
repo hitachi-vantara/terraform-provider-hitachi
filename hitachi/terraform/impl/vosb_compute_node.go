@@ -215,7 +215,7 @@ func ConvertVssbComputeNodeWithPathDetailsToSchema(computeNode *terraformmodel.C
 	for _, item := range computeNode.ComputePaths.Data {
 		data := map[string]interface{}{
 			"port_id":         item.PortId,
-			"iscsi_initiator": item.PortName,
+			"target_port_identifier": item.PortName,
 			"port_name":       item.PortNickname,
 		}
 		pa2 = append(pa2, data)

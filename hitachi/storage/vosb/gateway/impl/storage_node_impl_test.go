@@ -49,6 +49,7 @@ func xTestAddStorageNode(t *testing.T) {
 			"",
 			"vssb-789",
 			"baremetal",
+			"",
 		)
 		if err != nil {
 			t.Errorf("Unexpected error in GetStorageNodes %v", err)
@@ -73,9 +74,9 @@ func removeTestFile(t *testing.T, filepath string) {
 	}
 }
 
-// Integration test for doAddStorageNodeAzure function (binary file support)
-// go test -v -run TestDoAddStorageNodeAzure -count=1
-func xTestDoAddStorageNodeAzure(t *testing.T) {
+// Integration test for doAddStorageNode functions (binary file support)
+// go test -v -run TestDoAddStorageNodeCloudProviders -count=1
+func xTestDoAddStorageNodeCloudProviders(t *testing.T) {
 	psm, err := newTestManager()
 	if err != nil {
 		t.Fatalf("Unexpected error %v", err)
@@ -87,6 +88,7 @@ func xTestDoAddStorageNodeAzure(t *testing.T) {
 		exportedConfigurationFile string
 		setupUserPassword         string
 		expectedCloudProvider     string
+		vmConfigFileS3URI         string
 		wantError                 bool
 		description               string
 	}{
@@ -96,8 +98,19 @@ func xTestDoAddStorageNodeAzure(t *testing.T) {
 			exportedConfigurationFile: "/tmp/test_large_binary.bin",
 			setupUserPassword:         "",
 			expectedCloudProvider:     "azure",
+			vmConfigFileS3URI:         "",
 			wantError:                 false,
 			description:               "Test Azure deployment with large binary file (>32KB)",
+		},
+		{
+			name:                      "aws_with_s3_uri",
+			configurationFile:         "/tmp/test_aws_config.csv",
+			exportedConfigurationFile: "",
+			setupUserPassword:         "",
+			expectedCloudProvider:     "aws",
+			vmConfigFileS3URI:         "s3://test-bucket/vm-config/config.tar.gz",
+			wantError:                 false,
+			description:               "Test AWS deployment with configuration file and S3 URI for VM configuration file",
 		},
 	}
 
@@ -110,14 +123,31 @@ func xTestDoAddStorageNodeAzure(t *testing.T) {
 				createTestBinaryFile(t, tt.exportedConfigurationFile, binaryData)
 				defer removeTestFile(t, tt.exportedConfigurationFile)
 			}
+			if tt.configurationFile != "" {
+				var configData = []byte("test,configuration,data\nnode1,config1,value1\n") // CSV-like test data
+				createTestBinaryFile(t, tt.configurationFile, configData)
+				defer removeTestFile(t, tt.configurationFile)
+			}
 
-			// Execute the function
-			err := psm.doAddStorageNodeAzure(
-				tt.configurationFile,
-				tt.exportedConfigurationFile,
-				tt.setupUserPassword,
-				tt.expectedCloudProvider,
-			)
+			// Execute the function based on cloud provider
+			var err error
+			if tt.expectedCloudProvider == "azure" {
+				err = psm.doAddStorageNodeAzure(
+					tt.configurationFile,
+					tt.exportedConfigurationFile,
+					tt.setupUserPassword,
+					tt.expectedCloudProvider,
+					tt.vmConfigFileS3URI,
+				)
+			} else {
+				err = psm.doAddStorageNode(
+					tt.configurationFile,
+					tt.exportedConfigurationFile,
+					tt.setupUserPassword,
+					tt.expectedCloudProvider,
+					tt.vmConfigFileS3URI,
+				)
+			}
 
 			// Validate results
 			if tt.wantError && err == nil {

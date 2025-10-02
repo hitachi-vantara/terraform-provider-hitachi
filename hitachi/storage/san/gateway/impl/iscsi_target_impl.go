@@ -26,6 +26,24 @@ func (psm *sanStorageManager) GetIscsiTarget(portID string, iscsiTargetNumber in
 	return &iscsiTarget, nil
 }
 
+// GetIscsiTargetByPortId
+func (psm *sanStorageManager) GetIscsiTargetsByPortId(portID string) (*sanmodel.IscsiTargets, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var iscsiTargets sanmodel.IscsiTargets
+	apiSuf := fmt.Sprintf("objects/host-groups?portId=%v", portID)
+	err := httpmethod.GetCall(psm.storageSetting, apiSuf, &iscsiTargets)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in %s API call, err: %v", apiSuf, err)
+		return nil, err
+	}
+
+	return &iscsiTargets, nil
+}
+
 // GetAllIscsiTargets
 func (psm *sanStorageManager) GetAllIscsiTargets() (*sanmodel.IscsiTargets, error) {
 	log := commonlog.GetLogger()
@@ -126,7 +144,6 @@ func (psm *sanStorageManager) SetIscsiNameForIscsiTarget(reqBody sanmodel.SetIsc
 
 	return nil
 }
-
 // SetNicknameForIscsiName
 func (psm *sanStorageManager) SetNicknameForIscsiName(portID string, iscsiTargetNumber int, iscsiName string, reqBody sanmodel.SetNicknameIscsiReq) error {
 	log := commonlog.GetLogger()

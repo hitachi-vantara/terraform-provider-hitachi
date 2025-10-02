@@ -15,72 +15,111 @@ VSP One SDS Block: Create and/or download configuration definition file of the s
 ```terraform
 # Hitachi VSP One SDS Block: Generate and Download Configuration File
 #
-# This resource allows you to create or retrieve configuration files for a Hitachi VSP One SDS Block system
-# in cloud or bare-metal environments. It supports different cloud providers and maintenance operations such as
-# adding or replacing storage nodes and drives.
-#
-# The `hitachi_vosb_configuration_file` resource automates generation and optional download of system configuration files.
-#
-### Usage Modes
-# Choose one of the modes below to control how the file is generated or downloaded:
-#
-# - Set `download_existconfig_only = true` to **only download** the most recent existing configuration file.
-# - Set `create_only = true` to **only create** a new configuration file without downloading.
-# - By default, both `create_only` and `download_existconfig_only` are `false`, which means the file will be **created and downloaded**.
-#
-### Expected Cloud Provider Behavior
-# The `expected_cloud_provider` parameter is used only to validate input combinations based on the expected cloud environment.
-# If there is a mismatch between the given 'expected_cloud_provider' and the VSP One SDS Block environment, the request will still proceed.
-# VSP One SDS Block will apply its actual cloud provider behavior regardless of this value.
-#
-# - **google / azure**: Additional input parameters are required based on the selected maintenance operation (`export_file_type`).
-# - If not provided: All additional parameters are ignored — only basic creation/download will occur.
-#
-### Maintenance Operation Types (`export_file_type`)
-# The type of maintenance operation determines what additional parameters are required:
-#
-# - `"Normal"` *(default)*: No additional parameters are needed.
-# - `"AddStorageNodes"`: Requires `machine_image_id` and `address_setting`.
-# - `"ReplaceStorageNode"`: Requires `machine_image_id` and `node_id`. Optional `recoverSingleNode`
-# - `"AddDrives"`: Requires `number_of_drives` (between 6 and 24).
-# - `"ReplaceDrive"`: Requires either `drive_id` (UUID) or `recover_single_drive = true`.
-#
-### Parameters
-# - `vosb_address`: **(Required)** IP or hostname of VSP One SDS Block.
-# - `download_existconfig_only`: **(Optional)** If `true`, skips creation and only downloads the latest file.
-# - `create_only`: **(Optional)** If `true`, creates the file but skips downloading it.
-# - `download_path`: **(Optional)** Path to save the downloaded file. Ignored if no download occurs.
-#      Can be either:
-#      - A directory: File is saved there with a default name (e.g. ConfigurationFiles_20250625_171510.tar.gz)
-#      - A full file path: File is saved using the given name; `.tar.gz` is added if no extension is given.
-#        Despite the name, this can be a directory or full file path.
-#
-# - `create_configuration_file_param`: **(Optional)** A block of parameters used only for Google Cloud and Azure to generate the configuration file:
-#
-#   - `expected_cloud_provider`: **(Optional)** `"google"` or `"azure"`. Controls behavior of other fields. If not provided, ignores other fields below.
-#   - `export_file_type`: **(Optional)** One of `"Normal"`, `"AddStorageNodes"`, `"ReplaceStorageNode"`, `"AddDrives"`, `"ReplaceDrive"`. Defaults to `"Normal"`.
-#   - `machine_image_id`: **(Optional)** Required for node operations.
-#   - `number_of_drives`: **(Optional)** Must be between 6 and 24 for `AddDrives`.
-#   - `recover_single_drive`: **(Optional)** If `true`, replaces a single removed drive.
-#   - `drive_id`: **(Optional)** UUID of drive to replace. Not allowed if `recover_single_drive = true`.
-#   - `recover_single_node`: **(Optional)** If `true`, recovers a node during replacement.
-#   - `node_id`: **(Optional)** UUID of the node to replace. Required for `ReplaceStorageNode`.
-#   - `address_setting`: **(Optional)** A list (1–6 items) of storage node IP settings for `AddStorageNodes`.
-#
-### Outputs
-# - `status`: Operation status returned from the VSP One SDS Block.
-# - `output_file_path`: The full local path to the resulting downloaded configuration file.
-#
-### Notes
-# - Fields not applicable to the selected `expected_cloud_provider` or `export_file_type` are ignored.
-# - Input combinations are validated at runtime.
-#
-### Examples
+# The `hitachi_vosb_configuration_file` resource allows you to create or download configuration files
+# for a VSP One SDS Block system. It supports bare-metal and multiple cloud providers (AWS, Google Cloud, Azure),
+# and can be used for maintenance operations such as adding or replacing storage nodes and drives.
 
-# example "Download existing configuration file. For baremetal or any cloud provider (default export_file_type Normal)" 
+### General Parameters
+# - `vosb_address`: IP or hostname of VSP One SDS Block (**Required**).
+# - `download_existconfig_only`: If `true`, skips creation and only downloads the latest file. Requires `download_path`.
+# - `create_only`: If `true`, creates the file but skips downloading.
+# - `download_path`: Path to save the downloaded file.
+#   - Can be a directory or a full file path.
+#   - `.tar.gz` is added if no extension is given for full file paths.
+# - `create_configuration_file_param`: Block of `create` parameters for cloud providers. Not for bare-metal.
+
+### Expected Cloud Provider Behavior
+# - `expected_cloud_provider`: Validates input combinations only. Accepted values: `"google"`, `"aws"`, `"azure"`.
+# - If the value does not match the actual environment, the request still proceeds.
+# - VSP One SDS Block always applies its actual cloud provider behavior.
+# - Additional parameters may be required based on the selected maintenance operation (`export_file_type`).
+# - If not provided, all cloud-specific parameters are ignored.
+
+### Maintenance Operation Types (`export_file_type`)
+# - `"Normal"` *(default)*: No additional parameters required.
+# - `"AddStorageNodes"`: See cloud-specific requirements below.
+# - `"ReplaceStorageNode"`: See cloud-specific requirements below.
+# - `"AddDrives"`: See cloud-specific requirements below.
+# - `"ReplaceDrive"`: See cloud-specific requirements below.
+# - Note: Exact parameters depend on the cloud provider (AWS, Azure, GCP).
+
+### Configuration File Parameters
+# For details, refer to the provider documentation, resource `.md` file in `docs/`.
+# - `expected_cloud_provider`: `"google"`, `"azure"`, `"aws"`.
+# - `export_file_type`: `"Normal"`, `"AddStorageNodes"`, `"ReplaceStorageNode"`, `"AddDrives"`, `"ReplaceDrive"`.
+# - `machine_image_id`: VM image ID for node operations.
+# - `number_of_drives`: Number of drives to add (6–24 for `AddDrives`).
+# - `recover_single_drive`: Replaces a single removed drive if `true`.
+# - `drive_id`: UUID of drive to replace. Not allowed if `recover_single_drive = true`.
+# - `recover_single_node`: Recovers a node if `true`.
+# - `node_id`: UUID of node to replace (required for `ReplaceStorageNode`).
+# - `address_setting`: List (1–6 items) of storage node IPs for `AddStorageNodes`. Ignored for AWS.
+# - `template_s3_url`: AWS only. URL of S3 bucket storing the configuration file.
+
+### Outputs
+# - `status`: Operation status returned by the VSP One SDS Block system.
+# - `output_file_path`: Local path of the downloaded configuration file (if downloaded).
+
+### Notes
+# - Fields not applicable to the selected cloud provider or `export_file_type` are ignored.
+# - Input combinations are validated at runtime.
+
+# =====================================================================
+# Bare-metal
+# - Usage Modes: See `General Parameters` above.
+# - No additional parameters needed. Cloud-specific parameters are ignored.
+
+# =====================================================================
+# AWS
+# - Usage Modes: same as above.
+# - For normal create, it needs create_configuration_file_param
+# - Required:
+#   - `create_configuration_file_param`
+#   - `expected_cloud_provider = "aws"`
+#   - `template_s3_url`
+# - By `export_file_type`:
+#   - `"Normal"`: None
+#   - `"AddStorageNodes"`: `machine_image_id`
+#   - `"ReplaceStorageNode"`: `machine_image_id`
+#   - `"AddDrives"`: `number_of_drives` (6–24)
+#   - `"ReplaceDrive"`: `machine_image_id`, and either `drive_id` or `recover_single_drive`
+
+# =====================================================================
+# Google Cloud (GCP)
+# - Usage Modes: same as above.
+# - For normal create, no need for create_configuration_file_param
+# - Required (for other than normal create):
+#   - `create_configuration_file_param`
+#   - `expected_cloud_provider = "google"`
+# - By `export_file_type`:
+#   - `"Normal"`: None
+#   - `"AddStorageNodes"`: `machine_image_id`, `address_setting`
+#   - `"ReplaceStorageNode"`: `machine_image_id`, `node_id`, optional `recover_single_node`
+#   - `"AddDrives"`: `number_of_drives` (6–24)
+#   - `"ReplaceDrive"`: `machine_image_id`, and either `drive_id` or `recover_single_drive`
+
+# =====================================================================
+# Azure
+# - Usage Modes: same as above.
+# - For normal create, no need for create_configuration_file_param
+# - Required (for other than normal create):
+#   - `create_configuration_file_param`
+#   - `expected_cloud_provider = "azure"`
+# - By `export_file_type`:
+#   - `"Normal"`: None
+#   - `"AddStorageNodes"`: `machine_image_id`, `address_setting`. Optional: `compute_port_ipv6_address` in address_setting.
+#   - `"ReplaceStorageNode"`: `machine_image_id`
+#   - `"AddDrives"`: `number_of_drives` (6–24)
+#   - `"ReplaceDrive"`: None
+
+# =====================================================================
+### Examples
+# For more examples, see the cloud-specific example files.
+
+# Example: Create and download configuration file. 
 resource "hitachi_vosb_configuration_file" "download" {
   vosb_address              = var.vosb_address
-  download_existconfig_only = true
+  download_existconfig_only = false
   download_path             = "."
   create_only               = false
 }
@@ -88,120 +127,6 @@ resource "hitachi_vosb_configuration_file" "download" {
 output "download_output" {
   value = resource.hitachi_vosb_configuration_file.download
 }
-
-# example "Create and download configuration file. For baremetal or any cloud provider (default export_file_type Normal)" 
-# resource "hitachi_vosb_configuration_file" "create_download" {
-#   vosb_address              = var.vosb_address
-#   download_existconfig_only = false
-#   download_path             = "/tmp/myDownloadConfig.tar.gz"
-#   create_only               = false
-# }
-
-# output "create_download_output" {
-#   value = resource.hitachi_vosb_configuration_file.create_download
-# }
-
-# example "Create configuration file only. For baremetal or any cloud provider (default export_file_type Normal)" 
-# resource "hitachi_vosb_configuration_file" "create" {
-#   vosb_address = var.vosb_address
-#   create_only = true
-# }
-
-# output "create_output" {
-#   value = resource.hitachi_vosb_configuration_file.create
-# }
-
-# example "Create and download configuration file. For google or azure cloud provider (export_file_type Normal specified)" 
-# resource "hitachi_vosb_configuration_file" "normal" {
-#   vosb_address  = var.vosb_address
-#   download_path = "/tmp/myDownloadConfig"
-#   create_configuration_file_param {
-#     expected_cloud_provider = "google" # or azure
-#     export_file_type        = "Normal"
-#   }
-# }
-
-# output "normal_output" {
-#   value = resource.hitachi_vosb_configuration_file.normal
-# }
-
-# example "AddStorageNodes export_file_type: Create and download configuration file. For google or azure cloud provider" 
-# resource "hitachi_vosb_configuration_file" "add_storage_node" {
-#   vosb_address  = var.vosb_address
-#   download_path = "."
-#   create_configuration_file_param {
-#     expected_cloud_provider = "google" # or azure
-#     export_file_type        = "AddStorageNodes"
-#     machine_image_id        = "ami-0123456789abcdef0"
-#     address_setting {
-#       index                       = 1
-#       control_port_ipv4_address   = "192.168.0.1"
-#       internode_port_ipv4_address = "192.168.0.2"
-#       compute_port_ipv4_address   = "192.168.0.3"
-#       compute_port_ipv6_address   = "2001:db8:85a3::8a2e:370:7334" // only for Azure
-#     }
-#     address_setting {
-#       index                       = 2
-#       control_port_ipv4_address   = "192.168.0.4"
-#       internode_port_ipv4_address = "192.168.0.5"
-#       compute_port_ipv4_address   = "192.168.0.6"
-#       compute_port_ipv6_address   = "2001:db8:85a3::8a2e:370:7334" // only for Azure
-#     }
-#   }
-# }
-
-# output "add_storage_node_output" {
-#   value = resource.hitachi_vosb_configuration_file.add_storage_node
-# }
-
-# example "ReplaceDrive export_file_type: Create and download configuration file. Only for google cloud provider" 
-# resource "hitachi_vosb_configuration_file" "replace_drive" {
-#   vosb_address = var.vosb_address
-#   download_path = "."
-#   create_configuration_file_param {
-#     expected_cloud_provider = "google"
-#     export_file_type        = "ReplaceDrive"
-#     machine_image_id        = "ami-0123456789abcdef0"
-#     recover_single_drive    = false
-#     drive_id                = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9"
-#   }
-# }
-
-# output "replace_drive_output" {
-#   value = resource.hitachi_vosb_configuration_file.replace_drive
-# }
-
-# example "AddDrives export_file_type: Create and download configuration file. For google or azure cloud provider" 
-# resource "hitachi_vosb_configuration_file" "add_drives" {
-#   vosb_address = var.vosb_address
-#   download_path = "."
-#   create_configuration_file_param {
-#     expected_cloud_provider = "google" # or azure
-#     export_file_type        = "AddDrives"
-#     number_of_drives        = 6
-#   }
-# }
-
-# output "add_drives_output" {
-#   value = resource.hitachi_vosb_configuration_file.add_drives
-# }
-
-# example "ReplaceStorageNode export_file_type: Create and download configuration file. For google or azure cloud provider" 
-# resource "hitachi_vosb_configuration_file" "replace_storage_node" {
-#   vosb_address = var.vosb_address
-#   download_path = "."
-#   create_configuration_file_param {
-#     expected_cloud_provider = "google" # or azure
-#     export_file_type        = "ReplaceStorageNode"
-#     machine_image_id        = "ami-0123456789abcdef0"
-#     node_id                 = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9" // ignored for azure
-#     recover_single_node     = false // ignored for azure
-#   }
-# }
-
-# output "replace_storage_node_output" {
-#   value = resource.hitachi_vosb_configuration_file.replace_storage_node
-# }
 ```
 
 <!-- schema generated by tfplugindocs -->
@@ -213,7 +138,7 @@ output "download_output" {
 
 ### Optional
 
-- `create_configuration_file_param` (Block List, Max: 1) Parameters for creating a configuration file (relevant for Google Cloud and Azure only). Ignored for AWS and Bare Metal. (see [below for nested schema](#nestedblock--create_configuration_file_param))
+- `create_configuration_file_param` (Block List, Max: 1) Parameters for creating a configuration file (relevant for Google Cloud, Azure, and AWS). Ignored for Bare Metal. (see [below for nested schema](#nestedblock--create_configuration_file_param))
 - `create_only` (Boolean) If true, creates a new configuration file but does not download it. Ignored if `download_existconfig_only` is true.
 - `download_existconfig_only` (Boolean) If true, skips creation and only downloads the latest existing configuration file. Requires `download_path`. All other parameters are ignored.
 - `download_path` (String) Path to save the downloaded configuration file. Ignored if no download occurs. Can be a directory or a specific file path.
@@ -231,10 +156,10 @@ Optional:
 
 - `address_setting` (Block List, Max: 6) IP settings to be assigned to storage nodes being added. Mandatory if export_file_type is AddStorageNodes. (see [below for nested schema](#nestedblock--create_configuration_file_param--address_setting))
 - `drive_id` (String) UUID of the drive to replace. Must not be set if `recover_single_drive` is true.
-- `expected_cloud_provider` (String) Specifies the expected cloud provider type. Valid values: "google", "azure".
+- `expected_cloud_provider` (String) Specifies the expected cloud provider type. Valid values: "google", "azure", "aws".
 
 	- Used to validate combinations of inputs based on the deployment environment.
-	- If set to "google" or "azure", specific parameters may be required for certain operations.
+	- If set to "google", "azure", or "aws", specific parameters may be required for certain operations.
 	- If not specified, other cloud-specific inputs below are ignored.
 	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
 	If there's a mismatch, the request still proceeds and behaves according to the actual environment.
@@ -243,21 +168,27 @@ Optional:
 
 	Determines which additional parameters are needed:
 	- Normal: All other parameters are ignored.
-	- AddStorageNodes: Requires 'machine_image_id' and 'address_setting'.
+	- AddStorageNodes: Requires 'machine_image_id' and 'address_setting'. (address_setting is ignored for AWS).
 	- ReplaceStorageNode:
 		- Google Cloud: Requires 'machine_image_id' and 'node_id'. Optionally 'recover_single_node'.
-		- Azure: Requires 'machine_image_id'.
+		- Azure, AWS: Requires 'machine_image_id' only.
 	- AddDrives: Requires 'number_of_drives'.
-	- ReplaceDrive (Google Cloud only): Requires 'drive_id' or 'recover_single_drive'.
+	- ReplaceDrive (Google Cloud, and AWS only): Requires 'drive_id' or 'recover_single_drive'.
 
 	Note:
-	- Ignored in AWS and Bare Metal environments.
-	- Used only in Google Cloud or Azure to control behavior.
-- `machine_image_id` (String) ID or URI of the VM image used in AddStorageNodes or ReplaceStorageNode operations.
+	- Ignored in Bare Metal environments.
+	- Used in Google Cloud, Azure, or AWS to control behavior.
+- `machine_image_id` (String) Identifier of the machine image associated with the VM.
+	This argument is required only when performing AddStorageNodes or ReplaceStorageNode operations.
+	- **AWS:** AMI ID (e.g. 'ami-0abcdef1234567890'), available in the EC2 console under AMIs.
+	- **Google Cloud:** Image name (e.g. 'hsds-installed-sdsc-01180060-0587'), available in the Compute Engine Images page.
+	- **Azure:** Image reference in marketplace format 'publisher:offer:sku:version'
+	(e.g. 'hitachivantara:vsp_one_sds_block_image:01_18_00_50_byol:latest') available in the Azure Portal under Images or from Marketplace listings.
 - `node_id` (String) UUID of the storage node to replace. Required for ReplaceStorageNode.
 - `number_of_drives` (Number) Number of drives to install per node in AddDrives. Must be between 6 and 24.
 - `recover_single_drive` (Boolean) Whether to recover a removed drive during a ReplaceDrive operation.
 - `recover_single_node` (Boolean) Whether to recover a storage node during a ReplaceStorageNode operation.
+- `template_s3_url` (String) URL of an Amazon S3 bucket where the VM configuration file is stored. Must be in the format `https://<bucket-name>.s3.<region>.amazonaws.com/folder/`. Note the ending slash. Required for AWS, Ignored for Google and Azure.
 
 <a id="nestedblock--create_configuration_file_param--address_setting"></a>
 ### Nested Schema for `create_configuration_file_param.address_setting`

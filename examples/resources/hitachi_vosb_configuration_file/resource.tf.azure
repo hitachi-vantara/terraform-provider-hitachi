@@ -1,0 +1,109 @@
+# Hitachi VSP One SDS Block: Generate and Download Configuration File
+#
+### AZURE
+# - Usage Modes: See `General Parameters` in resource.tf.
+# - For normal create, no need for create_configuration_file_param
+# - Required (for other than normal create):
+#   - `create_configuration_file_param`
+#   - `expected_cloud_provider = "azure"`
+# - Parameter requirements by `export_file_type`:
+#   - `"Normal"` *(default)*: No additional parameters.
+#   - `"AddStorageNodes"`: Requires `machine_image_id` and `address_setting`. Optional: `compute_port_ipv6_address` in address_setting.
+#   - `"ReplaceStorageNode"`: Requires `machine_image_id`.
+#   - `"AddDrives"`: Requires `number_of_drives` (6–24).
+#   - `"ReplaceDrive"`: No additional parameters.
+#
+
+##########################
+# Example: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "normal" {
+  vosb_address  = var.vosb_address
+  download_path = "."
+}
+
+output "normal_output" {
+  value = resource.hitachi_vosb_configuration_file.normal
+}
+
+/*
+##########################
+# Example: AddStorageNodes export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "add_storage_node" {
+  vosb_address  = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "azure"
+    export_file_type        = "AddStorageNodes"
+    machine_image_id        = "hitachivantara:vsp_one_sds_block_image:01_18_00_50_byol:latest"
+    address_setting {
+      index                       = 1
+      control_port_ipv4_address   = "192.168.0.1"
+      internode_port_ipv4_address = "192.168.0.2"
+      compute_port_ipv4_address   = "192.168.0.3"
+      compute_port_ipv6_address   = "2001:db8:85a3::8a2e:370:7334" # optional
+    }
+    address_setting {
+      index                       = 2
+      control_port_ipv4_address   = "192.168.0.4"
+      internode_port_ipv4_address = "192.168.0.5"
+      compute_port_ipv4_address   = "192.168.0.6"
+      compute_port_ipv6_address   = "2001:db8:85a3::8a2e:370:7334" # optional
+    }
+  }
+}
+
+output "add_storage_node_output" {
+  value = resource.hitachi_vosb_configuration_file.add_storage_node
+}
+
+##########################
+# Example: ReplaceStorageNode export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "replace_storage_node" {
+  vosb_address = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "azure"
+    export_file_type        = "ReplaceStorageNode"
+    machine_image_id        = "hitachivantara:vsp_one_sds_block_image:01_18_00_50_byol:latest"
+    node_id                 = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9"
+    recover_single_node     = false
+  }
+}
+
+output "replace_storage_node_output" {
+  value = resource.hitachi_vosb_configuration_file.replace_storage_node
+}
+
+##########################
+# Example: AddDrives export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "add_drives" {
+  vosb_address = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "azure"
+    export_file_type        = "AddDrives"
+    number_of_drives        = 6
+  }
+}
+
+output "add_drives_output" {
+  value = resource.hitachi_vosb_configuration_file.add_drives
+}
+
+##########################
+# Example: ReplaceDrive export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "replace_drive" {
+  vosb_address  = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "azure"
+    export_file_type        = "ReplaceDrive"
+    recover_single_drive    = false
+    drive_id                = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9"
+  }
+}
+
+output "replace_drive_output" {
+  value = resource.hitachi_vosb_configuration_file.replace_drive
+}
+*/

@@ -106,10 +106,10 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 					Type:        schema.TypeString,
 					Description: "Port ID of the connection",
 				},
-				"iscsi_initiator": {
+				"target_port_identifier": {
 					Computed:    true,
 					Type:        schema.TypeString,
-					Description: "iSCSI initiator name",
+					Description: "WWN (for FC) or iSCSI name (for iSCSI) of the allocation destination compute port of the target operation",
 				},
 				"port_name": {
 					Computed:    true,

@@ -26,8 +26,8 @@ VSP One SDS Block Compute Node: Registers the information of the compute node.
 // Customize the values of the parameters (vosb_address, compute_node_name, os_type),
 // and the nested "iscsi_connection" blocks to match your desired compute node configuration.
 //
-// The "iscsi_connection" blocks define Fibre Channel connections for the compute node,
-// including the host WWNs (World Wide Names).
+// The "iscsi_connection" blocks define iscsi connection for the compute node,
+// including the iscsi_initiator and port_names.
 //
 //
 // resource "hitachi_vosb_compute_node" "mycompute2" {
@@ -39,6 +39,10 @@ VSP One SDS Block Compute Node: Registers the information of the compute node.
 //     iscsi_initiator = "iqn.1993-08.org.debian.iscsi:01:107dc7e4254f"
 //     port_names = ["001-iSCSI-000"]
 //   }
+// }
+//
+// output "computenodecreate" {
+//   value = resource.hitachi_vosb_compute_node.mycompute2
 // }
 
 //////////////////////////////// fc_connection /////////////////////////////////
@@ -134,9 +138,9 @@ Read-Only:
 
 Read-Only:
 
-- `iscsi_initiator` (String) iSCSI initiator name
 - `port_id` (String) Port ID of the connection
 - `port_name` (String) Port name of the connection
+- `target_port_identifier` (String) WWN (for FC) or iSCSI name (for iSCSI) of the allocation destination compute port of the target operation
 
 ## Import
 

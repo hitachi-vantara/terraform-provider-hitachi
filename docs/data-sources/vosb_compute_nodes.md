@@ -85,6 +85,6 @@ Read-Only:
 
 Read-Only:
 
-- `iscsi_initiator` (String) iSCSI initiator name
 - `port_id` (String) Port ID of the connection
 - `port_name` (String) Port name of the connection
+- `target_port_identifier` (String) WWN (for FC) or iSCSI name (for iSCSI) of the allocation destination compute port of the target operation

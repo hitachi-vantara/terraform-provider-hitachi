@@ -15,7 +15,8 @@ func (psm *vssbStorageManager) AddStorageNode(
 	configurationFile string,
 	exportedConfigurationFile string,
 	setupUserPassword string,
-	expectedCloudProvider string) (err error) {
+	expectedCloudProvider string,
+	vmConfigFileS3URI string) (err error) {
 
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -33,7 +34,7 @@ func (psm *vssbStorageManager) AddStorageNode(
 		return
 	}
 
-	err = gatewayObj.AddStorageNode(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider)
+	err = gatewayObj.AddStorageNode(configurationFile, exportedConfigurationFile, setupUserPassword, expectedCloudProvider, vmConfigFileS3URI)
 	if err != nil {
 		log.WriteDebug("TFError| error in AddStorageNode, err: %v", err)
 	}

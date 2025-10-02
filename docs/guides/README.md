@@ -23,7 +23,7 @@
 
 ## Introduction
 
-Terraform provider for Hitachi Vantara storage systems 2.1.
+Terraform provider for Hitachi Vantara storage systems 2.1.1.
 
 See [User Guide and Release Notes](https://docs.hitachivantara.com/search/all?query=terraform&value-filters=Option~%2522Terraform%2522*Product_custom~%2522Adapters+and+Drivers%2522&content-lang=en-US)
 
@@ -44,7 +44,7 @@ Ensure the following are installed:
 
 ### 3.1 Build RPM package (for Developers)
 
-Requires **Golang v1.22** and **superuser privileges**.
+Requires **Golang v1.24** and **superuser privileges**.
 
 ```bash
 export GOPATH=/usr/local/go
@@ -54,7 +54,7 @@ cd <your hitachi terraform source code directory>
 
 Example output path:
 ```
-./rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.1-40.x86_64.rpm
+./rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.1.1-40.x86_64.rpm
 ```
 
 ### 3.2 Build without RPM (for Developers)
@@ -80,7 +80,7 @@ terraform init && terraform apply
 /usr/bin/rpm -e HV_Storage_Terraform
 
 # Install the new version: replace build number (XX)
-/usr/bin/rpm -Uvh HV_Storage_Terraform-02.1-XX.x86_64.rpm
+/usr/bin/rpm -Uvh HV_Storage_Terraform-02.1.1-XX.x86_64.rpm
 ```
 
 ### Example Installation Output
@@ -90,7 +90,7 @@ Preparing...                          ################################# [100%]
 [Tue Jun 17 11:13:25 EDT 2025] Starting pre-install checks
 [Tue Jun 17 11:13:27 EDT 2025] Pre-install checks passed
 Updating / installing...
-   1:HV_Storage_Terraform-02.1-50     ################################# [100%]
+   1:HV_Storage_Terraform-02.1.1-50     ################################# [100%]
 [Tue Jun 17 11:13:28 EDT 2025] Starting installation of HV_Storage_Terraform
 [Tue Jun 17 11:13:28 EDT 2025] WARN: Overwriting existing directories under /opt/hitachi/terraform
 [Tue Jun 17 11:13:28 EDT 2025] Installing terraform plugin for root
@@ -110,13 +110,13 @@ Log:
 Verify:
 ```bash
 # Check the plugin terraform-provider-hitachi version (-v or --version)
-cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.1/linux_amd64
+cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.1.1/linux_amd64
 ./terraform-provider-hitachi -v
 ```
 
 Example Output:
 ```text
-Hitachi Terraform Provider version: 2.1
+Hitachi Terraform Provider version: 2.1.1
 ```
 
 ---
@@ -132,7 +132,7 @@ terraform providers
 
 Example output:
 ```text
-provider[localhost/hitachi-vantara/hitachi] ~> 2.1
+provider[localhost/hitachi-vantara/hitachi] ~> 2.1.1
 ```
 
 ---
@@ -150,7 +150,7 @@ provider[localhost/hitachi-vantara/hitachi] ~> 2.1
 ```
 [Tue Jun 17 11:13:14 EDT 2025] Starting uninstallation of HV_Storage_Terraform
 [Tue Jun 17 11:13:14 EDT 2025] WARN: Deleting /opt/hitachi/terraform and contents
-[Tue Jun 17 11:13:14 EDT 2025] Erasing terraform plugin 2.1 for root
+[Tue Jun 17 11:13:14 EDT 2025] Erasing terraform plugin 2.1.1 for root
 [Tue Jun 17 11:13:14 EDT 2025] Removing install directory /opt/hitachi/terraform
 [Tue Jun 17 11:13:14 EDT 2025] Erase complete
 [Tue Jun 17 11:13:14 EDT 2025] Uninstallation complete

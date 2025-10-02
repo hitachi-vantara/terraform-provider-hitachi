@@ -17,4 +17,5 @@ type CreateConfigurationFileParam struct {
 	RecoverSingleNode     bool             `json:"recoverSingleNode,omitempty"`
 	NodeID                string           `json:"nodeId,omitempty"`
 	AddressSetting        []AddressSetting `json:"addressSetting,omitempty"`
+	TemplateS3Url         string           `json:"templateS3Url,omitempty"`
 }

@@ -8,7 +8,7 @@ NAME = hitachi
 BINARY = terraform-provider-${NAME}
 
 # Use the TERRAFORM_VERSION and BUILD_NUMBER passed from build.sh, or use default
-VERSION := $(or $(TERRAFORM_VERSION),2.1)
+VERSION := $(or $(TERRAFORM_VERSION),2.1.1)
 BUILD_NUMBER := $(or $(BUILD_NUMBER),1)
 
 # Full version string: e.g., 2.0.x
@@ -19,7 +19,7 @@ FULL_VERSION := ${SEMVER}-${BUILD_NUMBER}
 OS_ARCH = x86_64
 LINUX_OS_ARCH = linux_amd64
 
-GOVERSION = 1.22
+GOVERSION = 1.24
 
 .DEFAULT_GOAL := all
 
@@ -55,10 +55,9 @@ config:
 	cp scripts/logbundle.sh $(OPT_TERRAFORM)/bin
 	cp ${BINARY} $(OPT_TERRAFORM)/bin
 	cp -r docs $(OPT_TERRAFORM)
-	cp -r examples $(OPT_TERRAFORM)
-	# @for ex in $(OPT_TERRAFORM)/examples/data-sources/* $(OPT_TERRAFORM)/examples/resources/*; do \
-	# 	cp -f hitachi/common/telemetry/user_consent_message.tf "$$ex"; \
-	# done
+	chmod 0755 examples/data-sources/*/clean.sh
+	chmod 0755 examples/resources/*/clean.sh
+	cp -r --preserve=mode examples $(OPT_TERRAFORM)
 
 .PHONY: release
 release:

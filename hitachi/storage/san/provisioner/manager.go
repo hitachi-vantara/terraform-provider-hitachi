@@ -30,6 +30,7 @@ type SanStorageManager interface {
 	RemoveLdevFromHG(portID string, hostGroupNumber int, lunID int) (err error)
 	// ISCSI TARGET
 	GetIscsiTarget(portID string, iscsiTargetNumber int) (*sanmodel.IscsiTarget, error)
+	GetIscsiTargetsByPortId(portID string) (*sanmodel.IscsiTargets, error)
 	GetAllIscsiTargets() (*sanmodel.IscsiTargets, error)
 	SetIscsiHostGroupModeAndOptions(portID string, hostGroupNumber int, reqBody sanmodel.SetIscsiHostModeAndOptions) error
 	CreateIscsiTarget(reqBody sanmodel.CreateIscsiTargetReq) (*sanmodel.IscsiTarget, error)

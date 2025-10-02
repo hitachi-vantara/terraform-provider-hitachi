@@ -204,6 +204,8 @@ func (psm *vssbStorageManager) UpdateComputeNodeResource(inputCompute *vssbmodel
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	log.WriteDebug("TFDebug| updating existing compute node %#v", *existingCompute)
+	log.WriteDebug("TFDebug| input compute node %#v", *inputCompute)
 	err := psm.ReconcileComputeNodeNameAndOsType(inputCompute, existingCompute)
 	if err != nil {
 		log.WriteDebug("TFError| error in ReconcileComputeNodeNameAndOsType, err: %v", err)
@@ -217,7 +219,7 @@ func (psm *vssbStorageManager) UpdateComputeNodeResource(inputCompute *vssbmodel
 			return err
 		}
 	}
-	if inputCompute.FcConnections != nil {
+	if inputCompute.FcConnections != nil && len(inputCompute.FcConnections) > 0 {
 		err := psm.AddRemoveFCPorts(inputCompute, existingCompute)
 		if err != nil {
 			log.WriteDebug("TFError| error in ReconcileComputeNodeIscsiConnections, err: %v", err)
@@ -243,7 +245,9 @@ func (psm *vssbStorageManager) AddRemoveFCPorts(inputCompute *vssbmodel.ComputeR
 	}
 	existingHbaNames := []string{}
 	for _, path := range existingCompute.Node.Paths {
-		existingHbaNames = append(existingHbaNames, path.HbaName)
+		if "FC" == path.Protocol {
+			existingHbaNames = append(existingHbaNames, path.HbaName)
+		}
 	}
 	newHbaNames := []string{}
 	for _, hbaname := range inputCompute.FcConnections {
@@ -251,6 +255,8 @@ func (psm *vssbStorageManager) AddRemoveFCPorts(inputCompute *vssbmodel.ComputeR
 
 	}
 	added, removed, _, _ := utils.GetStringSliceDiff(existingHbaNames, newHbaNames)
+	log.WriteDebug("TFDebug| added FC %#v", added)
+	log.WriteDebug("TFDebug| removed FC %#v", removed)
 
 	err = provObj.AddFCportsWWN(added, existingCompute.Node.ID)
 	if err != nil {

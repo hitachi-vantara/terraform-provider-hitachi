@@ -3,6 +3,7 @@ package sanstorage
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	provisonerimpl "terraform-provider-hitachi/hitachi/storage/san/provisioner/impl"
 	provisonermodel "terraform-provider-hitachi/hitachi/storage/san/provisioner/model"
@@ -525,31 +526,63 @@ func (psm *sanStorageManager) GetIscsiTargetsByPortIds(portIds []string) (*sanmo
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_ISCSITARGET_BEGIN), objStorage.Serial)
-	provIscsiTargets, err := provObj.GetAllIscsiTargets()
+
+	// get iscsi ports
+	provStoragePorts, err := provObj.GetStoragePorts()
 	if err != nil {
-		log.WriteDebug("TFError| error in GetAllIscsiTargets provisioner call, err: %v", err)
-		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_ISCSITARGET_FAILED), objStorage.Serial)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_STORAGE_PORTS_FAILED), objStorage.Serial)
 		return nil, err
 	}
-	provIscsiTargetsFilter := provisonermodel.IscsiTargets{}
-	for _, target := range provIscsiTargets.IscsiTargets {
-		for _, id := range portIds {
-			if target.PortID == id {
-				provIscsiTargetsFilter.IscsiTargets = append(provIscsiTargetsFilter.IscsiTargets, target)
 
-			}
+	// filter only iscsi ports
+	iscsiPorts := []string{}
+	for _, p := range *provStoragePorts {
+		if p.PortType == "ISCSI" {
+			iscsiPorts = append(iscsiPorts, p.PortId)
 		}
 	}
+
+	log.WriteDebug("All ISCSI ports: %+v", iscsiPorts)
+
+	portIdsIscsi := []string{}
+	if len(portIds) > 0 {
+		// check if iscsi port
+		for _, p := range portIds {
+			if containsStringIgnoreCase(iscsiPorts, p) {
+				portIdsIscsi = append(portIdsIscsi, p)
+			} else {
+				log.WriteDebug("TFError| portId %v is not an ISCSI port", p)
+			}
+		}
+	} else {
+		portIdsIscsi = iscsiPorts
+	}
+
+	log.WriteDebug("Get Info for ISCSI ports: %+v", portIdsIscsi)
+
+	provIscsiTargets := []provisonermodel.IscsiTargetGwy{}
+	for _, p := range portIdsIscsi {
+		log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_ISCSITARGET_BEGIN), objStorage.Serial)
+		pIscsis, err := provObj.GetIscsiTargetsByPortId(p)
+		if err != nil {
+			log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_ISCSITARGET_FAILED), objStorage.Serial)
+			return nil, err
+		}
+		provIscsiTargets = append(provIscsiTargets, pIscsis.IscsiTargets...)
+	}
+
 	// Converting Prov to Reconciler
-	reconIscsiTargets := sanmodel.IscsiTargets{}
-	err = copier.Copy(&reconIscsiTargets, provIscsiTargetsFilter)
+	reconIscsiTargets := []sanmodel.IscsiTarget{}
+	err = copier.Copy(&reconIscsiTargets, provIscsiTargets)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from prov to reconciler structure, err: %v", err)
 		return nil, err
 	}
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_ISCSITARGET_END), objStorage.Serial)
 
-	return &reconIscsiTargets, nil
+	return &sanmodel.IscsiTargets{
+		IscsiTargets: reconIscsiTargets,
+	}, nil
 }
 
 // GetAllIscsiTargets
@@ -619,4 +652,13 @@ func (psm *sanStorageManager) DeleteIscsiTarget(portID string, iscsiTargetNumber
 	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_ISCSITARGET_END), portID, iscsiTargetNumber)
 
 	return nil
+}
+
+func containsStringIgnoreCase(slice []string, str string) bool {
+	for _, v := range slice {
+		if strings.EqualFold(v, str) {
+			return true
+		}
+	}
+	return false
 }

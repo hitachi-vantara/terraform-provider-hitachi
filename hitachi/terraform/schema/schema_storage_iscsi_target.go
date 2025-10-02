@@ -127,6 +127,11 @@ var IscsiTargetsInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "iSCSI target alias of the iSCSI target",
 	},
+	"iscsi_target_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "iSCSI target name",
+	},
 	"iscsi_target_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
@@ -136,6 +141,14 @@ var IscsiTargetsInfoSchema = map[string]*schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
 		Description: "Type of host mode",
+	},
+	"host_mode_options": &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Description: "List of host mode options",
+		Elem: &schema.Schema{
+			Type: schema.TypeInt,
+		},
 	},
 }
 
