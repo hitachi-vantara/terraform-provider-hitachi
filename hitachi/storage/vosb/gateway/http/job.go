@@ -86,13 +86,36 @@ func CheckJobStatus(storageSetting vssbmodel.StorageDeviceSettings, jobID string
 	return &jobResponse, nil
 }
 
+func calculateMaxRetryCount(apiTimeoutSec int) int {
+    waitTime := 1
+    totalWait := 0
+    count := 0
+
+    for totalWait < apiTimeoutSec {
+        totalWait += waitTime
+        count++
+        if waitTime < 120 {
+            waitTime *= 2
+            if waitTime > 120 {
+                waitTime = 120
+            }
+        }
+    }
+    return count
+}
+
 func WaitForJobToComplete(storageSetting vssbmodel.StorageDeviceSettings, jobResponse *vssbmodel.JobResponse) (string, *vssbmodel.JobResponse, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	apiTimeoutSec := config.DEFAULT_API_TIMEOUT
+	if config.ConfigData != nil && config.ConfigData.APITimeout > 0 {
+		apiTimeoutSec = config.ConfigData.APITimeout
+	}
+
 	var FIRST_WAIT_TIME time.Duration = 1 // in sec
-	MAX_RETRY_COUNT := 6
+	MAX_RETRY_COUNT := calculateMaxRetryCount(apiTimeoutSec)
 
 	// if r.status_code != http.client.ACCEPTED {
 	// 	panic(errors.New("Exception")) //requests.HTTPError(r)
