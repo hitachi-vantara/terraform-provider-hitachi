@@ -9,7 +9,7 @@ on:
   workflow_dispatch:              # Manual run with a tag input
     inputs:
       tag:
-        description: 'Tag to build (e.g., v2.1.1)'
+        description: 'Tag to build (e.g., v2.1.2)'
         required: true
 
 permissions:

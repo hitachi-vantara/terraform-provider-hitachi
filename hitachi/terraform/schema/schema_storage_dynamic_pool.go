@@ -8,17 +8,17 @@ var DynamicPoolInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Pool ID of storage",
+		Description: "Pool ID of the storage system",
 	},
 	"pool_status": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Pool status of storage",
+		Description: "Pool status of the storage system",
 	},
 	"used_capacity_rate": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -63,12 +63,12 @@ var DynamicPoolInfoSchema = map[string]*schema.Schema{
 	"num_of_ldevs": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total number of ldevs",
+		Description: "Total number of LDEVs",
 	},
 	"first_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "First ldev ID",
+		Description: "First LDEV ID",
 	},
 	"warning_threshold": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -148,7 +148,7 @@ var DynamicPoolInfoSchema = map[string]*schema.Schema{
 	"suspend_snapshot": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "Checks if suspend snapshot",
+		Description: "Checks if snapshot has been suspended",
 	},
 }
 
@@ -156,21 +156,21 @@ var DataDynamicPoolSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"pool_id": &schema.Schema{
 		Type:          schema.TypeInt,
 		Optional:      true,
 		Computed:      true,
 		ConflictsWith: []string{"pool_name"},
-		Description:   "Pool ID of the storage. Either `pool_id` or `pool_name` must be specified.",
+		Description:   "Pool ID of the storage system. Either `pool_id` or `pool_name` must be specified.",
 	},
 	"pool_name": &schema.Schema{
 		Type:          schema.TypeString,
 		Optional:      true,
 		Computed:      true,
 		ConflictsWith: []string{"pool_id"},
-		Description:   "Pool name of the storage. Either `pool_name` or `pool_id` must be specified.",
+		Description:   "Pool name of the storage system. Either `pool_name` or `pool_id` must be specified.",
 	},
 	// output
 	"dynamic_pools": &schema.Schema{
@@ -188,7 +188,7 @@ var DataDynamicPoolsSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	// output
 	"dynamic_pools": &schema.Schema{

@@ -41,7 +41,7 @@ output "volumeoutput" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
@@ -62,13 +62,13 @@ Read-Only:
 - `data_reduction_status` (String) Data reduction status of the volume resource
 - `full_allocated` (Boolean) Allocation status of the volume resource
 - `id` (String) ID of the volume resource
-- `name` (String) Name of created the volume resource
-- `nick_name` (String) Nick name of created the volume resource
+- `name` (String) Name of the created volume resource
+- `nick_name` (String) Nickname of the created volume resource
 - `number_of_connecting_servers` (Number) Number of connected servers to create the volume resource
 - `number_of_snapshots` (Number) Number of snapshots to create the volume resource
-- `pool_id` (String) Pool ID of created the volume resource
-- `pool_name` (String) Pool Name of created the volume resource
-- `protection_domain_id` (String) Protection Domain ID of the volume resource
+- `pool_id` (String) Pool ID of the created volume resource
+- `pool_name` (String) Pool Name of the created volume resource
+- `protection_domain_id` (String) Protection domain ID of the volume resource
 - `saving_effects` (Block List) Volumes saving effects information (see [below for nested schema](#nestedblock--volumes--saving_effects))
 - `saving_mode` (String) Saving mode of the volume resource
 - `saving_setting` (String) Setting of the volume resource
@@ -77,9 +77,9 @@ Read-Only:
 - `status` (String) Status of the volume resource
 - `status_summary` (String) Status summary of the volume resource
 - `storage_controller_id` (String) Storage controller ID of the volume
-- `total_capacity` (Number) Total capacity of created the volume resource
-- `used_capacity` (Number) Used capacity of created the volume resource
-- `volume_number` (Number) Volume number of created the volume resource
+- `total_capacity` (Number) Total capacity of the created volume resource
+- `used_capacity` (Number) Used capacity of the created volume resource
+- `volume_number` (Number) Volume number of the created volume resource
 - `volume_type` (String) Volume type of the volume resource
 
 <a id="nestedblock--volumes--compute_nodes"></a>
@@ -91,7 +91,7 @@ Read-Only:
 - `lun` (Number) LUN ID of the compute node
 - `name` (String) Name of the compute node
 - `os_type` (String) OS type of the compute node
-- `total_capacity` (Number) Total capacity of compute node
+- `total_capacity` (Number) Total capacity of the compute node
 - `used_capacity` (Number) Used capacity of the compute node
 - `volume_count` (Number) Total volume count attached to the compute node
 

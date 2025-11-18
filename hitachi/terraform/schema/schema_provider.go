@@ -9,23 +9,23 @@ var ProviderSchema = map[string]*schema.Schema{
 	"hitachi_vosb_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Hitachi VSP One SDS Block is a storage software product that builds and sets up a virtual storage system from multiple general-purpose servers. The system offers a high-performance, high-capacity block storage service with high reliability.",
+		Description: "VSP One SDS Block and Cloud combines VSP One SDS Block, which creates virtual storage systems from general-purpose servers, with VSP One SDS Cloud, which enables deployment on AWS, Google Cloud Platform (GCP), and Microsoft Azure.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"vosb_address": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Host name or the IP address (IPv4) of the VSP One SDS Block.",
+					Description: "Host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 				},
 				"username": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Username of the VSP One SDS Block",
+					Description: "Username of the VSP One SDS Block and Cloud system",
 				},
 				"password": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Password of the VSP One SDS Block",
+					Description: "Password of the VSP One SDS Block and Cloud system",
 				},
 			},
 		},
@@ -34,28 +34,28 @@ var ProviderSchema = map[string]*schema.Schema{
 	"san_storage_system": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Hitachi VSP One series and Hitachi VSP 5000 series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. Both systems focus on simplifying data storage management while ensuring high availability and data integrity.",
+		Description: "VSP One Block 20 series and VSP 5000 series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. Both systems focus on simplifying data storage management while ensuring high availability and data integrity.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"serial": &schema.Schema{
 					Type:        schema.TypeInt,
 					Required:    true,
-					Description: "Serial number storage",
+					Description: "Storage system serial number",
 				},
 				"management_ip": &schema.Schema{ // svp_ip for VSP-5000 or controller0 for other models
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Management IP for VSP-5000 series",
+					Description: "Management IP for VSP 5000 series",
 				},
 				"username": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Username for VSP server",
+					Description: "Username for VSP storage system",
 				},
 				"password": &schema.Schema{
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "Password for VSP server",
+					Description: "Password for VSP storage system",
 				},
 			},
 		},

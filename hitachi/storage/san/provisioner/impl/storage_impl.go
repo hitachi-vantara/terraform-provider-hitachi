@@ -1,6 +1,7 @@
 package sanstorage
 
 import (
+	"strings"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	gatewayimpl "terraform-provider-hitachi/hitachi/storage/san/gateway/impl"
@@ -84,21 +85,40 @@ func (psm *sanStorageManager) GetStorageSystem() (*sanmodel.StorageSystem, error
 	}
 
 	ssCapacity, err := gatewayObj.GetStorageCapacity()
+	getCapacityFailed := false
 	if err != nil {
 		log.WriteDebug("TFError| error in GetStorageCapacity gateway call, err: %v", err)
-		return nil, err
+		// Return error for all HTTP errors except 500 Internal Server Error
+		if !strings.Contains(strings.ToLower(err.Error()), "500 internal server error") {
+			return nil, err
+		}
+		getCapacityFailed = true
 	}
 
-	log.WriteDebug("TFDebug|SS: %+v , %+v\n", ssInfo, ssCapacity)
+	if !getCapacityFailed {
+		log.WriteDebug("TFDebug|SS: %+v , %+v\n", ssInfo, ssCapacity)
+	} else {
+		log.WriteDebug("TFDebug|SS: %+v , Capacity info not retrieved\n", ssInfo)
+	}
 
 	mgmtIP := ssInfo.SvpIP
 	if mgmtIP == "" {
 		mgmtIP = ssInfo.Ctl1IP
 	}
 
-	totalCapInMB := utils.ConvertSizeFromKbToMb(ssCapacity.Total.TotalCapacity)
-	freeCapInMB := utils.ConvertSizeFromKbToMb(ssCapacity.Total.FreeSpace)
-	usedCapInMB := totalCapInMB - freeCapInMB
+	var totalCapInMB uint64
+	var freeCapInMB uint64
+	var usedCapInMB uint64
+
+	if !getCapacityFailed {
+		totalCapInMB = utils.ConvertSizeFromKbToMb(ssCapacity.Total.TotalCapacity)
+		freeCapInMB = utils.ConvertSizeFromKbToMb(ssCapacity.Total.FreeSpace)
+		usedCapInMB = totalCapInMB - freeCapInMB
+	} else {
+		totalCapInMB = 0
+		freeCapInMB = 0
+		usedCapInMB = 0
+	}
 
 	ss := sanmodel.StorageSystem{
 		StorageDeviceID:   ssInfo.StorageDeviceID,

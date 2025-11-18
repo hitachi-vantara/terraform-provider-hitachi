@@ -8,20 +8,20 @@ var DataVssbPortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"port": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Default:     "",
-		Description: "Port Id of the port, or iqn of the port or port name of the port",
+		Description: "Port ID of the port, or IQN of the port or port name of the port",
 	},
 	// output
 	"vosb_port": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is port output",
+		Description: "Port output",
 		Elem: &schema.Resource{
 			Schema: VssbPortInfoSchema,
 		},
@@ -50,12 +50,12 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 		Description: `The compute port nickname. Each compute port must have its own unique nickname.
-		must match /^[a-zA-Z0-9!#\$%&'\+\-\.=@\^_\{\}~\(\)\[\]:]{1,32}$/`,
+		Must match /^[a-zA-Z0-9!#\$%&'\+\-\.=@\^_\{\}~\(\)\[\]:]{1,32}$/`,
 	},
 	"name": &schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
-		Description: `The WWN of the allocation destination compute port of the target operation for FC connection, or the iSCSI name for iSCSI connections.
+		Description: `The WWN of the allocation destination compute port of the target operation for FC connections, or the iSCSI name for iSCSI connections.
 		The same name cannot be used for multiple compute ports.`,
 	},
 	"configured_port_speed": &schema.Schema{
@@ -88,7 +88,7 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 	"protection_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The ID of the protection domain to which the volume is belonging.",
+		Description: "The ID of the protection domain to which the volume belongs.",
 	},
 	"storage_node_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -328,7 +328,7 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 				"target_chap_user_name": &schema.Schema{
 					Computed: true,
 					Type:     schema.TypeString,
-					Description: `CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+					Description: `CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 					(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/`,
 				},
 				"initiator_chap_user_name": &schema.Schema{

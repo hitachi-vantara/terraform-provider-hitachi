@@ -46,13 +46,13 @@ output "iscsitarget" {
 ### Required
 
 - `iscsi_target_number` (Number) iSCSI target number
-- `port_id` (String) Port ID on storage
-- `serial` (Number) Serial number of storage
+- `port_id` (String) Port ID on the storage system
+- `serial` (Number) Serial number of the storage system
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `iscsitarget` (Block List) This is iSCSI target output (see [below for nested schema](#nestedblock--iscsitarget))
+- `iscsitarget` (Block List) iSCSI target output (see [below for nested schema](#nestedblock--iscsitarget))
 
 <a id="nestedblock--iscsitarget"></a>
 ### Nested Schema for `iscsitarget`
@@ -66,11 +66,11 @@ Read-Only:
 - `iscsi_target_id` (String) iSCSI target ID
 - `iscsi_target_name` (String) iSCSI target name
 - `iscsi_target_number` (Number) iSCSI target number
-- `ldevs` (List of Number) List of ldev IDs
-- `lun_paths` (Block List) List of lun_paths of the resource (see [below for nested schema](#nestedblock--iscsitarget--lun_paths))
-- `luns` (List of Number) List of luns
-- `port_id` (String) Port ID on storage
-- `storage_serial_number` (Number) Serial number of storage
+- `ldevs` (List of Number) List of LDEV IDs
+- `lun_paths` (Block List) List of LUN paths of the resource (see [below for nested schema](#nestedblock--iscsitarget--lun_paths))
+- `luns` (List of Number) List of LUNs
+- `port_id` (String) Port ID on the storage system
+- `storage_serial_number` (Number) Serial number of the storage system
 
 <a id="nestedblock--iscsitarget--initiators"></a>
 ### Nested Schema for `iscsitarget.initiators`
@@ -86,5 +86,5 @@ Read-Only:
 
 Read-Only:
 
-- `ldev_id` (Number) Ldev ID of lun
-- `lun_id` (Number) Lun ID of lun
+- `ldev_id` (Number) LDEV ID
+- `lun_id` (Number) LUN ID

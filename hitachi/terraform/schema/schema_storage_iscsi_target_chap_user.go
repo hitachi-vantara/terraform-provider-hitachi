@@ -8,7 +8,7 @@ var IscsiChapUserInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"iscsi_target_number": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -43,7 +43,7 @@ var DataIscsiChapUserSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -72,7 +72,7 @@ var DataIscsiChapUserSchema = map[string]*schema.Schema{
 	"chap_user": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is chap user output",
+		Description: "CHAP user output",
 		Elem: &schema.Resource{
 			Schema: IscsiChapUserInfoSchema,
 		},
@@ -83,7 +83,7 @@ var DataIscsiChapUsersSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -100,7 +100,7 @@ var DataIscsiChapUsersSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is chap users output",
+		Description: "CHAP users output",
 		Elem: &schema.Resource{
 			Schema: IscsiChapUserInfoSchema,
 		},
@@ -111,7 +111,7 @@ var ResourceIscsiChapUserSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -147,7 +147,7 @@ var ResourceIscsiChapUserSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is chap user output",
+		Description: "CHAP user output",
 		Elem: &schema.Resource{
 			Schema: IscsiChapUserInfoSchema,
 		},

@@ -49,11 +49,11 @@ output "voloutput" {
 
 ### Required
 
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Optional
 
-- `ldev_id` (Number) Ldev ID of lun
+- `ldev_id` (Number) LDEV ID
 - `name` (String) Name of volume to be created
 - `paritygroup_id` (String) Parity group ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
 - `pool_id` (Number) Pool ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
@@ -63,31 +63,31 @@ output "voloutput" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `volume` (Block List) This is volume output (see [below for nested schema](#nestedblock--volume))
+- `volume` (Block List) Volume output (see [below for nested schema](#nestedblock--volume))
 
 <a id="nestedblock--volume"></a>
 ### Nested Schema for `volume`
 
 Read-Only:
 
-- `attributes` (List of String) List of attributes of volume
-- `clpr_id` (Number) clpr ID
+- `attributes` (List of String) List of attributes of the volume
+- `clpr_id` (Number) CLPR ID
 - `emulation_type` (String) Emulation type
 - `free_capacity_in_mb` (Number) Free capacity in MB
-- `is_alua_enabled` (Boolean) It checks whether alua is enabled on volume
-- `is_full_allocation_enabled` (Boolean) It checks whether full allocation is enabled on volume
+- `is_alua_enabled` (Boolean) Checks whether ALUA is enabled on the volume
+- `is_full_allocation_enabled` (Boolean) Checks whether full allocation is enabled on the volume
 - `label` (String) Label
-- `ldev_id` (Number) Ldev ID of lun
-- `mpblade_id` (Number) Mpblade ID
+- `ldev_id` (Number) LDEV ID
+- `mpblade_id` (Number) MP blade ID
 - `naa_id` (String) NAA ID
-- `num_ports` (Number) Number of ports available on volume
+- `num_ports` (Number) Number of ports available on the volume
 - `paritygroup_id` (List of String) Parity group ID
 - `pool_id` (Number) Pool ID
 - `ports` (Block List) (see [below for nested schema](#nestedblock--volume--ports))
-- `resourcegroup_id` (Number) Resource group ID of volume
+- `resourcegroup_id` (Number) Resource group ID of the volume
 - `ss_id` (String) SS ID
 - `status` (String) Status
-- `storage_serial_number` (Number) Serial number of storage
+- `storage_serial_number` (Number) Serial number of the storage system
 - `total_capacity_in_mb` (Number) Total capacity in MB
 - `used_capacity_in_mb` (Number) Used capacity in MB
 
@@ -96,7 +96,7 @@ Read-Only:
 
 Read-Only:
 
-- `hostgroup_id` (Number) HostGroup ID
-- `hostgroup_name` (String) HostGroup name
-- `lun_id` (Number) Lun ID
+- `hostgroup_id` (Number) Host group ID
+- `hostgroup_name` (String) Host group name
+- `lun_id` (Number) LUN ID
 - `port_id` (String) Port ID

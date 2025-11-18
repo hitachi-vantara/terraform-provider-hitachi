@@ -81,7 +81,7 @@ var VssbStorageUserInfoSchema = map[string]*schema.Schema{
 	"is_enabled_console_login": &schema.Schema{
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Description: "Whether the user is enabled for console login. Can be null.",
+		Description: "Whether the user is enabled for the console login. Can be null.",
 	},
 	"vps_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -101,7 +101,7 @@ var ResourceVssbChangeUserPasswordSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"user_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -124,7 +124,7 @@ var ResourceVssbChangeUserPasswordSchema = map[string]*schema.Schema{
 	"user_info": &schema.Schema{
 		Type:        schema.TypeList, // Changed from TypeMap to TypeList
 		Computed:    true,
-		Description: "This is the user output information",
+		Description: "User output information",
 		Elem: &schema.Resource{
 			Schema: VssbStorageUserInfoSchema,
 		},

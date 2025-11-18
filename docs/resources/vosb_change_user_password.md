@@ -50,13 +50,13 @@ output "user_output" {
 - `current_password` (String, Sensitive) The current password of the user.
 - `new_password` (String, Sensitive) The new password for the user.
 - `user_id` (String) The user ID for the password change.
-- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `status` (String) The status of the password change operation.
-- `user_info` (List of Object) This is the user output information (see [below for nested schema](#nestedatt--user_info))
+- `user_info` (List of Object) User output information (see [below for nested schema](#nestedatt--user_info))
 
 <a id="nestedatt--user_info"></a>
 ### Nested Schema for `user_info`

@@ -43,13 +43,13 @@ output "hostgroup" {
 
 ### Required
 
-- `hostgroup_number` (Number) HostGroup number
-- `port_id` (String) Port ID on storage
-- `serial` (Number) Serial number of storage
+- `hostgroup_number` (Number) Host group number
+- `port_id` (String) Port ID on the storage system
+- `serial` (Number) Serial number of the storage system
 
 ### Read-Only
 
-- `hostgroup` (Block List) This is hostGroup output (see [below for nested schema](#nestedblock--hostgroup))
+- `hostgroup` (Block List) Host group output (see [below for nested schema](#nestedblock--hostgroup))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--hostgroup"></a>
@@ -57,25 +57,25 @@ output "hostgroup" {
 
 Read-Only:
 
-- `hg_luns` (List of Number) HostGroup lun IDs
-- `host_mode` (String) Mode of hostgroup
+- `hg_luns` (List of Number) Host group LUN IDs
+- `host_mode` (String) Mode of the host group
 - `host_mode_options` (List of Number) The number of items in the host mode options list
-- `hostgroup_name` (String) Name of hostGroup
-- `hostgroup_number` (Number) Created hostGroup number
-- `ldevs` (List of Number) The number of ldev IDs in hostGroup
-- `lun_paths` (Block List) HostGroup lun paths with lun IDs and ldev IDs (see [below for nested schema](#nestedblock--hostgroup--lun_paths))
-- `port_id` (String) Assigned port ID of hostGroup
-- `storage_serial_number` (Number) Serial number of storage
-- `wwns` (List of String) WWN list of hostGroup.
-- `wwns_detail` (Block List) Details of wwns for the created hostGroup including ID and name (see [below for nested schema](#nestedblock--hostgroup--wwns_detail))
+- `hostgroup_name` (String) Name of the host group
+- `hostgroup_number` (Number) Created host group number
+- `ldevs` (List of Number) The number of LDEV IDs in the host group
+- `lun_paths` (Block List) Host group LUN paths with LUN IDs and LDEV IDs (see [below for nested schema](#nestedblock--hostgroup--lun_paths))
+- `port_id` (String) Assigned port ID of the host group
+- `storage_serial_number` (Number) Serial number of the storage system
+- `wwns` (List of String) WWN list of the host group.
+- `wwns_detail` (Block List) Details of WWNs for the created host group including ID and name (see [below for nested schema](#nestedblock--hostgroup--wwns_detail))
 
 <a id="nestedblock--hostgroup--lun_paths"></a>
 ### Nested Schema for `hostgroup.lun_paths`
 
 Read-Only:
 
-- `hg_lun_id` (Number) Lun Path hostGroup ID
-- `ldev_id` (Number) Lun Path Ldev ID
+- `hg_lun_id` (Number) LUN path of the host group ID
+- `ldev_id` (Number) LUN path of the LDEV ID
 
 
 <a id="nestedblock--hostgroup--wwns_detail"></a>

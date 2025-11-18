@@ -8,72 +8,72 @@ var StoragePoolSchema = map[string]*schema.Schema{
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Id of pool",
+		Description: "ID of the pool",
 	},
 	"pool_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Name of pool",
+		Description: "Name of the pool",
 	},
 	"protection_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Protection domain ID of pool",
+		Description: "Protection domain ID of the pool",
 	},
 	"status_summary": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Status summary of pool",
+		Description: "Status summary of the pool",
 	},
 	"status": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Status of pool",
+		Description: "Status of the pool",
 	},
 	"total_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total capacity of pool",
+		Description: "Total capacity of the pool",
 	},
 	"total_raw_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total raw capacity of pool",
+		Description: "Total raw capacity of the pool",
 	},
 	"used_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Used capacity of pool",
+		Description: "Used capacity of the pool",
 	},
 	"free_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Free capacity of pool",
+		Description: "Free capacity of the pool",
 	},
 	"total_physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total physical capacity of pool",
+		Description: "Total physical capacity of the pool",
 	},
 	"meta_data_physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Meta data physical capacity of pool",
+		Description: "Meta data physical capacity of the pool",
 	},
 	"reserved_physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Reserved physical capacity of pool",
+		Description: "Reserved physical capacity of the pool",
 	},
 	"usable_physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Usable physical capacity of pool",
+		Description: "Usable physical capacity of the pool",
 	},
 	"blocked_physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Blocked physical capacity of pool",
+		Description: "Blocked physical capacity of the pool",
 	},
 	"capacity_manage": &schema.Schema{
 		Computed:    true,
@@ -85,27 +85,27 @@ var StoragePoolSchema = map[string]*schema.Schema{
 				"used_capacity_rate": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Used capacity rate of pool",
+					Description: "Used capacity rate of the pool",
 				},
 				"maximum_reserve_rate": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Maximum reserve rate of pool",
+					Description: "Maximum reserve rate of the pool",
 				},
 				"threshold_warning": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Threshold warning of pool",
+					Description: "Threshold warning of the pool",
 				},
 				"threshold_depletion": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Threshold depletion of pool",
+					Description: "Threshold depletion of the pool",
 				},
 				"threshold_storage_controller_depletion": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Threshold storage controller depletion of pool",
+					Description: "Threshold storage controller depletion of the pool",
 				},
 			},
 		},
@@ -178,57 +178,57 @@ var StoragePoolSchema = map[string]*schema.Schema{
 	"number_of_volumes": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Number of volumes on pool",
+		Description: "Number of volumes on the pool",
 	},
 	"redundant_policy": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Number of volumes on pool",
+		Description: "Number of volumes on the pool",
 	},
 	"redundant_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: " of pool",
+		Description: "Redundant type of the pool",
 	},
 	"data_redundancy": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Redundant type of pool",
+		Description: "Redundant type of the pool",
 	},
 	"storage_controller_capacities_general_status": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage controller capacities general status of pool",
+		Description: "Storage controller capacities general status of the pool",
 	},
 	"total_volume_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total volume capacity of pool",
+		Description: "Total volume capacity of the pool",
 	},
 	"provisioned_volume_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Provisioned volume capacity of pool",
+		Description: "Provisioned volume capacity of the pool",
 	},
 	"other_volume_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Other volume capacity of pool",
+		Description: "Other volume capacity of the pool",
 	},
 	"temporary_volume_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Temporary volume capacity of pool",
+		Description: "Temporary volume capacity of the pool",
 	},
 	"rebuild_capacity_policy": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Rebuild capacity policy of pool",
+		Description: "Rebuild capacity policy of the pool",
 	},
 	"rebuild_capacity_status": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Rebuild capacity status of pool",
+		Description: "Rebuild capacity status of the pool",
 	},
 	"rebuild_capacity_resource_setting": &schema.Schema{
 		Computed:    true,
@@ -240,7 +240,7 @@ var StoragePoolSchema = map[string]*schema.Schema{
 				"number_of_tolerable_drive_failures": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Number of tolerable drive failures of pool",
+					Description: "Number of tolerable drive failures of the pool",
 				},
 			},
 		},
@@ -255,7 +255,7 @@ var StoragePoolSchema = map[string]*schema.Schema{
 				"number_of_drives": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Number of drives of pool",
+					Description: "Number of drives of the pool",
 				},
 			},
 		},
@@ -266,13 +266,13 @@ var DatasourceVssbStoragePoolsSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"storage_pool_names": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		Computed:    true,
-		Description: "List of pool names to be fetched from storage device",
+		Description: "List of pool names to be retrieved from the storage system",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -282,7 +282,7 @@ var DatasourceVssbStoragePoolsSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is storage pools output",
+		Description: "Storage pools output",
 		Elem: &schema.Resource{
 			Schema: StoragePoolSchema,
 		},
@@ -293,7 +293,7 @@ var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"storage_pool_name": &schema.Schema{
 		Type:        schema.TypeString,

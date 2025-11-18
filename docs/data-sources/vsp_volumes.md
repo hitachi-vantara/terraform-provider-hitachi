@@ -41,42 +41,42 @@ output "volumes1" {
 
 ### Required
 
-- `end_ldev_id` (Number) End ldev ID of lun
-- `serial` (Number) Serial number of storage
-- `start_ldev_id` (Number) Start ldev ID of lun
+- `end_ldev_id` (Number) Ending LDEV ID
+- `serial` (Number) Serial number of the storage system
+- `start_ldev_id` (Number) Starting LDEV ID
 
 ### Optional
 
-- `undefined_ldev` (Boolean) If set to true, returns not allocated luns else otherwise
+- `undefined_ldev` (Boolean) If set to true, returns not allocated LUNs
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `volumes` (Block List) This is volumes output (see [below for nested schema](#nestedblock--volumes))
+- `volumes` (Block List) Volumes output (see [below for nested schema](#nestedblock--volumes))
 
 <a id="nestedblock--volumes"></a>
 ### Nested Schema for `volumes`
 
 Read-Only:
 
-- `attributes` (List of String) List of attributes of volume
-- `clpr_id` (Number) clpr ID
+- `attributes` (List of String) List of attributes of the volume
+- `clpr_id` (Number) CLPR ID
 - `emulation_type` (String) Emulation type
 - `free_capacity_in_mb` (Number) Free capacity in MB
-- `is_alua_enabled` (Boolean) It checks whether alua is enabled on volume
-- `is_full_allocation_enabled` (Boolean) It checks whether full allocation is enabled on volume
+- `is_alua_enabled` (Boolean) Checks whether ALUA is enabled on the volume
+- `is_full_allocation_enabled` (Boolean) Checks whether full allocation is enabled on the volume
 - `label` (String) Label
-- `ldev_id` (Number) Ldev ID of lun
-- `mpblade_id` (Number) Mpblade ID
+- `ldev_id` (Number) LDEV ID
+- `mpblade_id` (Number) MP blade ID
 - `naa_id` (String) NAA ID
-- `num_ports` (Number) Number of ports available on volume
+- `num_ports` (Number) Number of ports available on the volume
 - `paritygroup_id` (List of String) Parity group ID
 - `pool_id` (Number) Pool ID
 - `ports` (Block List) (see [below for nested schema](#nestedblock--volumes--ports))
-- `resourcegroup_id` (Number) Resource group ID of volume
+- `resourcegroup_id` (Number) Resource group ID of the volume
 - `ss_id` (String) SS ID
 - `status` (String) Status
-- `storage_serial_number` (Number) Serial number of storage
+- `storage_serial_number` (Number) Serial number of the storage system
 - `total_capacity_in_mb` (Number) Total capacity in MB
 - `used_capacity_in_mb` (Number) Used capacity in MB
 
@@ -85,7 +85,7 @@ Read-Only:
 
 Read-Only:
 
-- `hostgroup_id` (Number) HostGroup ID
-- `hostgroup_name` (String) HostGroup name
-- `lun_id` (Number) Lun ID
+- `hostgroup_id` (Number) Host group ID
+- `hostgroup_name` (String) Host group name
+- `lun_id` (Number) LUN ID
 - `port_id` (String) Port ID

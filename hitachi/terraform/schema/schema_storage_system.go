@@ -8,42 +8,42 @@ var SSInfoSchema = map[string]*schema.Schema{
 	"storage_device_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage device ID",
+		Description: "Storage system ID",
 	},
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"storage_device_model": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage device model",
+		Description: "Storage system model",
 	},
 	"dkc_micro_code_version": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "DKC micro code version of storage",
+		Description: "DKC micro code version of the storage system",
 	},
 	"management_ip": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage management ip",
+		Description: "Storage system management IP address",
 	},
 	"svp_ip": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage svp IP",
+		Description: "Storage system SVP IP address",
 	},
 	"controller1_ip": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage controller1 IP",
+		Description: "Storage system controller1 IP address",
 	},
 	"controller2_ip": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Storage controller2 IP",
+		Description: "Storage system controller2 IP address",
 	},
 	"free_capacity_in_mb": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -67,14 +67,14 @@ var StorageSystemSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	// output
 	"storage_system": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is storage system output",
+		Description: "Storage system output",
 		Elem: &schema.Resource{
 			Schema: SSInfoSchema,
 		},

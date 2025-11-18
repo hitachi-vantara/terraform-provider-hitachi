@@ -44,34 +44,34 @@ output "myparitygroup" {
 
 ### Required
 
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Optional
 
-- `parity_group_ids` (List of String) List of parity group IDs to fetch
+- `parity_group_ids` (List of String) List of parity group IDs to retrieve
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `parity_groups` (Block List) This is parity groups output (see [below for nested schema](#nestedblock--parity_groups))
+- `parity_groups` (Block List) Parity groups output (see [below for nested schema](#nestedblock--parity_groups))
 
 <a id="nestedblock--parity_groups"></a>
 ### Nested Schema for `parity_groups`
 
 Read-Only:
 
-- `available_physical_capacity` (Number) Available physical capacity of parity group
-- `available_volume_capacity` (Number) Available volume capacity of parity group
-- `available_volume_capacity_in_kb` (Number) Available volume capacity of parity group in kb
-- `clpr_id` (Number) Clpr ID of parity group
-- `drive_type` (String) Drive type of parity group
-- `drive_type_name` (String) Drive type name of parity group
+- `available_physical_capacity` (Number) Available physical capacity of the parity group
+- `available_volume_capacity` (Number) Available volume capacity of the parity group
+- `available_volume_capacity_in_kb` (Number) Available volume capacity of the parity group in KB
+- `clpr_id` (Number) CLPR ID of the parity group
+- `drive_type` (String) Drive type of the parity group
+- `drive_type_name` (String) Drive type name of the parity group
 - `is_accelerated_compression_enabled` (Boolean) Indicates whether accelerated compression is enabled for the parity group
-- `num_of_ldevs` (Number) Total number of ldevs in parity group
+- `num_of_ldevs` (Number) Total number of LDEVs in the parity group
 - `parity_group_id` (String) Parity group ID
-- `physical_capacity` (Number) Physical capacity of parity group
-- `raid_level` (String) Raid level of parity group
-- `raid_type` (String) Raid type of parity group
-- `storage_serial_number` (Number) Serial number of storage
-- `total_capacity` (Number) Total capacity of parity group
-- `used_capacity_rate` (Number) Used capacity rate of parity group
+- `physical_capacity` (Number) Physical capacity of the parity group
+- `raid_level` (String) RAID level of the parity group
+- `raid_type` (String) RAID type of the parity group
+- `storage_serial_number` (Number) Serial number of the storage system
+- `total_capacity` (Number) Total capacity of the parity group
+- `used_capacity_rate` (Number) Used capacity rate of the parity group

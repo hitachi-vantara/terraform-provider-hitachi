@@ -8,7 +8,7 @@ var IscsiTargetInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"iscsi_target_number": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -18,7 +18,7 @@ var IscsiTargetInfoSchema = map[string]*schema.Schema{
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Port ID on storage",
+		Description: "Port ID on the storage system",
 	},
 	"iscsi_target_alias": &schema.Schema{
 		Type:        schema.TypeString,
@@ -51,7 +51,7 @@ var IscsiTargetInfoSchema = map[string]*schema.Schema{
 	"ldevs": &schema.Schema{
 		Computed:    true,
 		Type:        schema.TypeList,
-		Description: "List of ldev IDs",
+		Description: "List of LDEV IDs",
 		Elem: &schema.Schema{
 			Type: schema.TypeInt,
 		},
@@ -59,7 +59,7 @@ var IscsiTargetInfoSchema = map[string]*schema.Schema{
 	"luns": &schema.Schema{
 		Computed:    true,
 		Type:        schema.TypeList,
-		Description: "List of luns",
+		Description: "List of LUNs",
 		Elem: &schema.Schema{
 			Type: schema.TypeInt,
 		},
@@ -68,18 +68,18 @@ var IscsiTargetInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "List of lun_paths of the resource",
+		Description: "List of LUN paths of the resource",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"ldev_id": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Ldev ID of lun",
+					Description: "LDEV ID",
 				},
 				"lun_id": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Lun ID of lun",
+					Description: "LUN ID",
 				},
 			},
 		},
@@ -110,7 +110,7 @@ var IscsiTargetsInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"iscsi_target_number": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -156,12 +156,12 @@ var DataIscsiTargetSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "Port ID on storage",
+		Description: "Port ID on the storage system",
 	},
 	"iscsi_target_number": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -173,7 +173,7 @@ var DataIscsiTargetSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is iSCSI target output",
+		Description: "iSCSI target output",
 		Elem: &schema.Resource{
 			Schema: IscsiTargetInfoSchema,
 		},
@@ -184,13 +184,13 @@ var DataIscsiTargetsSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"port_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		Computed:    true,
-		Description: "List of Port IDs which need to be fetched from the storage server",
+		Description: "List of port IDs that must be retrieved from the storage system",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -198,14 +198,14 @@ var DataIscsiTargetsSchema = map[string]*schema.Schema{
 	"total_iscsi_target_count": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total number of iSCSI Target IDs which need to be fetched from the storage server",
+		Description: "Total number of iSCSI Target IDs that must be retrieved from the storage system",
 	},
 	// output
 	"iscsitargets": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is iSCSI Target output",
+		Description: "iSCSI target output",
 		Elem: &schema.Resource{
 			Schema: IscsiTargetsInfoSchema,
 		},
@@ -216,12 +216,12 @@ var ResourceIscsiTargetSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage is required",
+		Description: "Serial number of the storage system",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "Port ID in which the resource to be created",
+		Description: "Port ID in which the resource is to be created",
 	},
 	"iscsi_target_number": &schema.Schema{ // similar to hostgroup number
 		Type:        schema.TypeInt,
@@ -241,12 +241,12 @@ var ResourceIscsiTargetSchema = map[string]*schema.Schema{
 	"host_mode": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Host mode value to be given to create the resource",
+		Description: "Host mode value to create the resource",
 	},
 	"host_mode_options": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Host mode options can be passed to create the resource",
+		Description: "Host mode options that can be passed to create the resource",
 		Elem: &schema.Schema{
 			Type: schema.TypeInt,
 		},
@@ -254,18 +254,18 @@ var ResourceIscsiTargetSchema = map[string]*schema.Schema{
 	"lun": &schema.Schema{
 		Type:        schema.TypeSet,
 		Optional:    true,
-		Description: "Lun input for the resource",
+		Description: "LUN input for the resource",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"ldev_id": {
 					Optional:    true,
 					Type:        schema.TypeInt,
-					Description: "Ldev ID of lun",
+					Description: "LDEV ID",
 				},
 				"lun_id": {
 					Optional:    true,
 					Type:        schema.TypeInt,
-					Description: "Lun ID of lun",
+					Description: "LUN ID",
 				},
 			},
 		},
@@ -294,7 +294,7 @@ var ResourceIscsiTargetSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is iSCSI target output",
+		Description: "iSCSI target output",
 		Elem: &schema.Resource{
 			Schema: IscsiTargetInfoSchema,
 		},

@@ -44,17 +44,17 @@ output "iscsitargets" {
 
 ### Required
 
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Optional
 
-- `port_ids` (List of String) List of Port IDs which need to be fetched from the storage server
+- `port_ids` (List of String) List of port IDs that must be retrieved from the storage system
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `iscsitargets` (Block List) This is iSCSI Target output (see [below for nested schema](#nestedblock--iscsitargets))
-- `total_iscsi_target_count` (Number) Total number of iSCSI Target IDs which need to be fetched from the storage server
+- `iscsitargets` (Block List) iSCSI target output (see [below for nested schema](#nestedblock--iscsitargets))
+- `total_iscsi_target_count` (Number) Total number of iSCSI Target IDs that must be retrieved from the storage system
 
 <a id="nestedblock--iscsitargets"></a>
 ### Nested Schema for `iscsitargets`
@@ -68,4 +68,4 @@ Read-Only:
 - `iscsi_target_name` (String) iSCSI target name
 - `iscsi_target_number` (Number) iSCSI target number
 - `port_id` (String) Port ID of the iSCSI target
-- `storage_serial_number` (Number) Serial number of storage
+- `storage_serial_number` (Number) Serial number of the storage system

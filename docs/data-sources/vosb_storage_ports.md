@@ -42,36 +42,36 @@ output "storagePorts" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
-- `port_name` (String) Port name of the storage device
+- `port_name` (String) Port name of the storage system
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `ports` (Block List) This is ports output (see [below for nested schema](#nestedblock--ports))
+- `ports` (Block List) Ports output (see [below for nested schema](#nestedblock--ports))
 
 <a id="nestedblock--ports"></a>
 ### Nested Schema for `ports`
 
 Read-Only:
 
-- `configured_port_speed` (String) Configured port speed of port
-- `fc_information` (Block List) FC information of port (see [below for nested schema](#nestedblock--ports--fc_information))
-- `interface_name` (String) Interface name of port
-- `iscsi_information` (Block List) Iscsi information of port (see [below for nested schema](#nestedblock--ports--iscsi_information))
-- `name` (String) Name of port
-- `nickname` (String) Nickname of port
-- `por_speed_duplex` (String) Por speed duplex of port
+- `configured_port_speed` (String) Configured port speed of the port
+- `fc_information` (Block List) Fibre Channel information of the port (see [below for nested schema](#nestedblock--ports--fc_information))
+- `interface_name` (String) Interface name of the port
+- `iscsi_information` (Block List) iSCSI information of the port (see [below for nested schema](#nestedblock--ports--iscsi_information))
+- `name` (String) Name of the port
+- `nickname` (String) Nickname of the port
+- `por_speed_duplex` (String) Port speed duplex of the port
 - `port_auth_settings` (Block List) Port auth settings information (see [below for nested schema](#nestedblock--ports--port_auth_settings))
-- `port_speed` (String) Port speed of port
-- `protection_domain_id` (String) Protection domain ID of port
-- `protocol` (String) Protocol of port
-- `status` (String) Status of port
-- `status_summary` (String) status summary of port
-- `storage_node_id` (String) Storage node ID of port
+- `port_speed` (String) Port speed of the port
+- `protection_domain_id` (String) Protection domain ID of the port
+- `protocol` (String) Protocol of the port
+- `status` (String) Status of the port
+- `status_summary` (String) Status summary of the port
+- `storage_node_id` (String) Storage node ID of the port
 - `type` (String) Type of port
 
 <a id="nestedblock--ports--fc_information"></a>
@@ -79,9 +79,9 @@ Read-Only:
 
 Read-Only:
 
-- `connection_type` (String) Connection type of FC port
-- `physical_wwn` (String) WWN of port
-- `sfp_data_transfer_rate` (String) Data transfer rate of FC port
+- `connection_type` (String) Connection type of the Fibre Channel port
+- `physical_wwn` (String) WWN of the port
+- `sfp_data_transfer_rate` (String) Data transfer rate of the Fibre Channel port
 
 
 <a id="nestedblock--ports--iscsi_information"></a>
@@ -89,23 +89,23 @@ Read-Only:
 
 Read-Only:
 
-- `delayed_ack` (Boolean) Delayed ack of iSCSI port
-- `ip_mode` (String) IP mode of iSCSI port
-- `ipv4_information` (Block List) Ipv4 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv4_information))
-- `ipv6_information` (Block List) Ipv6 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv6_information))
-- `is_isns_client_enabled` (Boolean) Checks if is isns client enabled of iSCSI port
-- `isns_servers` (Block List) Isns servers information (see [below for nested schema](#nestedblock--ports--iscsi_information--isns_servers))
-- `mac_address` (String) MAC address of iSCSI port
-- `mtu_size` (Number) MTU size of iSCSI port
+- `delayed_ack` (Boolean) Delayed ACK of the iSCSI port
+- `ip_mode` (String) IP mode of the iSCSI port
+- `ipv4_information` (Block List) IPv4 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv4_information))
+- `ipv6_information` (Block List) IPv6 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv6_information))
+- `is_isns_client_enabled` (Boolean) Checks if iSNS client is enabled of the iSCSI port
+- `isns_servers` (Block List) iSNS servers information (see [below for nested schema](#nestedblock--ports--iscsi_information--isns_servers))
+- `mac_address` (String) MAC address of the iSCSI port
+- `mtu_size` (Number) MTU size of the iSCSI port
 
 <a id="nestedblock--ports--iscsi_information--ipv4_information"></a>
 ### Nested Schema for `ports.iscsi_information.ipv4_information`
 
 Read-Only:
 
-- `address` (String) Address of ipv4 information
-- `default_gateway` (String) Default gateway of ipv4 information
-- `subnet_mask` (String) Subnet mask of ipv4 information
+- `address` (String) Address of IPv4 information
+- `default_gateway` (String) Default gateway of IPv4 information
+- `subnet_mask` (String) Subnet mask of IPv4 information
 
 
 <a id="nestedblock--ports--iscsi_information--ipv6_information"></a>
@@ -113,12 +113,12 @@ Read-Only:
 
 Read-Only:
 
-- `default_gateway` (String) Default gateway of ipv6 information
-- `global_address_1` (String) Global address of ipv6 information
-- `global_address_mode` (String) Global address mode of ipv6 information
-- `linklocal_address` (String) Linklocal address of ipv6 information
-- `linklocal_address_mode` (String) Linklocal address mode of ipv6 information
-- `subnet_prefix_length_1` (Number) Subnet prefix length of ipv6 information
+- `default_gateway` (String) Default gateway of IPv6 information
+- `global_address_1` (String) Global address of IPv6 information
+- `global_address_mode` (String) Global address mode of IPv6 information
+- `linklocal_address` (String) Linklocal address of IPv6 information
+- `linklocal_address_mode` (String) Linklocal address mode of IPv6 information
+- `subnet_prefix_length_1` (Number) Subnet prefix length of IPv6 information
 
 
 <a id="nestedblock--ports--iscsi_information--isns_servers"></a>
@@ -126,9 +126,9 @@ Read-Only:
 
 Read-Only:
 
-- `index` (Number) Index of isns server
-- `port` (Number) Port of isns server
-- `server_name` (String) Server name of isns server
+- `index` (Number) Index of iSNS server
+- `port` (Number) Port of iSNS server
+- `server_name` (String) Server name of iSNS server
 
 
 
@@ -137,6 +137,6 @@ Read-Only:
 
 Read-Only:
 
-- `auth_mode` (String) Auth mode of Port
-- `is_discovery_chap_auth` (Boolean) Is discovery chap auth of Port
-- `is_mutual_chap_auth` (Boolean) Is mutual chap of Port
+- `auth_mode` (String) Auth mode of the port
+- `is_discovery_chap_auth` (Boolean) Is discovery CHAP auth of the port
+- `is_mutual_chap_auth` (Boolean) Is mutual CHAP of the port

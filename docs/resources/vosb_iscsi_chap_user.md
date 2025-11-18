@@ -46,11 +46,11 @@ output "chap_user_output" {
 
 ### Required
 
-- `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+- `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/
-- `target_chap_user_secret` (String, Sensitive) CHAP secret used for CHAP authentication on the compute port (i.e., target side).
+- `target_chap_user_secret` (String, Sensitive) CHAP secret used for CHAP authentication on the compute port (that is, the target side).
 		(12 to 32 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\/\[\]~ ]{12,32}$/
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
@@ -62,7 +62,7 @@ output "chap_user_output" {
 
 ### Read-Only
 
-- `chap_users` (List of Object) This is chap users output (see [below for nested schema](#nestedatt--chap_users))
+- `chap_users` (List of Object) CHAP users output (see [below for nested schema](#nestedatt--chap_users))
 - `id` (String) The ID of this resource.
 
 <a id="nestedatt--chap_users"></a>

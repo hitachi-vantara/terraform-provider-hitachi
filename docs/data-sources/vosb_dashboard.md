@@ -41,11 +41,11 @@ output "dashboardoutput" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
-- `dashboard_info` (Block List) This is dashboard output (see [below for nested schema](#nestedblock--dashboard_info))
+- `dashboard_info` (Block List) Dashboard output (see [below for nested schema](#nestedblock--dashboard_info))
 
 ### Read-Only
 

@@ -8,7 +8,7 @@ NAME = hitachi
 BINARY = terraform-provider-${NAME}
 
 # Use the TERRAFORM_VERSION and BUILD_NUMBER passed from build.sh, or use default
-VERSION := $(or $(TERRAFORM_VERSION),2.1.1)
+VERSION := $(or $(TERRAFORM_VERSION),2.1.2)
 BUILD_NUMBER := $(or $(BUILD_NUMBER),1)
 
 # Full version string: e.g., 2.0.x

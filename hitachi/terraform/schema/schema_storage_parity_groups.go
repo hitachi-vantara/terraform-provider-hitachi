@@ -8,7 +8,7 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"parity_group_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -18,57 +18,57 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"num_of_ldevs": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total number of ldevs in parity group",
+		Description: "Total number of LDEVs in the parity group",
 	},
 	"used_capacity_rate": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Used capacity rate of parity group",
+		Description: "Used capacity rate of the parity group",
 	},
 	"available_volume_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Available volume capacity of parity group",
+		Description: "Available volume capacity of the parity group",
 	},
 	"raid_level": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Raid level of parity group",
+		Description: "RAID level of the parity group",
 	},
 	"raid_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Raid type of parity group",
+		Description: "RAID type of the parity group",
 	},
 	"clpr_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Clpr ID of parity group",
+		Description: "CLPR ID of the parity group",
 	},
 	"drive_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Drive type of parity group",
+		Description: "Drive type of the parity group",
 	},
 	"drive_type_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Drive type name of parity group",
+		Description: "Drive type name of the parity group",
 	},
 	"total_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total capacity of parity group",
+		Description: "Total capacity of the parity group",
 	},
 	"physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Physical capacity of parity group",
+		Description: "Physical capacity of the parity group",
 	},
 	"available_physical_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Available physical capacity of parity group",
+		Description: "Available physical capacity of the parity group",
 	},
 	"is_accelerated_compression_enabled": &schema.Schema{
 		Type:        schema.TypeBool,
@@ -78,7 +78,7 @@ var ParityGroupsInfoSchema = map[string]*schema.Schema{
 	"available_volume_capacity_in_kb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Available volume capacity of parity group in kb",
+		Description: "Available volume capacity of the parity group in KB",
 	},
 }
 
@@ -86,13 +86,13 @@ var DataParityGroupSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"parity_group_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		Computed:    true,
-		Description: "List of parity group IDs to fetch",
+		Description: "List of parity group IDs to retrieve",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -102,7 +102,7 @@ var DataParityGroupSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is parity groups output",
+		Description: "Parity groups output",
 		Elem: &schema.Resource{
 			Schema: ParityGroupsInfoSchema,
 		},
@@ -113,13 +113,13 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"parity_group_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		Computed:    true,
-		Description: "List of parity group IDs to fetch",
+		Description: "List of parity group IDs to retrieve",
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -129,7 +129,7 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is parity groups output",
+		Description: "Parity groups output",
 		Elem: &schema.Resource{
 			Schema: ParityGroupsInfoSchema,
 		},

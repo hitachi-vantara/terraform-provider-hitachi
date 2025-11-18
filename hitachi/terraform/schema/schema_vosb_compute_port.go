@@ -26,7 +26,7 @@ var VssbComputePortInfoSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
-		Description: "List of chap users to be attached to the compute port.",
+		Description: "List of CHAP users to be attached to the compute port.",
 	},
 }
 
@@ -34,7 +34,7 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -58,14 +58,14 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
-		Description: "List of chap users to be attached to the compute port.",
+		Description: "List of CHAP users to be attached to the compute port.",
 	},
 	// output
 	"compute_port": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "Outputs information about the volume",
+		Description: "Output information about the volume",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiPortAuthInfoSchema,
 		},
@@ -76,7 +76,7 @@ var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -89,7 +89,7 @@ var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
 		Optional:    true,
-		Description: "Outputs information about the compute port",
+		Description: "Output information about the compute port",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiPortAuthInfoSchema,
 		},
@@ -115,7 +115,7 @@ var VssbIscsiPortAuthInfoSchema = map[string]*schema.Schema{
 				"is_discovery_chap_auth": &schema.Schema{
 					Computed:    true,
 					Type:        schema.TypeBool,
-					Description: "Enables or disables CHAP authentication at the time of discovery in iSCSI connection. Enables CHAP authentication at the time of discovery when true is specified.",
+					Description: "Enables or disables CHAP authentication at the time of discovery of the iSCSI connection. Enables CHAP authentication at the time of discovery when true is specified.",
 				},
 				"is_mutual_chap_auth": &schema.Schema{
 					Computed:    true,
@@ -138,7 +138,7 @@ var VssbIscsiPortAuthInfoSchema = map[string]*schema.Schema{
 				"target_chap_user_name": &schema.Schema{
 					Computed: true,
 					Type:     schema.TypeString,
-					Description: `CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+					Description: `CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 					(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/`,
 				},
 				"initiator_chap_user_name": &schema.Schema{

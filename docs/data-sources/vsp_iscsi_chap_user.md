@@ -54,11 +54,11 @@ output "my_iscsi_initiator_chap_user_output" {
 		o initiator : CHAP user name of the host bus adapter (iSCSI initiator) side
 - `iscsi_target_number` (Number) Target ID of the iSCSI target.
 - `port_id` (String) Port number
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Read-Only
 
-- `chap_user` (List of Object) This is chap user output (see [below for nested schema](#nestedatt--chap_user))
+- `chap_user` (List of Object) CHAP user output (see [below for nested schema](#nestedatt--chap_user))
 - `id` (String) The ID of this resource.
 
 <a id="nestedatt--chap_user"></a>

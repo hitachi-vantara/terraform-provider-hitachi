@@ -41,7 +41,7 @@ output "storageNodes" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
@@ -57,25 +57,25 @@ output "storageNodes" {
 
 Read-Only:
 
-- `availability_zone_id` (String) Availability Zone Id of node
-- `bios_uuid` (String) Bios Uuid of node
-- `cluster_role` (String) cluster Role of node
-- `control_port_ipv4_address` (String) Control Port Ipv4 Address of node
-- `drive_data_relocation_status` (String) Drive Data Relocation Status of node
-- `fault_domain_id` (String) Fault Domain Id of node
-- `fault_domain_name` (String) Fault Doma Name of node
-- `id` (String) ID of node
-- `insufficient_resources_for_rebuild_capacity` (List of Object) Insufficient resources for rebuild capacity of node (see [below for nested schema](#nestedatt--nodes--insufficient_resources_for_rebuild_capacity))
-- `internode_port_ipv4_address` (String) Internode Port Ipv4 Address of node
-- `memory` (Number) Memory size of node
-- `model_name` (String) model name of node
-- `name` (String) Name of node
-- `protection_domain_id` (String) Protection Domain ID of node
+- `availability_zone_id` (String) Availability zone ID of the node
+- `bios_uuid` (String) BIOS UUID of the node
+- `cluster_role` (String) Cluster role of the node
+- `control_port_ipv4_address` (String) Control port IPv4 address of the node
+- `drive_data_relocation_status` (String) Drive data relocation status of the node
+- `fault_domain_id` (String) Fault Domain ID of the node
+- `fault_domain_name` (String) Fault domain name of the node
+- `id` (String) ID of the node
+- `insufficient_resources_for_rebuild_capacity` (List of Object) Insufficient resources for rebuild capacity of the node (see [below for nested schema](#nestedatt--nodes--insufficient_resources_for_rebuild_capacity))
+- `internode_port_ipv4_address` (String) Internode port IPv4 address of the node
+- `memory` (Number) Memory size of the node
+- `model_name` (String) Model name of the node
+- `name` (String) Name of the node
+- `protection_domain_id` (String) Protection domain ID of the node
 - `rebuildable_resources` (List of Object) Rebuildable resources information (see [below for nested schema](#nestedatt--nodes--rebuildable_resources))
-- `serial_number` (String) Serial Number of node
-- `software_version` (String) Software Version of node
-- `status` (String) Status of node
-- `status_summary` (String) status summary of node
+- `serial_number` (String) Serial number of the node
+- `software_version` (String) Software version of the node
+- `status` (String) Status of the node
+- `status_summary` (String) Status summary of the node
 
 <a id="nestedatt--nodes--insufficient_resources_for_rebuild_capacity"></a>
 ### Nested Schema for `nodes.insufficient_resources_for_rebuild_capacity`

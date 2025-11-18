@@ -10,7 +10,7 @@ var DataVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"node_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -34,105 +34,105 @@ var VssbStorageNodeInfoSchema = map[string]*schema.Schema{
 	"id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "ID of node",
+		Description: "ID of the node",
 	},
 	"bios_uuid": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Bios Uuid of node",
+		Description: "BIOS UUID of the node",
 	},
 	"fault_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Fault Domain Id of node",
+		Description: "Fault Domain ID of the node",
 	},
 	"fault_domain_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Fault Doma Name of node",
+		Description: "Fault domain name of the node",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Name of node",
+		Description: "Name of the node",
 	},
 	"cluster_role": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "cluster Role of node",
+		Description: "Cluster role of the node",
 	},
 	"drive_data_relocation_status": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Drive Data Relocation Status of node",
+		Description: "Drive data relocation status of the node",
 	},
 	"control_port_ipv4_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Control Port Ipv4 Address of node",
+		Description: "Control port IPv4 address of the node",
 	},
 	"internode_port_ipv4_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Internode Port Ipv4 Address of node",
+		Description: "Internode port IPv4 address of the node",
 	},
 	"software_version": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Software Version of node",
+		Description: "Software version of the node",
 	},
 	"serial_number": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Serial Number of node",
+		Description: "Serial number of the node",
 	},
 	"memory": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Memory size of node",
+		Description: "Memory size of the node",
 	},
 	"availability_zone_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Availability Zone Id of node",
+		Description: "Availability zone ID of the node",
 	},
 	"model_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "model name of node",
+		Description: "Model name of the node",
 	},
 	"protection_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Protection Domain ID of node",
+		Description: "Protection domain ID of the node",
 	},
 	"status_summary": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "status summary of node",
+		Description: "Status summary of the node",
 	},
 	"status": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Status of node",
+		Description: "Status of the node",
 	},
 	"insufficient_resources_for_rebuild_capacity": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		// MaxItems:    1,
-		Description: "Insufficient resources for rebuild capacity of node",
+		Description: "Insufficient resources for rebuild capacity of the node",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"capacity_of_drive": {
 					Optional:    true,
 					Type:        schema.TypeInt,
 					Default:     -1,
-					Description: "Capacity Of Drive",
+					Description: "Capacity of the drive",
 				},
 				"number_of_drives": {
 					Optional:    true,
 					Type:        schema.TypeInt,
-					Description: "Number Of Drives",
+					Description: "Number of drives",
 				},
 			},
 		},
@@ -147,7 +147,7 @@ var VssbStorageNodeInfoSchema = map[string]*schema.Schema{
 				"number_of_drives": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "Number of drives of node",
+					Description: "Number of drives of the node",
 				},
 			},
 		},
@@ -159,12 +159,12 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"configuration_file": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Configuration File",
+		Description: "Configuration file",
 	},
 	"exported_configuration_file": &schema.Schema{
 		Type:        schema.TypeString,
@@ -179,7 +179,7 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	"setup_user_password": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Setup User Password",
+		Description: "Setup user password",
 	},
 	"expected_cloud_provider": &schema.Schema{
 		Type:     schema.TypeString,
@@ -190,7 +190,7 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	- Used to validate combinations of inputs based on the deployment environment.
 	- If set to "google" or "azure", specific parameters may be required for certain operations.
 	- If set to "baremetal" (default), other cloud-specific inputs are ignored.
-	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
+	- Note: The actual cloud provider is determined by the VSP One SDS Block and Cloud system at the "vosb_address" endpoint.
 	If there's a mismatch, the request still proceeds and behaves according to the actual environment.`,
 		ValidateFunc: validation.StringInSlice([]string{
 			"google", "azure", "aws", "baremetal",

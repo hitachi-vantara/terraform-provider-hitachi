@@ -43,17 +43,17 @@ output "hostgroups" {
 
 ### Required
 
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Optional
 
-- `port_ids` (List of String) A list of port IDs on storage
+- `port_ids` (List of String) A list of port IDs on the storage system
 
 ### Read-Only
 
-- `hostgroups` (Block List) This is hostgroups output (see [below for nested schema](#nestedblock--hostgroups))
+- `hostgroups` (Block List) Host groups output (see [below for nested schema](#nestedblock--hostgroups))
 - `id` (String) The ID of this resource.
-- `total_hostgroup_count` (Number) Total number of hostGroups in storage
+- `total_hostgroup_count` (Number) Total number of host groups in the storage system
 
 <a id="nestedblock--hostgroups"></a>
 ### Nested Schema for `hostgroups`
@@ -61,7 +61,7 @@ output "hostgroups" {
 Read-Only:
 
 - `host_mode` (String) Type of host mode
-- `hostgroup_name` (String) HostGroup name
-- `hostgroup_number` (Number) HostGroup number
-- `port_id` (String) Port ID on storage
-- `storage_serial_number` (Number) Serial number of storage
+- `hostgroup_name` (String) Host group name
+- `hostgroup_number` (Number) Host group number
+- `port_id` (String) Port ID on the storage system
+- `storage_serial_number` (Number) Serial number of the storage system

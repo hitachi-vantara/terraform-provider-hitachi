@@ -44,11 +44,11 @@ output "mycomputeport" {
 ### Required
 
 - `name` (String) Name of the port
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Read-Only
 
-- `compute_port` (Block List) Outputs information about the compute port (see [below for nested schema](#nestedblock--compute_port))
+- `compute_port` (Block List) Output information about the compute port (see [below for nested schema](#nestedblock--compute_port))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--compute_port"></a>

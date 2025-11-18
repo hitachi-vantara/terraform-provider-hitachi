@@ -8,7 +8,7 @@ var ComputeNodesSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	// output
 	"compute_node": &schema.Schema{
@@ -40,7 +40,7 @@ var VolumeNodeInfoSchema = map[string]*schema.Schema{
 	"total_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total capacity of compute node",
+		Description: "Total capacity of the compute node",
 	},
 	"used_capacity": &schema.Schema{
 		Type:        schema.TypeInt,

@@ -46,11 +46,11 @@ output "my_iscsi_chap_users_output" {
 
 - `iscsi_target_number` (Number) Target ID of the iSCSI target.
 - `port_id` (String) Port number
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Read-Only
 
-- `chap_users` (Block List) This is chap users output (see [below for nested schema](#nestedblock--chap_users))
+- `chap_users` (Block List) CHAP users output (see [below for nested schema](#nestedblock--chap_users))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--chap_users"></a>
@@ -65,4 +65,4 @@ Read-Only:
 		o initiator : CHAP user name of the host bus adapter (iSCSI initiator) side
 - `iscsi_target_number` (Number) Target ID of the iSCSI target.
 - `port_id` (String) Port number
-- `storage_serial_number` (Number) Serial number of storage
+- `storage_serial_number` (Number) Serial number of the storage system

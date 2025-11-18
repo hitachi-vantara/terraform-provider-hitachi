@@ -9,17 +9,17 @@ var LunInfoSchema = map[string]*schema.Schema{
 	"storage_serial_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Ldev ID of lun",
+		Description: "LDEV ID",
 	},
 	"clpr_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "clpr ID",
+		Description: "CLPR ID",
 	},
 	"emulation_type": &schema.Schema{
 		Type:        schema.TypeString,
@@ -29,7 +29,7 @@ var LunInfoSchema = map[string]*schema.Schema{
 	"num_ports": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Number of ports available on volume",
+		Description: "Number of ports available on the volume",
 	},
 	"ports": &schema.Schema{
 		Type:     schema.TypeList,
@@ -45,17 +45,17 @@ var LunInfoSchema = map[string]*schema.Schema{
 				"hostgroup_id": &schema.Schema{
 					Type:        schema.TypeInt,
 					Computed:    true,
-					Description: "HostGroup ID",
+					Description: "Host group ID",
 				},
 				"hostgroup_name": &schema.Schema{
 					Type:        schema.TypeString,
 					Computed:    true,
-					Description: "HostGroup name",
+					Description: "Host group name",
 				},
 				"lun_id": &schema.Schema{
 					Type:        schema.TypeInt,
 					Computed:    true,
-					Description: "Lun ID",
+					Description: "LUN ID",
 				},
 			},
 		},
@@ -66,7 +66,7 @@ var LunInfoSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
-		Description: "List of attributes of volume",
+		Description: "List of attributes of the volume",
 	},
 	"paritygroup_id": &schema.Schema{
 		Type:     schema.TypeList,
@@ -89,7 +89,7 @@ var LunInfoSchema = map[string]*schema.Schema{
 	"mpblade_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Mpblade ID",
+		Description: "MP blade ID",
 	},
 	"ss_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -104,12 +104,12 @@ var LunInfoSchema = map[string]*schema.Schema{
 	"is_full_allocation_enabled": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "It checks whether full allocation is enabled on volume",
+		Description: "Checks whether full allocation is enabled on the volume",
 	},
 	"resourcegroup_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Resource group ID of volume",
+		Description: "Resource group ID of the volume",
 	},
 	/*
 		"data_reduction_mode": &schema.Schema{
@@ -121,7 +121,7 @@ var LunInfoSchema = map[string]*schema.Schema{
 	"is_alua_enabled": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "It checks whether alua is enabled on volume",
+		Description: "Checks whether ALUA is enabled on the volume",
 	},
 	"naa_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -149,20 +149,20 @@ var DataLunSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
 		ValidateFunc: validation.IntBetween(0, 65535),
-		Description: "Ldev ID of lun",
+		Description: "LDEV ID",
 	},
 	// output
 	"volume": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is volume output",
+		Description: "Volume output",
 		Elem: &schema.Resource{
 			Schema: LunInfoSchema,
 		},
@@ -173,31 +173,31 @@ var DataLunsSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"start_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
 		ValidateFunc: validation.IntBetween(0, 65535),
-		Description: "Start ldev ID of lun",
+		Description: "Starting LDEV ID",
 	},
 	"end_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
 		ValidateFunc: validation.IntBetween(0, 65535),
-		Description: "End ldev ID of lun",
+		Description: "Ending LDEV ID",
 	},
 	"undefined_ldev": &schema.Schema{
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Description: "If set to true, returns not allocated luns else otherwise",
+		Description: "If set to true, returns not allocated LUNs",
 	},
 	// output
 	"volumes": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is volumes output",
+		Description: "Volumes output",
 		Elem: &schema.Resource{
 			Schema: LunInfoSchema,
 		},
@@ -208,12 +208,12 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Serial number of storage",
+		Description: "Serial number of the storage system",
 	},
 	"ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
-		Description: "Ldev ID of lun",
+		Description: "LDEV ID",
 	},
 	"pool_id": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -255,7 +255,7 @@ var ResourceLunSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
 		Computed:    true,
-		Description: "This is volume output",
+		Description: "Volume output",
 		Elem: &schema.Resource{
 			Schema: LunInfoSchema,
 		},

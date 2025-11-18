@@ -41,7 +41,7 @@ output "dynamicpools" {
 
 ### Required
 
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Read-Only
 
@@ -60,20 +60,20 @@ Read-Only:
 - `depletion_threshold` (Number) Depletion threshold
 - `duplication_number` (Number) Duplication number
 - `duplication_rate` (Number) Duplication rate
-- `first_ldev_id` (Number) First ldev ID
+- `first_ldev_id` (Number) First LDEV ID
 - `is_mainframe` (Boolean) Is mainframe pool
 - `is_shrinking` (Boolean) Is shrinking pool
 - `located_volume_count` (Number) Total number of located volume count
-- `num_of_ldevs` (Number) Total number of ldevs
-- `pool_id` (Number) Pool ID of storage
+- `num_of_ldevs` (Number) Total number of LDEVs
+- `pool_id` (Number) Pool ID of the storage system
 - `pool_name` (String) Pool name
-- `pool_status` (String) Pool status of storage
+- `pool_status` (String) Pool status of the storage system
 - `pool_type` (String) Pool type
 - `reserved_volume_count` (Number) Total number of reserved volume count
 - `snapshot_count` (Number) Snapshot count
 - `snapshot_used_capacity` (Number) Snapshot used capacity
-- `storage_serial_number` (Number) Serial number of storage
-- `suspend_snapshot` (Boolean) Checks if suspend snapshot
+- `storage_serial_number` (Number) Serial number of the storage system
+- `suspend_snapshot` (Boolean) Checks if snapshot has been suspended
 - `total_located_capacity` (Number) Total number of located capacity
 - `total_physical_capacity` (Number) Total physical capacity
 - `total_pool_capacity` (Number) Total pool capacity

@@ -43,29 +43,29 @@ output "storageports" {
 
 ### Required
 
-- `serial` (Number) Serial number of storage
+- `serial` (Number) Serial number of the storage system
 
 ### Optional
 
-- `port_id` (String) Port ID of the storage device
+- `port_id` (String) Port ID of the storage system
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `ports` (Block List) This is ports output (see [below for nested schema](#nestedblock--ports))
-- `total_port_count` (Number) Total number of ports on the storage device
+- `ports` (Block List) Ports output (see [below for nested schema](#nestedblock--ports))
+- `total_port_count` (Number) Total number of ports on the storage system
 
 <a id="nestedblock--ports"></a>
 ### Nested Schema for `ports`
 
 Read-Only:
 
-- `fabric_mode` (Boolean) Fabric mode of the storage device
-- `loop_id` (String) Loop ID of the storage device
-- `lun_security_setting` (Boolean) Lun security setting of the storage device
-- `port_attributes` (List of String) List of port attributes of the storage device
-- `port_connection` (String) Port connection of the storage device
+- `fabric_mode` (Boolean) Fabric mode of the storage system
+- `loop_id` (String) Loop ID of the storage system
+- `lun_security_setting` (Boolean) LUN security setting of the storage system
+- `port_attributes` (List of String) List of port attributes of the storage system
+- `port_connection` (String) Port connection of the storage system
 - `port_id` (String) Port ID
-- `port_speed` (String) Port speed of the storage device
+- `port_speed` (String) Port speed of the storage system
 - `port_type` (String) Port type
 - `wwn` (String) WWN of the port

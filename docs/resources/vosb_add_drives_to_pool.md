@@ -57,7 +57,7 @@ output "pool_output" {
 ### Required
 
 - `storage_pool_name` (String) Storage pool name
-- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 

@@ -62,15 +62,15 @@ output "my_iscsi_chap_users_output" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
-- `target_chap_user` (String) CHAP user name or CHAP user ID used for CHAP authentication on the compute port (i.e., target side).
+- `target_chap_user` (String) CHAP user name or CHAP user ID used for CHAP authentication on the compute port (that is, the target side).
 
 ### Read-Only
 
-- `chap_users` (Block List) This is output schema (see [below for nested schema](#nestedblock--chap_users))
+- `chap_users` (Block List) Output schema (see [below for nested schema](#nestedblock--chap_users))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--chap_users"></a>
@@ -81,5 +81,5 @@ Read-Only:
 - `chap_user_id` (String) The unique ID of the CHAP user associated with CHAP authentication settings.
 - `initiator_chap_user_name` (String) CHAP user name used for CHAP authentication on the initiator port of the compute node in mutual CHAP authentication.
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/
-- `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+- `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/

@@ -44,19 +44,19 @@ output "volumecreateData" {
 ### Required
 
 - `name` (String) Name of the volume server
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Blockk.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 ### Optional
 
-- `capacity_gb` (Number) Capacity of the volume to be created in Gigabytes. Required for create operation.
+- `capacity_gb` (Number) Capacity of the volume to be created in Gigabytes. Required for the create operation.
 - `compute_nodes` (List of String) List of compute nodes to be attached to the volume. To remove all the nodes from the volume declare compute_nodes = []
-- `nick_name` (String) Nick name of the volume
-- `storage_pool` (String) Storage pool name of the storage server. Required for create operation.
+- `nick_name` (String) Nickname of the volume
+- `storage_pool` (String) Storage pool name of the storage system. Required for the create operation.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `volume` (List of Object) Outputs information about the volume (see [below for nested schema](#nestedatt--volume))
+- `volume` (List of Object) Output information about the volume (see [below for nested schema](#nestedatt--volume))
 
 <a id="nestedatt--volume"></a>
 ### Nested Schema for `volume`

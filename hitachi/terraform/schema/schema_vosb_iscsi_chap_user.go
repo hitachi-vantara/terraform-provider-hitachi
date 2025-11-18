@@ -13,7 +13,7 @@ var VssbIscsiChapUserInfoSchema = map[string]*schema.Schema{
 	"target_chap_user_name": &schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
-		Description: `CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+		Description: `CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/`,
 	},
 	"initiator_chap_user_name": &schema.Schema{
@@ -29,20 +29,20 @@ var DataVssbIscsiChapUsersSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"target_chap_user": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Default:     "",
-		Description: "CHAP user name or CHAP user ID used for CHAP authentication on the compute port (i.e., target side).",
+		Description: "CHAP user name or CHAP user ID used for CHAP authentication on the compute port (that is, the target side).",
 	},
 	// output
 	"chap_users": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is output schema",
+		Description: "Output schema",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
 		},
@@ -54,12 +54,12 @@ var DataVssbIscsiChapUserSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"target_chap_user_name": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
-		Description: `CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+		Description: `CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/`,
 	},
 	// output
@@ -67,7 +67,7 @@ var DataVssbIscsiChapUserSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "This is output schema",
+		Description: "Output schema",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
 		},
@@ -78,7 +78,7 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"chap_user_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -89,14 +89,14 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"target_chap_user_name": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
-		Description: `CHAP user name used for CHAP authentication on the compute port (i.e., target side).
+		Description: `CHAP user name used for CHAP authentication on the compute port (that is, the target side).
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/`,
 	},
 	"target_chap_user_secret": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 		Sensitive:   true,
-		Description: `CHAP secret used for CHAP authentication on the compute port (i.e., target side).
+		Description: `CHAP secret used for CHAP authentication on the compute port (that is, the target side).
 		(12 to 32 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\/\[\]~ ]{12,32}$/`,
 	},
 	"initiator_chap_user_name": &schema.Schema{
@@ -117,7 +117,7 @@ var ResourceVssbChapUserSchema = map[string]*schema.Schema{
 	"chap_users": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "This is chap users output",
+		Description: "CHAP users output",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiChapUserInfoSchema,
 		},

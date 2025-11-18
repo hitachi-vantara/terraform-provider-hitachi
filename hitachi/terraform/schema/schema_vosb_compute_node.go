@@ -8,13 +8,13 @@ var DataComputeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Computed:    true,
-		Description: "The name  to be fetched",
+		Description: "The name to be retrieved",
 	},
 	// output
 	"compute_nodes": &schema.Schema{
@@ -58,12 +58,12 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 	"number_of_volumes": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "The number of volumes attached in the compute node",
+		Description: "The number of volumes attached to the compute node",
 	},
 	"number_of_paths": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Number of iSCSI connection initiated to the compute node",
+		Description: "Number of iSCSI connections initiated to the compute node",
 	},
 
 	"paths": &schema.Schema{
@@ -76,7 +76,7 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 				"protocol": &schema.Schema{
 					Computed:    true,
 					Type:        schema.TypeString,
-					Description: "Type of Protocol of the attached connection",
+					Description: "Type of protocol of the attached connection",
 				},
 				"hba_name": &schema.Schema{
 					Computed:    true,
@@ -98,7 +98,7 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Optional:    true,
 		Type:        schema.TypeList,
-		Description: "Port Details of the iSCSI connection",
+		Description: "Port details of the iSCSI connection",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"port_id": {
@@ -125,7 +125,7 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -135,12 +135,12 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"os_type": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Type of the OS to be selected like Linux, Windows, VmWare, etc., it is required while creating compute node.",
+		Description: "Type of the OS to be selected such as Linux, Windows, VmWare, and so on; it is required to create the compute node.",
 	},
 	"iscsi_connection": &schema.Schema{
 		Type:        schema.TypeSet,
 		Optional:    true,
-		Description: "Details of iSCSI connection to the compute node",
+		Description: "Details of the iSCSI connections to the compute node",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"iscsi_initiator": {
@@ -162,12 +162,12 @@ var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"fc_connection": &schema.Schema{
 		Type:        schema.TypeSet,
 		Optional:    true,
-		Description: "Details of Fiber channel connections",
+		Description: "Details of Fibre Channel connections",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"host_wwn": {
 					Optional:    true,
-					Description: "Host WWN Names which need to be attached to the compute node",
+					Description: "Host WWN names that must be attached to the compute node",
 					Type:        schema.TypeString,
 				},
 			},
