@@ -25,7 +25,7 @@ jobs:
     # allow manual runs, release events, or tag-push; block random branch runs
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           # when manual or release, checkout the right tag
