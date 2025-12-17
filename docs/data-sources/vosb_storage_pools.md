@@ -42,7 +42,7 @@ output "pool" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 
@@ -60,7 +60,7 @@ Read-Only:
 
 - `blocked_physical_capacity` (Number) Blocked physical capacity of the pool
 - `capacity_manage` (Block List) Capacity manage information (see [below for nested schema](#nestedblock--storage_pools--capacity_manage))
-- `data_redundancy` (Number) Redundant type of the pool
+- `data_redundancy` (Number) Data redundancy of the pool
 - `free_capacity` (Number) Free capacity of the pool
 - `meta_data_physical_capacity` (Number) Meta data physical capacity of the pool
 - `number_of_volumes` (Number) Number of volumes on the pool

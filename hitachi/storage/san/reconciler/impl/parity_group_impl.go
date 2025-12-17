@@ -49,3 +49,42 @@ func (psm *sanStorageManager) GetParityGroups(parityGroupIds ...[]string) (*[]sa
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_END), objStorage.Serial)
 	return &reconcileParityGroups, nil
 }
+
+func (psm *sanStorageManager) GetParityGroup(parityGroupId string) (*sanmodel.ParityGroup, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := provisonermodel.StorageDeviceSettings{
+		Serial:   psm.storageSetting.Serial,
+		Username: psm.storageSetting.Username,
+		Password: psm.storageSetting.Password,
+		MgmtIP:   psm.storageSetting.MgmtIP,
+	}
+
+	log.WriteDebug("TFDebug| Storage Serial:%d, ManagementIP:%s\n", psm.storageSetting.Serial, psm.storageSetting.MgmtIP)
+	provObj, err := provisonerimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_BEGIN), objStorage.Serial)
+	provParityGroup, err := provObj.GetParityGroup(parityGroupId)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetParityGroups provisioner call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_PARITY_GROUP_FAILED), objStorage.Serial)
+		return nil, err
+	}
+
+	// Converting Prov to Reconciler
+	reconcileParityGroup := sanmodel.ParityGroup{}
+	err = copier.Copy(&reconcileParityGroup, provParityGroup)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from prov to reconciler structure, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_END), objStorage.Serial)
+	return &reconcileParityGroup, nil
+}

@@ -51,19 +51,54 @@ func main() {
 	dataSourceRegex := regexp.MustCompile(`"([^"]+)":\s+datasourceimpl\.(\w+)\(\)`)
 
 	// Add ProviderConfigure mappings
-	entries = append(entries, entry{"san.terraform.ProviderConfigure", "san.terraform.providerConfigure"})
-	entries = append(entries, entry{"vosb.terraform.ProviderConfigure", "vosb.terraform.providerConfigure"})
+	entries = append(entries,
+		entry{"san.terraform.ProviderConfigure", "san.terraform.providerConfigure"},
+		entry{"vosb.terraform.ProviderConfigure", "vosb.terraform.providerConfigure"},
+		entry{"vsp_one.terraform.ProviderConfigure", "vsp_one.terraform.providerConfigure"},
+	)
+
+	inBlockComment := false
 
 	for scanner.Scan() {
 		line := scanner.Text()
+		trimmed := strings.TrimSpace(line)
+
+		// --- Handle comments ---
+		// Detect start or end of block comment
+		if strings.Contains(trimmed, "/*") {
+			inBlockComment = true
+		}
+		if inBlockComment {
+			if strings.Contains(trimmed, "*/") {
+				inBlockComment = false
+			}
+			continue
+		}
+
+		// Skip single-line comments
+		if strings.HasPrefix(trimmed, "//") || trimmed == "" {
+			continue
+		}
+
+		// Remove inline comments (e.g., trailing // text)
+		if idx := strings.Index(trimmed, "//"); idx != -1 {
+			trimmed = strings.TrimSpace(trimmed[:idx])
+		}
+
+		// Skip if line became empty after removing comment
+		if trimmed == "" {
+			continue
+		}
 
 		// Match Resources
-		if match := resourceRegex.FindStringSubmatch(line); match != nil {
+		if match := resourceRegex.FindStringSubmatch(trimmed); match != nil {
 			tfName := match[1]
 			funcName := match[2]
 			prefix := "san"
 			if strings.HasPrefix(tfName, "hitachi_vosb_") {
 				prefix = "vosb"
+			} else if strings.HasPrefix(tfName, "hitachi_vsp_one_") {
+				prefix = "vsp_one"
 			}
 			entries = append(entries, entry{
 				key:   fmt.Sprintf("%s.resource.%s", prefix, funcName),
@@ -79,6 +114,8 @@ func main() {
 			prefix := "san"
 			if strings.HasPrefix(tfName, "hitachi_vosb_") {
 				prefix = "vosb"
+			} else if strings.HasPrefix(tfName, "hitachi_vsp_one_") {
+				prefix = "vsp_one"
 			}
 			entries = append(entries, entry{
 				key:   fmt.Sprintf("%s.datasource.%s", prefix, funcName),

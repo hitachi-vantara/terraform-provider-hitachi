@@ -8,7 +8,7 @@ var DataVssbStoragePortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block system.",
 	},
 	"port_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -42,7 +42,7 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 	"type": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Type of port",
+		Description: "Type of the port",
 	},
 	"nickname": &schema.Schema{
 		Type:        schema.TypeString,
@@ -87,7 +87,7 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 	"status_summary": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Status summary of the port",
+		Description: "status summary of the port",
 	},
 	"status": &schema.Schema{
 		Type:        schema.TypeString,
@@ -149,29 +149,29 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 				"is_isns_client_enabled": {
 					Computed:    true,
 					Type:        schema.TypeBool,
-					Description: "Checks if iSNS client is enabled of the iSCSI port",
+					Description: "Checks if is iSNS client enabled of the iSCSI port",
 				},
 				"ipv4_information": &schema.Schema{
 					Computed:    true,
 					Type:        schema.TypeList,
 					Optional:    true,
-					Description: "IPv4 information",
+					Description: "Ipv4 information",
 					Elem: &schema.Resource{
 						Schema: map[string]*schema.Schema{
 							"address": {
 								Computed:    true,
 								Type:        schema.TypeString,
-								Description: "Address of IPv4 information",
+								Description: "Address of ipv4 information",
 							},
 							"subnet_mask": {
 								Computed:    true,
 								Type:        schema.TypeString,
-								Description: "Subnet mask of IPv4 information",
+								Description: "Subnet mask of ipv4 information",
 							},
 							"default_gateway": {
 								Computed:    true,
 								Type:        schema.TypeString,
-								Description: "Default gateway of IPv4 information",
+								Description: "Default gateway of ipv4 information",
 							},
 						},
 					},
@@ -220,7 +220,7 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 					Computed:    true,
 					Type:        schema.TypeList,
 					Optional:    true,
-					Description: "iSNS servers information",
+					Description: "iSNS server information",
 					Elem: &schema.Resource{
 						Schema: map[string]*schema.Schema{
 							"index": {
@@ -231,7 +231,7 @@ var VssbStoragePortInfoSchema = map[string]*schema.Schema{
 							"server_name": {
 								Computed:    true,
 								Type:        schema.TypeString,
-								Description: "Server name of iSNS server",
+								Description: "Server name of iSNSs server",
 							},
 							"port": {
 								Computed:    true,

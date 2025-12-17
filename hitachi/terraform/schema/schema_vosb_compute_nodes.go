@@ -8,13 +8,14 @@ var ComputeNodesSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block system.",
 	},
 	// output
 	"compute_node": &schema.Schema{
-		Type:     schema.TypeList,
-		Computed: true,
-		Optional: true,
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "Compute node output",
 		Elem: &schema.Resource{
 			Schema: NodeInfoSchema,
 		},
@@ -61,27 +62,33 @@ var VolumeNodeInfoSchema = map[string]*schema.Schema{
 
 var NodeInfoSchema = map[string]*schema.Schema{
 	"id": &schema.Schema{
-		Type:     schema.TypeString,
-		Computed: true,
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "ID of the compute node",
 	},
 	"name": &schema.Schema{
-		Type:     schema.TypeString,
-		Computed: true,
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Name of the compute node",
 	},
 	"os_type": &schema.Schema{
-		Type:     schema.TypeString,
-		Computed: true,
+		Type:        schema.TypeString,
+		Computed:    true,
+		Description: "Operating system type",
 	},
 	"total_capacity": &schema.Schema{
-		Type:     schema.TypeInt,
-		Computed: true,
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total capacity",
 	},
 	"used_capacity": &schema.Schema{
-		Type:     schema.TypeInt,
-		Computed: true,
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Used capacity",
 	},
 	"volume_count": &schema.Schema{
-		Type:     schema.TypeInt,
-		Computed: true,
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Volume count",
 	},
 }

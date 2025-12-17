@@ -1,6 +1,9 @@
 package sanstorage
 
-import sanmodel "terraform-provider-hitachi/hitachi/storage/san/provisioner/model"
+import (
+	sanmodel "terraform-provider-hitachi/hitachi/storage/san/provisioner/model"
+	sangatewaymodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
+)
 
 // SanStorageManager interface
 type SanStorageManager interface {
@@ -8,15 +11,12 @@ type SanStorageManager interface {
 	GetStorageSystemInfo() (*sanmodel.StorageSystem, error)
 	GetStorageSystem() (*sanmodel.StorageSystem, error)
 	// VOLUME
-	GetLun(ldevID int) (*sanmodel.LogicalUnit, error)
-	GetRangeOfLuns(startLdevID int, endLdevID int, IsUndefinedLdev bool) (*[]sanmodel.LogicalUnit, error)
-	CreateLunInDynamicPoolWithLDevId(ldevId int, sizeInGB uint, dynamicPool uint, dataReductionMode string) (*int, error)
-	CreateLunInParityGroupWithLDevId(ldevId int, sizeInGB uint, parityGroup string, dataReductionMode string) (*int, error)
-	CreateLunInDynamicPool(sizeInGB uint, dynamicPool uint, dataReductionMode string) (*int, error)
-	CreateLunInParityGroup(sizeInGB uint, parityGroup string, dataReductionMode string) (*int, error)
-	ExpandLun(ldevId int, newSize uint64) (*int, error)
+	GetLun(ldevID int) (*sangatewaymodel.LogicalUnit, error)
+	GetRangeOfLuns(startLdevID int, endLdevID int, IsUndefinedLdev bool) (*[]sangatewaymodel.LogicalUnit, error)
+	CreateLun(reqBody sangatewaymodel.CreateLunRequestGwy) (*int, error)
+	ExpandLun(ldevId int, newSize string) (*int, error)
 	DeleteLun(ldevId int) error
-	UpdateLun(ldevId int, label *string, dataReductionMode *string) (*sanmodel.LogicalUnit, error)
+	UpdateLun(ldevId int, updReq sangatewaymodel.UpdateLunRequestGwy) (*int, error)
 	// HOSTGROUP
 	GetHostGroup(portID string, hostGroupNumber int) (*sanmodel.HostGroup, error)
 	GetAllHostGroups() (*sanmodel.HostGroups, error)
@@ -54,6 +54,7 @@ type SanStorageManager interface {
 	GetDynamicPoolById(poolId int) (*sanmodel.DynamicPool, error)
 	// PARITY GROUP
 	GetParityGroups(parityGroupIds ...[]string) (*[]sanmodel.ParityGroup, error)
+	GetParityGroup(parityGroupId string) (*sanmodel.ParityGroup, error)
 
 	GetPools() (*[]sanmodel.Pool, error)
 }

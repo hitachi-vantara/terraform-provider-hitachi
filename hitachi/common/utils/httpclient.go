@@ -19,8 +19,10 @@ import (
 )
 
 var (
-	sharedClient     *http.Client
-	sharedClientOnce sync.Once
+	sharedClient      *http.Client
+	sharedClientOnce  sync.Once
+	noKeepAliveClient *http.Client
+	noKeepAliveOnce   sync.Once
 )
 
 // SharedClient returns a singleton, reusable HTTP client
@@ -44,15 +46,50 @@ func SharedClient() *http.Client {
 	return sharedClient
 }
 
+func NoKeepAliveClient() *http.Client {
+	noKeepAliveOnce.Do(func() {
+		log := commonlog.GetLogger()
+		log.WriteEnter()
+		defer log.WriteExit()
+
+		apiTimeout := config.DEFAULT_API_TIMEOUT
+		if config.ConfigData != nil && config.ConfigData.APITimeout > 0 {
+			apiTimeout = config.ConfigData.APITimeout
+		}
+
+		timeout := time.Duration(apiTimeout) * time.Second
+
+		tr := &http.Transport{
+			TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+			DisableKeepAlives:     true,
+			MaxIdleConns:          0,
+			MaxIdleConnsPerHost:   0,
+			IdleConnTimeout:       1 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+		}
+
+		noKeepAliveClient = &http.Client{
+			Timeout:   timeout,
+			Transport: tr,
+		}
+
+		log.WriteDebug("API Execution Timeout: %v", timeout)
+	})
+
+	return noKeepAliveClient
+}
+
 // Helper function to build a configured client
 func newHTTPClient(timeout time.Duration, skipTLSVerify bool) *http.Client {
 	tr := &http.Transport{
 		TLSClientConfig:       &tls.Config{InsecureSkipVerify: skipTLSVerify},
-		MaxIdleConns:          100,              // Reuses connections across requests
-		IdleConnTimeout:       90 * time.Second, // Keeps unused connections alive
-		DisableKeepAlives:     false,            // Enables connection reuse
-		TLSHandshakeTimeout:   10 * time.Second, // Gives up TLS setup after 10s
-		ExpectContinueTimeout: 1 * time.Second,  // Waits 1s for "100 Continue"
+		MaxIdleConns:          200, // Reuses connections across requests
+		MaxIdleConnsPerHost:   200,
+		IdleConnTimeout:       120 * time.Second, // Keeps unused connections alive
+		DisableKeepAlives:     false,             // Enables connection reuse
+		TLSHandshakeTimeout:   10 * time.Second,  // Gives up TLS setup after 10s
+		ExpectContinueTimeout: 1 * time.Second,   // Waits 1s for "100 Continue"
 	}
 
 	return &http.Client{
@@ -83,7 +120,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add auth
-	if basicAuthentication != nil {
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
 		/*
 
 			usernameDecoded, err := DecodeBase64EncodedString(basicAuthentication[0].Username)
@@ -104,9 +141,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -129,6 +164,7 @@ func HTTPGet(url string, headers *map[string]string, basicAuthentication ...*Htt
 	log.WriteDebug("HTTP Response: %s\n", string(body))
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -150,7 +186,7 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add auth
-	if basicAuthentication != nil {
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
 		/*
 
 			usernameDecoded, err := DecodeBase64EncodedString(basicAuthentication[0].Username)
@@ -170,9 +206,7 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -195,12 +229,15 @@ func HTTPPost(url string, headers *map[string]string, httpBody []byte, basicAuth
 	log.WriteDebug("HTTP Response: %s\n", string(body))
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
 	return string(body), nil
 }
 
+// this is used for session api call, it should use NoKeepAliveClient
+// because of UCT-588. Disable keep-alive for session api
 func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string]string, httpBody []byte) (string, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
@@ -221,15 +258,13 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
 	logRequest(req, httpBody)
 
-	resp, err := SharedClient().Do(req)
+	resp, err := NoKeepAliveClient().Do(req)
 	if err != nil {
 		log.WriteError(err)
 		return "", err
@@ -244,6 +279,7 @@ func HTTPPostWithCreds(url string, creds *map[string]string, headers *map[string
 	}
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -284,9 +320,7 @@ func HTTPPostNoBody(url string, headers *map[string]string, httpBody []byte, bas
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -308,6 +342,7 @@ func HTTPPostNoBody(url string, headers *map[string]string, httpBody []byte, bas
 	log.WriteDebug("HTTP Response: %s\n", string(body))
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -329,15 +364,13 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add auth
-	if basicAuthentication != nil {
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
 		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
 	}
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -358,6 +391,7 @@ func HTTPDelete(url string, headers *map[string]string, basicAuthentication ...*
 	}
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -386,9 +420,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -396,7 +428,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add auth
-	if basicAuthentication != nil {
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
 		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
 	}
 
@@ -417,6 +449,7 @@ func HTTPDeleteWithBody(url string, headers *map[string]string, httpBody []byte,
 	}
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -439,15 +472,13 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add auth
-	if basicAuthentication != nil {
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
 		req.SetBasicAuth(basicAuthentication[0].Username, basicAuthentication[0].Password)
 	}
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -468,6 +499,7 @@ func HTTPPatch(url string, headers *map[string]string, httpBody []byte, basicAut
 	}
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -496,8 +528,7 @@ func HTTPDownloadFile(url string, toFilePath string, headers *map[string]string,
 	// Optional headers
 	if headers != nil {
 		for k, v := range *headers {
-			req.Header.Add(k, v)
-			log.WriteInfo("header key=[%s], value=[%s]", k, v)
+			req.Header.Set(k, v)
 		}
 	}
 
@@ -512,6 +543,7 @@ func HTTPDownloadFile(url string, toFilePath string, headers *map[string]string,
 
 	if IsHttpError(resp.StatusCode) {
 		bodyBytes, _ := io.ReadAll(resp.Body)
+		io.Copy(io.Discard, resp.Body) // ensure keep-alive connection can be reused
 		log.WriteError("HTTP error: %s", string(bodyBytes))
 		return string(bodyBytes), fmt.Errorf("%v", resp.Status)
 	}
@@ -597,7 +629,7 @@ func logRequest(req *http.Request, reqBodyInBytes []byte) {
 
 	log.WriteDebug("Method: %s", req.Method)
 	log.WriteDebug("URL: %s", req.URL.String())
-	log.WriteDebug("Headers: %s", req.Header)
+	log.WriteDebug("Headers: %v", sanitizeHeaders(req.Header))
 	// log.WriteDebug("Body: %s", string(bodyBytes))
 	log.WriteDebug("Body: %s", string(maskedReq))
 	log.WriteDebug("ContentLength: %d", req.ContentLength)
@@ -624,7 +656,7 @@ func HTTPPostForm(
 	req.Header.Set("Accept", "application/json")
 
 	// Add auth
-	if basicAuthentication != nil {
+	if len(basicAuthentication) > 0 && basicAuthentication[0] != nil {
 		/*
 
 			usernameDecoded, err := DecodeBase64EncodedString(basicAuthentication[0].Username)
@@ -644,9 +676,7 @@ func HTTPPostForm(
 
 	if headers != nil {
 		for k, v := range *headers {
-			strValue := fmt.Sprintf("header key=[%s], value=[%s]", k, v)
-			log.WriteInfo(strValue)
-			req.Header.Add(k, v)
+			req.Header.Set(k, v)
 		}
 	} else {
 		// the above is doing Add, so we need to set the content type here
@@ -672,6 +702,7 @@ func HTTPPostForm(
 	log.WriteDebug("HTTP Response: %s\n", string(body))
 
 	if IsHttpError(resp.StatusCode) {
+		io.Copy(io.Discard, resp.Body) // keep-alive safe
 		return string(body), fmt.Errorf("%v", resp.Status)
 	}
 
@@ -697,4 +728,16 @@ func secureJoin(baseDir, filename string) (string, error) {
 	}
 
 	return targetAbs, nil
+}
+
+// mask headers in logs
+func sanitizeHeaders(h http.Header) http.Header {
+	clone := h.Clone()
+	for key := range clone {
+		if strings.EqualFold(key, "Authorization") ||
+			strings.Contains(strings.ToLower(key), "password") {
+			clone.Set(key, "***MASKED***")
+		}
+	}
+	return clone
 }

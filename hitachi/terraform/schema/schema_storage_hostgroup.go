@@ -13,22 +13,22 @@ var HostGroupInfoSchema = map[string]*schema.Schema{
 	"hostgroup_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Created host group number",
+		Description: "Created hostGroup number",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Assigned port ID of the host group",
+		Description: "Assigned port ID of hostGroup",
 	},
 	"hostgroup_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Name of the host group",
+		Description: "Name of hostGroup",
 	},
 	"host_mode": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Mode of the host group",
+		Description: "Mode of hostgroup",
 	},
 	"host_mode_options": &schema.Schema{
 		Type:     schema.TypeList,
@@ -44,7 +44,7 @@ var HostGroupInfoSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeInt,
 		},
-		Description: "The number of LDEV IDs in the host group",
+		Description: "The number of ldev IDs in hostGroup",
 	},
 	"hg_luns": &schema.Schema{
 		Computed: true,
@@ -52,24 +52,24 @@ var HostGroupInfoSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeInt,
 		},
-		Description: "Host group LUN IDs",
+		Description: "HostGroup lun IDs",
 	},
 	"lun_paths": &schema.Schema{
 		Computed:    true,
 		Optional:    true,
-		Description: "Host group LUN paths with LUN IDs and LDEV IDs",
+		Description: "HostGroup lun paths with lun IDs and ldev IDs",
 		Type:        schema.TypeList,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"hg_lun_id": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "LUN path of the host group ID",
+					Description: "Lun Path hostGroup ID",
 				},
 				"ldev_id": {
 					Computed:    true,
 					Type:        schema.TypeInt,
-					Description: "LUN path of the LDEV ID",
+					Description: "Lun Path Ldev ID",
 				},
 			},
 		},
@@ -80,13 +80,13 @@ var HostGroupInfoSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
-		Description: "WWN list of the host group.",
+		Description: "WWN list of hostGroup.",
 	},
 	"wwns_detail": &schema.Schema{
 		Computed:    true,
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "Details of WWNs for the created host group including ID and name",
+		Description: "Details of wwns for the created hostGroup including ID and name",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"wwn": {
@@ -113,7 +113,7 @@ var HostGroupsInfoSchema = map[string]*schema.Schema{
 	"hostgroup_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Host group number",
+		Description: "HostGroup number",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
@@ -123,7 +123,7 @@ var HostGroupsInfoSchema = map[string]*schema.Schema{
 	"hostgroup_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Host group name",
+		Description: "HostGroup name",
 	},
 	"host_mode": &schema.Schema{
 		Type:        schema.TypeString,
@@ -146,14 +146,14 @@ var DataHostGroupSchema = map[string]*schema.Schema{
 	"hostgroup_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Required:    true,
-		Description: "Host group number",
+		Description: "HostGroup number",
 	},
 	// output
 	"hostgroup": &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "Host group output",
+		Description: "hostGroup output",
 		Elem: &schema.Resource{
 			Schema: HostGroupInfoSchema,
 		},
@@ -177,7 +177,7 @@ var DataHostGroupsSchema = map[string]*schema.Schema{
 	// output
 	"hostgroups": &schema.Schema{
 		Type:        schema.TypeList,
-		Description: "Host groups output",
+		Description: "hostgroups output",
 		Optional:    true,
 		Computed:    true,
 		Elem: &schema.Resource{
@@ -187,7 +187,7 @@ var DataHostGroupsSchema = map[string]*schema.Schema{
 	"total_hostgroup_count": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total number of host groups in the storage system",
+		Description: "Total number of hostGroups in the storage system",
 	},
 }
 
@@ -200,22 +200,22 @@ var ResourceHostGroupSchema = map[string]*schema.Schema{
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The Port ID to be specified",
+		Description: "Port ID to be specified",
 	},
 	"hostgroup_number": &schema.Schema{
 		Type:        schema.TypeInt,
 		Optional:    true,
-		Description: "Host group number to be specified",
+		Description: "HostGroup number to be specified",
 	},
 	"hostgroup_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "Host group name to be specified to create the group",
+		Description: "HostGroup name to be specified to create the group",
 	},
 	"host_mode": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "The host mode to create the group",
+		Description: "The Host Mode to create the group",
 	},
 	"host_mode_options": &schema.Schema{
 		Type:     schema.TypeList,
@@ -248,18 +248,18 @@ var ResourceHostGroupSchema = map[string]*schema.Schema{
 	"wwn": &schema.Schema{
 		Type:        schema.TypeSet,
 		Optional:    true,
-		Description: "World wide name of the host group",
+		Description: "World wide name of hostGroup",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"host_wwn": {
 					Optional:    true,
 					Type:        schema.TypeString,
-					Description: "Name of the WWN resource",
+					Description: "Name of wwn resource",
 				},
 				"wwn_nickname": {
 					Optional:    true,
 					Type:        schema.TypeString,
-					Description: "Nickname of the WWN resource",
+					Description: "Nickname of wwn resource",
 				},
 			},
 		},
@@ -269,7 +269,7 @@ var ResourceHostGroupSchema = map[string]*schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Optional:    true,
-		Description: "Response data of the created host group",
+		Description: "Response data of the created hostGroup",
 		Elem: &schema.Resource{
 			Schema: HostGroupInfoSchema,
 		},

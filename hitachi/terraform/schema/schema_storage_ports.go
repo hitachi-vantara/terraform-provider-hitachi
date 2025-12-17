@@ -46,7 +46,7 @@ var StoragePortSchema = map[string]*schema.Schema{
 	"lun_security_setting": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "LUN security setting of the storage system",
+		Description: "Lun security setting of the storage system",
 	},
 	"wwn": &schema.Schema{
 		Type:        schema.TypeString,

@@ -2,8 +2,8 @@ package terraform
 
 import (
 	"context"
-	// "fmt"
-	"strconv"
+	"fmt"
+	// "strconv"
 	// "time"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -46,7 +46,7 @@ func DataSourceStorageHostGroupRead(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 
-	d.SetId(hostgroup.PortID + strconv.Itoa(hostgroup.HostGroupNumber))
+	d.SetId(fmt.Sprintf("%s,%d,%s", hostgroup.PortID, hostgroup.HostGroupNumber, hostgroup.HostGroupName))
 	log.WriteInfo("hg read successfully")
 
 	return nil

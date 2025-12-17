@@ -9,8 +9,7 @@
 # associated with the provided parameters. This allows you to access configuration
 # and property information for the specified volume.
 #
-# Customize the values of the parameters (serial, ldev_id) to match your environment,
-# enabling you to retrieve information about the desired volume.
+# Provide the storage system serial number and ldev_id.
 #
 
 data "hitachi_vsp_volume" "volume" {

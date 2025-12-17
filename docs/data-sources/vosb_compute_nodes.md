@@ -44,7 +44,7 @@ output "nodeoutput" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block system.
 
 ### Optional
 
@@ -52,7 +52,7 @@ output "nodeoutput" {
 
 ### Read-Only
 
-- `compute_nodes` (Block List) All the information if the selected compute node (see [below for nested schema](#nestedblock--compute_nodes))
+- `compute_nodes` (Block List) All the information of the selected compute node (see [below for nested schema](#nestedblock--compute_nodes))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--compute_nodes"></a>
@@ -62,11 +62,11 @@ Read-Only:
 
 - `id` (String) ID
 - `nickname` (String) Nickname
-- `number_of_paths` (Number) Number of iSCSI connections initiated to the compute node
+- `number_of_paths` (Number) Number of iSCSI connection initiated to the compute node
 - `number_of_volumes` (Number) The number of volumes attached to the compute node
 - `os_type` (String) OS type
 - `paths` (Block List) Path/iSCSI connections details (see [below for nested schema](#nestedblock--compute_nodes--paths))
-- `port_details` (Block List) Port details of the iSCSI connection (see [below for nested schema](#nestedblock--compute_nodes--port_details))
+- `port_details` (Block List) Port Details of the iSCSI connection (see [below for nested schema](#nestedblock--compute_nodes--port_details))
 - `total_capacity` (Number) Total capacity in MB
 - `used_capacity` (Number) Used capacity in MB
 
@@ -77,7 +77,7 @@ Read-Only:
 
 - `hba_name` (String) Name of the HBA connection
 - `port_ids` (List of String) Port IDs of the iSCSI connection
-- `protocol` (String) Type of protocol of the attached connection
+- `protocol` (String) Type of Protocol of the attached connection
 
 
 <a id="nestedblock--compute_nodes--port_details"></a>

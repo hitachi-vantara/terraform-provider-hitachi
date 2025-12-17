@@ -63,12 +63,12 @@ var DynamicPoolInfoSchema = map[string]*schema.Schema{
 	"num_of_ldevs": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Total number of LDEVs",
+		Description: "Total number of ldevs",
 	},
 	"first_ldev_id": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "First LDEV ID",
+		Description: "First ldev ID",
 	},
 	"warning_threshold": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -148,7 +148,7 @@ var DynamicPoolInfoSchema = map[string]*schema.Schema{
 	"suspend_snapshot": &schema.Schema{
 		Type:        schema.TypeBool,
 		Computed:    true,
-		Description: "Checks if snapshot has been suspended",
+		Description: "Checks if suspend snapshot",
 	},
 }
 

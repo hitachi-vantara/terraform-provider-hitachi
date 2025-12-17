@@ -108,7 +108,7 @@ func (psm *sanStorageManager) CreateHostGroup(reqBody sanmodel.CreateHostGroupRe
 	arr := strings.Split(*affRes, ",")
 	portID := arr[0]
 	hgNum, _ := strconv.Atoi(arr[1])
-	log.WriteDebug("TFDebug| portID=%d hgNum=%v", portID, hgNum)
+	log.WriteDebug("TFDebug| portID=%+v hgNum=%+v", portID, hgNum)
 	return &portID, &hgNum, nil
 }
 

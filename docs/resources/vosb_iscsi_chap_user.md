@@ -46,11 +46,11 @@ output "chap_user_output" {
 
 ### Required
 
-- `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (that is, the target side).
+- `target_chap_user_name` (String) CHAP user name used for CHAP authentication on the compute port (that is, target side).
 		(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/
-- `target_chap_user_secret` (String, Sensitive) CHAP secret used for CHAP authentication on the compute port (that is, the target side).
+- `target_chap_user_secret` (String, Sensitive) CHAP secret used for CHAP authentication on the compute port (that is, target side).
 		(12 to 32 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\/\[\]~ ]{12,32}$/
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 

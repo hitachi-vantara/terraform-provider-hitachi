@@ -52,11 +52,11 @@ output "chapuser_association_with_computeport" {
 	- None: No authentication is performed.
 - `name` (String) Name of the port
 - `target_chap_users` (List of String) List of CHAP users to be attached to the compute port.
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Read-Only
 
-- `compute_port` (Block List) Output information about the volume (see [below for nested schema](#nestedblock--compute_port))
+- `compute_port` (Block List) Outputs information about the volume (see [below for nested schema](#nestedblock--compute_port))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--compute_port"></a>

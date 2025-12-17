@@ -14,6 +14,11 @@ var MessageCatalog = map[interface{}]string{
 	INFO_GET_STORAGE_SYSTEM_END:   "Successfully read storage information for storage system : %s.",
 	ERR_GET_STORAGE_SYSTEM_FAILED: "Failed to read storage information for storage system : %s.",
 
+	// STORAGE SYSTEM VSP One
+	INFO_GET_STORAGE_SYSTEM_ADMIN_BEGIN: "Reading storage information for storage system VSP One : %s.",
+	INFO_GET_STORAGE_SYSTEM_ADMIN_END:   "Successfully read storage information for storage system VSP One : %s.",
+	ERR_GET_STORAGE_SYSTEM_ADMIN_FAILED: "Failed to read storage information for storage system VSP One : %s.",
+
 	// VOLUME
 	INFO_GET_LUN_BEGIN:       "Reading lun information for lun id %d.",
 	INFO_GET_LUN_END:         "Successfully read lun information for lun id %d.",
@@ -26,6 +31,15 @@ var MessageCatalog = map[interface{}]string{
 	ERR_UPDATE_LUN_FAILED:    "Failed to update lun with id %d on storage serial %d.",
 	INFO_UPDATE_LUN_BEGIN:    "Updating lun with id %d on storage serial %d.",
 	INFO_UPDATE_LUN_END:      "Successfully updated lun with id %d on storage serial %d.",
+
+	// VOLUME QOS
+	INFO_GET_VOLUME_QOS_ADMIN_BEGIN: "Getting volume QoS information for volume id %s.",
+	INFO_GET_VOLUME_QOS_ADMIN_END:   "Successfully got volume QoS information for volume id %s.",
+	ERR_GET_VOLUME_QOS_ADMIN_FAILED: "Failed to get volume QoS information for volume id %s.",
+
+	INFO_SET_VOLUME_QOS_ADMIN_BEGIN: "Setting volume QoS information for volume id %s.",
+	INFO_SET_VOLUME_QOS_ADMIN_END:   "Successfully set volume QoS information for volume id %s.",
+	ERR_SET_VOLUME_QOS_ADMIN_FAILED: "Failed to set volume QoS information for volume id %s with error: %v.",
 
 	// VOSB - VOLUME
 	INFO_GET_ALL_VOLUME_INFO_BEGIN: "Reading all volume information.",
@@ -212,4 +226,21 @@ var MessageCatalog = map[interface{}]string{
 	INFO_CREATE_DOWNLOAD_CONFIG_BEGIN: "Creating and/or downloading configuration file.",
 	ERR_CREATE_DOWNLOAD_CONFIG_FAILED: "Failed to create or download configuration file.",
 	INFO_CREATE_DOWNLOAD_CONFIG_END:   "Successfully created or downloaded configuration file.",
+
+	// VSP One SERVER
+	INFO_GET_ADMIN_SERVER_LIST_BEGIN: "Reading VSP One server list from %s.",
+	INFO_GET_ADMIN_SERVER_LIST_END:   "Successfully read VSP One server list from %s.",
+	ERR_GET_ADMIN_SERVER_LIST_FAILED: "Failed to read VSP One server list from %s: %v.",
+	INFO_GET_ADMIN_SERVER_INFO_BEGIN: "Reading VSP One server info from %s with id %d.",
+	INFO_GET_ADMIN_SERVER_INFO_END:   "Successfully read VSP One server info from %s with id %d.",
+	ERR_GET_ADMIN_SERVER_INFO_FAILED: "Failed to read VSP One server info from %s with id %d: %v.",
+	INFO_CREATE_ADMIN_SERVER_BEGIN:   "Creating VSP One server %s on %s.",
+	INFO_CREATE_ADMIN_SERVER_END:     "Successfully created VSP One server %s on %s with id %d.",
+	ERR_CREATE_ADMIN_SERVER_FAILED:   "Failed to create VSP One server %s on %s: %v.",
+	INFO_UPDATE_ADMIN_SERVER_BEGIN:   "Updating VSP One server %d on %s.",
+	INFO_UPDATE_ADMIN_SERVER_END:     "Successfully updated VSP One server %d on %s.",
+	ERR_UPDATE_ADMIN_SERVER_FAILED:   "Failed to update VSP One server %d on %s: %v.",
+	INFO_DELETE_ADMIN_SERVER_BEGIN:   "Deleting VSP One server %d on %s.",
+	INFO_DELETE_ADMIN_SERVER_END:     "Successfully deleted VSP One server %d on %s.",
+	ERR_DELETE_ADMIN_SERVER_FAILED:   "Failed to delete VSP One server %d on %s: %v.",
 }

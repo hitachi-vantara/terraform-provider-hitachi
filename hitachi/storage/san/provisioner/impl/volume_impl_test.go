@@ -3,6 +3,7 @@ package sanstorage
 import (
 	"fmt"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/provisioner/model"
+	sangatewaymodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 	"testing"
 )
 
@@ -81,15 +82,28 @@ func xTestCreateLunInDynamicPoolWithLDevId(t *testing.T) {
 
 	ldevId := 107
 	var sizeInGB uint = 2
-	var dynamicPool uint = 0
-	dataReductionMode := "compression"
+	var dpool int = 0
+	// dataReductionMode := "compression"
+	// sharedVol := true
+	// compAccEnabled := true
 
-	newLdevId, err := psm.CreateLunInDynamicPoolWithLDevId(ldevId, sizeInGB, dynamicPool, dataReductionMode)
+	size := fmt.Sprintf("%dG", sizeInGB)
+
+	reqBody := sangatewaymodel.CreateLunRequestGwy{
+		LdevID:             &ldevId,
+		PoolID:             &dpool,
+		ByteFormatCapacity: size,
+		// DataReductionMode:  &dataReductionMode,
+		// IsDataReductionSharedVolumeEnabled: &sharedVol,
+		// IsCompressionAccelerationEnabled: &compAccEnabled,
+	}
+
+	newLdevId, err := psm.CreateLun(reqBody)
 	if err != nil {
 		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
-	t.Logf("newLdevId: %v", &newLdevId)
+	t.Logf("newLdevId: %v", *newLdevId)
 
 	lun, err := psm.GetLun(*newLdevId)
 	if err != nil {
@@ -107,19 +121,32 @@ func xTestCreateLunInDynamicPool(t *testing.T) {
 	}
 
 	var sizeInGB uint = 2
-	var dynamicPool uint = 0
+	var dpool int = 0
 	dataReductionMode := "compression"
+	sharedVol := true
+	compAccEnabled := true
 
-	newLdevId, err := psm.CreateLunInDynamicPool(sizeInGB, dynamicPool, dataReductionMode)
+	size := fmt.Sprintf("%dG", sizeInGB)
+
+	reqBody := sangatewaymodel.CreateLunRequestGwy{
+		// LdevID:             &ldevId,
+		PoolID:             &dpool,
+		ByteFormatCapacity: size,
+		DataReductionMode:  &dataReductionMode,
+		IsDataReductionSharedVolumeEnabled: &sharedVol,
+		IsCompressionAccelerationEnabled: &compAccEnabled,
+	}
+
+	newLdevId, err := psm.CreateLun(reqBody)
 	if err != nil {
-		t.Errorf("Unexpected error in CreateLunInDynamicPool %v", err)
+		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
-	t.Logf("newLdevId: %v", &newLdevId)
+	t.Logf("newLdevId: %v", *newLdevId)
 
 	lun, err := psm.GetLun(*newLdevId)
 	if err != nil {
-		t.Errorf("Unexpected error in CreateLunInDynamicPool %v", err)
+		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
 	t.Logf("Response: %v", lun)
@@ -136,17 +163,30 @@ func xTestCreateLunInParityGroupWithLDevId(t *testing.T) {
 	var sizeInGB uint = 2
 	parityGroupId := "1-1"
 	dataReductionMode := "compression"
+	// sharedVol := true
+	// compAccEnabled := true
 
-	newLdevId, err := psm.CreateLunInParityGroupWithLDevId(ldevId, sizeInGB, parityGroupId, dataReductionMode)
+	size := fmt.Sprintf("%dG", sizeInGB)
+
+	reqBody := sangatewaymodel.CreateLunRequestGwy{
+		LdevID:             &ldevId,
+		ParityGroupID:      &parityGroupId,
+		ByteFormatCapacity: size,
+		DataReductionMode:  &dataReductionMode,
+		// IsDataReductionSharedVolumeEnabled: &sharedVol,
+		// IsCompressionAccelerationEnabled: &compAccEnabled,
+	}
+
+	newLdevId, err := psm.CreateLun(reqBody)
 	if err != nil {
-		t.Errorf("Unexpected error in CreateLunInParityGroupWithLDevId %v", err)
+		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
-	t.Logf("newLdevId: %v", &newLdevId)
+	t.Logf("newLdevId: %v", *newLdevId)
 
 	lun, err := psm.GetLun(*newLdevId)
 	if err != nil {
-		t.Errorf("Unexpected error in CreateLunInParityGroupWithLDevId %v", err)
+		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
 	t.Logf("Response: %v", lun)
@@ -159,20 +199,34 @@ func xTestCreateLunInParityGroup(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
+	// ldevId := 108
 	var sizeInGB uint = 2
 	parityGroupId := "1-1"
 	dataReductionMode := "compression"
+	// sharedVol := true
+	// compAccEnabled := true
 
-	newLdevId, err := psm.CreateLunInParityGroup(sizeInGB, parityGroupId, dataReductionMode)
+	size := fmt.Sprintf("%dG", sizeInGB)
+
+	reqBody := sangatewaymodel.CreateLunRequestGwy{
+		// LdevID:             &ldevId,
+		ParityGroupID:      &parityGroupId,
+		ByteFormatCapacity: size,
+		DataReductionMode:  &dataReductionMode,
+		// IsDataReductionSharedVolumeEnabled: &sharedVol,
+		// IsCompressionAccelerationEnabled: &compAccEnabled,
+	}
+
+	newLdevId, err := psm.CreateLun(reqBody)
 	if err != nil {
-		t.Errorf("Unexpected error in CreateLunInParityGroup %v", err)
+		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
-	t.Logf("newLdevId: %v", &newLdevId)
+	t.Logf("newLdevId: %v", *newLdevId)
 
 	lun, err := psm.GetLun(*newLdevId)
 	if err != nil {
-		t.Errorf("Unexpected error in CreateLunInParityGroup %v", err)
+		t.Errorf("Unexpected error in CreateLunInDynamicPoolWithLDevId %v", err)
 		return
 	}
 	t.Logf("Response: %v", lun)
@@ -185,15 +239,16 @@ func xTestExpandLun(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	var sizeInGB uint64 = 2
-	ldevId := 221
+	var sizeInGB uint64 = 4
+	ldevId := 107
+	size := fmt.Sprintf("%dG", sizeInGB)
 
-	newLdevId, err := psm.ExpandLun(ldevId, sizeInGB)
+	newLdevId, err := psm.ExpandLun(ldevId, size)
 	if err != nil {
 		t.Errorf("Unexpected error in ExpandLun %v", err)
 		return
 	}
-	t.Logf("newLdevId: %v", &newLdevId)
+	t.Logf("newLdevId: %v", *newLdevId)
 
 	lun, err := psm.GetLun(*newLdevId)
 	if err != nil {
@@ -210,7 +265,7 @@ func xTestDeleteLun(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	ldevId := 282
+	ldevId := 125
 
 	err = psm.DeleteLun(ldevId)
 	if err != nil {
@@ -226,14 +281,23 @@ func xTestUpdateLun(t *testing.T) {
 		t.Fatalf("Unexpected error %v", err)
 	}
 
-	ldevId := 281
-	var label string = "label51"
-	var dataReductionMode string = "disabled"
+	ldevId := 107
+	// label := "Updated_Lun_Label_107"
+	// dataReductionMode := "compression"
+	// reductionMode := "post_process"
+	compAccEnabled := true
 
-	logicalUnit, err := psm.UpdateLun(ldevId, &label, &dataReductionMode)
+	reqBody := sangatewaymodel.UpdateLunRequestGwy{
+		// Label:             &label,
+		// DataReductionMode:  &dataReductionMode,
+		// DataReductionProcessMode: &reductionMode,
+		IsCompressionAccelerationEnabled: &compAccEnabled,
+	}
+
+	_, err = psm.UpdateLun(ldevId, reqBody)
 	if err != nil {
 		t.Errorf("Unexpected error in UpdateLun %v", err)
 		return
 	}
-	t.Logf("logicalUnit: %v", &logicalUnit)
+	t.Logf("ldevId: %v", ldevId)
 }

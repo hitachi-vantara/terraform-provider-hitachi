@@ -1,6 +1,9 @@
 package sanstorage
 
-import reconcilermodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
+import (
+	reconcilermodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
+	gatewaymodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
+)
 
 // SanStorageManager interface
 type SanStorageManager interface {
@@ -8,11 +11,11 @@ type SanStorageManager interface {
 	GetStorageSystemInfo() (*reconcilermodel.StorageSystem, error)
 	GetStorageSystem() (*reconcilermodel.StorageSystem, error)
 	// VOLUME
-	GetLun(ldevID int) (*reconcilermodel.LogicalUnit, error)
-	GetRangeOfLuns(startLdevID int, endLdevID int, IsUndefinedLdev bool) (*[]reconcilermodel.LogicalUnit, error)
-	SetLun(lunRequest *reconcilermodel.LunRequest) (*reconcilermodel.LogicalUnit, error)
+	GetLun(ldevID int) (*gatewaymodel.LogicalUnit, error)
+	GetRangeOfLuns(startLdevID int, endLdevID int, IsUndefinedLdev bool) (*[]gatewaymodel.LogicalUnit, error)
+	SetLun(lunRequest *reconcilermodel.LunRequest) (*int, error)
 	DeleteLun(ldevId int) error
-	UpdateLun(lunUpdateRequest *reconcilermodel.UpdateLunRequest) (*reconcilermodel.LogicalUnit, error)
+	UpdateLun(lunUpdateRequest *reconcilermodel.UpdateLunRequest) (*int, error)
 	// HOSTGROUP
 	GetHostGroup(portID string, hostGroupNumber int) (*reconcilermodel.HostGroup, error)
 	GetAllHostGroups() (*reconcilermodel.HostGroups, error)
@@ -38,6 +41,7 @@ type SanStorageManager interface {
 	GetDynamicPoolById(poolId int) (*reconcilermodel.DynamicPool, error)
 	//PARITY GROUP
 	GetParityGroups(parityGroupIds ...[]string) (*[]reconcilermodel.ParityGroup, error)
+	GetParityGroup(parityGroupId string) (*reconcilermodel.ParityGroup, error)
 
 	GetPools() (*[]reconcilermodel.Pool, error)
 }

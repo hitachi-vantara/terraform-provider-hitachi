@@ -16,7 +16,7 @@
 
 data "hitachi_vsp_parity_group" "myparitygroup" {
   serial = 12345
-  parity_group_ids = ["1-2"]
+  parity_group_id = "1-1"
 }
 
 output "myparitygroup" {

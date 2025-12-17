@@ -78,13 +78,13 @@ output "computenodecreate" {
 ### Required
 
 - `compute_node_name` (String) Name to be created
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
 
 ### Optional
 
-- `fc_connection` (Block Set) Details of Fibre Channel connections (see [below for nested schema](#nestedblock--fc_connection))
-- `iscsi_connection` (Block Set) Details of the iSCSI connections to the compute node (see [below for nested schema](#nestedblock--iscsi_connection))
-- `os_type` (String) Type of the OS to be selected such as Linux, Windows, VmWare, and so on; it is required to create the compute node.
+- `fc_connection` (Block Set) Details of Fiber channel connections (see [below for nested schema](#nestedblock--fc_connection))
+- `iscsi_connection` (Block Set) Details of iSCSI connection to the compute node (see [below for nested schema](#nestedblock--iscsi_connection))
+- `os_type` (String) Type of the OS to be selected like Linux, Windows, VmWare, etc., it is required while creating compute node.
 
 ### Read-Only
 
@@ -96,7 +96,7 @@ output "computenodecreate" {
 
 Optional:
 
-- `host_wwn` (String) Host WWN names that must be attached to the compute node
+- `host_wwn` (String) Host WWN Names which need to be attached to the compute node
 
 
 <a id="nestedblock--iscsi_connection"></a>
@@ -115,11 +115,11 @@ Read-Only:
 
 - `id` (String) ID
 - `nickname` (String) Nickname
-- `number_of_paths` (Number) Number of iSCSI connections initiated to the compute node
+- `number_of_paths` (Number) Number of iSCSI connection initiated to the compute node
 - `number_of_volumes` (Number) The number of volumes attached to the compute node
 - `os_type` (String) OS type
 - `paths` (Block List) Path/iSCSI connections details (see [below for nested schema](#nestedblock--compute_nodes--paths))
-- `port_details` (Block List) Port details of the iSCSI connection (see [below for nested schema](#nestedblock--compute_nodes--port_details))
+- `port_details` (Block List) Port Details of the iSCSI connection (see [below for nested schema](#nestedblock--compute_nodes--port_details))
 - `total_capacity` (Number) Total capacity in MB
 - `used_capacity` (Number) Used capacity in MB
 
@@ -130,7 +130,7 @@ Read-Only:
 
 - `hba_name` (String) Name of the HBA connection
 - `port_ids` (List of String) Port IDs of the iSCSI connection
-- `protocol` (String) Type of protocol of the attached connection
+- `protocol` (String) Type of Protocol of the attached connection
 
 
 <a id="nestedblock--compute_nodes--port_details"></a>

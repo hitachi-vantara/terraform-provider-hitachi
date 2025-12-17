@@ -62,12 +62,12 @@ Read-Only:
 
 - `available_physical_capacity` (Number) Available physical capacity of the parity group
 - `available_volume_capacity` (Number) Available volume capacity of the parity group
-- `available_volume_capacity_in_kb` (Number) Available volume capacity of the parity group in KB
+- `available_volume_capacity_in_kb` (Number) Available volume capacity of the parity group in kb
 - `clpr_id` (Number) CLPR ID of the parity group
 - `drive_type` (String) Drive type of the parity group
 - `drive_type_name` (String) Drive type name of the parity group
 - `is_accelerated_compression_enabled` (Boolean) Indicates whether accelerated compression is enabled for the parity group
-- `num_of_ldevs` (Number) Total number of LDEVs in the parity group
+- `num_of_ldevs` (Number) Total number of LDEVs in parity group
 - `parity_group_id` (String) Parity group ID
 - `physical_capacity` (Number) Physical capacity of the parity group
 - `raid_level` (String) RAID level of the parity group

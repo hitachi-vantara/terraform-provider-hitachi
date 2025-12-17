@@ -54,7 +54,7 @@ output "iscsioutput" {
 ### Optional
 
 - `host_mode` (String) Host mode value to create the resource
-- `host_mode_options` (List of Number) Host mode options that can be passed to create the resource
+- `host_mode_options` (List of Number) Host mode options can be passed to create the resource
 - `initiator` (Block Set) Initiator input for the resource (see [below for nested schema](#nestedblock--initiator))
 - `iscsi_target_name` (String) iSCSI target name
 - `iscsi_target_number` (Number) Resource will be created based on iSCSI target number
@@ -96,7 +96,7 @@ Read-Only:
 - `iscsi_target_name` (String) iSCSI target name
 - `iscsi_target_number` (Number) iSCSI target number
 - `ldevs` (List of Number) List of LDEV IDs
-- `lun_paths` (Block List) List of LUN paths of the resource (see [below for nested schema](#nestedblock--iscsitarget--lun_paths))
+- `lun_paths` (Block List) List of lun_paths of the resource (see [below for nested schema](#nestedblock--iscsitarget--lun_paths))
 - `luns` (List of Number) List of LUNs
 - `port_id` (String) Port ID on the storage system
 - `storage_serial_number` (Number) Serial number of the storage system

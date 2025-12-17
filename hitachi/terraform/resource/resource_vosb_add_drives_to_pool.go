@@ -40,7 +40,8 @@ func resourceVssbAddDrivesToPoolCreate(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(fmt.Errorf("failed to add drives to storage pool: %w", err))
 	}
 
-	_, ok := d.GetOk("drive_ids")
+	dv, ok := d.GetOk("drive_ids")
+	log.WriteDebug("drive_ids: %v, ok: %v", dv, ok)
 	if !ok {
 		if err := d.Set("drive_ids", []string{}); err != nil {
 			return diag.FromErr(err)
@@ -70,14 +71,24 @@ func resourceVssbAddDrivesToPoolRead(ctx context.Context, d *schema.ResourceData
 }
 
 func validateAddDrivesToPoolInputs(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
-	addAllOffline := diff.Get("add_all_offline_drives").(bool)
-	driveIds := diff.Get("drive_ids").([]interface{})
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
 
-	if addAllOffline && len(driveIds) > 0 {
-		return fmt.Errorf("'add_all_offline_drives' cannot be true when 'drive_ids' are specified. Use one or the other")
+	addAllOffline, aOk := diff.GetOk("add_all_offline_drives")
+	driveIds, dOk := diff.GetOk("drive_ids")
+
+	log.WriteDebug("Validating inputs: add_all_offline_drives=%v, drive_ids=%v", addAllOffline, driveIds)
+
+	if aOk && dOk {
+		if addAllOffline.(bool) && len(driveIds.([]interface{})) > 0 {
+			log.WriteDebug("'add_all_offline_drives' cannot be true when 'drive_ids' are specified. Use one or the other")
+			return fmt.Errorf("'add_all_offline_drives' cannot be true when 'drive_ids' are specified. Use one or the other")
+		}
 	}
 
-	if !addAllOffline && len(driveIds) == 0 {
+	if !addAllOffline.(bool) && len(driveIds.([]interface{})) == 0 {
+		log.WriteDebug("Either 'add_all_offline_drives' must be true or at least one 'drive_ids' must be provided")
 		return fmt.Errorf("you must specify either 'add_all_offline_drives' or provide at least one 'drive_ids'")
 	}
 

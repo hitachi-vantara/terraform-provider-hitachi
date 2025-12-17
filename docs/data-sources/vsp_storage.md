@@ -54,14 +54,14 @@ output "s12345" {
 
 Read-Only:
 
-- `controller1_ip` (String) Storage system controller1 IP address
-- `controller2_ip` (String) Storage system controller2 IP address
+- `controller1_ip` (String) Storage controller1 IP address
+- `controller2_ip` (String) Storage controller2 IP address
 - `dkc_micro_code_version` (String) DKC micro code version of the storage system
 - `free_capacity_in_mb` (Number) Free capacity in MB
-- `management_ip` (String) Storage system management IP address
+- `management_ip` (String) Storage management IP address
 - `storage_device_id` (String) Storage system ID
 - `storage_device_model` (String) Storage system model
 - `storage_serial_number` (Number) Serial number of the storage system
-- `svp_ip` (String) Storage system SVP IP address
+- `svp_ip` (String) Storage SVP IP address
 - `total_capacity_in_mb` (Number) Total capacity in MB
 - `used_capacity_in_mb` (Number) Used capacity in MB

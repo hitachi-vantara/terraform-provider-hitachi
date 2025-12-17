@@ -88,6 +88,7 @@ mkdir -p "$logdir"
 chmod 755 "$logdir"
 
 echo "[$(date)] Starting installation of HV_Storage_Terraform" | tee -a "$logfile"
+echo "[$(date)] Package version: %{name}-%{version}-%{release}" | tee -a "$logfile"
 
 # Warning about overwrite
 echo "[$(date)] WARN: Overwriting existing directories under %{terraform}" | tee -a "$logfile" >&2
@@ -111,9 +112,13 @@ if [[ $1 -eq 1 ]]; then
     echo "[$(date)] Installation successful" | tee -a "$logfile"
 
   %define user_consent_message %(sed 's/["`$\\]/\\&/g; s/^/echo "/; s/$/"/' BUILD/user_consent_message.txt | paste -sd';' -)
-  echo
-  %{user_consent_message}
-  echo
+
+  # Print and log the user consent message
+  (
+      echo
+      %{user_consent_message}
+      echo
+  ) | tee -a "$logfile"
 fi
 
 
@@ -129,6 +134,7 @@ chmod 755 "$logdir"
 [ -f "$logfile" ] && rm -f "$logfile"
 
 echo "[$(date)] Starting uninstallation of HV_Storage_Terraform" | tee -a "$logfile"
+echo "[$(date)] Package version: %{name}-%{version}-%{release}" | tee -a "$logfile"
 
 if [[ $1 -eq 0 ]]; then
   echo "[$(date)] WARN: Removing terraform plugins and files except user_consent.json" | tee -a "$logfile" >&2

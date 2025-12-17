@@ -8,17 +8,19 @@ var DataVolumeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block system.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
+		Description: "Compute node name",
 	},
 	// output
 	"volumes": &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
 		Optional: true,
+		Description: "Volumes output",
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,
 		},
@@ -29,7 +31,7 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -39,7 +41,7 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 	"storage_pool": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
-		Description: "Storage pool name of the storage system. Required for the create operation.",
+		Description: "Storage pool name of the storage server. Required for the create operation.",
 	},
 	"capacity_gb": &schema.Schema{
 		Type:        schema.TypeFloat,
@@ -75,17 +77,19 @@ var VolumeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"volume_name": &schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
+		Description: "Volume name",
 	},
 	// output
 	"volume": &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: true,
 		Optional: true,
+		Description: "Volume output",
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,
 		},
@@ -147,7 +151,7 @@ var VolumeInfoSchema = map[string]*schema.Schema{
 	"pool_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Pool Name of the created volume resource",
+		Description: "Pool name of the created volume resource",
 	},
 	"total_capacity": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -173,7 +177,7 @@ var VolumeInfoSchema = map[string]*schema.Schema{
 	"protection_domain_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "Protection domain ID of the volume resource",
+		Description: "Protection Domain ID of the volume resource",
 	},
 	"full_allocated": &schema.Schema{
 		Type:        schema.TypeBool,

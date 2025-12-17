@@ -62,7 +62,7 @@ Read-Only:
 
 - `fabric_mode` (Boolean) Fabric mode of the storage system
 - `loop_id` (String) Loop ID of the storage system
-- `lun_security_setting` (Boolean) LUN security setting of the storage system
+- `lun_security_setting` (Boolean) Lun security setting of the storage system
 - `port_attributes` (List of String) List of port attributes of the storage system
 - `port_connection` (String) Port connection of the storage system
 - `port_id` (String) Port ID

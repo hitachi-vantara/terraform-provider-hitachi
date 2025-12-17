@@ -41,16 +41,16 @@ output "volumeoutput" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block system.
 
 ### Optional
 
-- `compute_node_name` (String)
+- `compute_node_name` (String) Compute node name
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `volumes` (Block List) (see [below for nested schema](#nestedblock--volumes))
+- `volumes` (Block List) Volumes output (see [below for nested schema](#nestedblock--volumes))
 
 <a id="nestedblock--volumes"></a>
 ### Nested Schema for `volumes`
@@ -67,8 +67,8 @@ Read-Only:
 - `number_of_connecting_servers` (Number) Number of connected servers to create the volume resource
 - `number_of_snapshots` (Number) Number of snapshots to create the volume resource
 - `pool_id` (String) Pool ID of the created volume resource
-- `pool_name` (String) Pool Name of the created volume resource
-- `protection_domain_id` (String) Protection domain ID of the volume resource
+- `pool_name` (String) Pool name of the created volume resource
+- `protection_domain_id` (String) Protection Domain ID of the volume resource
 - `saving_effects` (Block List) Volumes saving effects information (see [below for nested schema](#nestedblock--volumes--saving_effects))
 - `saving_mode` (String) Saving mode of the volume resource
 - `saving_setting` (String) Setting of the volume resource

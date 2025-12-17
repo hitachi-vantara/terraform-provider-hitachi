@@ -193,7 +193,7 @@ var StoragePoolSchema = map[string]*schema.Schema{
 	"data_redundancy": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
-		Description: "Redundant type of the pool",
+		Description: "Data redundancy of the pool",
 	},
 	"storage_controller_capacities_general_status": &schema.Schema{
 		Type:        schema.TypeString,
@@ -266,7 +266,7 @@ var DatasourceVssbStoragePoolsSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"storage_pool_names": &schema.Schema{
 		Type:        schema.TypeList,
@@ -293,7 +293,7 @@ var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
 	},
 	"storage_pool_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -309,7 +309,7 @@ var ResourceVssbStoragePoolSchema = map[string]*schema.Schema{
 	"drive_ids": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Computed:    true,
+		// Computed:    true,
 		Elem:        &schema.Schema{Type: schema.TypeString},
 		Description: "List of specific offline drive IDs for expansion of the storage pool",
 	},

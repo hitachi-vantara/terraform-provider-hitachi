@@ -1,12 +1,13 @@
 #
-# Hitachi VSP Terraform Provider
+# VSP Terraform Provider
 #
 # The Hitachi Terraform provider enables automation and infrastructure-as-code
 # management of Hitachi storage systems, including:
 #
-# - Hitachi VSP One SDS Block (Baremetal, AWS, GCP, Azure)
-# - Hitachi VSP One B20 series
-# - Hitachi VSP 5000 series
+# - VSP One SDS Block and Cloud (AWS, GCP, Azure)
+# - VSP One SDS Block (Baremetal)
+# - VSP One B20 series
+# - VSP 5000 series
 #
 # This provider allows you to retrieve and manage storage configuration such as
 # volumes, hostgroups, ports, and replication settings. It supports both software-defined
@@ -15,8 +16,8 @@
 #
 # The provider supports two connection types:
 #
-# - `hitachi_vosb_provider`: For VSP One SDS Block systems.
-# - `san_storage_system`: For VSP One B20 series and VSP 5000 series.
+# - `hitachi_vosb_provider`: For VSP One SDS Block and Cloud systems.
+# - `san_storage_system`: For VSP One B20 series, VSP One B80 series, and VSP 5000 series.
 #
 # Example configuration for VSP One SDS Block:
 #
@@ -43,7 +44,7 @@
 terraform {
   required_providers {
     hitachi = {
-      version = "2.1.2"
+      version = "2.2.0"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }

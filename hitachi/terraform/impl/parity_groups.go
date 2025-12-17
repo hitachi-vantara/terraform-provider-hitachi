@@ -83,6 +83,51 @@ func GetParityGroups(d *schema.ResourceData) (*[]terraformmodel.ParityGroup, err
 	return &terraformModelParityGroups, nil
 }
 
+func GetParityGroup(d *schema.ResourceData) (*terraformmodel.ParityGroup, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	serial := d.Get("serial").(int)
+
+	storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
+	if err != nil {
+		return nil, err
+	}
+
+	setting := reconcilermodel.StorageDeviceSettings{
+		Serial:   storageSetting.Serial,
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+		MgmtIP:   storageSetting.MgmtIP,
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_BEGIN), setting.Serial)
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx, err: %v", err)
+		return nil, err
+	}
+
+	pgid := d.Get("parity_group_id").(string)
+
+	parityGroup, err := reconObj.GetParityGroup(pgid)
+	if err != nil {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_PARITY_GROUP_FAILED), setting.Serial)
+		return nil, err
+	}
+
+	terraformModelParityGroup := terraformmodel.ParityGroup{}
+	err = copier.Copy(&terraformModelParityGroup, parityGroup)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		return nil, err
+	}
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_END), setting.Serial)
+
+	return &terraformModelParityGroup, nil
+}
+
 func ConvertParityGroupToSchema(parityGroup *terraformmodel.ParityGroup, serial int) *map[string]interface{} {
 	parity := map[string]interface{}{
 		"storage_serial_number":              serial,

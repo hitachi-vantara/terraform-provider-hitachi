@@ -3,7 +3,13 @@ package telemetry
 import (
 	"runtime"
 	"strings"
+	"sync"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+)
+
+var (
+	lastTerraformCaller string
+	lastCallerLock      sync.RWMutex
 )
 
 // GetGatewayCallStackInfo returns connection type and gateway method name
@@ -34,21 +40,53 @@ func GetTerraformCallStackInfo() string {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	callStackMethodNames := captureCallStack(10)
+	callStackMethodNames := captureCallStack(50)
 	log.WriteDebug("CALLSTACK:GetResourceCallStackInfo: %s", strings.Join(callStackMethodNames, "\n"))
 
 	resourceStack := ""
-	resourceSearch1 := "terraform/resource."
-	resourceSearch2 := "terraform/datasource."
-	resourceSearch3 := "terraform.providerConfigure"
+	resourceSearches := []string{
+		"terraform/resource.",
+		"terraform/datasource.",
+		"terraform.providerConfigure",
+	}
+
 	for _, s := range callStackMethodNames {
-		if strings.Contains(s, resourceSearch1) || strings.Contains(s, resourceSearch2) || strings.Contains(s, resourceSearch3) {
-			resourceStack = s
+		for _, search := range resourceSearches {
+			if strings.Contains(s, search) {
+				resourceStack = s
+				break
+			}
+		}
+		if resourceStack != "" {
 			break
 		}
 	}
 
-	return parseTerraformMethodStack(resourceStack)
+	caller := parseTerraformMethodStack(resourceStack)
+
+	// ✅ Don’t cache any prefix ending with terraform.providerConfigure
+	if caller != "" && !strings.HasSuffix(caller, "terraform.providerConfigure") {
+		lastCallerLock.Lock()
+		lastTerraformCaller = caller
+		lastCallerLock.Unlock()
+		log.WriteDebug("Updated lastTerraformCaller: %s", caller)
+	}
+
+	if caller != "" {
+		return caller
+	}
+
+	// ✅ If not found, use last cached value
+	lastCallerLock.RLock()
+	cached := lastTerraformCaller
+	lastCallerLock.RUnlock()
+
+	if cached != "" {
+		log.WriteDebug("Using cached lastTerraformCaller: %s", cached)
+		return cached
+	}
+
+	return ""
 }
 
 // parseTerraformMethodStack

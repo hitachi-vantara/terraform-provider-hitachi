@@ -23,6 +23,7 @@ import (
 
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	terraform "terraform-provider-hitachi/hitachi/terraform/impl"
+	terrcommon "terraform-provider-hitachi/hitachi/terraform/common"
 
 	//resourceimpl "terraform-provider-hitachi/hitachi/terraform/resource"
 	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
@@ -75,7 +76,7 @@ func resourceStorageHostGroupCreate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	d.Set("hostgroup_number", hostGroup.HostGroupNumber)
-	createID := fmt.Sprintf("%s%d", hostGroup.PortID, hostGroup.HostGroupNumber)
+	createID := fmt.Sprintf("%s,%d,%s", hostGroup.PortID, hostGroup.HostGroupNumber, hostGroup.HostGroupName)
 	d.SetId(createID)
 	log.WriteInfo("hg created successfully")
 
@@ -112,7 +113,7 @@ func resourceStorageHostGroupUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	d.Set("hostgroup_number", hostGroup.HostGroupNumber)
-	updatedID := fmt.Sprintf("%s%d", hostGroup.PortID, hostGroup.HostGroupNumber)
+	updatedID := fmt.Sprintf("%s,%d,%s", hostGroup.PortID, hostGroup.HostGroupNumber, hostGroup.HostGroupName)
 	d.SetId(updatedID)
 	log.WriteInfo("hg updated successfully")
 
@@ -143,47 +144,102 @@ func resourceMyResourceCustomDiffHostGroup(ctx context.Context, d *schema.Resour
 
 	serial := d.Get("serial").(int)
 
-	storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
-	if err != nil {
-		return err
-	}
-
-	setting := reconcilermodel.StorageDeviceSettings{
-		Serial:   storageSetting.Serial,
-		Username: storageSetting.Username,
-		Password: storageSetting.Password,
-		MgmtIP:   storageSetting.MgmtIP,
-	}
-
-	reconObj, err := reconimpl.NewEx(setting)
-	if err != nil {
-		log.WriteDebug("TFError| error in Reconciler NewEx, err: %v", err)
-		return err
-	}
-	// Define the regular expression pattern
-	pattern := "^[a-zA-Z0-9_-]{1,64}$"
-	reg := regexp.MustCompile(pattern)
-
-	hgName, ok := d.GetOk("hostgroup_name")
-	// Check if the value matches the pattern
-	if ok {
-		if !reg.MatchString(hgName.(string)) {
-			return fmt.Errorf("hostgroup_name Value is alphanumeric and can only accpet '-' and '_' and within the range of 1-64 characters")
-		}
-	}
-	// vlidate hostgroup_number ranges from 0 to 255
-	hg_number, ok := d.GetOk("hostgroup_number")
-	if ok {
-		hgNumberInt := hg_number.(int)
-		if hgNumberInt < 0 || hgNumberInt > 255 {
-			return fmt.Errorf("hostgroup_number Value should be between 0 and 255")
-		}
-	}
-	portId, ok := d.GetOk("port_id")
-	if ok {
-		_, err := reconObj.GetStoragePortByPortId(portId.(string))
+	if d.Id() == "" {
+		// create
+		storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
 		if err != nil {
-			return fmt.Errorf(err.Error())
+			return err
+		}
+
+		setting := reconcilermodel.StorageDeviceSettings{
+			Serial:   storageSetting.Serial,
+			Username: storageSetting.Username,
+			Password: storageSetting.Password,
+			MgmtIP:   storageSetting.MgmtIP,
+		}
+
+		reconObj, err := reconimpl.NewEx(setting)
+		if err != nil {
+			log.WriteDebug("TFError| error in Reconciler NewEx, err: %v", err)
+			return err
+		}
+
+		// Validate allowed name format
+        pattern := `^[A-Za-z0-9.@_:-]{1,64}$`
+        reg := regexp.MustCompile(pattern)
+
+		hgName, ok := d.GetOk("hostgroup_name")
+		// Check if the value matches the pattern
+		if ok {
+			if !reg.MatchString(hgName.(string)) {
+				return fmt.Errorf("hostgroup_name must be 1–64 chars, alphanumeric or . @ _ : -, cannot start with '-'")
+			}
+			if strings.HasPrefix(hgName.(string), "-") {
+				return fmt.Errorf("hostgroup_name cannot start with a hyphen (-)")
+			}
+		}
+
+		// vlidate hostgroup_number ranges from 0 to 255
+		hg_number, ok := d.GetOk("hostgroup_number")
+		if ok {
+			hgNumberInt := hg_number.(int)
+			if hgNumberInt < 0 || hgNumberInt > 255 {
+				return fmt.Errorf("hostgroup_number Value should be between 0 and 255")
+			}
+		}
+		portId, ok := d.GetOk("port_id")
+		if ok {
+			_, err := reconObj.GetStoragePortByPortId(portId.(string))
+			if err != nil {
+				return fmt.Errorf("%v", err.Error())
+			}
+		}
+	} else {
+		// update
+		storedPortID, storedHgNum, storedHgName, err := terrcommon.ParseHostGroupFromID(d.Id())
+		if err != nil {
+			return err
+		}
+
+		// Read new values from config
+		newPortID := d.Get("port_id").(string)
+
+		//
+		// PORT ID IMMUTABLE
+		//
+		if newPortID != storedPortID {
+			return fmt.Errorf(
+				"existing hostgroup does not match port_id provided (expected %s, got %s)",
+				storedPortID, newPortID,
+			)
+		}
+
+		//
+		// HOSTGROUP NUMBER IMMUTABLE (if user provides it)
+		//
+		if v, ok := d.GetOkExists("hostgroup_number"); ok {
+			newHgNum := v.(int)
+			if newHgNum != 0 && newHgNum != storedHgNum {
+				return fmt.Errorf(
+					"existing hostgroup does not match hostgroup_number provided (expected %d, got %d)",
+					storedHgNum, newHgNum,
+				)
+			}
+		}
+
+		//
+		// HOSTGROUP NAME IMMUTABLE
+		//
+		if v, ok := d.GetOkExists("hostgroup_name"); ok {
+			newHgName := v.(string)
+
+			// Now check immutability
+			if newHgName != storedHgName {
+				return fmt.Errorf(
+					"existing hostgroup does not match hostgroup_name provided (expected %s, got %s)",
+					storedHgName, newHgName,
+				)
+			}
 		}
 	}
 

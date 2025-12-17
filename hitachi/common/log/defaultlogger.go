@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"time"
 
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -119,7 +120,8 @@ func formatLog(severity string, message string) string {
 
 func (l *DefaultLogger) WriteDebug(message string, a ...interface{}) {
 	if shouldLog(DEBUGT) {
-		log := formatLog("DEBUG", fmt.Sprintf(message, a...))
+		safe := safeArgs(a)
+		log := formatLog("DEBUG", fmt.Sprintf(message, safe...))
 		logWriterFile.Println(log)
 	}
 }
@@ -127,7 +129,8 @@ func (l *DefaultLogger) WriteDebug(message string, a ...interface{}) {
 func (l *DefaultLogger) WriteInfo(message interface{}, a ...interface{}) {
 	if shouldLog(INFOT) {
 		msg := fmt.Sprintf("%v", message)
-		log := formatLog("INFO", fmt.Sprintf(msg, a...))
+		safe := safeArgs(a)
+		log := formatLog("INFO", fmt.Sprintf(msg, safe...))
 		logWriterFile.Println(log)
 	}
 }
@@ -135,7 +138,8 @@ func (l *DefaultLogger) WriteInfo(message interface{}, a ...interface{}) {
 func (l *DefaultLogger) WriteWarn(message interface{}, a ...interface{}) {
 	if shouldLog(WARNT) {
 		msg := fmt.Sprintf("%v", message)
-		log := formatLog("WARN", fmt.Sprintf(msg, a...))
+		safe := safeArgs(a)
+		log := formatLog("WARN", fmt.Sprintf(msg, safe...))
 		logWriterFile.Println(log)
 	}
 }
@@ -143,7 +147,8 @@ func (l *DefaultLogger) WriteWarn(message interface{}, a ...interface{}) {
 func (l *DefaultLogger) WriteError(message interface{}, a ...interface{}) {
 	if shouldLog(ERRORT) {
 		msg := fmt.Sprintf("%v", message)
-		log := formatLog("ERROR", fmt.Sprintf(msg, a...))
+		safe := safeArgs(a)
+		log := formatLog("ERROR", fmt.Sprintf(msg, safe...))
 		logWriterFile.Println(log)
 	}
 }
@@ -155,8 +160,8 @@ func (l *DefaultLogger) WriteEnter(a ...interface{}) {
 
 func (l *DefaultLogger) WriteParam(format string, value interface{}) {
 	if shouldLog(INFOT) {
-
-		log := formatLog(string(PARAM), fmt.Sprintf("%v", value))
+		safe := safeValue(value)
+		log := formatLog(string(PARAM), fmt.Sprintf("%v", safe))
 		logWriterFile.Println(log)
 	}
 }
@@ -168,4 +173,38 @@ func (l *DefaultLogger) WriteExit() {
 		log := formatLog(string(EXIT), "")
 		logWriterFile.Println(log)
 	}
+}
+
+// safeValue converts a possibly-nil pointer into its zero value.
+// Non-pointer values are returned untouched.
+func safeValue(v interface{}) interface{} {
+	if v == nil {
+		return nil
+	}
+
+	rv := reflect.ValueOf(v)
+
+	// If not a pointer, return as is
+	if rv.Kind() != reflect.Ptr {
+		return v
+	}
+
+	// Pointer but nil → return zero value of the element type
+	if rv.IsNil() {
+		elemType := rv.Type().Elem()
+		zero := reflect.Zero(elemType)
+		return zero.Interface()
+	}
+
+	// Pointer with value → return the dereferenced value
+	return rv.Elem().Interface()
+}
+
+// Apply safeValue to all variadic args
+func safeArgs(args []interface{}) []interface{} {
+	out := make([]interface{}, len(args))
+	for i, a := range args {
+		out[i] = safeValue(a)
+	}
+	return out
 }

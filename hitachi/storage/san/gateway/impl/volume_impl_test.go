@@ -127,15 +127,13 @@ func xTestCreateLun(t *testing.T) {
 	}
 
 	//ldevId := 43
-	//poolID := 0
-	parityGroupID := "1-1"
+	poolID := 0
 	byteFormatCapacity := "2G"
 	//dataReductionMode := "disabled" // disabled
 
 	reqBody := sanmodel.CreateLunRequestGwy{
 		//LdevID: &ldevId,
-		//PoolID: &poolID,
-		ParityGroupID:      &parityGroupID,
+		PoolID: &poolID,
 		ByteFormatCapacity: byteFormatCapacity,
 		//DataReductionMode:  &dataReductionMode,
 	}
@@ -145,7 +143,57 @@ func xTestCreateLun(t *testing.T) {
 		t.Errorf("Unexpected error in Create Lun %v", err)
 		return
 	}
-	t.Logf("Response: %v", resp)
+	t.Logf("Response: %v", *resp)
+}
+
+// go test -v -run TestCreateBasicVolume
+func xTestCreateBasicVolume(t *testing.T) {
+	psm, err := newTestManager()
+	if err != nil {
+		t.Fatalf("Unexpected error %v", err)
+	}
+
+	//ldevId := 43
+	parityGroupID := "1-1"
+	byteFormatCapacity := "2G"
+
+	reqBody := sanmodel.CreateLunRequestGwy{
+		//LdevID: &ldevId,
+		ParityGroupID:      &parityGroupID,
+		ByteFormatCapacity: byteFormatCapacity,
+	}
+
+	resp, err := psm.CreateLun(reqBody)
+	if err != nil {
+		t.Errorf("Unexpected error in Create Lun %v", err)
+		return
+	}
+	t.Logf("Response: %v", *resp)
+}
+
+// go test -v -run TestCreateExternalVolume
+func xTestCreateExternalVolume(t *testing.T) {
+	psm, err := newTestManager()
+	if err != nil {
+		t.Fatalf("Unexpected error %v", err)
+	}
+
+	//ldevId := 43
+	externalParityGroupID := "E1-1"
+	byteFormatCapacity := "2G"
+
+	reqBody := sanmodel.CreateLunRequestGwy{
+		//LdevID: &ldevId,
+		ExternalParityGroupID:      &externalParityGroupID,
+		ByteFormatCapacity: byteFormatCapacity,
+	}
+
+	resp, err := psm.CreateLun(reqBody)
+	if err != nil {
+		t.Errorf("Unexpected error in Create Lun %v", err)
+		return
+	}
+	t.Logf("Response: %v", *resp)
 }
 
 // go test -v -run TestUpdateLun
@@ -157,10 +205,16 @@ func xTestUpdateLun(t *testing.T) {
 
 	dataReductionMode := "compression"
 	newLabel := "newLabel"
+	// dataReductionProcessMode := "inline"
+	// isCompressionAccelerationEnabled := true
+	// isAluaEnabled := false
 
 	reqBody := sanmodel.UpdateLunRequestGwy{
 		Label:             &newLabel,
 		DataReductionMode: &dataReductionMode,
+		// DataReductionProcessMode: &dataReductionProcessMode,
+		// IsCompressionAccelerationEnabled: &isCompressionAccelerationEnabled,
+		// IsAluaEnabled: &isAluaEnabled,
 	}
 	ldevId := 281
 

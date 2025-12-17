@@ -4,23 +4,16 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-
-	// "time"
-	// "errors"
 	"sync"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
-
+	// utils "terraform-provider-hitachi/hitachi/common/utils"
 	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
 
-	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/jinzhu/copier"
 )
 
 var syncLunOperation = &sync.Mutex{}
@@ -33,7 +26,7 @@ func ResourceStorageLun() *schema.Resource {
 		UpdateContext: resourceStorageLunUpdate,
 		DeleteContext: resourceStorageLunDelete,
 		Schema:        schemaimpl.ResourceLunSchema,
-		CustomizeDiff: customDiffFunc(),
+		CustomizeDiff: resourceStorageLunValidation,
 	}
 }
 
@@ -91,14 +84,7 @@ func resourceStorageLunUpdate(ctx context.Context, d *schema.ResourceData, m int
 		return diag.FromErr(err)
 	}
 
-	terraformModelLun := terraformmodel.LogicalUnit{}
-	err = copier.Copy(&terraformModelLun, logicalUnit)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil
-	}
-
-	lun := impl.ConvertLunToSchema(&terraformModelLun, serial)
+	lun := impl.ConvertLunToSchema(logicalUnit, serial)
 	log.WriteDebug("lun: %+v\n", *lun)
 	lunList := []map[string]interface{}{
 		*lun,
@@ -132,58 +118,162 @@ func resourceStorageLunDelete(ctx context.Context, d *schema.ResourceData, m int
 	return nil
 }
 
-func customDiffFunc() schema.CustomizeDiffFunc {
-	return customdiff.All(
-		validateSizeDiff(),
-		// validateSerialDiff(),
-		// validateLdevDiff(),
-		// validatePoolDiff(),
-		// validateParitygroupDiff(),
-	)
-}
+func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
 
-func validateSizeDiff() schema.CustomizeDiffFunc {
-	return customdiff.ValidateChange("size_gb", func(ctx context.Context, old, new, meta any) error {
-		// size must only increase not decrease
-		if new.(int) < old.(int) {
-			return fmt.Errorf("new size_gb value must be greater than old value: %d", old.(int))
-		}
-		return nil
-	})
-}
+	currentID := d.Id()
+	isCreate := currentID == ""
+	// isUpdate := !isCreate
 
-func validateSerialDiff() schema.CustomizeDiffFunc {
-	return customdiff.ValidateChange("serial", func(ctx context.Context, old, new, meta any) error {
-		if new.(int) != old.(int) {
-			return fmt.Errorf("serial should not change: old value: %d", old.(int))
-		}
-		return nil
-	})
-}
+	// Prevent LDEV ID change during update
+	if currentID != "" {
+		// Resource is in UPDATE mode
 
-func validateLdevDiff() schema.CustomizeDiffFunc {
-	return customdiff.ValidateChange("ldev_id", func(ctx context.Context, old, new, meta any) error {
-		if new.(int) != old.(int) {
-			return fmt.Errorf("ldev_id should not change: old value: %d", old.(int))
-		}
-		return nil
-	})
-}
+		ldevRaw, exists := d.GetOk("ldev_id")
+		if exists {
+			newLdevID, ok := ldevRaw.(int)
+			if !ok {
+				return fmt.Errorf("invalid type for ldev_id")
+			}
 
-func validatePoolDiff() schema.CustomizeDiffFunc {
-	return customdiff.ValidateChange("pool_id", func(ctx context.Context, old, new, meta any) error {
-		if new.(int) != old.(int) {
-			return fmt.Errorf("pool_id should not change: old value: %d", old.(int))
-		}
-		return nil
-	})
-}
+			// Convert the resource ID into int to compare
+			idFromState, err := strconv.Atoi(currentID)
+			if err != nil {
+				return fmt.Errorf("failed to parse current resource ID (%s): %v", currentID, err)
+			}
 
-func validateParitygroupDiff() schema.CustomizeDiffFunc {
-	return customdiff.ValidateChange("paritygroup_id", func(ctx context.Context, old, new, meta any) error {
-		if new.(string) != old.(string) {
-			return fmt.Errorf("paritygroup_id should not change: old value: %s", old.(string))
+			// LDEV ID mismatch check
+			if newLdevID != idFromState {
+				return fmt.Errorf(
+					"ldev_id (%d) does not match the provisioned LDEV ID (%d). "+
+						"Hitachi LDEVs cannot be reassigned after provisioning.",
+					newLdevID, idFromState,
+				)
+			}
 		}
-		return nil
-	})
+	}
+
+	// -----------------------------------------------------
+	// Validate size_gb input
+	// -----------------------------------------------------
+	sizeRaw := d.Get("size_gb")
+	if sizeRaw == nil {
+		return fmt.Errorf("size_gb is required")
+	}
+
+	newSizeGB, ok := sizeRaw.(float64)
+	if !ok {
+		return fmt.Errorf("invalid type for size_gb")
+	}
+	if newSizeGB <= 0 {
+		return fmt.Errorf("size_gb must be greater than zero, got %.2f", newSizeGB)
+	}
+
+	// Prevent size decrease
+	oldRaw, newRaw := d.GetChange("size_gb")
+	if oldRaw != nil && newRaw != nil {
+		oldVal, okOld := oldRaw.(float64)
+		newVal, okNew := newRaw.(float64)
+		if okOld && okNew && newVal < oldVal {
+			return fmt.Errorf("new size_gb value must be >= old value: %.2f", oldVal)
+		}
+	}
+
+	// Validate against real array capacity (state field)
+	if volSizeMB, ok := d.Get("total_capacity_in_mb").(int); ok && volSizeMB > 0 {
+		actualSizeGB := float64(volSizeMB) / 1024.0
+		if newSizeGB < actualSizeGB {
+			return fmt.Errorf(
+				"requested size_gb (%.2f GB) is smaller than the provisioned size (%.2f GB). "+
+					"Hitachi volumes cannot be shrunk.",
+				newSizeGB, actualSizeGB,
+			)
+		}
+	}
+
+	// -----------------------------------------------------
+	// Pool or Parity Group validation
+	// -----------------------------------------------------
+
+	// pool_id: default -1 means "not provided"
+	poolID := -1
+	if v, ok := d.GetOk("pool_id"); ok {
+		poolID = v.(int)
+	}
+	hasPoolID := poolID >= 0
+
+	// pool_name
+	poolName, hasPoolName := d.Get("pool_name").(string)
+	if hasPoolName && poolName == "" {
+		hasPoolName = false
+	}
+
+	// paritygroup_id
+	parityGroupID, hasParityGroup := d.Get("paritygroup_id").(string)
+	if hasParityGroup && parityGroupID == "" {
+		hasParityGroup = false
+	}
+
+	// external_paritygroup_id
+	externalParityGroupID, hasExternalParityGroup := d.Get("external_paritygroup_id").(string)
+	if hasExternalParityGroup && externalParityGroupID == "" {
+		hasExternalParityGroup = false
+	}
+
+	// exactly one of these must be specified
+	count := 0
+	if hasPoolID {
+		count++
+	}
+	if hasPoolName {
+		count++
+	}
+	if hasParityGroup {
+		count++
+	}
+
+	if hasExternalParityGroup {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("exactly one of pool_id, pool_name, paritygroup_id, or external_paritygroup_id must be specified")
+	}
+
+	isDpPool := hasPoolID || hasPoolName
+	isPG := hasParityGroup || hasExternalParityGroup
+
+	// Flags
+	capacitySaving := d.Get("capacity_saving").(string)
+	isShareEnabled := d.Get("is_data_reduction_shared_volume_enabled").(bool)
+	isAccelerationEnabled := d.Get("is_compression_acceleration_enabled").(bool)
+	_, hasAlua := d.GetOk("is_alua_enabled")
+	_, hasDRProcessMode := d.GetOk("data_reduction_process_mode")
+
+	if isPG {
+		// Parity-Group restrictions
+		if capacitySaving != "disabled" || isShareEnabled || isAccelerationEnabled || hasDRProcessMode || hasAlua {
+			return fmt.Errorf("data reduction and ALUA settings are only supported for DP-pool volumes (either pool_id or pool_name specified)")
+		}
+	} else if isDpPool {
+		// DP-pool restrictions below
+		if isCreate {
+			if hasDRProcessMode || hasAlua {
+				return fmt.Errorf("data_reduction_process_mode, is_alua_enabled cannot be specified during create; it is only valid for updates")
+			}
+		}
+		if capacitySaving == "disabled" {
+			if isShareEnabled || isAccelerationEnabled || hasDRProcessMode {
+				return fmt.Errorf("data_reduction_process_mode, is_data_reduction_shared_volume_enabled=true, is_compression_acceleration_enabled=true can only be used when capacity_saving is not 'disabled'")
+
+			}
+		}
+	}
+
+	// Fix console output of "volume"
+	d.SetNewComputed("volume")
+
+	return nil
 }

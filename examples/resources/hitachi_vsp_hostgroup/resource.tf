@@ -17,16 +17,24 @@
 
 resource "hitachi_vsp_hostgroup" "myhg" {
   serial            = 12345
-  hostgroup_number  = 23
+  hostgroup_number  = 23  # optional
   hostgroup_name    = "TESTING-HOSTGROUP"
   port_id           = "CL1-A"
+
+  # optional
   host_mode_options = [12, 32]
   host_mode         = "AIX"
 
-  # SET of LUN
+  # optional
   lun {
     ldev_id = 25
     lun     = 12
+  }
+
+  # optional
+  wwn {
+    host_wwn     = "1200000012000001"
+    wwn_nickname = "NAME-12012001"
   }
 }
 

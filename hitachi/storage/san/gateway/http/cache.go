@@ -7,7 +7,7 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-var DEFAULT_CACHE_STORAGE_DURATION = 30 * time.Second
+var DEFAULT_CACHE_STORAGE_DURATION = 270 * time.Second
 var cacheStorageDuration = DEFAULT_CACHE_STORAGE_DURATION
 var cacheStorage = cache.New(cacheStorageDuration, 2*cacheStorageDuration)
 

@@ -9,6 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 	// "io/ioutil"
 	// "os"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -205,6 +206,81 @@ func ConvertSizeToBytes(size string) (uint64, error) {
 	return sizeInBytes, nil
 }
 
+func ParseCapacityToMiB(s string) (int64, error) {
+	s = strings.TrimSpace(strings.ToUpper(s))
+	if s == "" {
+		return 0, fmt.Errorf("empty capacity string")
+	}
+
+	// Require explicit unit suffix (M, G, or T)
+	re := regexp.MustCompile(`^([0-9]+(\.[0-9]+)?)([MGT])$`)
+	matches := re.FindStringSubmatch(s)
+	if matches == nil {
+		return 0, fmt.Errorf("invalid format (must include unit suffix M, G, or T)")
+	}
+
+	value, err := strconv.ParseFloat(matches[1], 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid numeric value")
+	}
+
+	switch matches[3] {
+	case "T":
+		value *= 1024 * 1024
+	case "G":
+		value *= 1024
+	case "M":
+		// already in MiB
+	case "K":
+		value /= 1024
+	default:
+		return 0, fmt.Errorf("unsupported unit %q", matches[3])
+	}
+
+	return int64(math.Round(value)), nil
+}
+
+// ConvertFloatSizeToSmartUnit converts a float64 size in GB into a smart string
+// using T, G, M, or K, always using the largest unit that yields an integer.
+func ConvertFloatSizeToSmartUnit(sizeGB float64) string {
+	if sizeGB <= 0 {
+		return "0K"
+	}
+
+	bytes := sizeGB * 1024 * 1024 * 1024 // convert GB to bytes
+
+	const (
+		kb = 1024.0
+		mb = kb * 1024
+		gb = mb * 1024
+		tb = gb * 1024
+	)
+
+	// Helper to check if value is whole number
+	isInt := func(f float64) bool {
+		return math.Abs(f-math.Round(f)) < 1e-9
+	}
+
+	// Try largest possible unit that results in an integer
+	tbVal := bytes / tb
+	if isInt(tbVal) && tbVal >= 1 {
+		return fmt.Sprintf("%dT", int64(tbVal))
+	}
+
+	gbVal := bytes / gb
+	if isInt(gbVal) && gbVal >= 1 {
+		return fmt.Sprintf("%dG", int64(gbVal))
+	}
+
+	mbVal := bytes / mb
+	if isInt(mbVal) && mbVal >= 1 {
+		return fmt.Sprintf("%dM", int64(mbVal))
+	}
+
+	kbVal := bytes / kb
+	return fmt.Sprintf("%dK", int64(math.Round(kbVal)))
+}
+
 func DecodeBase64EncodedString(strvalue string) (string, error) {
 	log := commonlog.GetLogger()
 
@@ -328,4 +404,41 @@ func CapitalizeFirst(s string) string {
     runes := []rune(s)
     runes[0] = unicode.ToUpper(runes[0])
     return string(runes)
+}
+
+// IntToHexString converts an int to uppercase hex with 0x prefix.
+func IntToHexString(v int) string {
+	return fmt.Sprintf("0x%X", v)
+}
+
+// HexStringToInt converts hex (with or without 0x prefix) to int.
+func HexStringToInt(s string) (int, error) {
+	s = strings.TrimSpace(s)
+
+	// Allow 0x or 0X prefixes
+	if strings.HasPrefix(s, "0x") || strings.HasPrefix(s, "0X") {
+		s = s[2:]
+	}
+
+	v, err := strconv.ParseInt(s, 16, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid hex string '%s': %w", s, err)
+	}
+
+	return int(v), nil
+}
+
+// ParseLdev: accepts either *ldevID or *ldevHex
+func ParseLdev(ldevID *int, ldevHex *string) (int, error) {
+	// If ldevID is provided, it wins
+	if ldevID != nil {
+		return *ldevID, nil
+	}
+
+	// Else try hex
+	if ldevHex != nil && *ldevHex != "" {
+		return HexStringToInt(*ldevHex)
+	}
+
+	return 0, fmt.Errorf("either ldev_id or ldev_hex must be provided")
 }

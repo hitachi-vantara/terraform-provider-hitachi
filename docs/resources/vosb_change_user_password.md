@@ -50,7 +50,7 @@ output "user_output" {
 - `current_password` (String, Sensitive) The current password of the user.
 - `new_password` (String, Sensitive) The new password for the user.
 - `user_id` (String) The user ID for the password change.
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Read-Only
 

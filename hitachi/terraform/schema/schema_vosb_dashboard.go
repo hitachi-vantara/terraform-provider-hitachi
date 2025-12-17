@@ -109,7 +109,7 @@ var DataVssbDashboardSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	// output
 	"dashboard_info": &schema.Schema{

@@ -23,6 +23,7 @@ func getCall(storageSetting sanmodel.StorageDeviceSettings, apiSuf string, outpu
 	url := GetUrl(storageSetting.MgmtIP, apiSuf)
 	resJSONString, err := utils.HTTPGet(url, &headers)
 	if err != nil {
+		err := CheckHttpErrorResponse(resJSONString, err)
 		log.WriteError(err)
 		return err
 	}
@@ -62,6 +63,7 @@ func PostCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string,
 
 	jobString, err := utils.HTTPPost(url, &headers, reqBodyInBytes)
 	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
 		log.WriteError(err)
 		return nil, err
 	}
@@ -114,6 +116,7 @@ func PatchCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf string
 
 	jobString, err := utils.HTTPPatch(url, &headers, reqBodyInBytes)
 	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
 		log.WriteError(err)
 		return nil, err
 	}
@@ -166,6 +169,7 @@ func DeleteCallAsync(storageSetting sanmodel.StorageDeviceSettings, apiSuf strin
 
 	jobString, err := utils.HTTPDeleteWithBody(url, &headers, reqBodyInBytes)
 	if err != nil {
+		err := CheckHttpErrorResponse(jobString, err)
 		log.WriteError(err)
 		return nil, err
 	}

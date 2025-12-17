@@ -13,14 +13,14 @@ description: |-
 
 ```terraform
 #
-# Hitachi Terraform Provider
+# VSP Terraform Provider
 #
 # The Hitachi Terraform provider enables automation and infrastructure-as-code
 # management of Hitachi storage systems, including:
 #
-# - VSP One SDS Block (Baremetal, AWS, GCP, Azure)
-# - VSP One Block 20 series
-# - VSP One BLock 80 series
+# - VSP One SDS Block and Cloud (AWS, GCP, Azure)
+# - VSP One SDS Block (Baremetal)
+# - VSP One B20 series
 # - VSP 5000 series
 #
 # This provider allows you to retrieve and manage storage configuration such as
@@ -30,8 +30,8 @@ description: |-
 #
 # The provider supports two connection types:
 #
-# - `hitachi_vosb_provider`: For VSP One SDS Block systems.
-# - `san_storage_system`: For VSP One Block 20 series and VSP 5000 series.
+# - `hitachi_vosb_provider`: For VSP One SDS Block and Cloud systems.
+# - `san_storage_system`: For VSP One B20 series, VSP One B80 series, and VSP 5000 series.
 #
 # Example configuration for VSP One SDS Block:
 #
@@ -58,7 +58,7 @@ description: |-
 terraform {
   required_providers {
     hitachi = {
-      version = "2.1.2"
+      version = "2.2.0"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -79,7 +79,8 @@ provider "hitachi" {
 ### Optional
 
 - `hitachi_vosb_provider` (Block List) VSP One SDS Block and Cloud combines VSP One SDS Block, which creates virtual storage systems from general-purpose servers, with VSP One SDS Cloud, which enables deployment on AWS, Google Cloud Platform (GCP), and Microsoft Azure. (see [below for nested schema](#nestedblock--hitachi_vosb_provider))
-- `san_storage_system` (Block List) VSP One Block 20 series and VSP 5000 series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. Both systems focus on simplifying data storage management while ensuring high availability and data integrity. (see [below for nested schema](#nestedblock--san_storage_system))
+- `hitachi_vsp_one_provider` (Block List) VSP One Block Administrator is a configuration management tool designed for VSP One Block storage systems, simplifying and streamlining storage management. (see [below for nested schema](#nestedblock--hitachi_vsp_one_provider))
+- `san_storage_system` (Block List) VSP One Block 20 series, VSP One Block 80 series, and VSP 5000 series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. Both systems focus on simplifying data storage management while ensuring high availability and data integrity. (see [below for nested schema](#nestedblock--san_storage_system))
 
 <a id="nestedblock--hitachi_vosb_provider"></a>
 ### Nested Schema for `hitachi_vosb_provider`
@@ -91,12 +92,23 @@ Required:
 - `vosb_address` (String) Host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
 
 
+<a id="nestedblock--hitachi_vsp_one_provider"></a>
+### Nested Schema for `hitachi_vsp_one_provider`
+
+Required:
+
+- `management_ip` (String) Management IP address for the VSP One Block Administrator
+- `password` (String) Password for the VSP One Block Administrator
+- `serial` (Number) Serial number of the storage system
+- `username` (String) User name for the VSP One Block Administrator
+
+
 <a id="nestedblock--san_storage_system"></a>
 ### Nested Schema for `san_storage_system`
 
 Required:
 
-- `management_ip` (String) Management IP for VSP 5000 series
-- `password` (String) Password for VSP storage system
-- `serial` (Number) Storage system serial number
-- `username` (String) Username for VSP storage system
+- `management_ip` (String) Management IP for the VSP 5000 series
+- `password` (String) Password for the storage system
+- `serial` (Number) Serial number of the storage system
+- `username` (String) Username for the storage system

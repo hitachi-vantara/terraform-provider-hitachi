@@ -47,6 +47,10 @@ func Load(path string) error {
 						AddStorageNodePollMax: DEFAULT_ASN_POLL_MAX,
 						APITimeout:            DEFAULT_API_TIMEOUT,
 						AWSTimeout:            DEFAULT_AWS_TIMEOUT,
+						MaxConcurrentOps:      DEFAULT_MAX_CONCURRENT_OPS,
+						ConcurrentApiDelaySec: DEFAULT_CONCURRENT_API_DELAY_SEC,
+						MaxRetries:            DEFAULT_MAX_RETRIES,
+						RetryDelaySec:         DEFAULT_RETRY_DELAY_SEC,
 					},
 					AWS_URL: DEFAULT_AWS_URL,
 				}
@@ -101,6 +105,10 @@ func CreateDefaultConfigFile(path string) error {
 		AddStorageNodePollMax: DEFAULT_ASN_POLL_MAX,
 		APITimeout:            DEFAULT_API_TIMEOUT,
 		AWSTimeout:            DEFAULT_AWS_TIMEOUT,
+		MaxConcurrentOps:      DEFAULT_MAX_CONCURRENT_OPS,
+		ConcurrentApiDelaySec: DEFAULT_CONCURRENT_API_DELAY_SEC,
+		MaxRetries:            DEFAULT_MAX_RETRIES,
+		RetryDelaySec:         DEFAULT_RETRY_DELAY_SEC,
 	}
 
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -128,6 +136,10 @@ func resolveConfigFromEnv(cfg *Config) *Config {
 	apiTimeout := getEnvInt("API_TIMEOUT", cfg.APITimeout, DEFAULT_API_TIMEOUT)
 	awsTimeout := getEnvInt("AWS_TIMEOUT", cfg.AWSTimeout, DEFAULT_AWS_TIMEOUT)
 	awsUrl := getEnvStr("AWS_URL", cfg.AWS_URL, DEFAULT_AWS_URL)
+	maxConcurrentOps := getEnvInt("MAX_CONCURRENT_OPS", cfg.MaxConcurrentOps, DEFAULT_MAX_CONCURRENT_OPS)
+	concurrentApiDelaySec := getEnvInt("CONCURRENT_API_DELAY_SEC", cfg.ConcurrentApiDelaySec, DEFAULT_CONCURRENT_API_DELAY_SEC)
+	maxRetries := getEnvInt("MAX_RETRIES", cfg.MaxRetries, DEFAULT_MAX_RETRIES)
+	retryDelaySec := getEnvInt("RETRY_DELAY_SEC", cfg.RetryDelaySec, DEFAULT_RETRY_DELAY_SEC)
 
 	userConsent := DEFAULT_CONSENT_MESSAGE
 	if cfg.UserConsentMessage != "" {
@@ -146,6 +158,10 @@ func resolveConfigFromEnv(cfg *Config) *Config {
 			AWSTimeout:            awsTimeout,
 			UserConsentMessage:    userConsent,
 			RunConsentMessage:     runConsent,
+			MaxConcurrentOps:      maxConcurrentOps,
+			ConcurrentApiDelaySec: concurrentApiDelaySec,
+			MaxRetries:            maxRetries,
+			RetryDelaySec:         retryDelaySec,
 		},
 		AWS_URL: awsUrl,
 	}

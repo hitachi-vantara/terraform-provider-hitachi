@@ -3,14 +3,17 @@ package sanstorage
 import (
 	"encoding/json"
 	"fmt"
-
-	// "strconv"
+	"math/rand"
 	"time"
+
+	"golang.org/x/sync/singleflight"
 
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
 	// sanmodel "terraform-provider-hitachi/hitachi/storage/san/model"
 )
+
+var tokenGroup singleflight.Group // prevent duplicate token refreshes
 
 func GetUrl(ip string, urlPath string) string {
 	log := commonlog.GetLogger()
@@ -24,8 +27,6 @@ func GetUrl(ip string, urlPath string) string {
 
 // token timeout is 300 sec
 func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
-	// curl -k -v -H "Accept:application/json" -H "Content-Type:application/json" -u user:passw  -X POST
-	// https://mgmtIP/ConfigurationManager/v1/objects/sessions/ -d ""
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -57,6 +58,7 @@ func GetAuthTokenNoCache(mgmtIP, username, password string) (string, error) {
 		return "", fmt.Errorf("failed to unmarshal json response: %+v", err2)
 	}
 
+	log.WriteInfo("Successfully obtained new session token.")
 	return responseSession.Token, nil
 }
 
@@ -76,16 +78,25 @@ func GetAuthToken(mgmtIP, username, password string) (string, error) {
 		return value.(string), nil
 	}
 
+	// Prevent duplicate refresh across goroutines
+	v, err, _ := tokenGroup.Do(cachekey, func() (interface{}, error) {
 	token, err := GetAuthTokenNoCache(mgmtIP, username, password)
 	if err != nil {
 		return "", err
 	}
 
-	// store to cache
-	// token last 300 secs, but store only in cache for 270 secs
-	cacheStorage.Set(cachekey, token, 270*time.Second)
+		// Add small random jitter (avoid simultaneous expiry refresh)
+		jitter := time.Duration(rand.Intn(30)) * time.Second
+		cacheStorage.Set(cachekey, token, cacheStorageDuration+jitter)
 
+		log.WriteDebug("TFDebug|Stored new token in cache for %v (+%v jitter)", cacheStorageDuration, jitter)
 	return token, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+	return v.(string), nil
 }
 
 func GetAuthTokenHeader(mgmtIP, username, password string) (headers map[string]string, err error) {

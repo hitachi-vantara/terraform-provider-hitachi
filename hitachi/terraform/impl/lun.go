@@ -1,32 +1,24 @@
 package terraform
 
 import (
-	// "encoding/json"
-	// "errors"
-	// "context"
 	"fmt"
 	"strings"
-
-	// "io/ioutil"
 	"strconv"
-	// "time"
 
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
-
-	// "terraform-provider-hitachi/hitachi/common/utils"
-
+	utils "terraform-provider-hitachi/hitachi/common/utils"
+	// terrcommon "terraform-provider-hitachi/hitachi/terraform/common"
+	sangatewaymodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 	reconimpl "terraform-provider-hitachi/hitachi/storage/san/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
-	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/jinzhu/copier"
 )
 
 // GetLun gets a lun
-func GetLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
+func GetLun(d *schema.ResourceData) (*sangatewaymodel.LogicalUnit, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -50,6 +42,31 @@ func GetLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
 			lunID = lun
 		}
 	}
+
+	// vnext
+	// var lunID int
+
+	// finalLdev, err := terrcommon.ExtractLdevFields(d, "ldev_id", "ldev_hex")
+	// if err != nil {
+	// 	log.WriteError(mc.GetMessage(mc.ERR_GET_LUN_FAILED), lunID)
+	// 	return nil, err
+	// }
+	// if finalLdev != nil {
+	// 	lunID = *finalLdev
+	// } else {
+	// 	lunFromState := d.State().ID
+	// 	log.WriteDebug("TFDebug| lunFromState from state: %s", lunFromState)
+	// 	if lunFromState != "" {
+	// 		lun, err := strconv.Atoi(lunFromState)
+	// 		if err != nil {
+	// 			log.WriteDebug("TFError| error while converting string to int lunID, err: %v", err)
+	// 			return nil, err
+	// 		}
+	// 		lunID = lun
+	// 	} else {
+	// 		return nil, fmt.Errorf("state ID for ldev_id is missing")
+	// 	}
+	// }
 
 	log.WriteDebug("TFDebug| lunID: %v", lunID)
 
@@ -78,20 +95,13 @@ func GetLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
 		return nil, err
 	}
 
-	terraformModelLun := terraformmodel.LogicalUnit{}
-	err = copier.Copy(&terraformModelLun, lun)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
-	}
-
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_LUN_END), lunID)
 
-	return &terraformModelLun, nil
+	return lun, nil
 }
 
 // GetRangeOfLuns gets the desired luns based on range specified
-func GetRangeOfLuns(d *schema.ResourceData) (*[]terraformmodel.LogicalUnit, error) {
+func GetRangeOfLuns(d *schema.ResourceData) (*[]sangatewaymodel.LogicalUnit, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -111,6 +121,37 @@ func GetRangeOfLuns(d *schema.ResourceData) (*[]terraformmodel.LogicalUnit, erro
 	if endLdevID < startLdevID {
 		return nil, fmt.Errorf("end_ldev_id must be greater than or equal to start_ldev_id")
 	}
+
+	// vnext
+	// startLdevID := 0
+	// finalStartLdev, err := terrcommon.ExtractLdevFields(d, "start_ldev_id", "start_ldev_hex")
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if finalStartLdev != nil {
+	// 	startLdevID = *finalStartLdev
+	// }
+
+	// endLdevID := 0
+	// finalEndLdev, err := terrcommon.ExtractLdevFields(d, "end_ldev_id", "end_ldev_hex")
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if finalEndLdev != nil {
+	// 	endLdevID = *finalEndLdev
+	// }
+
+	// if startLdevID < 0 {
+	// 	return nil, fmt.Errorf("start_ldev_id/start_ldev_hex must be greater than or equal to 0")
+	// }
+
+	// if endLdevID < 0 {
+	// 	return nil, fmt.Errorf("end_ldev_id/end_ldev_hex must be greater than or equal to 0")
+	// }
+
+	// if endLdevID < startLdevID {
+	// 	return nil, fmt.Errorf("end_ldev_id/end_ldev_hex must be greater than or equal to start_ldev_id/start_ldev_hex")
+	// }
 
 	isUndefindLdev := d.Get("undefined_ldev").(bool)
 
@@ -139,20 +180,13 @@ func GetRangeOfLuns(d *schema.ResourceData) (*[]terraformmodel.LogicalUnit, erro
 		return nil, err
 	}
 
-	terraformModelLuns := []terraformmodel.LogicalUnit{}
-	err = copier.Copy(&terraformModelLuns, luns)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
-	}
-
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_LUN_RANGE_END), startLdevID, endLdevID)
 
-	return &terraformModelLuns, nil
+	return luns, nil
 }
 
 // CreateLun creates a lun
-func CreateLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
+func CreateLun(d *schema.ResourceData) (*sangatewaymodel.LogicalUnit, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -187,56 +221,40 @@ func CreateLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
 			// does not exist, or in the process of being deleted
 			return nil, fmt.Errorf("volume does not exist")
 		}
-		terraformModelLun := terraformmodel.LogicalUnit{}
-		err = copier.Copy(&terraformModelLun, lun)
-		if err != nil {
-			log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-			return nil, err
-		}
-
-		return &terraformModelLun, nil
+		return lun, nil
 	}
 
-	createInput, err := CreateLunRequestFromSchema(d)
+	reconcilerCreateLunRequest, err := CreateLunRequestFromSchema(d)
 	if err != nil {
 		return nil, err
 	}
 
-	reconcilerCreateLunRequest := reconcilermodel.LunRequest{}
-	err = copier.Copy(&reconcilerCreateLunRequest, createInput)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
-	}
-
-	lun, err := reconObj.SetLun(&reconcilerCreateLunRequest)
+	lun, err := reconObj.SetLun(reconcilerCreateLunRequest)
 	if err != nil {
 		log.WriteDebug("TFError| error in SetLun, err: %v", err)
 		return nil, err
 	}
 
-	terraformModelLun := terraformmodel.LogicalUnit{}
-	err = copier.Copy(&terraformModelLun, lun)
+	logicalUnit, err := reconObj.GetLun(*lun)
 	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		log.WriteDebug("TFError| error in GetLun, err: %v", err)
 		return nil, err
 	}
 
-	return &terraformModelLun, nil
+	return logicalUnit, nil
 }
 
-func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateLunRequest, error) {
+func CreateLunRequestFromSchema(d *schema.ResourceData) (*reconcilermodel.LunRequest, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	createInput := terraformmodel.CreateLunRequest{}
+	createInput := reconcilermodel.LunRequest{}
 
-	size_gb, ok := d.GetOk("size_gb")
-	if !ok {
-		return nil, fmt.Errorf("size_gb must be greater than 0 for create")
+	// size_gb → ByteFormatCapacity
+	if size_gb, ok := d.GetOk("size_gb"); ok {
+		createInput.ByteFormatCapacity = utils.ConvertFloatSizeToSmartUnit(size_gb.(float64))
 	}
-	createInput.CapacityInGB = uint64(size_gb.(int))
 
 	ldevId, ok := d.GetOk("ldev_id")
 	if ok {
@@ -244,51 +262,46 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 		createInput.LdevID = &lid
 	}
 
+	// vnext
+	// finalLdev, err := terrcommon.ExtractLdevFields(d, "ldev_id", "ldev_hex")
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if finalLdev != nil {
+	// 	createInput.LdevID = finalLdev
+	// }
+
 	name, ok := d.GetOk("name")
 	if ok {
 		label := name.(string)
 		createInput.Name = &label
 	}
-	// Remove dedup from this version
-	/*
-		dedup_mode, ok := d.GetOk("dedup_mode")
-		if ok {
-			dedup := dedup_mode.(string)
-			createInput.DataReductionMode = &dedup
-		}
-	*/
 
-	// either pool or paritygroup
-
-	var pool_name = ""
-	var paritygroup_id = ""
-	pool_id, exists := d.GetOk("pool_id")
-	okPO := exists || (pool_id.(int) == 0)
-
-	pool_name = d.Get("pool_name").(string)
-	paritygroup_id = d.Get("paritygroup_id").(string)
-	log.WriteDebug("Pool ID=%v Pool Name=%v PG=%v\n", pool_id, pool_name, paritygroup_id)
-
-	log.WriteDebug("ok=%v \n", ok)
-
-	count := 0
-	if okPO && pool_id != -1 {
-		count++
-	}
-	if pool_name != "" {
-		count++
-	}
-	if paritygroup_id != "" {
-		count++
-	}
-	log.WriteDebug("count=%v\n", count)
-	if count != 1 {
-		return nil, fmt.Errorf("either pool_id or pool_name or paritygroup_id is required to create volume")
+	dedup_mode, ok := d.GetOk("capacity_saving")
+	if ok {
+		dedup := dedup_mode.(string)
+		createInput.DataReductionMode = &dedup
 	}
 
-	if pool_id.(int) >= 0 {
-		pool_id_int := pool_id.(int)
-		createInput.PoolID = &pool_id_int
+	if v, ok := d.GetOk("is_data_reduction_share_enabled"); ok {
+		val := v.(bool)
+		createInput.IsDataReductionSharedVolumeEnabled = &val
+	}
+
+	if v, ok := d.GetOk("is_compression_acceleration_enabled"); ok {
+		val := v.(bool)
+		createInput.IsCompressionAccelerationEnabled = &val
+	}
+
+	pool_id := d.Get("pool_id").(int)
+	pool_name := d.Get("pool_name").(string)
+	paritygroup_id := d.Get("paritygroup_id").(string)
+	external_paritygroup_id := d.Get("external_paritygroup_id").(string)
+	log.WriteDebug("Pool ID=%v Pool Name=%v PG=%v ExPG=%v\n", pool_id, pool_name, paritygroup_id, external_paritygroup_id)
+
+	if pool_id >= 0 {
+		// pool_id_int := pool_id.(int)
+		createInput.PoolID = &pool_id
 	} else if pool_name != "" {
 		ppid, err := GetPoolIdFromPoolName(d, pool_name)
 		createInput.PoolID = ppid
@@ -297,6 +310,8 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.CreateL
 		}
 	} else if paritygroup_id != "" {
 		createInput.ParityGroupID = &paritygroup_id
+	} else if external_paritygroup_id != "" {
+		createInput.ExternalParityGroupID = &external_paritygroup_id
 	}
 
 	log.WriteDebug("createInput: %+v", createInput)
@@ -357,7 +372,7 @@ func CheckSchemaIfLunGet(d *schema.ResourceData) *int {
 	fields := []string{
 		"size_gb",
 		"name",
-		//"dedup_mode",
+		// "capacity_saving",
 		"pool_id",
 		"pool_name",
 		"paritygroup_id",
@@ -447,54 +462,140 @@ func DeleteLun(d *schema.ResourceData) error {
 	return nil
 }
 
-func ConvertLunToSchema(logicalUnit *terraformmodel.LogicalUnit, serial int) *map[string]interface{} {
+func ConvertLunToSchema(logicalUnit *sangatewaymodel.LogicalUnit, serial int) *map[string]interface{} {
+
 	lun := map[string]interface{}{
-		"storage_serial_number":      serial,
-		"ldev_id":                    logicalUnit.LdevID,
-		"clpr_id":                    logicalUnit.ClprID,
-		"emulation_type":             logicalUnit.EmulationType,
-		"num_ports":                  logicalUnit.NumOfPorts,
-		"attributes":                 logicalUnit.Attributes,
-		"label":                      logicalUnit.Label,
-		"status":                     logicalUnit.Status,
+		"storage_serial_number": serial,
+
+		// --- BASIC IDENTIFIERS ---
+		"ldev_id":              logicalUnit.LdevID,
+		// vnext
+		// "ldev_hex":             utils.IntToHexString(logicalUnit.LdevID),
+		"virtual_ldev_id":      logicalUnit.VirtualLdevID,
+		"clpr_id":              logicalUnit.ClprID,
+		"emulation_type":       logicalUnit.EmulationType,
+		"byte_format_capacity": logicalUnit.ByteFormatCapacity,
+		"block_capacity":       logicalUnit.BlockCapacity,
+
+		// --- ATTRIBUTES ---
+		"attributes": logicalUnit.Attributes,
+		"label":      logicalUnit.Label,
+		"status":     logicalUnit.Status,
+
+		// --- CORE INFO ---
 		"mpblade_id":                 logicalUnit.MpBladeID,
-		"ss_id":                      logicalUnit.Ssid,
+		"ssid":                       logicalUnit.Ssid,
 		"pool_id":                    logicalUnit.PoolID,
-		"paritygroup_id":             logicalUnit.ParityGroupId,
+		"num_of_used_block":          logicalUnit.NumOfUsedBlock,
 		"is_full_allocation_enabled": logicalUnit.IsFullAllocationEnabled,
-		"resourcegroup_id":           logicalUnit.ResourceGroupID,
-		//"data_reduction_mode":        logicalUnit.DataReductionMode,
-		"is_alua_enabled":      logicalUnit.IsAluaEnabled,
-		"naa_id":               logicalUnit.NaaID,
+		"resource_group_id":          logicalUnit.ResourceGroupID,
+
+		// --- DATA REDUCTION ---
+		"data_reduction_status":        logicalUnit.DataReductionStatus,
+		"data_reduction_mode":          logicalUnit.DataReductionMode,
+		"data_reduction_process_mode":  logicalUnit.DataReductionProcessMode,
+		"data_reduction_progress_rate": logicalUnit.DataReductionProgressRate,
+
+		// --- ALUA ---
+		"is_alua_enabled": logicalUnit.IsAluaEnabled,
+
+		// --- NAA ---
+		"naa_id": logicalUnit.NaaID,
+
+		// --- COMPRESSION ACCEL ---
+		"is_compression_acceleration_enabled": logicalUnit.IsCompressionAccelerationEnabled,
+		"compression_acceleration_status":     logicalUnit.CompressionAccelerationStatus,
+
+		// --- RAID ---
+		"raid_level":                 logicalUnit.RaidLevel,
+		"raid_type":                  logicalUnit.RaidType,
+		"num_of_parity_groups":       logicalUnit.NumOfParityGroups,
+		"parity_group_ids":           logicalUnit.ParityGroupIds,
+		"drive_type":                 logicalUnit.DriveType,
+		"drive_byte_format_capacity": logicalUnit.DriveByteFormatCapacity,
+		"drive_block_capacity":       logicalUnit.DriveBlockCapacity,
+
+		// --- CAPACITIES ---
 		"total_capacity_in_mb": logicalUnit.TotalCapacityInMB,
 		"free_capacity_in_mb":  logicalUnit.FreeCapacityInMB,
 		"used_capacity_in_mb":  logicalUnit.UsedCapacityInMB,
+
+		// --- PORT COUNT ---
+		"num_ports": logicalUnit.NumOfPorts,
+
+		// --- NEW: COMPOSING / SNAPSHOT POOLS ---
+		"composing_pool_id": logicalUnit.ComposingPoolId,
+		"snapshot_pool_id":  logicalUnit.SnapshotPoolId,
+
+		// --- NEW: EXTERNAL VOLUME FIELDS ---
+		"external_vendor_id":        logicalUnit.ExternalVendorId,
+		"external_product_id":       logicalUnit.ExternalProductId,
+		"external_volume_id":        logicalUnit.ExternalVolumeId,
+		"external_volume_id_string": logicalUnit.ExternalVolumeIdString,
+
+		"num_of_external_ports": logicalUnit.NumOfExternalPorts,
+
+		// --- QUORUM ---
+		"quorum_disk_id":               logicalUnit.QuorumDiskId,
+		"quorum_storage_serial_number": logicalUnit.QuorumStorageSerialNumber,
+		"quorum_storage_type_id":       logicalUnit.QuorumStorageTypeId,
+
+		// --- NAMESPACE / SUBSYSTEM ---
+		"namespace_id":     logicalUnit.NamespaceID,
+		"nvm_subsystem_id": logicalUnit.NvmSubsystemId,
+
+		// --- RELOCATION / TIERING ---
+		"is_relocation_enabled": logicalUnit.IsRelocationEnabled,
+		"tier_level":            logicalUnit.TierLevel,
+
+		// Tier-level usage
+		"used_capacity_per_tier_level1": logicalUnit.UsedCapacityPerTierLevel1,
+		"used_capacity_per_tier_level2": logicalUnit.UsedCapacityPerTierLevel2,
+		"used_capacity_per_tier_level3": logicalUnit.UsedCapacityPerTierLevel3,
+
+		"tier_level_for_new_page_allocation": logicalUnit.TierLevelForNewPageAllocation,
+
+		// --- OPERATION TYPE ---
+		"operation_type":                    logicalUnit.OperationType,
+		"preparing_operation_progress_rate": logicalUnit.PreparingOperationProgressRate,
 	}
 
+	// --- INTERNAL PORT LIST ---
 	ports := []map[string]interface{}{}
-	for _, pin := range logicalUnit.Ports {
-		p := map[string]interface{}{
-			"port_id":        pin.PortID,
-			"hostgroup_id":   pin.HostGroupNumber,
-			"hostgroup_name": pin.HostGroupName,
-			"lun_id":         pin.Lun,
-		}
-		ports = append(ports, p)
+	for _, p := range logicalUnit.Ports {
+		ports = append(ports, map[string]interface{}{
+			"port_id":          p.PortID,
+			"hostgroup_number": p.HostGroupNumber,
+			"hostgroup_name":   p.HostGroupName,
+			"lun":              p.Lun,
+		})
 	}
 	lun["ports"] = ports
+
+	// --- EXTERNAL PORT LIST ---
+	extPorts := []map[string]interface{}{}
+	for _, ep := range logicalUnit.ExternalPorts {
+		extPorts = append(extPorts, map[string]interface{}{
+			"port_id":          ep.PortID,
+			"hostgroup_number": ep.HostGroupNumber,
+			"lun":              ep.Lun,
+			"wwn":              ep.Wwn,
+		})
+	}
+	lun["external_ports"] = extPorts
 
 	return &lun
 }
 
 // UpdateLun updates a lun
-func UpdateLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
+func UpdateLun(d *schema.ResourceData) (*sangatewaymodel.LogicalUnit, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
 
 	serial := d.Get("serial").(int)
 
-	updateInput, err := UpdateLunRequestFromSchema(d)
+	reconcilerUpdateLunRequest, err := UpdateLunRequestFromSchema(d)
 	if err != nil {
 		return nil, err
 	}
@@ -517,34 +618,26 @@ func UpdateLun(d *schema.ResourceData) (*terraformmodel.LogicalUnit, error) {
 		return nil, err
 	}
 
-	reconcilerUpdateLunRequest := reconcilermodel.UpdateLunRequest{}
-	err = copier.Copy(&reconcilerUpdateLunRequest, updateInput)
-	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
-		return nil, err
-	}
-
 	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_LUN_BEGIN), reconcilerUpdateLunRequest.LdevID, setting.Serial)
-	lun, err := reconObj.UpdateLun(&reconcilerUpdateLunRequest)
+	lun, err := reconObj.UpdateLun(reconcilerUpdateLunRequest)
 	if err != nil {
 		log.WriteDebug("TFError| error in UpdateLun reconciler call, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_UPDATE_LUN_FAILED), reconcilerUpdateLunRequest.LdevID, setting.Serial)
 		return nil, err
 	}
 
-	terraformModelLun := terraformmodel.LogicalUnit{}
-	err = copier.Copy(&terraformModelLun, lun)
+	logicalUnit, err := reconObj.GetLun(*lun)
 	if err != nil {
-		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
+		log.WriteDebug("TFError| error in GetLun, err: %v", err)
 		return nil, err
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_LUN_END), reconcilerUpdateLunRequest.LdevID, setting.Serial)
 
-	return &terraformModelLun, nil
+	return logicalUnit, nil
 }
 
-func UpdateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.UpdateLunRequest, error) {
+func UpdateLunRequestFromSchema(d *schema.ResourceData) (*reconcilermodel.UpdateLunRequest, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -554,13 +647,19 @@ func UpdateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.UpdateL
 	log.WriteDebug("Input State: %+v", d.Get("state"))
 	log.WriteDebug("Input Diff: %+v", d.Get("diff"))
 
-	updateInput := terraformmodel.UpdateLunRequest{}
+	updateInput := reconcilermodel.UpdateLunRequest{}
 
 	if d.HasChange("size_gb") {
 		old, new := d.GetChange("size_gb")
-		expandSize := new.(int) - old.(int)
-		size_gb := uint64(expandSize)
-		updateInput.CapacityInGB = &size_gb
+		oldVal := old.(float64)
+		newVal := new.(float64)
+		if newVal <= oldVal {
+			return nil, fmt.Errorf("new size_gb (%.2f) must be greater than old (%.2f)", newVal, oldVal)
+		}
+
+		diffGB := newVal - oldVal
+		expandSizeStr := utils.ConvertFloatSizeToSmartUnit(diffGB)
+		updateInput.ByteFormatCapacity = &expandSizeStr
 	}
 
 	if d.HasChange("name") {
@@ -568,16 +667,30 @@ func UpdateLunRequestFromSchema(d *schema.ResourceData) (*terraformmodel.UpdateL
 		updateInput.Name = &name
 	}
 
-	// Remove dedup from this version
-	/*
-		if d.HasChange("dedup_mode") {
-			dedup := d.Get("dedup_mode").(string)
-			if dedup == "" {
-				dedup = "disabled"
-			}
-			updateInput.DataReductionMode = &dedup
+	if d.HasChange("capacity_saving") {
+		dedup := d.Get("capacity_saving").(string)
+		if dedup == "" {
+			dedup = "disabled"
 		}
-	*/
+		updateInput.DataReductionMode = &dedup
+	}
+
+	if v, ok := d.GetOk("data_reduction_process_mode"); ok {
+		val := v.(string)
+		updateInput.DataReductionProcessMode = &val
+	}
+
+	if d.HasChange("is_compression_acceleration_enabled") {
+		if v, ok := d.GetOk("is_compression_acceleration_enabled"); ok {
+			val := v.(bool)
+			updateInput.IsCompressionAccelerationEnabled = &val
+		}
+	}
+
+	if v, ok := d.GetOk("is_alua_enabled"); ok {
+		val := v.(bool)
+		updateInput.IsAluaEnabled = &val
+	}
 
 	pldevID, err := getLdevIdFromSchema(d)
 	if err != nil {
@@ -594,20 +707,16 @@ func getLdevIdFromSchema(d *schema.ResourceData) (*int, error) {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	ldevID, ok := d.GetOk("ldev_id")
-	log.WriteDebug("spec input ldevID: %+v", ldevID)
-	if !ok {
-		volume, ok := d.GetOk("volume")
-		if !ok {
-			return nil, fmt.Errorf("no info data in resource")
-		}
-		log.WriteDebug("volume: %+v", volume.([]interface{})[0])
-		ldevID, ok = volume.([]interface{})[0].(map[string]interface{})["ldev_id"]
-		if !ok {
-			return nil, fmt.Errorf("found no ldev_id in info")
-		}
-		log.WriteDebug("volume ldevID: %+v", ldevID)
+	idStr := d.Id()
+	if idStr == "" {
+		return nil, fmt.Errorf("resource ID is empty; cannot determine ldev_id")
 	}
-	ldev := ldevID.(int)
-	return &ldev, nil
+
+	ldevID, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid resource ID '%s': %v", idStr, err)
+	}
+
+	log.WriteDebug("ldevID derived from resource ID: %d", ldevID)
+	return &ldevID, nil
 }

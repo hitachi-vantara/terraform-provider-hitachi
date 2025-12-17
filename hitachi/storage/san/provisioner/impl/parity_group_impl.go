@@ -68,3 +68,41 @@ func (psm *sanStorageManager) GetParityGroups(parityGroupIds ...[]string) (*[]sa
 	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_END), objStorage.Serial)
 	return &filteredParityGroups, nil
 }
+
+func (psm *sanStorageManager) GetParityGroup(parityGroupId string) (*sanmodel.ParityGroup, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	objStorage := sangatewaymodel.StorageDeviceSettings{
+		Serial:   psm.storageSetting.Serial,
+		Username: psm.storageSetting.Username,
+		Password: psm.storageSetting.Password,
+		MgmtIP:   psm.storageSetting.MgmtIP,
+	}
+
+	log.WriteDebug("TFDebug| Storage Serial:%d, ManagementIP:%s\n", psm.storageSetting.Serial, psm.storageSetting.MgmtIP)
+	gatewayObj, err := gatewayimpl.NewEx(objStorage)
+	if err != nil {
+		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_BEGIN), objStorage.Serial)
+	parityGroup, err := gatewayObj.GetParityGroup(parityGroupId)
+	if err != nil {
+		log.WriteDebug("TFError| error in GetParityGroup gateway call, err: %v", err)
+		log.WriteError(mc.GetMessage(mc.ERR_GET_PARITY_GROUP_FAILED), objStorage.Serial)
+		return nil, err
+	}
+
+	provParityGroup := sanmodel.ParityGroup{}
+	err = copier.Copy(&provParityGroup, parityGroup)
+	if err != nil {
+		log.WriteDebug("TFError| error in Copy from gateway to provisioner structure, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_PARITY_GROUP_END), objStorage.Serial)
+	return &provParityGroup, nil
+}

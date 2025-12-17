@@ -3,12 +3,12 @@
 page_title: "hitachi_vsp_parity_group Data Source - terraform-provider-hitachi"
 subcategory: ""
 description: |-
-  VSP Storage Parity Group: The following request obtains information about all parity groups.
+  VSP Storage Parity Group: The following request obtains information about a parity group.
 ---
 
 # hitachi_vsp_parity_group (Data Source)
 
-VSP Storage Parity Group: The following request obtains information about all parity groups.
+VSP Storage Parity Group: The following request obtains information about a parity group.
 
 ## Example Usage
 
@@ -31,7 +31,7 @@ VSP Storage Parity Group: The following request obtains information about all pa
 
 data "hitachi_vsp_parity_group" "myparitygroup" {
   serial = 12345
-  parity_group_ids = ["1-2"]
+  parity_group_id = "1-1"
 }
 
 output "myparitygroup" {
@@ -44,30 +44,27 @@ output "myparitygroup" {
 
 ### Required
 
+- `parity_group_id` (String) Parity group ID to retrieve
 - `serial` (Number) Serial number of the storage system
-
-### Optional
-
-- `parity_group_ids` (List of String) List of parity group IDs to retrieve
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `parity_groups` (Block List) Parity groups output (see [below for nested schema](#nestedblock--parity_groups))
+- `parity_group` (Block List) Parity group output (see [below for nested schema](#nestedblock--parity_group))
 
-<a id="nestedblock--parity_groups"></a>
-### Nested Schema for `parity_groups`
+<a id="nestedblock--parity_group"></a>
+### Nested Schema for `parity_group`
 
 Read-Only:
 
 - `available_physical_capacity` (Number) Available physical capacity of the parity group
 - `available_volume_capacity` (Number) Available volume capacity of the parity group
-- `available_volume_capacity_in_kb` (Number) Available volume capacity of the parity group in KB
+- `available_volume_capacity_in_kb` (Number) Available volume capacity of the parity group in kb
 - `clpr_id` (Number) CLPR ID of the parity group
 - `drive_type` (String) Drive type of the parity group
 - `drive_type_name` (String) Drive type name of the parity group
 - `is_accelerated_compression_enabled` (Boolean) Indicates whether accelerated compression is enabled for the parity group
-- `num_of_ldevs` (Number) Total number of LDEVs in the parity group
+- `num_of_ldevs` (Number) Total number of LDEVs in parity group
 - `parity_group_id` (String) Parity group ID
 - `physical_capacity` (Number) Physical capacity of the parity group
 - `raid_level` (String) RAID level of the parity group

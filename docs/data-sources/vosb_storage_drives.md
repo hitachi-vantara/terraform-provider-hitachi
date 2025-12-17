@@ -45,7 +45,7 @@ output "my_drives_output" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of VSP One SDS Block.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 

@@ -20,7 +20,7 @@ import (
 
 func DataSourceStorageParityGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "VSP Storage Parity Group: The following request obtains information about all parity groups.",
+		Description: "VSP Storage Parity Group: The following request obtains information about a parity group.",
 		ReadContext: DataSourceStorageParityGroupRead,
 		Schema:      schemaimpl.DataParityGroupSchema,
 	}
@@ -32,39 +32,30 @@ func DataSourceStorageParityGroupRead(ctx context.Context, d *schema.ResourceDat
 	defer log.WriteExit()
 
 	serial := d.Get("serial").(int)
-	var parityGroups []terraformmodel.ParityGroup
+	var parityGroup terraformmodel.ParityGroup
 
-	parityGroupSource, err := impl.GetParityGroups(d)
+	parityGroupSource, err := impl.GetParityGroup(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	err = copier.Copy(&parityGroups, parityGroupSource)
+	err = copier.Copy(&parityGroup, parityGroupSource)
 	if err != nil {
 		log.WriteDebug("TFError| error in Copy from reconciler to terraform structure, err: %v", err)
 		return diag.FromErr(err)
 	}
 
 	pgList := []map[string]interface{}{}
-	for _, pg := range parityGroups {
-		eachPg := impl.ConvertParityGroupToSchema(&pg, serial)
-		log.WriteDebug("pg: %+v\n", *eachPg)
-		pgList = append(pgList, *eachPg)
-	}
+	pg := impl.ConvertParityGroupToSchema(&parityGroup, serial)
+	pgList = append(pgList, *pg)
+	log.WriteDebug("pgList: %+v\n", pgList)
 
-	if err := d.Set("parity_groups", pgList); err != nil {
+	if err := d.Set("parity_group", pgList); err != nil {
 		return diag.FromErr(err)
-	}
-
-	_, ok := d.GetOk("parity_group_ids")
-	if !ok {
-		if err := d.Set("parity_group_ids", []string{}); err != nil {
-			return diag.FromErr(err)
-		}
 	}
 
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
-	log.WriteInfo("all parity group read successfully")
+	log.WriteInfo("parity group read successfully")
 
 	return nil
 }

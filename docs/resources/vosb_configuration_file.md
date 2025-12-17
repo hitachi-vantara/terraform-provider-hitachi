@@ -134,7 +134,7 @@ output "download_output" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block system.
 
 ### Optional
 
@@ -183,7 +183,7 @@ Optional:
 	- **AWS:** AMI ID (e.g. 'ami-0abcdef1234567890'), available in the EC2 console under AMIs.
 	- **Google Cloud:** Image name (e.g. 'hsds-installed-sdsc-01180060-0587'), available in the Compute Engine Images page.
 	- **Azure:** Image reference in marketplace format 'publisher:offer:sku:version'
-	(e.g. 'hitachivantara:vsp_one_sds_block_image:01_18_00_50_byol:latest') available in the Azure Portal under Images or from Marketplace listings.
+	(for example, 'hitachivantara:vsp_one_sds_block_image:01_18_00_50_byol:latest') available in the Azure Portal under Images or from Marketplace listings.
 - `node_id` (String) UUID of the storage node to replace. Required for ReplaceStorageNode.
 - `number_of_drives` (Number) Number of drives to install per node in AddDrives. Must be between 6 and 24.
 - `recover_single_drive` (Boolean) Whether to recover a removed drive during a ReplaceDrive operation.

@@ -11,7 +11,7 @@ import (
 	"terraform-provider-hitachi/hitachi/terraform"
 )
 
-var version = "2.1.2" // Will be overridden with -ldflags during build
+var version = "2.2.0" // Will be overridden with -ldflags during build
 
 // main.go is only used for plugin startup via plugin.Serve(...).
 // It runs once when Terraform loads the provider binary, and it's not meant for handling provider-specific configuration logic.

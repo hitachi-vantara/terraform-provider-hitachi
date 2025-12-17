@@ -16,31 +16,75 @@ VSP Storage Volume: The following request creates a volume by using the specifie
 //
 // Hitachi VSP Volume Resource
 //
-// This section defines a Terraform resource block to create a Hitachi VSP volume.
-// The resource "hitachi_vsp_volume" represents a volume on a Hitachi Virtual Storage
-// Platform (VSP) and allows you to manage its configuration using Terraform.
+// This section defines a Terraform resource block to create or manage a volume
+// on a Hitachi Virtual Storage Platform (VSP). The resource "hitachi_vsp_volume"
+// allows you to provision new volumes or manage existing ones using Terraform.
 //
-// Parameters:
+// Required Parameters:
 //   - `serial`: The serial number of the target storage system.
-//   - `size_gb`: The size of the volume to be created (in GB).
-//   - `pool_id`, `pool_name`, or `paritygroup_id`: Specify the storage location.
-//      At least one of these must be provided.
-//   - `name`: Optional name for the volume.
-//   - `ldev_id`: Optional logical device ID.
+//   - `size_gb`: The size of the volume to be created in GB (supports decimals).
+//
+// Storage Location (exactly one must be provided):
+//   - `pool_id`: ID of the target pool.
+//   - `pool_name`: Name of the pool.
+//   - `paritygroup_id`: Parity Group ID.
+//   - `external_paritygroup_id`: External parity group ID.
+//
+// Optional Parameters:
+//   - `ldev_id`: Logical Device ID in decimal.
+//   - `name`: Name of the volume.
+//   - `capacity_saving`: Capacity-saving mode: compression,
+//                        compression_deduplication, or disabled.
+//   - `is_data_reduction_shared_volume_enabled`: Enables TI Advanced data
+//                        reduction shared volumes. Requires a pool and
+//                        capacity saving enabled. Ignored on update.
+//   - `is_compression_acceleration_enabled`: Enables compression accelerator.
+//                        If omitted, it is automatically enabled when
+//                        capacity saving is active and hardware supports it.
+//   - `is_alua_enabled`: Enables ALUA mode. Allowed only during update.
+//   - `data_reduction_process_mode`: inline or post_process. Only valid when
+//                        capacity saving is enabled; allowed only during update.
 //
 
-resource "hitachi_vsp_volume" "mylun" {
+// Example DP Volume
+resource "hitachi_vsp_volume" "myDpVol" {
   serial  = 12345
   size_gb = 1
-  pool_id = 1
+  pool_id = 1 # or 
+  # pool_name = "poolName"
 
-  //Optional parameters
-  name = "hitachi_vsp_volume"
-  ldev_id = 0
+  # optionals
+  # name     = "newName1"
+  # ldev_id  = 6640
+
+  # capacity_saving                         = "compression" # compression, compression_deduplication or disabled
+  # is_data_reduction_shared_volume_enabled = true          # ignored on update
+  # is_compression_acceleration_enabled     = true
+
+  # only for update
+  # is_alua_enabled             = true
+  # data_reduction_process_mode = "inline" # or process
 }
 
 output "voloutput" {
-  value = resource.hitachi_vsp_volume.mylun
+  value = resource.hitachi_vsp_volume.myDpVol
+}
+
+
+// Example PG Volume
+resource "hitachi_vsp_volume" "myPgVol" {
+  serial         = 12345
+  size_gb        = 2.5
+  paritygroup_id = "1-2" # or 
+  # external_paritygroup_id = "E1-1" 
+
+  # optionals
+  # name = "dummyPG"
+  # ldev_id = 243
+}
+
+output "voloutput" {
+  value = resource.hitachi_vsp_volume.myPgVol
 }
 ```
 
@@ -50,53 +94,110 @@ output "voloutput" {
 ### Required
 
 - `serial` (Number) Serial number of the storage system
+- `size_gb` (Number) Size of the volume (GB) (supports decimal values like 1.5). Max 262,144 GB (256 TiB).
 
 ### Optional
 
-- `ldev_id` (Number) LDEV ID
-- `name` (String) Name of volume to be created
-- `paritygroup_id` (String) Parity group ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
-- `pool_id` (Number) Pool ID in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
-- `pool_name` (String) Pool Name in which volume is to be created. **One of `paritygroup_id`, `pool_id`, or `pool_name` must be specified.**
-- `size_gb` (Number) Size of volume to be created in GB
+- `capacity_saving` (String) Capacity saving mode: compression_deduplication, compression, or disabled.
+- `data_reduction_process_mode` (String) Capacity-saving mode. Allowed values: inline, post_process. Can only be used when capacity saving is enabled. Optional on update; error on create.
+- `external_paritygroup_id` (String) External parity group ID. One of pool_id, pool_name, paritygroup_id, external_paritygroup_id must be set.
+- `is_alua_enabled` (Boolean) Enable ALUA. Optional on update; error on create.
+- `is_compression_acceleration_enabled` (Boolean) Enable the compression accelerator. If omitted and capacity saving is enabled, accelerator will be auto-enabled when available.
+- `is_data_reduction_shared_volume_enabled` (Boolean) Create a data reduction shared volume (TI Advanced). Must specify pool_id or pool_name and capacity_saving != disabled if true. Optional on create; ignored on update.
+- `ldev_id` (Number) LDEV ID.
+- `name` (String) Name of the volume
+- `paritygroup_id` (String) Parity group ID. One of pool_id, pool_name, paritygroup_id, external_paritygroup_id must be set.
+- `pool_id` (Number) Pool ID. One of pool_id, pool_name, paritygroup_id, external_paritygroup_id must be set.
+- `pool_name` (String) Pool name. One of pool_id, pool_name, paritygroup_id, external_paritygroup_id must be set.
+- `volume` (Block List) Volume output (see [below for nested schema](#nestedblock--volume))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `volume` (Block List) Volume output (see [below for nested schema](#nestedblock--volume))
 
 <a id="nestedblock--volume"></a>
 ### Nested Schema for `volume`
 
+Optional:
+
+- `attributes` (List of String) List of volume attributes and flags
+
 Read-Only:
 
-- `attributes` (List of String) List of attributes of the volume
-- `clpr_id` (Number) CLPR ID
-- `emulation_type` (String) Emulation type
-- `free_capacity_in_mb` (Number) Free capacity in MB
-- `is_alua_enabled` (Boolean) Checks whether ALUA is enabled on the volume
-- `is_full_allocation_enabled` (Boolean) Checks whether full allocation is enabled on the volume
-- `label` (String) Label
+- `block_capacity` (Number) Volume capacity expressed in blocks (1 block = 512 bytes)
+- `byte_format_capacity` (String) Human-readable capacity string (e.g., 2G, 512M)
+- `clpr_id` (Number) CLPR (Cache Logical Partition) ID the volume belongs to
+- `composing_pool_id` (Number) Composing pool ID for tiered storage or HDT
+- `compression_acceleration_status` (String) Status of the compression accelerator
+- `data_reduction_mode` (String) Data reduction mode (compression, compression_deduplication)
+- `data_reduction_process_mode` (String) Process mode for capacity saving (inline or post_process)
+- `data_reduction_progress_rate` (Number) Progress rate of data reduction operations (%)
+- `data_reduction_status` (String) Data reduction status (ENABLED / DISABLED / PROCESSING)
+- `drive_block_capacity` (Number) Drive capacity in blocks
+- `drive_byte_format_capacity` (String) Drive capacity in human-readable units
+- `drive_type` (String) Drive type backing the volume (e.g., SAS, SSD)
+- `emulation_type` (String) Emulation type of the LDEV (e.g., OPEN-V)
+- `external_ports` (Block List) List of external ports connected to the volume (see [below for nested schema](#nestedblock--volume--external_ports))
+- `external_product_id` (String) Product ID of the external volume
+- `external_vendor_id` (String) Vendor ID of the external volume
+- `external_volume_id` (String) Internal numeric ID of the external volume
+- `external_volume_id_string` (String) External volume ID in string format
+- `free_capacity_in_mb` (Number) Free capacity (MB)
+- `is_alua_enabled` (Boolean) Indicates whether ALUA is enabled
+- `is_compression_acceleration_enabled` (Boolean) Indicates whether compression accelerator is enabled
+- `is_full_allocation_enabled` (Boolean) Indicates whether full allocation is enabled
+- `is_relocation_enabled` (Boolean) Indicates whether HDT relocation is enabled
+- `label` (String) User-defined volume label
 - `ldev_id` (Number) LDEV ID
-- `mpblade_id` (Number) MP blade ID
-- `naa_id` (String) NAA ID
-- `num_ports` (Number) Number of ports available on the volume
-- `paritygroup_id` (List of String) Parity group ID
-- `pool_id` (Number) Pool ID
+- `mpblade_id` (Number) MP Blade ID currently serving the volume
+- `naa_id` (String) NAA ID (global identifier for the volume)
+- `namespace_id` (String) NVMe namespace ID
+- `num_of_external_ports` (Number) Number of external ports
+- `num_of_parity_groups` (Number) Number of parity groups the volume is composed of
+- `num_of_used_block` (Number) Number of used blocks
+- `num_ports` (Number) Number of internal ports associated with this volume
+- `nvm_subsystem_id` (String) NVMe subsystem ID
+- `operation_type` (String) Current volume operation (e.g., formatting, relocation)
+- `parity_group_ids` (List of String) List of parity group IDs
+- `pool_id` (Number) Pool ID that the volume belongs to
 - `ports` (Block List) (see [below for nested schema](#nestedblock--volume--ports))
-- `resourcegroup_id` (Number) Resource group ID of the volume
-- `ss_id` (String) SS ID
-- `status` (String) Status
+- `preparing_operation_progress_rate` (Number) Percentage progress of the current operation
+- `quorum_disk_id` (Number) Quorum disk ID (for GAD / HA clusters)
+- `quorum_storage_serial_number` (String) Serial number of the quorum storage system
+- `quorum_storage_type_id` (String) Type ID of the quorum storage system
+- `raid_level` (String) RAID level of the parity group
+- `raid_type` (String) RAID type (internal/external/virtual)
+- `resource_group_id` (Number) Resource group ID
+- `snapshot_pool_id` (Number) Snapshot pool ID used for copy-on-write snapshots
+- `ssid` (String) Subsystem ID
+- `status` (String) Current status of the volume (e.g., NORMAL)
 - `storage_serial_number` (Number) Serial number of the storage system
-- `total_capacity_in_mb` (Number) Total capacity in MB
-- `used_capacity_in_mb` (Number) Used capacity in MB
+- `tier_level` (String) Current tier level of the volume (0–3)
+- `tier_level_for_new_page_allocation` (String) Tier level where new pages are allocated
+- `total_capacity_in_mb` (Number) Total volume capacity (MB)
+- `used_capacity_in_mb` (Number) Used capacity (MB)
+- `used_capacity_per_tier_level1` (Number) Used capacity on Tier 1
+- `used_capacity_per_tier_level2` (Number) Used capacity on Tier 2
+- `used_capacity_per_tier_level3` (Number) Used capacity on Tier 3
+- `virtual_ldev_id` (Number) Virtual LDEV ID assigned by the array
+
+<a id="nestedblock--volume--external_ports"></a>
+### Nested Schema for `volume.external_ports`
+
+Read-Only:
+
+- `hostgroup_number` (Number) External host group number
+- `lun` (Number) External LUN number
+- `port_id` (String) External port ID
+- `wwn` (String) World Wide Name of the port
+
 
 <a id="nestedblock--volume--ports"></a>
 ### Nested Schema for `volume.ports`
 
 Read-Only:
 
-- `hostgroup_id` (Number) Host group ID
-- `hostgroup_name` (String) Host group name
-- `lun_id` (Number) LUN ID
-- `port_id` (String) Port ID
+- `hostgroup_name` (String) Name of the host group
+- `hostgroup_number` (Number) Internal host group number on the port
+- `lun` (Number) LUN number assigned to the host group
+- `port_id` (String) Port ID (e.g., CL1-A)

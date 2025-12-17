@@ -44,14 +44,14 @@ output "volumecreateData" {
 ### Required
 
 - `name` (String) Name of the volume server
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Optional
 
 - `capacity_gb` (Number) Capacity of the volume to be created in Gigabytes. Required for the create operation.
 - `compute_nodes` (List of String) List of compute nodes to be attached to the volume. To remove all the nodes from the volume declare compute_nodes = []
 - `nick_name` (String) Nickname of the volume
-- `storage_pool` (String) Storage pool name of the storage system. Required for the create operation.
+- `storage_pool` (String) Storage pool name of the storage server. Required for the create operation.
 
 ### Read-Only
 

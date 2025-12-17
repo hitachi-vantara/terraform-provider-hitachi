@@ -18,6 +18,7 @@ import (
 	"terraform-provider-hitachi/hitachi/common/utils"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 	vosbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
+	adminmodel "terraform-provider-hitachi/hitachi/storage/admin/gateway/model"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,6 +30,7 @@ var statsMutex sync.Mutex
 var global_Consent *UserConsent
 var sanStorageModel string
 var vosbStorageVersion string
+var adminStorageModel string
 
 func init() {
 	log := commonlog.GetLogger()
@@ -96,6 +98,13 @@ func getMethodTaskExecutionInfo(status string, elapsedTime float64, storageSetti
 		// storageSerial = getUUIDFromIP(storageSetting.ClusterAddress).String()
 		// storageSerial = storageSetting.ClusterAddress
 		storageModel = getVosbStorageVersion(storageSettingInt, outputForModelOrVersion)
+	} else if connectionType == "admin" {
+		connectionType = "vsp_one" // normalize admin to vsp_one
+		storageType = "vsp_one"
+		storageSetting := storageSettingInt.(adminmodel.StorageDeviceSettings)
+		terraformResourceMethod = storageSetting.TerraformResourceMethod
+		storageSerial = strconv.Itoa(storageSetting.Serial)
+		storageModel = getAdminStorageModel(storageSettingInt, outputForModelOrVersion)
 	}
 
 	log.WriteDebug("terraformResourceMethod: %+v", terraformResourceMethod)
@@ -136,6 +145,7 @@ func updateLocalUsagesStat(task MethodTaskExecution) error {
 	updateExecutionStats(usages, task)
 	updateSanStorageSystems(usages, task)
 	updateSdsBlockSystems(usages, task)
+	updateAdminStorageSystems(usages, task)
 
 	if err := saveUsagesToLocalFile(usages); err != nil {
 		log.WriteError("Error saving usages telemetry stats to file: %v", err)
@@ -197,6 +207,24 @@ func updateSdsBlockSystems(usages *UsagesTelemetry, task MethodTaskExecution) {
 	usages.SdsBlockSystems = append(usages.SdsBlockSystems, SdsBlockSystem{
 		ClusterAddress: task.StorageSerial,
 		Version:        task.StorageModel,
+	})
+}
+
+// updateAdminStorageSystems updates the list of SAN storage systems in the usages.json
+func updateAdminStorageSystems(usages *UsagesTelemetry, task MethodTaskExecution) {
+	if task.ConnectionType != "vsp_one" || task.StorageSerial == "" {
+		return
+	}
+
+	for _, system := range usages.AdminStorageSystems {
+		if system.StorageSerial == task.StorageSerial {
+			return
+		}
+	}
+
+	usages.AdminStorageSystems = append(usages.AdminStorageSystems, AdminStorageSystem{
+		StorageModel:  task.StorageModel,
+		StorageSerial: task.StorageSerial,
 	})
 }
 
@@ -558,6 +586,38 @@ func getVosbStorageVersion(storageSettingInt interface{}, outputForModelOrVersio
 		log.WriteDebug("vosbmodel.StorageVersionInfo: %+v", versionInfo)
 		vosbStorageVersion = versionInfo.ApiVersion
 		return vosbStorageVersion
+	}
+
+	return ""
+}
+
+func getAdminStorageModel(storageSettingInt interface{}, outputForModelOrVersion interface{}) string {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	storageSetting := storageSettingInt.(adminmodel.StorageDeviceSettings)
+
+	// Use global cache if already populated
+	if adminStorageModel != "" {
+		log.WriteDebug("from global cache var adminStorageModel: %v", adminStorageModel)
+		return adminStorageModel
+	}
+
+	// read from disk cache first
+	key := storageSetting.MgmtIP + ":StorageAdminInfo"
+	var cachedInfo adminmodel.StorageAdminInfo
+	found, _ := diskcache.Get(key, &cachedInfo)
+	if found {
+		adminStorageModel = cachedInfo.ModelName
+		log.WriteDebug("from disk cache adminStorageModel: %v", adminStorageModel)
+		return adminStorageModel
+	}
+
+	if infoFromAPI, ok := outputForModelOrVersion.(*adminmodel.StorageAdminInfo); ok && infoFromAPI != nil {
+		log.WriteDebug("adminmodel.StorageAdminInfo from API: %+v", infoFromAPI)
+		adminStorageModel = infoFromAPI.ModelName
+		return adminStorageModel
 	}
 
 	return ""

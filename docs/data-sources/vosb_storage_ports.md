@@ -42,7 +42,7 @@ output "storagePorts" {
 
 ### Required
 
-- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.
+- `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block system.
 
 ### Optional
 
@@ -70,9 +70,9 @@ Read-Only:
 - `protection_domain_id` (String) Protection domain ID of the port
 - `protocol` (String) Protocol of the port
 - `status` (String) Status of the port
-- `status_summary` (String) Status summary of the port
+- `status_summary` (String) status summary of the port
 - `storage_node_id` (String) Storage node ID of the port
-- `type` (String) Type of port
+- `type` (String) Type of the port
 
 <a id="nestedblock--ports--fc_information"></a>
 ### Nested Schema for `ports.fc_information`
@@ -91,10 +91,10 @@ Read-Only:
 
 - `delayed_ack` (Boolean) Delayed ACK of the iSCSI port
 - `ip_mode` (String) IP mode of the iSCSI port
-- `ipv4_information` (Block List) IPv4 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv4_information))
+- `ipv4_information` (Block List) Ipv4 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv4_information))
 - `ipv6_information` (Block List) IPv6 information (see [below for nested schema](#nestedblock--ports--iscsi_information--ipv6_information))
-- `is_isns_client_enabled` (Boolean) Checks if iSNS client is enabled of the iSCSI port
-- `isns_servers` (Block List) iSNS servers information (see [below for nested schema](#nestedblock--ports--iscsi_information--isns_servers))
+- `is_isns_client_enabled` (Boolean) Checks if is iSNS client enabled of the iSCSI port
+- `isns_servers` (Block List) iSNS server information (see [below for nested schema](#nestedblock--ports--iscsi_information--isns_servers))
 - `mac_address` (String) MAC address of the iSCSI port
 - `mtu_size` (Number) MTU size of the iSCSI port
 
@@ -103,9 +103,9 @@ Read-Only:
 
 Read-Only:
 
-- `address` (String) Address of IPv4 information
-- `default_gateway` (String) Default gateway of IPv4 information
-- `subnet_mask` (String) Subnet mask of IPv4 information
+- `address` (String) Address of ipv4 information
+- `default_gateway` (String) Default gateway of ipv4 information
+- `subnet_mask` (String) Subnet mask of ipv4 information
 
 
 <a id="nestedblock--ports--iscsi_information--ipv6_information"></a>
@@ -128,7 +128,7 @@ Read-Only:
 
 - `index` (Number) Index of iSNS server
 - `port` (Number) Port of iSNS server
-- `server_name` (String) Server name of iSNS server
+- `server_name` (String) Server name of iSNSs server
 
 
 

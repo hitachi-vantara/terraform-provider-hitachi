@@ -30,7 +30,7 @@
 
 ## Introduction
 
-Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform 2.1.2.
+Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform 2.2.
 
 Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform enables
 IT and data center administrators to automate and manage the configuration of Hitachi block
@@ -53,7 +53,7 @@ sources and resources.
 terraform {
   required_providers {
     hitachi = {
-      version = "2.1.2"
+      version = "2.2"
       source = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -76,7 +76,7 @@ Terraform data sources/resources modules.
 terraform {
   required_providers {
     hitachi = {
-      version = "2.1.2"
+      version = "2.2"
       source = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -167,7 +167,7 @@ Hitachi recommends that you update the operating system with the latest software
 
 Ensure the following are installed:
 - `jq`
-- `terraform` (>= 1.11.3)
+- `terraform` (>= 1.14.0)
 - `uuidgen`
 - Standard runtime libraries (`glibc`, etc.)
 
@@ -177,7 +177,7 @@ Ensure the following are installed:
 
 ### Build RPM package (for Developers)
 
-Requires **Golang v1.24** and **superuser privileges**.
+Requires **Golang v1.24 or 1.25.x** and **superuser privileges**.
 
 ```bash
 export GOPATH=/usr/local/go
@@ -187,7 +187,7 @@ cd <your hitachi terraform source code directory>
 
 Example output path:
 ```
-./rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.1.2-19.x86_64.rpm
+./rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.2-19.x86_64.rpm
 ```
 
 ### Build without RPM (for Developers)
@@ -213,18 +213,18 @@ Verify the Prequisites and dependencies
 1. From the Hitachi Vantara Support Portal (https://support.hitachivantara.com/en/anonymous-dashboard.html) 
 Downloads page (login credentials required), search for terraform, click Hardware Download, and then 
 download the VSP One Block Storage Provider for HashiCorp Terraform file. The Terraform modules are version
-2.1.2.
+2.2.
 
 2. Extract the following file from the distribution media kit installation TAR file:
-HV_Storage_Terraform-02.1.2-XX.x86_64.tar.gz file.
+HV_Storage_Terraform-02.2-XX.x86_64.tar.gz file.
 
 3. Extract the installation rpm file on the Linux server using the following command:
 
 ```bash
-tar -zxvf HV_Storage_Terraform-02.1.2-XX.x86_64.tar.gz
+tar -zxvf HV_Storage_Terraform-02.2-XX.x86_64.tar.gz
 ```
 
-4. Upload the HV_Storage_Terraform-02.1.2-XX.x86_64.rpm file to the Linux host
+4. Upload the HV_Storage_Terraform-02.2-XX.x86_64.rpm file to the Linux host
 where you want to install VSP One Block Storage Provider for HashiCorp Terraform.
 
 5. Install VSP One Block Storage Provider for HashiCorp Terraform.
@@ -232,7 +232,7 @@ where you want to install VSP One Block Storage Provider for HashiCorp Terraform
 - Enter:
 
 ```bash
-yum localinstall ./HV_Storage_Terraform-02.1.2-XX.x86_64.rpm
+yum localinstall ./HV_Storage_Terraform-02.2-XX.x86_64.rpm
 ```
 
 When prompted, input y to continue installation.
@@ -283,7 +283,7 @@ cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.1.2/linux_amd64
 
 Example Output:
 ```text
-Hitachi Terraform Provider version: 2.1.2
+Hitachi Terraform Provider version: 2.2
 ```
 
 ---
@@ -299,7 +299,7 @@ terraform providers
 
 Example output:
 ```text
-provider[localhost/hitachi-vantara/hitachi] ~> 2.1.2
+provider[localhost/hitachi-vantara/hitachi] ~> 2.2
 ```
 
 ---
@@ -391,7 +391,7 @@ Verify that the provider file is configured. For example:
 terraform {
   required_providers {
     hitachi = {
-      version = "2.1.2"
+      version = "2.2"
       source = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -413,7 +413,7 @@ Initializing the backend...
 Initializing provider plugins...
 - Reusing previous version of localhost/hitachi-vantara/hitachi from the dependency
 lock file
-- Using previously-installed localhost/hitachi-vantara/hitachi v2.1.2
+- Using previously-installed localhost/hitachi-vantara/hitachi v2.2
 
 Terraform has been successfully initialized!
 

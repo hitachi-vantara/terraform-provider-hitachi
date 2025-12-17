@@ -8,7 +8,7 @@ var DataVssbPortSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block and Cloud system.",
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block system.",
 	},
 	"port": &schema.Schema{
 		Type:        schema.TypeString,
@@ -50,12 +50,12 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 		Description: `The compute port nickname. Each compute port must have its own unique nickname.
-		Must match /^[a-zA-Z0-9!#\$%&'\+\-\.=@\^_\{\}~\(\)\[\]:]{1,32}$/`,
+		must match /^[a-zA-Z0-9!#\$%&'\+\-\.=@\^_\{\}~\(\)\[\]:]{1,32}$/`,
 	},
 	"name": &schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
-		Description: `The WWN of the allocation destination compute port of the target operation for FC connections, or the iSCSI name for iSCSI connections.
+		Description: `The WWN of the allocation destination compute port of the target operation for Fibre Channel connection, or the iSCSI name for iSCSI connections.
 		The same name cannot be used for multiple compute ports.`,
 	},
 	"configured_port_speed": &schema.Schema{
@@ -78,7 +78,7 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 		Description: `x ∈ { "10Mbps Half" , "10Mbps Full" , "100Mbps Half" , "100Mbps Full" , "1Gbps Half" , "1Gbps Full" , "2.5Gbps Full" , "5Gbps Full" , "10Gbps Full" , "20Gbps Full" , "25Gbps Full" , "40Gbps Full" , "50Gbps Full" , "56Gbps Full" , "100Gbps Full" , "200Gbps Full" , "400Gbps Full" , "1G" , "8G" , "10G" , "16G" , "25G" , "32G" , "40G" , "Unknown" , "LinkDown" , "DependsOnHypervisor" }
-		Actual link speed and duplex settings of the physical port used for communication. Only link speed is displayed for FC connection configuration.
+		Actual link speed and duplex settings of the physical port used for communication. Only link speed is displayed for Fibre Channel connection configuration.
 		If configuredPortSpeed is Auto, a value is output as per the actual cable or switch specifications.
 		Unknown: The status is unknown.
 		LinkDown: Link down occurred.
@@ -93,7 +93,7 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 	"storage_node_id": &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The ID of the storage node that has compute ports.",
+		Description: "The ID of the storage node that has the compute ports.",
 	},
 	"interface_name": &schema.Schema{
 		Type:        schema.TypeString,
@@ -328,7 +328,7 @@ var VssbPortInfoSchema = map[string]*schema.Schema{
 				"target_chap_user_name": &schema.Schema{
 					Computed: true,
 					Type:     schema.TypeString,
-					Description: `CHAP user name used for CHAP authentication on the compute port (that is, the target side).
+					Description: `CHAP user name used for CHAP authentication on the compute port (i.e., target side).
 					(1 to 223 chars) , must match /^[a-zA-Z0-9\.:@_\-\+=\[\]~ ]{1,223}$/`,
 				},
 				"initiator_chap_user_name": &schema.Schema{

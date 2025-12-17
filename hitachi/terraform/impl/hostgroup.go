@@ -20,6 +20,7 @@ import (
 	reconimpl "terraform-provider-hitachi/hitachi/storage/san/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/san/reconciler/model"
 	terraformmodel "terraform-provider-hitachi/hitachi/terraform/model"
+	terrcommon "terraform-provider-hitachi/hitachi/terraform/common"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/jinzhu/copier"
@@ -524,6 +525,18 @@ func UpdateHostGroup(d *schema.ResourceData) (*terraformmodel.HostGroup, error) 
 	if err != nil {
 		log.WriteDebug("TFError| error in CreateHostGroupRequestFromSchema, err: %v", err)
 		return nil, err
+	}
+
+	// get hostgroup info from Id. Because this is already update, all these values are set
+	_, storedHgNum, storedHgName, err := terrcommon.ParseHostGroupFromID(d.Id())
+	if err != nil {
+		return nil, err
+	}
+	if storedHgName != "" {
+		updateInput.HostGroupName = &storedHgName
+	}
+	if storedHgNum != 0 {
+		updateInput.HostGroupNumber = &storedHgNum
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_HOSTGROUP_BEGIN), updateInput.PortID, updateInput.HostGroupNumber)

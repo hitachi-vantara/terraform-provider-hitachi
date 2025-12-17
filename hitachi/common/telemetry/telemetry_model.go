@@ -15,9 +15,10 @@ type TelemetryPayload struct {
 
 // usages.json file
 type UsagesTelemetry struct {
-	ExecutionStats    map[string]ExecutionStat `json:"executionStats"`
-	SanStorageSystems []SanStorageSystem       `json:"sanStorageSystems"`
-	SdsBlockSystems   []SdsBlockSystem         `json:"SdsBlockSystems"`
+	ExecutionStats      map[string]ExecutionStat `json:"executionStats"`
+	SanStorageSystems   []SanStorageSystem       `json:"sanStorageSystems"`
+	SdsBlockSystems     []SdsBlockSystem         `json:"SdsBlockSystems"`
+	AdminStorageSystems []AdminStorageSystem     `json:"adminStorageSystems"`
 }
 
 // averagetime saved to json file
@@ -37,6 +38,12 @@ type SanStorageSystem struct {
 type SdsBlockSystem struct {
 	ClusterAddress string `json:"clusterAddress"`
 	Version        string `json:"version"`
+}
+
+// admin
+type AdminStorageSystem struct {
+	StorageModel  string `json:"storageModel"`
+	StorageSerial string `json:"storageSerial"`
 }
 
 // intermediate info

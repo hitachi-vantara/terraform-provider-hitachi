@@ -11,12 +11,12 @@ sqs = boto3.client("sqs")
 SQS_QUEUE_URL = os.getenv("SQS_QUEUE_URL", "")
 
 RESPONSE_MSG = {
-    "status": 200,
+    "statusCode": 200,
     "body": json.dumps({"message": "Request received, processing asynchronously."}),
 }
 
 RESPONSE_MSG_ERR = {
-    "status": 400,
+    "statusCode": 400,
     "body": json.dumps({"message": "Validation failed"}),
 }
 
@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         site_id = body.get("site_id")
 
         if not site_id:
-            return {"status": 400, "body": json.dumps({"error": "Missing 'site_id'"})}
+            return {"statusCode": 400, "body": json.dumps({"error": "Missing 'site_id'"})}
 
         current_time = datetime.now(timezone.utc).isoformat() + "Z"
         body["current_time"] = current_time
@@ -49,7 +49,7 @@ def lambda_handler(event, context):
     except Exception as e:
         logger.error(f"Error: {e}", exc_info=True)
         return {
-            "status": 500,
+            "statusCode": 500,
             "body": json.dumps({"error": "Failed to process request"}),
         }
 

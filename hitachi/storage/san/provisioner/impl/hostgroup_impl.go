@@ -272,7 +272,15 @@ func (psm *sanStorageManager) CreateHostGroup(hgBody sanmodel.CreateHostGroupReq
 		if objHostgroup.HostGroupName != nil && objHostgroup.PortID != nil &&
 			hg.HostGroupName == *objHostgroup.HostGroupName && hg.PortID == *objHostgroup.PortID {
 				hostGroupNumber := hg.HostGroupNumber
-				phgNum = &hostGroupNumber
+				if phgNum == nil {
+					log.WriteDebug("TFDebug| User did not provide HostGroupNumber, using existing HostGroupNumber: %v", hostGroupNumber)
+					phgNum = &hostGroupNumber
+				} else if *phgNum != hostGroupNumber {
+					msg := fmt.Sprintf("existing hostgroup does not match hostgroup_number provided (expected %d, got %d)", hostGroupNumber, *phgNum)
+					log.WriteDebug(msg)
+					log.WriteError(mc.GetMessage(mc.ERR_CREATE_HOSTGROUP_FAILED), hgBody.PortID, hgBody.HostGroupNumber)
+					return nil, fmt.Errorf("%s", msg)
+				}
 				doCreate = false
 				break
 		}
