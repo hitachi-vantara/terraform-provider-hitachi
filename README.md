@@ -257,10 +257,10 @@ Preparing...                          ################################# [100%]
 [Tue Jun 17 11:13:25 EDT 2025] Starting pre-install checks
 [Tue Jun 17 11:13:27 EDT 2025] Pre-install checks passed
 Updating / installing...
-   1:HV_Storage_Terraform-02.1.2-50     ################################# [100%]
+   1:HV_Storage_Terraform-02.2.0-50     ################################# [100%]
 [Tue Jun 17 11:13:28 EDT 2025] Starting installation of HV_Storage_Terraform
 [Tue Jun 17 11:13:28 EDT 2025] WARN: Overwriting existing directories under /opt/hitachi/terraform
-[Tue Jun 17 11:13:28 EDT 2025] Installing terraform plugin for root
+[Tue Jun 17 11:13:28 EDT 2025] Installing terraform plugin for user1
 [Tue Jun 17 11:13:28 EDT 2025] Installation complete
 [Tue Jun 17 11:13:28 EDT 2025] Installation successful
 
@@ -277,7 +277,7 @@ Log:
 Verify:
 ```bash
 # Check the plugin terraform-provider-hitachi version (-v or --version)
-cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.1.2/linux_amd64
+cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.2.0/linux_amd64
 ./terraform-provider-hitachi -v
 ```
 
@@ -337,7 +337,7 @@ directory.
 ```
 [Tue Jun 17 11:13:14 EDT 2025] Starting uninstallation of HV_Storage_Terraform
 [Tue Jun 17 11:13:14 EDT 2025] WARN: Deleting /opt/hitachi/terraform and contents
-[Tue Jun 17 11:13:14 EDT 2025] Erasing terraform plugin 2.1.2 for root
+[Tue Jun 17 11:13:14 EDT 2025] Erasing terraform plugin 2.2.0 for user1
 [Tue Jun 17 11:13:14 EDT 2025] Removing install directory /opt/hitachi/terraform
 [Tue Jun 17 11:13:14 EDT 2025] Erase complete
 [Tue Jun 17 11:13:14 EDT 2025] Uninstallation complete
@@ -408,7 +408,7 @@ provider "hitachi" {
 Initialize the Terraform working directory:
 
 ```hcl
-[root@localhost ~]# terraform init
+# terraform init
 Initializing the backend...
 Initializing provider plugins...
 - Reusing previous version of localhost/hitachi-vantara/hitachi from the dependency
@@ -424,7 +424,7 @@ should now work.
 If you ever set or change modules or backend configuration for Terraform,
 rerun this command to reinitialize your working directory. If you forget, other
 commands will detect it and remind you to do so if necessary.
-[root@localhost ~]#
+#
 ```
 
 **1. Create configuration changes on the storage system**
@@ -450,7 +450,7 @@ output "volumecreateData" {
 
 Sample output:
 ```hcl
-[root@localhost ~]# terraform apply
+# terraform apply
 
 Terraform used the selected providers to generate the following execution plan.
 Resource actions are indicated with the following symbols:
@@ -561,7 +561,7 @@ output "nodeoutput" {
 Sample output:
 
 ```hcl
-[root@localhost ~]# terraform apply
+# terraform apply
 data.hitachi_vosb_compute_nodes.computenodes: Reading...
 data.hitachi_vosb_compute_nodes.computenodes: Read complete after 3s [id=b3ca158e-
 9415-475f-8162-5cf86a2cc13d]
@@ -669,7 +669,7 @@ nodeoutput = {
   "id" = "b3ca158e-9415-475f-8162-5cf86a2cc13d"
   "vosb_address" = "192.0.2.100"
 }
-[root@localhost ~]#
+#
 ```
 
 **3. Update a configuration on the storage system**
@@ -693,7 +693,7 @@ output "volumecreateData" {
 Sample output:
 
 ```hcl
-[root@localhost ~]# terraform apply
+# terraform apply
 hitachi_vosb_volume.volumecreate: Refreshing state... [id=ace94e65-212b-4af8-96fad8a4f5fec5cf]
 
 Terraform used the selected providers to generate the following execution plan.
@@ -842,14 +842,14 @@ volumecreateData = {
   ])
   "vosb_address" = "192.0.2.100"
 }
-[root@localhost ~]#
+#
 ```
 
 **4. Delete configuration from the storage system**
 Sample output:
 
 ```hcl
-[root@localhost ~]# terraform destroy
+# terraform destroy
 hitachi_vosb_volume.volumecreate: Refreshing state... [id=ace94e65-212b-4af8-96fad8a4f5fec5cf]
 
 Terraform used the selected providers to generate the following execution plan.
@@ -959,7 +959,7 @@ hitachi_vosb_volume.volumecreate: Destroying... [id=ace94e65-212b-4af8-96fad8a4f
 hitachi_vosb_volume.volumecreate: Destruction complete after 9s
 
 Destroy complete! Resources: 1 destroyed.
-[root@localhost ~]#
+#
 ```
 
 ---
