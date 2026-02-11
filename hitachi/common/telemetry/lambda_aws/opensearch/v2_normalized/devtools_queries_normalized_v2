@@ -1,0 +1,207 @@
+
+GET terraform_telemetry_v2/_mapping
+
+GET terraform_telemetry_v2/_count
+
+POST /terraform_telemetry_v2/_delete_by_query
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET /terraform_telemetry_v2/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "query": {
+    "term": {
+      "siteId": "68bac816-cc10-428b-a87e-adfb40db026e"
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "query": {
+    "range": {
+      "lastUpdate": {
+        "gte": "2025-06-01T00:00:00Z"
+      }
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "vsp",
+      "query": {
+        "term": {
+          "vsp.serial": "40015"
+        }
+      },
+      "inner_hits": {} 
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "sds_block",
+      "query": {
+        "term": {
+          "sds_block.serial": "172.25.66.20"
+        }
+      },
+      "inner_hits": {} 
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "vsp.san",
+      "query": {
+        "term": {
+          "vsp.san.name": "san.datasource.hitachi_vsp_parity_groups.GetParityGroups"
+        }
+      },
+      "inner_hits": {}
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "vsp.san",
+      "query": {
+        "wildcard": {
+          "vsp.san.name": "*GetParityGroups"
+        }
+      },
+      "inner_hits": {
+        "size": 10,
+        "_source": {
+          "includes": [
+            "vsp.san.name",
+            "vsp.san.metrics"
+          ]
+        }
+      }
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "vsp",
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "vsp.serial": "40015"
+              }
+            },
+            {
+              "nested": {
+                "path": "vsp.san",
+                "query": {
+                  "wildcard": {
+                    "vsp.san.name": "*GetParityGroups"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "inner_hits": {}
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "nested": {
+      "path": "vsp.san",
+      "query": {
+        "bool": {
+          "must": [
+            { "exists": { "field": "vsp.san.name" }},
+            { "wildcard": { "vsp.san.name": "*GetParityGroups*" }}
+          ]
+        }
+      },
+      "inner_hits": {}
+    }
+  }
+}
+
+GET terraform_telemetry_v2/_search
+{
+  "_source": false,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "nested": {
+            "path": "vsp",
+            "query": {
+              "term": {
+                "vsp.serial": "40015"
+              }
+            }
+          }
+        },
+        {
+          "nested": {
+            "path": "vsp.san",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "vsp.san.name": "san.datasource.hitachi_vsp_parity_groups.GetParityGroups"
+                    }
+                  },
+                  {
+                    "range": {
+                      "vsp.san.metrics.success": {
+                        "gt": 0
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "inner_hits": {}
+          }
+        }
+      ]
+    }
+  }
+}
+

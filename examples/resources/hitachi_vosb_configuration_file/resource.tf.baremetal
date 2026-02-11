@@ -1,0 +1,44 @@
+# Hitachi VSP One SDS Block: Generate and Download Configuration File
+#
+# Bare-metal
+# - Usage Modes: See `General Parameters` in resource.tf.
+# - No additional parameters needed. Cloud-specific parameters are ignored.
+
+##########################
+# Example: Download existing configuration file
+resource "hitachi_vosb_configuration_file" "download" {
+  vosb_address              = var.vosb_address
+  download_existconfig_only = true
+  download_path             = "."
+  create_only               = false
+}
+
+output "download_output" {
+  value = resource.hitachi_vosb_configuration_file.download
+}
+
+/*
+##########################
+# Example: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "create_download" {
+  vosb_address              = var.vosb_address
+  download_existconfig_only = false
+  download_path             = "/tmp/myDownloadConfig.tar.gz"
+  create_only               = false
+}
+
+output "create_download_output" {
+  value = resource.hitachi_vosb_configuration_file.create_download
+}
+
+##########################
+# Example: Create configuration file only
+resource "hitachi_vosb_configuration_file" "create" {
+  vosb_address = var.vosb_address
+  create_only  = true
+}
+
+output "create_output" {
+  value = resource.hitachi_vosb_configuration_file.create
+}
+*/

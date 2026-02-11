@@ -1,0 +1,71 @@
+{
+        "Citadel": [{"version": "1.4"}],
+        "project-info":[
+                {
+                 "name": "Terraform-Storage",
+                 "project-id": "178",
+                 "branch": "2.3.0",
+                 "email": "prasad.valavala@hitachivantara.com,hui.wang@hitachivantara.com,rahul.dey@hitachivantara.com,rabi.sahu@hitachivantara.com,sandeep.varma@hitachivantara.com,sradhanand.pati@hitachivantara.com,humphrey.alba@hitachivantara.com,terrance.ng@hitachivantara.com,arunima.gupta@hitachivantara.com", 
+                 "repotype": "gitlab",
+                 "org": "Converged",
+                 "repoPathsandBranch": "terraform-provider-hitachi,terraform-provider-hitachi-2.3",
+                 "artifactURL": ""
+                }
+        ],
+        "SCA-scan":[
+                {
+                 "enable": "false"
+                }
+        ],
+        "OSS-scan":[
+                {
+                 "enable": "false",
+                 "scantype": "source",
+                 "docker_registry": "n-a",
+                 "OSS_serverURL": "https://blackduck.sc.eng.hitachivantara.com/",
+                 "project": "Terraform-Storage",
+                 "version": "2.3.0",
+                 "imagespec": ""
+                }
+        ],
+        "DAST-scan":[
+                {
+                  "enable": "false",
+                  "url": "",
+                  "multiple-scans": "false",
+                  "user": "",
+                  "encoded" : "false",
+                  "password": "",
+                  "network": "Santa Clara"
+                }
+        ],
+        "SAST-scan":[
+                {
+                  "enable": "true"
+                }
+        ],
+        "host-based-scan":[
+                {
+                  "enable": "false",
+                  "ip": "", 
+                  "encoded" : "false",
+                  "user": "",
+                  "SSH": "false",
+                  "password": "",
+                  "SSH-key": "",
+                  "SSH_PassphraseProtected": "false",
+                  "SSH_Passphrase": "",
+                  "os": "unix",
+                  "network": "Santa Clara",
+                  "agent-based": "false"
+                }
+        ],
+        "container-scan":[
+                {
+                  "enable": "false",
+                  "ip": "",
+                  "container-scan": "true",
+                  "image-scan": "false"
+                }
+        ]
+}

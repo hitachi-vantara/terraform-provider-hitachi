@@ -1,0 +1,122 @@
+// Hitachi VSP One SDS Block Storage Node Resource
+//
+// This section defines a Terraform resource block for managing storage node
+// on a Hitachi VSP One SDS Block using HashiCorp Configuration Language (HCL).
+//
+// The resource "hitachi_vosb_storage_node" represents the storage node on a Hitachi VSP One SDS Block
+// using its block interface and allows you to manage its configuration
+// using Terraform.
+//
+
+// Expected Cloud Provider Behavior
+// The `expected_cloud_provider` (String) parameter specifies the expected cloud provider type. Valid values: "aws", "google", "azure", "baremetal".
+//	- Used to validate combinations of inputs based on the deployment environment.
+//	- If set to "aws", "google" or "azure", specific parameters may be required for certain operations.
+//	- If set to "baremetal" (default), other cloud-specific inputs are ignored.
+//	- Note: The actual cloud provider is determined by the VSP One SDS Block system at the "vosb_address" endpoint.
+//	If there's a mismatch, the request still proceeds and behaves according to the actual environment.
+
+/////////////////////////////// AWS /////////////////////////////////
+// Customize the values of the parameters (vosb_address, configuration_file, vm_configuration_file_s3_uri, expected_cloud_provider) 
+// as needed to match your desired AWS storage node configuration.
+//
+// - Set "configuration_file" to be used to add the storage node.
+// - Set "vm_configuration_file_s3_uri" to be used to add the storage node.
+// - Set "expected_cloud_provider" to be used to add the storage node.
+//
+// Parameters:
+// - configuration_file: configuration file to be used to add the storage node.
+// - vm_configuration_file_s3_uri: S3 URI of VMConfigurationFile.yml to be used to add the storage node.
+// - expected_cloud_provider: cloud platform.
+//
+// Example:
+// resource "hitachi_vosb_storage_node" "storageNode" {
+//   vosb_address = var.vosb_address
+//   configuration_file = "/tmp/configuration.csv"
+//   vm_configuration_file_s3_uri = "s3://bucketName/folder/VMConfigurationFile.yml"
+//   expected_cloud_provider = "aws"
+// }
+//
+// output "node_output" {
+//  value = resource.hitachi_vosb_storage_node.storageNode
+//}
+
+/////////////////////////////// Azure /////////////////////////////////
+// Customize the values of the parameters (vosb_address, exported_configuration_file, expected_cloud_provider) 
+// as needed to match your desired Azure storage node configuration.
+//
+// - Set "exported_configuration_file" to be used to add the storage node.
+// - Set "expected_cloud_provider" to be used to add the storage node.
+//
+// Parameters:
+// - exported_configuration_file: configuration file to be used to add the storage node.
+// - expected_cloud_provider: cloud platform.
+//
+// Example:
+// resource "hitachi_vosb_storage_node" "storageNode" {
+//   vosb_address = var.vosb_address
+//   exported_configuration_file = "/tmp/configuration.tar.gz"
+//   expected_cloud_provider = "azure"
+// }
+//
+// output "node_output" {
+//  value = resource.hitachi_vosb_storage_node.storageNode
+//}
+
+/////////////////////////// Google Cloud Platform (GPC) /////////////////////////////
+// See 'Adding storage nodes (Cloud for Google Cloud)' in Operation Guide.
+// In summary, here are the steps:
+// Before executing the “Add Storage Node” operation in SDS, do the following:
+// - Use the cluster’s Master Primary Node Ip address.
+// - Note: The cluster’s Master Primary may change, especially after VM stop/start cycles. 
+// - Create/Download the configuration_file (e.g. ConfigurationFiles_XXX.tar.gz).
+// - In a separate directory, extract it:
+//   tar -zxvf ConfigurationFiles_***.tar.gz
+// - Run Terraform in that directory:
+//   terraform init -backend-config="backend.auto.tfvars"
+//   terraform plan
+//   terraform apply -auto-approve
+//   terraform output
+// - After Terraform finishes, verify that the Storage Node VMs exist in the GPC console / UI.
+// - Only then, perform “Add Storage Node” in SDS to attach those nodes into the cluster.
+//
+// Customize the values of the parameters (vosb_address, exported_configuration_file, expected_cloud_provider) 
+// as needed to match your desired GCP storage node configuration.
+//
+// - Set "expected_cloud_provider" to be used to add the storage node.
+//
+// Parameters:
+// - expected_cloud_provider: cloud platform.
+//
+// no additional parameters are required
+//
+// Example:
+// resource "hitachi_vosb_storage_node" "storageNode" {
+//   vosb_address = var.vosb_address
+//   expected_cloud_provider = "google"
+// }
+//
+// output "node_output" {
+//  value = resource.hitachi_vosb_storage_node.storageNode
+//}
+
+//////////////////////////////// Baremetal /////////////////////////////////
+// Customize the values of the parameters (vosb_address, configuration_file, setup_user_password) 
+// as needed to match your desired baremetal storage node configuration.
+//
+// - Set "configuration_file" to be used to add the storage node.
+// - Set "setup_user_password" to be used to add the storage node.
+//
+// Parameters:
+// - configuration_file: configuration file to be used to add the storage node.
+// - setup_user_password: password to use to log into the storage node to be added.
+
+resource "hitachi_vosb_storage_node" "storageNode" {
+  vosb_address = var.vosb_address
+  configuration_file = "/tmp/configuration.csv"
+  setup_user_password = "password"
+}
+
+output "node_output" {
+  value = resource.hitachi_vosb_storage_node.storageNode
+}

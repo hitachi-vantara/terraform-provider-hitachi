@@ -1,0 +1,350 @@
+package vssbstorage
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+
+	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	config "terraform-provider-hitachi/hitachi/common/config"
+	"terraform-provider-hitachi/hitachi/common/utils"
+	vssbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
+)
+
+func CheckGwyAsyncResponse(resJSONString *string) (*vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	log.WriteDebug("TFDebug|resJSONString: %s", *resJSONString)
+
+	var jobResponse vssbmodel.JobResponse
+
+	// example:
+	// "errorSource" : "/ConfigurationManager/v1/objects/ldevs",
+	// "message" : "An unsupported parameter is specified in the request body, or the hierarchy of the specified parameter is invalid (attribute = capacityInGB)",
+	// "solution" : "Check whether the specified attribute is correct, and whether the attribute is specified in the correct hierarchy.",
+	// "messageId" : "KART40038-E",
+	// "detailCode" : "40038E-0"
+
+	// check if response is error
+	var gatewayError vssbmodel.GatewayError
+	err := json.Unmarshal([]byte(*resJSONString), &gatewayError)
+	if err != nil {
+		log.WriteDebug("TFError| error in Unmarshal call, err: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal json response: %+v", err)
+	}
+
+	if gatewayError.ErrorSource != "" {
+		// failure
+		jobResponse = vssbmodel.JobResponse{
+			Error: gatewayError,
+		}
+	} else {
+		// job started
+		err := json.Unmarshal([]byte(*resJSONString), &jobResponse)
+		if err != nil {
+			log.WriteDebug("TFError| error in Unmarshal call, err: %v", err)
+			return nil, fmt.Errorf("failed to unmarshal json response: %+v", err)
+		}
+	}
+
+	return &jobResponse, nil
+}
+
+func CheckJobStatus(storageSetting vssbmodel.StorageDeviceSettings, jobID string) (*vssbmodel.JobResponse, error) {
+	// curl -k -v -H "Accept:application/json" -H "Content-Type:application/json" -H "Authorization:Session $TOKEN" -X GET
+	// https://mgmtIP/ConfigurationManager/v1/objects/jobs/21739
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	url := GetUrl(storageSetting.ClusterAddress, "objects/jobs/"+jobID)
+
+	httpBasicAuth := utils.HttpBasicAuthentication{
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+	}
+
+	resJSONString, err := utils.HTTPGet(url, nil, &httpBasicAuth)
+	if err != nil {
+		log.WriteError(err)
+		log.WriteDebug("TFError| error in HTTPGet call, err: %v", err)
+		return nil, err
+	}
+
+	log.WriteDebug("TFDebug|resJSONString: %s", resJSONString)
+
+	var jobResponse vssbmodel.JobResponse
+
+	err2 := json.Unmarshal([]byte(resJSONString), &jobResponse)
+	if err2 != nil {
+		log.WriteDebug("TFError| error in Unmarshal call, err: %v", err2)
+		return nil, fmt.Errorf("failed to unmarshal json response: %+v", err2)
+	}
+
+	return &jobResponse, nil
+}
+
+func calculateMaxRetryCount(apiTimeoutSec int) int {
+    waitTime := 1
+    totalWait := 0
+    count := 0
+
+    for totalWait < apiTimeoutSec {
+        totalWait += waitTime
+        count++
+        if waitTime < 120 {
+            waitTime *= 2
+            if waitTime > 120 {
+                waitTime = 120
+            }
+        }
+    }
+    return count
+}
+
+func WaitForJobToComplete(storageSetting vssbmodel.StorageDeviceSettings, jobResponse *vssbmodel.JobResponse) (string, *vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	apiTimeoutSec := config.DEFAULT_API_TIMEOUT
+	if config.ConfigData != nil && config.ConfigData.APITimeout > 0 {
+		apiTimeoutSec = config.ConfigData.APITimeout
+	}
+
+	var FIRST_WAIT_TIME time.Duration = 1 // in sec
+	MAX_RETRY_COUNT := calculateMaxRetryCount(apiTimeoutSec)
+
+	// if r.status_code != http.client.ACCEPTED {
+	// 	panic(errors.New("Exception")) //requests.HTTPError(r)
+	// }
+
+	var jobResult *vssbmodel.JobResponse
+	var err error
+	status := "Initializing"
+	retryCount := 1
+	waitTime := FIRST_WAIT_TIME
+
+	for status != "Completed" {
+		if retryCount > MAX_RETRY_COUNT {
+			err = fmt.Errorf("Exception: %v", "Timeout Error! Operation was not completed.")
+			log.WriteError(err)
+			log.WriteDebug("TFError| error in MAX RETRY COUNT condition, err: %v", err)
+			return "", nil, err
+		}
+
+		time.Sleep(waitTime * time.Second)
+
+		jobResult, err = CheckJobStatus(storageSetting, jobResponse.JobID)
+		if err != nil {
+			log.WriteDebug("TFError| error in CheckJobStatus call, err: %v", err)
+			return "", nil, err
+		}
+
+		status = jobResult.Status
+		double_time := waitTime * 2
+		if double_time < 120 {
+			waitTime = double_time
+		} else {
+			waitTime = 120
+		}
+		retryCount += 1
+	}
+
+	// at this point, job status is completed
+
+	if jobResult.State == "Failed" {
+		log.WriteDebug("TFDebug|Error! SSB code : %+v", jobResult.Error.ErrorCode)
+		//	fmt.Errorf("Exception: %v, %v", "Job Error!", jobResult.text))
+		return jobResult.State, jobResult, nil
+	}
+
+	// otherwise state is Succeeded
+	// log.WriteDebug("Async job was succeeded. affected resource : %v" + jobResult.AffectedResources[0])
+	log.WriteDebug("TFDebug|Async job %v succeeded.", jobResponse.JobID)
+	return jobResult.State, jobResult, nil
+}
+
+// WaitForJobToCompleteExt is an extended version of WaitForJobToComplete with a constant wait time.
+// It is intended for long running jobs like add storage node with much longer wait time
+func WaitForJobToCompleteExt(storageSetting vssbmodel.StorageDeviceSettings, jobResponse *vssbmodel.JobResponse) (string, *vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	var FIRST_WAIT_TIME time.Duration = 1 // in sec
+
+	pollmax := config.DEFAULT_ASN_POLL_MAX
+	if config.ConfigData != nil && config.ConfigData.AddStorageNodePollMax > 0 {
+		pollmax = config.ConfigData.AddStorageNodePollMax
+	}
+	log.WriteDebug("maximum number of polling to wait for job completion: %v", pollmax)
+
+	// maximum number of polling to wait for job completion
+	MAX_RETRY_COUNT := pollmax
+
+	var jobResult *vssbmodel.JobResponse
+	var err error
+	status := "Initializing"
+	retryCount := 1
+	waitTime := FIRST_WAIT_TIME
+
+	for status != "Completed" {
+		if retryCount > MAX_RETRY_COUNT {
+			err = fmt.Errorf("Exception: %v", "Timeout Error! Operation was not completed.")
+			log.WriteError(err)
+			log.WriteDebug("TFError| error in MAX RETRY COUNT condition, err: %v", err)
+			return "", nil, err
+		}
+
+		time.Sleep(waitTime * time.Second)
+
+		jobResult, err = CheckJobStatus(storageSetting, jobResponse.JobID)
+		if err != nil {
+			log.WriteDebug("TFError| error in CheckJobStatus call, err: %v", err)
+			return "", nil, err
+		}
+
+		status = jobResult.Status
+		retryCount += 1
+		if retryCount > 9 {
+			// if no fast-fail within 10 seconds, make adjustment 
+			retryCount = 1
+			waitTime = 60 // constant wait time of 60 seconds for long running jobs
+		}
+	}
+
+	// at this point, job status is completed
+
+	if jobResult.State == "Failed" {
+		log.WriteDebug("TFDebug|Error! SSB code : %+v", jobResult.Error.ErrorCode)
+		//	fmt.Errorf("Exception: %v, %v", "Job Error!", jobResult.text))
+		return jobResult.State, jobResult, nil
+	}
+
+	// otherwise state is Succeeded
+	// log.WriteDebug("Async job was succeeded. affected resource : %v" + jobResult.AffectedResources[0])
+	log.WriteDebug("TFDebug|Async job %v succeeded.", jobResponse.JobID)
+	return jobResult.State, jobResult, nil
+}
+
+func CheckResponseAndWaitForJob(storageSetting vssbmodel.StorageDeviceSettings, resJSONString *string) (*vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	pjobResponse, err := CheckGwyAsyncResponse(resJSONString)
+	if err != nil {
+		log.WriteDebug("TFError| error in CheckGwyAsyncResponse call, err: %v", err)
+		return pjobResponse, err
+	}
+
+	if pjobResponse.JobID == "" {
+		// job didn't start
+		return pjobResponse, fmt.Errorf(pjobResponse.Error.Message)
+	}
+
+	state, job, err := WaitForJobToComplete(storageSetting, pjobResponse)
+	if err != nil {
+		log.WriteDebug("TFError| error in WaitForJobToComplete call, err: %v", err)
+		return job, err
+	}
+
+	log.WriteDebug("TFDebug|Final JOB: %+v", job)
+
+	if state != "Succeeded" {
+		return job, CheckJobGatewayErrorResponse(job.Error, err)
+	}
+
+	return job, nil
+}
+
+func CheckJobGatewayErrorResponse(gwyError vssbmodel.GatewayError, httpErr error) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	errmsg := ""
+	if httpErr != nil {
+		errmsg = fmt.Sprintf("%s\n", httpErr.Error())
+		log.WriteDebug("TFError| error in HTTP response, err: %v", httpErr)
+	}
+
+	gwyJSON, err := json.MarshalIndent(gwyError, "", "  ")
+	if err != nil {
+		gwyJSON = []byte(fmt.Sprintf("%+v", gwyError))
+	}
+	errmsg = fmt.Sprintf("%s%s", errmsg, string(gwyJSON))
+	if errmsg == "" {
+		errmsg = "Failed but got no error message in response"
+	}
+	return fmt.Errorf("%s", errmsg)
+}
+
+func CheckHttpErrorResponse(resJSONString string, httpErr error) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	errmsg := ""
+	if httpErr != nil {
+		errmsg = fmt.Sprintf("%s\n", httpErr.Error())
+		log.WriteDebug("TFError| error in HTTP response, err: %v", httpErr)
+	}
+	errmsg = fmt.Sprintf("%s%+v", errmsg, resJSONString)
+	if errmsg == "" {
+		errmsg = "Failed but got no error message in response"
+	}
+	return fmt.Errorf("%s", errmsg)
+}
+
+func CheckResponseAndWaitForJobExt(storageSetting vssbmodel.StorageDeviceSettings, resJSONString *string) (*vssbmodel.JobResponse, error) {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	pjobResponse, err := CheckGwyAsyncResponse(resJSONString)
+	if err != nil {
+		log.WriteDebug("TFError| error in CheckGwyAsyncResponse call, err: %v", err)
+		return pjobResponse, err
+	}
+
+	if pjobResponse.JobID == "" {
+		// job didn't start
+		return pjobResponse, fmt.Errorf(pjobResponse.Error.Message)
+	}
+
+	state, job, err := WaitForJobToCompleteExt(storageSetting, pjobResponse)
+	if err != nil {
+		log.WriteDebug("TFError| error in WaitForJobToCompleteExt call, err: %v", err)
+		return job, err
+	}
+
+	log.WriteDebug("TFDebug|Final JOB: %+v", job)
+
+	if state != "Succeeded" {
+		return job, CheckHttpErrorResponseExt(*resJSONString, err)
+	}
+
+	return job, nil
+}
+
+func CheckHttpErrorResponseExt(resJSONString string, httpErr error) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	if resJSONString == "" {
+		return httpErr
+	}
+
+	msg := "No http error in response"
+	msg = ""
+	if httpErr != nil {
+		msg = httpErr.Error()
+	}
+
+	return fmt.Errorf("%s", msg)
+}
