@@ -1,0 +1,20 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Terraform",
+            "type": "go",
+            "request": "attach",
+            "mode": "local",
+            // update following processId to debug
+            // also, uncomment line -> time.Sleep(10 * time.Second) in provider.go
+            // command: ps -A | grep terraform-provi
+            // command 2: watch -n 2 "ps -A | grep terraform-provi"
+            // copy processId of terraform-provi
+            "processId": 1952116
+        }
+    ]
+}

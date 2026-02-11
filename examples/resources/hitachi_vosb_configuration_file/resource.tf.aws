@@ -1,0 +1,103 @@
+# Hitachi VSP One SDS Block: Generate and Download Configuration File
+#
+### AWS
+# - Usage Modes: See `General Parameters` in resource.tf.
+# - For normal create, it needs create_configuration_file_param
+# - Required:
+#   - `create_configuration_file_param`
+#   - `expected_cloud_provider = "aws"`
+#   - `template_s3_url`: Amazon S3 location where the configuration file will be uploaded.
+# - Parameter requirements by `export_file_type`:
+#   - `"Normal"` *(default)*: No additional parameters.
+#   - `"AddStorageNodes"`: Requires `machine_image_id`.
+#   - `"ReplaceStorageNode"`: Requires `machine_image_id`.
+#   - `"AddDrives"`: Requires `number_of_drives` (6–24).
+#   - `"ReplaceDrive"`: Requires `machine_image_id` and either `drive_id` (UUID) or `recover_single_drive = true`.
+#
+
+##########################
+# Example: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "normal" {
+  vosb_address  = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "aws"
+    export_file_type        = "Normal"
+    template_s3_url         = "https://bucketname.s3.us-west-2.amazonaws.com/bucketfolder/"
+  }
+}
+
+output "normal_output" {
+  value = resource.hitachi_vosb_configuration_file.normal
+}
+
+/*
+##########################
+# Example: AddStorageNodes export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "add_storage_node" {
+  vosb_address  = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "aws"
+    export_file_type        = "AddStorageNodes"
+    template_s3_url         = "https://bucketname.s3.us-west-2.amazonaws.com/bucketfolder/"
+    machine_image_id        = "ami-0123456789abcdef0"
+  }
+}
+
+output "add_storage_node_output" {
+  value = resource.hitachi_vosb_configuration_file.add_storage_node
+}
+
+##########################
+# Example: ReplaceStorageNode export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "replace_storage_node" {
+  vosb_address = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "aws"
+    export_file_type        = "ReplaceStorageNode"
+    template_s3_url         = "https://bucketname.s3.us-west-2.amazonaws.com/bucketfolder/"
+    machine_image_id        = "ami-0123456789abcdef0"
+  }
+}
+
+output "replace_storage_node_output" {
+  value = resource.hitachi_vosb_configuration_file.replace_storage_node
+}
+
+##########################
+# Example: AddDrives export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "add_drives" {
+  vosb_address = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "aws"
+    export_file_type        = "AddDrives"
+    template_s3_url         = "https://bucketname.s3.us-west-2.amazonaws.com/bucketfolder/"
+    number_of_drives        = 6
+  }
+}
+
+output "add_drives_output" {
+  value = resource.hitachi_vosb_configuration_file.add_drives
+}
+
+##########################
+# Example: ReplaceDrive export_file_type: Create and download configuration file
+resource "hitachi_vosb_configuration_file" "replace_drive" {
+  vosb_address  = var.vosb_address
+  download_path = "."
+  create_configuration_file_param {
+    expected_cloud_provider = "aws"
+    export_file_type        = "ReplaceDrive"
+    template_s3_url         = "https://bucketname.s3.us-west-2.amazonaws.com/bucketfolder/"
+    recover_single_drive    = false
+    drive_id                = "6f1f57a3-8b5a-4aef-9c8f-0a617e2a73d9"
+  }
+}
+
+output "replace_drive_output" {
+  value = resource.hitachi_vosb_configuration_file.replace_drive
+}
+*/

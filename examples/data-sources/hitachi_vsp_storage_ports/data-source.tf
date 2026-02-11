@@ -1,0 +1,23 @@
+#
+# Hitachi VSP Storage Ports Data Retrieval
+#
+# This section defines a data source block to fetch information about a specific
+# storage port from a Hitachi Virtual Storage Platform (VSP) using HashiCorp
+# Configuration Language (HCL).
+#
+# The data source block "hitachi_vsp_storage_ports" retrieves details about a
+# storage port associated with the provided parameters. This allows you to access
+# configuration and property information for the specified storage port.
+#
+# Customize the values of the parameters (serial, port_id) to match your
+# environment, enabling you to retrieve information about the desired storage port.
+#
+
+data "hitachi_vsp_storage_ports" "storageports" {
+  serial  = 12345
+  port_id = "CL4-C"
+}
+
+output "storageports" {
+  value = data.hitachi_vsp_storage_ports.storageports
+}

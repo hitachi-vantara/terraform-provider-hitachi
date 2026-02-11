@@ -1,0 +1,73 @@
+# Terraform Provider release workflow.
+name: Release
+
+on:
+  push:
+    tags: ['v*']                  # NEW tag pushes
+  release:
+    types: [published]            # Publishing a GitHub Release
+  workflow_dispatch:              # Manual run with a tag input
+    inputs:
+      tag:
+        description: 'Tag to build (e.g., v2.1.2)'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    # allow manual runs, release events, or tag-push; block random branch runs
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # when manual or release, checkout the right tag
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || (github.event_name == 'release' && github.event.release.tag_name) || '' }}
+
+      # EXCLUDE vssb via sparse-checkout (keeps repo clean; avoids GoReleaser "dirty" error)
+      - name: Exclude vssb via sparse-checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git sparse-checkout init --no-cone
+          {
+            echo "/*"                      # include everything
+            echo "!/hitachi/storage/vssb/" # exclude this folder
+          } > .git/info/sparse-checkout
+          git read-tree -mu HEAD
+          # sanity: should be no changes
+          git status --porcelain
+
+      # (optional) schema check catches config typos fast
+      - name: GoReleaser config check
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          args: check
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
