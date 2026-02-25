@@ -1,6 +1,6 @@
 Release Notes for Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform 2.3.
 
-Version 2.3 focuses on improving error handling and introduces limited support for VSP One Block High End only over Fibre Channel (FC).
+Version 2.3 focuses on improving error handling and introduces limited support for VSP One Block High End.
 This version also adds support for Mainframe z16 and SVOS 10.5.1.
 Version 2.3 also has the following resources and data-sources modules added.
 
