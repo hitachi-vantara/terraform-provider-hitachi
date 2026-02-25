@@ -155,12 +155,12 @@ integrity.
 | VSP One Block 24 | A3-04-21-40/00 SVOS 10.4.1 |
 | VSP One Block 26 | A3-04-21-40/00 SVOS 10.4.1 |
 | VSP One Block 28 | A3-04-21-40/00 SVOS 10.4.1 |
-| VSP One Block High End | A0-05-20-00/05 SVOS 10.5.1 |
-| VSP 5100, 5500, 5100H, 5500H (SAS) | 90-09-26-00/00 |
-| VSP 5200, 5600, 5200H, 5200H (SAS) | 90-09-26-00/00 |
-| VSP E590, VSP E790 | 93-07-25-40/00 SVOS 9.8.7 |
-| VSP E990 | 93-07-25-60/00 SVOS 9.8.7 |
-| VSP E1090 | 93-07-25-80/00 SVOS 9.8.7 |
+| VSP One Block High End | A0-05-21-00/00 SVOS 10.5.1 |
+| VSP 5100, 5500, 5100H, 5500H (SAS) | 90-09-29-00/00 SVOS 9.8.7|
+| VSP 5200, 5600, 5200H, 5200H (SAS) | 90-09-29-00/00 SVOS 9.8.7|
+| VSP E590, VSP E790 | 93-07-29-40/00 SVOS 9.8.7 |
+| VSP E990 | 93-07-29-60/00 SVOS 9.8.7 |
+| VSP E1090 | 93-07-29-80/00 SVOS 9.8.7 |
 | VSP F350, VSP F370, VSP F700, FSP F900 | 88-08-14-x0/00 SVOS 9.6.0 |
 | VSP G370, VSP G700, VSP G900 | 88-08-14-x0/00 SVOS 9.6.0 |
 | VSP G350 | 88-08-15-20/01 |
@@ -1391,7 +1391,7 @@ register storage node: hitachi_vosb_storage_node (Resource)
 ## Terraform Compatibility
 
 Tested with:
-- Terraform >= 1.14.4
+- Terraform >= v1.14.4
 
 ---
 
