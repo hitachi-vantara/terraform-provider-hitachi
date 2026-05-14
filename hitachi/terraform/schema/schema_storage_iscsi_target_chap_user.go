@@ -105,35 +105,45 @@ var DataIscsiChapUsersSchema = map[string]*schema.Schema{
 			Schema: IscsiChapUserInfoSchema,
 		},
 	},
+	"chap_users_count": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Number of CHAP users returned by the data source.",
+	},
 }
 
 var ResourceIscsiChapUserSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
-		Description: "Serial number of the storage system",
+		Optional:    true,
+		Computed:    true,
+		Description: "Serial number of the storage system. Required for create/update and import.",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "Port number",
+		Optional:    true,
+		Computed:    true,
+		Description: "Port number. Required for create/update and import.",
 	},
 	"iscsi_target_number": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
-		Description: "Target ID of the iSCSI target.",
+		Optional:    true,
+		Computed:    true,
+		Description: "Target ID of the iSCSI target. Required for create/update and import.",
 	},
 	"chap_user_type": &schema.Schema{
 		Type:     schema.TypeString,
-		Required: true,
+		Optional: true,
+		Computed: true,
 		Description: `Type of CHAP user name
 			o target : CHAP user name of the iSCSI target side
 			o initiator : CHAP user name of the host bus adapter (iSCSI initiator) side`,
 	},
 	"chap_user_name": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "CHAP user name.",
+		Optional:    true,
+		Computed:    true,
+		Description: "CHAP user name. Required for create/update; optional for import.",
 	},
 	"chap_user_password": &schema.Schema{
 		Type:     schema.TypeString,

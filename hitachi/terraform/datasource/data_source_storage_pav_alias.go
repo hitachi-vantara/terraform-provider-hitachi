@@ -37,6 +37,10 @@ func DataSourceStoragePavAliasRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("pav_alias_count", len(items)); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	return nil
 }

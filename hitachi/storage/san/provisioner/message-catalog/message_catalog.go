@@ -267,4 +267,105 @@ var MessageCatalog = map[interface{}]string{
 	INFO_RESTORE_GROUP_VCLONE_BEGIN: "Executing restore from virtual clone for snapshot group %v for storage serial %v.",
 	INFO_RESTORE_GROUP_VCLONE_END:   "Successfully executed restore from virtual clone for snapshot group %v for storage serial %v. Job ID: %v.",
 	ERR_RESTORE_GROUP_VCLONE_FAILED: "Failed to execute restore from virtual clone for snapshot group %v for storage serial %v.",
+
+	// NVM Subsystem
+	INFO_GET_NVM_SUBSYSTEMS_BEGIN: "Reading NVM subsystems for storage serial %v.",
+	INFO_GET_NVM_SUBSYSTEMS_END:   "Successfully read NVM subsystems for storage serial %v.",
+	ERR_GET_NVM_SUBSYSTEMS_FAILED: "Failed to read NVM subsystems for storage serial %v.",
+
+	INFO_GET_NVM_SUBSYSTEM_BEGIN: "Reading NVM subsystem %v for storage serial %v.",
+	INFO_GET_NVM_SUBSYSTEM_END:   "Successfully read NVM subsystem %v for storage serial %v.",
+	ERR_GET_NVM_SUBSYSTEM_FAILED: "Failed to read NVM subsystem %v for storage serial %v.",
+
+	INFO_CREATE_NVM_SUBSYSTEM_BEGIN: "Creating NVM subsystem for storage serial %v.",
+	INFO_CREATE_NVM_SUBSYSTEM_END:   "Successfully created NVM subsystem for storage serial %v.",
+	ERR_CREATE_NVM_SUBSYSTEM_FAILED: "Failed to create NVM subsystem for storage serial %v.",
+
+	INFO_UPDATE_NVM_SUBSYSTEM_BEGIN: "Updating NVM subsystem %v for storage serial %v.",
+	INFO_UPDATE_NVM_SUBSYSTEM_END:   "Successfully updated NVM subsystem %v for storage serial %v.",
+	ERR_UPDATE_NVM_SUBSYSTEM_FAILED: "Failed to update NVM subsystem %v for storage serial %v.",
+
+	INFO_DELETE_NVM_SUBSYSTEM_BEGIN: "Deleting NVM subsystem %v for storage serial %v.",
+	INFO_DELETE_NVM_SUBSYSTEM_END:   "Successfully deleted NVM subsystem %v for storage serial %v.",
+	ERR_DELETE_NVM_SUBSYSTEM_FAILED: "Failed to delete NVM subsystem %v for storage serial %v.",
+
+	// NVM Subsystem Port
+	INFO_GET_NVM_SUBSYSTEM_PORT_BEGIN: "Reading NVM subsystem port %v in subsystem %v for storage serial %v.",
+	INFO_GET_NVM_SUBSYSTEM_PORT_END:   "Successfully read NVM subsystem port %v in subsystem %v for storage serial %v.",
+	ERR_GET_NVM_SUBSYSTEM_PORT_FAILED: "Failed to read NVM subsystem port %v in subsystem %v for storage serial %v.",
+
+	INFO_GET_NVM_SUBSYSTEM_PORTS_BEGIN: "Reading all NVM subsystem ports for subsystem %v for storage serial %v.",
+	INFO_GET_NVM_SUBSYSTEM_PORTS_END:   "Successfully read all NVM subsystem ports for subsystem %v for storage serial %v.",
+	ERR_GET_NVM_SUBSYSTEM_PORTS_FAILED: "Failed to read NVM subsystem ports for subsystem %v for storage serial %v.",
+
+	INFO_ADD_NVM_SUBSYSTEM_PORT_BEGIN: "Adding port %v to NVM subsystem %v for storage serial %v.",
+	INFO_ADD_NVM_SUBSYSTEM_PORT_END:   "Successfully added port %v to NVM subsystem %v for storage serial %v.",
+	ERR_ADD_NVM_SUBSYSTEM_PORT_FAILED: "Failed to add port %v to NVM subsystem %v for storage serial %v.",
+
+	INFO_DELETE_NVM_SUBSYSTEM_PORT_BEGIN: "Deleting port %v from NVM subsystem %v for storage serial %v.",
+	INFO_DELETE_NVM_SUBSYSTEM_PORT_END:   "Successfully deleted port %v from NVM subsystem %v for storage serial %v.",
+	ERR_DELETE_NVM_SUBSYSTEM_PORT_FAILED: "Failed to delete port %v from NVM subsystem %v for storage serial %v.",
+
+	// Host NQN
+	INFO_GET_ALL_HOST_NQNS_BEGIN: "Reading all Host NQNs for NVM subsystem %v for storage serial %v.",
+	INFO_GET_ALL_HOST_NQNS_END:   "Successfully read all Host NQNs for NVM subsystem %v for storage serial %v.",
+	ERR_GET_ALL_HOST_NQNS_FAILED: "Failed to read Host NQNs for NVM subsystem %v for storage serial %v.",
+
+	INFO_GET_HOST_NQN_BEGIN: "Reading Host NQN %v in NVM subsystem %v for storage serial %v.",
+	INFO_GET_HOST_NQN_END:   "Successfully read Host NQN %v in NVM subsystem %v for storage serial %v.",
+	ERR_GET_HOST_NQN_FAILED: "Failed to read Host NQN %v in NVM subsystem %v for storage serial %v.",
+
+	INFO_REGISTER_HOST_NQN_BEGIN: "Registering Host NQN %v in NVM subsystem %v for storage serial %v.",
+	INFO_REGISTER_HOST_NQN_END:   "Successfully registered Host NQN %v in NVM subsystem %v for storage serial %v.",
+	ERR_REGISTER_HOST_NQN_FAILED: "Failed to register Host NQN %v in NVM subsystem %v for storage serial %v.",
+
+	INFO_SET_HOST_NQN_NICKNAME_BEGIN: "Setting nickname for Host NQN %v in subsystem %v for storage serial %v.",
+	INFO_SET_HOST_NQN_NICKNAME_END:   "Successfully set nickname for Host NQN %v in subsystem %v for storage serial %v.",
+	ERR_SET_HOST_NQN_NICKNAME_FAILED: "Failed to set nickname for Host NQN %v in subsystem %v for storage serial %v.",
+
+	INFO_DELETE_LOGIN_HOST_NQN_BEGIN: "Deleting login for Host NQN at port %v for storage serial %v.",
+	INFO_DELETE_LOGIN_HOST_NQN_END:   "Successfully deleted login for Host NQN at port %v for storage serial %v.",
+	ERR_DELETE_LOGIN_HOST_NQN_FAILED: "Failed to delete login for Host NQN at port %v for storage serial %v.",
+
+	INFO_DELETE_HOST_NQN_BEGIN: "Deleting Host NQN %v from NVM subsystem %v for storage serial %v.",
+	INFO_DELETE_HOST_NQN_END:   "Successfully deleted Host NQN %v from NVM subsystem %v for storage serial %v.",
+	ERR_DELETE_HOST_NQN_FAILED: "Failed to delete Host NQN %v from NVM subsystem %v for storage serial %v.",
+
+	// Namespace
+	INFO_GET_NAMESPACE_BEGIN: "Reading namespace %v in subsystem %v for storage serial %v.",
+	INFO_GET_NAMESPACE_END:   "Successfully read namespace %v in subsystem %v for storage serial %v.",
+	ERR_GET_NAMESPACE_FAILED: "Failed to read namespace %v in subsystem %v for storage serial %v.",
+
+	INFO_GET_ALL_NAMESPACES_BEGIN: "Reading all namespaces for subsystem %v for storage serial %v.",
+	INFO_GET_ALL_NAMESPACES_END:   "Successfully read all namespaces for subsystem %v for storage serial %v.",
+	ERR_GET_ALL_NAMESPACES_FAILED: "Failed to read namespaces for subsystem %v for storage serial %v.",
+
+	INFO_CREATE_NAMESPACE_BEGIN: "Creating namespace in NVM subsystem %v for storage serial %v.",
+	INFO_CREATE_NAMESPACE_END:   "Successfully created namespace in NVM subsystem %v for storage serial %v.",
+	ERR_CREATE_NAMESPACE_FAILED: "Failed to create namespace in NVM subsystem %v for storage serial %v.",
+
+	INFO_SET_NAMESPACE_NICKNAME_BEGIN: "Setting nickname for namespace %v in subsystem %v for storage serial %v.",
+	INFO_SET_NAMESPACE_NICKNAME_END:   "Successfully set nickname for namespace %v in subsystem %v for storage serial %v.",
+	ERR_SET_NAMESPACE_NICKNAME_FAILED: "Failed to set nickname for namespace %v in subsystem %v for storage serial %v.",
+
+	INFO_DELETE_NAMESPACE_BEGIN: "Deleting namespace %v from subsystem %v for storage serial %v.",
+	INFO_DELETE_NAMESPACE_END:   "Successfully deleted namespace %v from subsystem %v for storage serial %v.",
+	ERR_DELETE_NAMESPACE_FAILED: "Failed to delete namespace %v from subsystem %v for storage serial %v.",
+
+	// Namespace Path
+	INFO_GET_NAMESPACE_PATHS_BEGIN: "Reading namespace paths for subsystem %v for storage serial %v.",
+	INFO_GET_NAMESPACE_PATHS_END:   "Successfully read namespace paths for subsystem %v for storage serial %v.",
+	ERR_GET_NAMESPACE_PATHS_FAILED: "Failed to read namespace paths for subsystem %v for storage serial %v.",
+
+	INFO_GET_NAMESPACE_PATH_DETAIL_BEGIN: "Reading path detail for namespace %v, Host NQN %v in subsystem %v for storage serial %v.",
+	INFO_GET_NAMESPACE_PATH_DETAIL_END:   "Successfully read path detail for namespace %v, Host NQN %v in subsystem %v for storage serial %v.",
+	ERR_GET_NAMESPACE_PATH_DETAIL_FAILED: "Failed to read path detail for namespace %v, Host NQN %v in subsystem %v for storage serial %v.",
+
+	INFO_REGISTER_NAMESPACE_PATH_BEGIN: "Registering path for namespace %v to Host NQN %v for storage serial %v.",
+	INFO_REGISTER_NAMESPACE_PATH_END:   "Successfully registered path for namespace %v to Host NQN %v for storage serial %v.",
+	ERR_REGISTER_NAMESPACE_PATH_FAILED: "Failed to register path for namespace %v to Host NQN %v for storage serial %v.",
+
+	INFO_DELETE_NAMESPACE_PATH_BEGIN: "Deleting path for namespace %v from Host NQN %v for storage serial %v.",
+	INFO_DELETE_NAMESPACE_PATH_END:   "Successfully deleted path for namespace %v from Host NQN %v for storage serial %v.",
+	ERR_DELETE_NAMESPACE_PATH_FAILED: "Failed to delete path for namespace %v from Host NQN %v for storage serial %v.",
 }

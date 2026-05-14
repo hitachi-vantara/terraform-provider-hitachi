@@ -243,7 +243,7 @@ func (psm *vssbStorageManager) GetExistingChapUserInformation(chapUserName strin
 		log.WriteDebug("TFError| error in NewEx call, err: %v", err)
 		return nil, err
 	}
-	var existingResource *provisonermodel.ChapUser = nil
+	var existingResource *provisonermodel.ChapUser = nil // #nosec G101 -- ChapUser is a type name, not a hardcoded credential
 
 	if id != "" {
 		existingResource, err = provObj.GetChapUserInfoById(id)

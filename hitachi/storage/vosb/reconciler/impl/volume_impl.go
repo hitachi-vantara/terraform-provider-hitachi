@@ -132,7 +132,14 @@ func (psm *vssbStorageManager) ReconcileVolume(postData *vssbmodel.CreateVolume)
 			return nil, err
 		}
 		poolId := poolDetails.ID
-		volumeAdd, err := provObj.CreateVolume(*postData.Name, nickname, poolId, *postData.CapacityInGB)
+		volumeAdd, err := provObj.CreateVolume(
+			*postData.Name,
+			nickname,
+			poolId,
+			*postData.CapacityInGB,
+			postData.StorageControllerId,
+			postData.FaultDomainId,
+		)
 		if err != nil {
 			log.WriteDebug("TFError| error in GetVolumeDetails provisioner call, err: %v", err)
 			log.WriteError(mc.GetMessage(mc.ERR_CREATE_VOLUME_FAILED), *postData.Name)

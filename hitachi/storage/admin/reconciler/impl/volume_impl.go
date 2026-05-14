@@ -26,7 +26,7 @@ func (psm *adminStorageManager) ReconcileReadAdminVolumes(volumeIDs []int) ([]gw
 	}
 
 	provObj, err := psm.getProvisionerManager()
-	if err != nil {                   
+	if err != nil {
 		return nil, nil, err
 	}
 
@@ -249,6 +249,14 @@ func (psm *adminStorageManager) expandVolume(params gwymodel.CreateVolumeParams,
 	}
 
 	requestedCap := params.Capacity
+	// In the update path we reuse CreateVolumeParams, where Capacity is a non-pointer.
+	// When the user does not specify `capacity` during update, the struct field
+	// remains the zero value (0). Treat 0 as "not requested" to avoid accidentally
+	// attempting an illegal shrink to 0 MiB.
+	if requestedCap == 0 {
+		log.WriteInfo("Skipping capacity expansion for Volume ID %d: capacity not specified.", tfVol.ID)
+		return nil
+	}
 	currentCap := tfVol.TotalCapacity
 	increment := requestedCap - currentCap
 

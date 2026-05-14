@@ -476,4 +476,10 @@ var DataDynamicPoolsSchema = map[string]*schema.Schema{
 			Schema: DynamicPoolInfoSchema,
 		},
 	},
+
+	"dynamic_pool_count": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Number of dynamic pools returned by the data source",
+	},
 }

@@ -33,7 +33,7 @@ def lambda_handler(event, context):
         body["current_time"] = current_time
 
         if not validate_input(body):
-            logger.error(f"body data validation failed: {body}")
+            logger.error("body data validation failed")
             return RESPONSE_MSG_ERR
 
         # Send message to SQS
@@ -42,12 +42,11 @@ def lambda_handler(event, context):
         )
 
         logger.info(f"Sent message to SQS: {response['MessageId']}")
-        logger.info(f"Payload: {json.dumps(body)}")
 
         return RESPONSE_MSG
 
     except Exception as e:
-        logger.error(f"Error: {e}", exc_info=True)
+        logger.error(f"Error: {e}")
         return {
             "statusCode": 500,
             "body": json.dumps({"error": "Failed to process request"}),
@@ -68,17 +67,17 @@ def validate_input(data):
 
     for key, expected in schema.items():
         if key not in data:
-            logger.error(f"key not in data: {key}")
+            logger.error("Required field missing in request data")
             return False
         value = data[key]
         if isinstance(expected, tuple):
             expected_type, validator = expected
             if not isinstance(value, expected_type) or not validator(value):
-                logger.error(f"value not instance: {key} : {value}")
+                logger.error("Validation failed for a field")
                 return False
         else:
             if not isinstance(value, expected):
-                logger.error(f"type not instance: {key} : {value} : {expected}")
+                logger.error("Validation failed for a field")
                 return False
 
     return True

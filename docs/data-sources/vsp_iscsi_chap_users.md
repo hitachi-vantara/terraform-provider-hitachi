@@ -52,6 +52,7 @@ output "my_iscsi_chap_users_output" {
 ### Read-Only
 
 - `chap_users` (Block List) CHAP users output (see [below for nested schema](#nestedblock--chap_users))
+- `chap_users_count` (Number) Number of CHAP users returned by the data source.
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--chap_users"></a>

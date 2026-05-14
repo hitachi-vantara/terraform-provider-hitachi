@@ -18,7 +18,7 @@ var syncChangeUserPasswordOperation = &sync.Mutex{}
 // Resource for changing user password
 func ResourceVssbChangeUserPassword() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP One SDS Block: Change Storage User Password.",
+		Description: "VSP One SDS Block: Change Storage User Password.",
 		CreateContext: resourceVssbChangeUserPasswordCreate,
 		UpdateContext: resourceVssbChangeUserPasswordUpdate,
 		DeleteContext: resourceVssbChangeUserPasswordDelete,
@@ -38,18 +38,18 @@ func resourceVssbChangeUserPasswordCreate(ctx context.Context, d *schema.Resourc
 	log.WriteInfo("starting change user password")
 	userInfo, err := impl.ChangeVssbUserPassword(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
 	userInfoMap := impl.ConvertVssbStorageUserToSchema(userInfo)
 	if err := d.Set("user_info", []interface{}{userInfoMap}); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
 	d.SetId(userInfo.UserId)
-	d.Set("status", "Password changed successfully")
+	if err := d.Set("status", "Password changed successfully"); err != nil {
+		return diag.FromErr(err)
+	}
 	log.WriteInfo("password changed successfully")
 	return nil
 }
@@ -59,7 +59,6 @@ func resourceVssbChangeUserPasswordUpdate(ctx context.Context, d *schema.Resourc
 }
 
 func resourceVssbChangeUserPasswordDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	d.SetId("")
 	return nil
 }
 

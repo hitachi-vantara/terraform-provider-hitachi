@@ -49,6 +49,10 @@ func DataSourceStorageLunsRead(ctx context.Context, d *schema.ResourceData, m in
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("volume_count", len(lunList)); err != nil {
+		return diag.FromErr(err)
+	}
+
 	// always run
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	//d.SetId(strconv.Itoa(logicalUnits.LdevID))

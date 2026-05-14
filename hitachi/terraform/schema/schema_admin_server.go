@@ -40,13 +40,13 @@ var AdminServerInfoSchema = map[string]*schema.Schema{
 		Elem:        &schema.Schema{Type: schema.TypeInt},
 		Description: "OS type option list.",
 	},
-	"total_capacity": {
+	"total_capacity_in_mib": {
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Computed:    true,
 		Description: "Total assigned volume capacity (MiB).",
 	},
-	"used_capacity": {
+	"used_capacity_in_mib": {
 		Type:        schema.TypeInt,
 		Optional:    true,
 		Computed:    true,
@@ -129,13 +129,15 @@ var AdminServerInfoSchema = map[string]*schema.Schema{
 var ResourceAdminServerSchema = map[string]*schema.Schema{
 	"serial": {
 		Type:        schema.TypeInt,
-		Required:    true,
-		Description: "Serial number of storage system.",
+		Optional:    true,
+		Computed:    true,
+		Description: "Serial number of storage system. Required for create/update and import.",
 	},
 	"server_nickname": {
 		Type:         schema.TypeString,
-		Required:     true,
-		Description:  "Server nickname.",
+		Optional:     true,
+		Computed:     true,
+		Description:  "Server nickname. Required for create/update; optional for import.",
 		ValidateFunc: validation.StringLenBetween(1, 32),
 	},
 	"protocol": {
@@ -172,13 +174,11 @@ var ResourceAdminServerSchema = map[string]*schema.Schema{
 	"is_reserved": {
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Default:     false,
 		Description: "Indicates whether the server is for host group addition. If true, a server with only id and server nickname reserved for host group addition will be created.",
 	},
 	"keep_lun_config": {
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Default:     false,
 		Description: "Specify whether to delete the server information while retaining the volume assignment information during delete operations.",
 	},
 
@@ -292,13 +292,13 @@ var DataSourceAdminServerListSchema = map[string]*schema.Schema{
 					Computed:    true,
 					Description: "OS type. If is_reserved is true, Undefined. Example values: Linux, VMware, HP-UX, OpenVMS, Tru64, Solaris, NetWare, Windows, AIX, Undefined, Unknown.",
 				},
-				"total_capacity": {
+				"total_capacity_in_mib": {
 					Type:        schema.TypeInt,
 					Optional:    true,
 					Computed:    true,
 					Description: "Total assigned volume capacity (MiB).",
 				},
-				"used_capacity": {
+				"used_capacity_in_mib": {
 					Type:        schema.TypeInt,
 					Optional:    true,
 					Computed:    true,
@@ -451,20 +451,16 @@ var ResourceAdminServerPathSchema = map[string]*schema.Schema{
 		Description: "Server ID.",
 	},
 	"hba_wwn": {
-		Type:        schema.TypeString,
-		Optional:    true,
-		Description: "Server HBA WWN. Either hba_wwn or iscsi_name must be specified, but not both.",
-		ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-			return
-		},
+		Type:          schema.TypeString,
+		Optional:      true,
+		Description:   "Server HBA WWN. Either hba_wwn or iscsi_name must be specified, but not both.",
+		ConflictsWith: []string{"iscsi_name"},
 	},
 	"iscsi_name": {
-		Type:        schema.TypeString,
-		Optional:    true,
-		Description: "Server iSCSI name. Either hba_wwn or iscsi_name must be specified, but not both.",
-		ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-			return
-		},
+		Type:          schema.TypeString,
+		Optional:      true,
+		Description:   "Server iSCSI name. Either hba_wwn or iscsi_name must be specified, but not both.",
+		ConflictsWith: []string{"hba_wwn"},
 	},
 	"port_ids": {
 		Type:        schema.TypeList,

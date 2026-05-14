@@ -49,9 +49,13 @@ func dataSourceStorageVolumeQosRead(ctx context.Context, d *schema.ResourceData,
 	d.SetId(fmt.Sprintf("%d-%d", serial, resp.VolumeId))
 
 	// Set qos values
-	d.Set("volume_id", resp.VolumeId)
-	d.Set("volume_id_hex", utils.IntToHexString(resp.VolumeId))
-	d.Set("threshold", []interface{}{
+	if err := d.Set("volume_id", resp.VolumeId); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("volume_id_hex", utils.IntToHexString(resp.VolumeId)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("threshold", []interface{}{
 		map[string]interface{}{
 			"is_upper_iops_enabled":          resp.Threshold.IsUpperIopsEnabled,
 			"upper_iops":                     resp.Threshold.UpperIops,
@@ -65,8 +69,10 @@ func dataSourceStorageVolumeQosRead(ctx context.Context, d *schema.ResourceData,
 			"response_priority":              resp.Threshold.ResponsePriority,
 			"target_response_time":           resp.Threshold.TargetResponseTime,
 		},
-	})
-	d.Set("alert_setting", []interface{}{
+	}); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("alert_setting", []interface{}{
 		map[string]interface{}{
 			"is_upper_alert_enabled":        resp.AlertSetting.IsUpperAlertEnabled,
 			"upper_alert_allowable_time":    resp.AlertSetting.UpperAlertAllowableTime,
@@ -75,14 +81,18 @@ func dataSourceStorageVolumeQosRead(ctx context.Context, d *schema.ResourceData,
 			"is_response_alert_enabled":     resp.AlertSetting.IsResponseAlertEnabled,
 			"response_alert_allowable_time": resp.AlertSetting.ResponseAlertAllowableTime,
 		},
-	})
-	d.Set("alert_time", []interface{}{
+	}); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("alert_time", []interface{}{
 		map[string]interface{}{
 			"upper_alert_time":    resp.AlertTime.UpperAlertTime,
 			"lower_alert_time":    resp.AlertTime.LowerAlertTime,
 			"response_alert_time": resp.AlertTime.ResponseAlertTime,
 		},
-	})
+	}); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }

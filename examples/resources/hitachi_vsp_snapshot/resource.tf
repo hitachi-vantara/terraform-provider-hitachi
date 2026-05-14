@@ -1,0 +1,956 @@
+################################################################################
+# Hitachi VSP Snapshot Management Resource
+#
+# This section defines resource blocks to manage the lifecycle of Thin Image 
+# snapshots. It supports both Thin Image (TI) Standard and Thin Image Advanced (TIA).
+#
+# The resource "hitachi_vsp_snapshot" supports read, create, split, resync, restore, clone (TI std), 
+# vclone/vrestore (TIA) of snapshot pairs.
+#
+################################################################################
+# Example: Import (existing snapshot)
+# -----------------------------------------------------------------------------
+# Use terraform import when the snapshot already exists on storage and
+# you want to bring it under Terraform management without re-creating it.
+# The import reads the current state from storage and writes it to tfstate.
+#
+# Import ID formats:
+# - <serial>/<pvol_ldev_id>
+# - <serial>/<pvol_ldev_id>,<mirror_unit_id>  (use when the pvol has multiple mirror units)
+#
+# terraform import hitachi_vsp_snapshot.imported '12345/6640'
+# terraform import hitachi_vsp_snapshot.imported '12345/6640,0'
+
+# Minimal skeleton block required for `terraform import`.
+# Create this block in your .tf before running the import command.
+resource "hitachi_vsp_snapshot" "imported" {}
+
+output "imported_snapshot_id" {
+  value = hitachi_vsp_snapshot.imported.id
+}
+################################################################################
+
+# -----------------------------------------------------------------------------------
+# Logic Matrix: Feature Support by Snapshot Type
+# -----------------------------------------------------------------------------------
+# Attribute                    TI Standard (HTI)              TI Advanced (TIA)
+# -----------------------------------------------------------------------------------
+# Pool (snapshot_pool_id)      HTI or HDP Pool                HDP Pool only
+# Volume Type (Attributes)     LDEV (HTI attr)                DRS Volume (HDP+DRS attr)
+# can_cascade                  Optional (Default: true)       Required (Must be true)
+# is_clone                     Supported                      Forbidden (Must be false)
+# is_data_reduction_force_copy Required if CapSaving enabled  Always Required (True)
+# retention_period_hours       Not Supported                  Supported (Requires auto_split)
+# auto_split                   Supported                      Supported
+# auto_clone                   Supported (if is_clone=true)   Forbidden
+# copy_speed                   Supported (with auto_clone)    Forbidden
+# mirror_unit_id               Range 0–1023                   Range 0–1023
+# is_consistency_group         Supported                      Supported
+# vClone Attribute (VCP/VC)    Not Supported                  Required for vClone/vRestore
+# -----------------------------------------------------------------------------------
+#
+# State Definitions & Constraints:
+#
+# state = "" / "read"           Default. Lookup-only state.
+#                               - If a Snapshot or vClone exists: Compares all input 
+#                                 fields (Pool ID, Group Name, etc.) given against backend 
+#                                 data. Returns an error if any mismatch is detected.
+#                               - If found: Returns the hardware state (Snapshot, 
+#                                 vClone, or both) to Terraform.
+#                               - If neither exists: Returns an empty state.
+#                                 Note: 'read' will NOT trigger any creation/update.
+#
+# state = "create"              Idempotent Creation and Management.
+#                               - If a Snapshot exists: 
+#                                   1. Validates identification fields (Pool, Group). 
+#                                      Errors out on mismatch.
+#                                   2. Does NOT compare SvolLdevID or RetentionPeriod
+#                                      during initial validation.
+#                                   3. Detects if S-VOL needs to be assigned/unassigned
+#                                      or if RetentionPeriod needs an increase.
+#                                   4. Returns the existing/updated snapshot.
+#                               - If a vClone exists: Since the snapshot pair metadata 
+#                                 is gone, this re-creates the pair relationship to 
+#                                 allow management (e.g., pairing-back for vRestore).
+#                               - If nothing exists: Creates a new snapshot.
+#
+# state = "split"               Captures a point-in-time image.
+#                               - Required Input Status: PAIR.
+#                               - TIA (Redirect-on-Write): 
+#                                 The 'retention_period_hours' is applied during 
+#                                 this transition. Once status becomes PSUS, 
+#                                 the lock is active based on the new split_time.
+#                               - TI Standard (Copy-on-Write):
+#                                 Transitions through 'COPY' to 'PSUS'. 
+#                                 Note: Retention is not supported 
+#                               - If already PSUS:
+#                                 The provider returns the current state.
+#
+# state = "resync"              Synchronizes S-VOL with P-VOL.
+#                               - Required State: Pair must be in PSUS.
+#                               - Retention Check: If the pair is in PSUS, any 
+#                                 existing 'retention_period_hours' MUST have 
+#                                 expired. If the lock is active, the storage 
+#                                 system will reject the resync (Error 2E11).
+#                               - Optional auto_split=true: Automatically 
+#                                 triggers a split once the synchronization 
+#                                 completes.
+#                               - Retention Update: If auto_split is true, any 
+#                                 new 'retention_period_hours' specified will 
+#                                 be applied to the new snapshot point-in-time.
+#
+# state = "restore"             Reverts P-VOL data from S-VOL (Rollback).
+#                               - TI Standard: Transitions to 'RCPY' status. S-VOL 
+#                                 access is 'Not Enabled' during copy. Once 100% 
+#                                 complete, it settles into 'PAIR'. 
+#                               - TIA: Uses metadata pointers; settles into 'PSUS' 
+#                                 (or 'PFUS' if pool threshold is exceeded).
+#                               - auto_split: If true, ensures TI Standard 
+#                                 triggers a split after RCPY to reach PSUS.
+#
+# state = "clone" (TI Std)      Independent physical copy (Snapshot to Clone).
+#                               - Requirement: is_clone=true.
+#                               - Process: Suspends relationship and severs it; 
+#                               - copy_speed: [slower | medium | faster]. 
+#                                 Controls background I/O priority. Default: medium.
+#
+# state = "vclone" (TIA)        VSP One B20/B85: Promotes a TIA pair to a Virtual Clone.
+#                               - If Status=PAIR: Performs 'create' (P-VOL gets VCP attr).
+#                               - If Status=Split: Performs 'convert' (S-VOL gets VC attr);
+#                                 becomes independent of pool for read I/O.
+#
+# state = "vrestore" (TIA)      VSP One B20/B85: Performs a snapshot restore from a Virtual Clone.
+#                               - Requirement: S-VOL must have VC attribute.
+#
+# state = "defrag"             (VSP 5000 / TI Standard ONLY)
+#                               Triggers 'delete-garbage-data' (defragmentation)
+#                               for the entire snapshot tree starting at root LDEV.
+#                               - defrag_operation must either be "start" or "stop".
+#                               - Operation: Asynchronous. The provider starts the
+#                                 process.
+#
+# state = "deletetree"         (VSP 5000 / TI Standard ONLY)
+#                              Forcibly deletes all Thin Image pairs in the
+#                              snapshot tree (cascade-enabled) from the root LDEV.
+#                              - TIA: Unsupported.
+#                              - Clones: Connected trees status changed to PSUE.
+#                              - Result: Snapshot data is permanently deleted.
+#
+# -----------------------------------------------------------------------------------
+#
+# Configuration Requirements:
+#
+#   - state: Defines the operation (read, create, split, resync, restore, clone, vclone, vrestore). 
+#            Defaults to "create" if omitted.
+#
+#   - snapshot_group_name & snapshot_pool_id: Required for create.
+#
+#   - pvol_ldev_id / pvol_ldev_id_hex: Always required to identify the primary volume.
+#   - svol_ldev_id / svol_ldev_id_hex: Optional.
+#
+#   - mirror_unit_id: 
+#       - when state is 'create':
+#           - if omitted, the storage system automatically assigns the next available mu.
+#           - if provided, the provider checks if a pair already exists at that mu.
+#               - if found: it verifies the existing snapshot matches your configuration.
+#               - if not found: it creates a new snapshot using the specific mu provided.
+#       - when state is NOT 'create' (split, resync, restore, clone, vclone, vrestore):
+#           - if first terraform run: 
+#               - mirror_unit_id is mandatory. Terraform needs this id to find the existing 
+#                 snapshot pair before it can perform the requested state.
+#           - if already tracked by terraform: 
+#               - mirror_unit_id is optional. The provider automatically retrieves the correct 
+#                 id from the terraform state (stored in the format 'pvol_id,mirror_unit_id').
+#               - if provided, it compares the mirror_unit_id from the terraform state; 
+#                 if it is the same it proceeds, otherwise it fails.
+#
+# Notes:
+#   - state 'clone': Pair should be clonable (is_clone true).
+#     Once complete, the snapshot pair is deleted, leaving an independent physical clone.
+#   - state 'split,resync,restore': Pair should not be clonable (is_clone false).
+#   - minimum parameters required except for 'create': pvol, mirror_unit_id (for first time run)
+#   - terraform destroy command deletes the pair.
+#
+################################################################################
+
+
+
+################################################################################
+# Example 1: Thin Image (TI) Standard - Floating Snapshot
+# Pattern: state="create", no svol. 
+# Result: Creates a point-in-time image in the HTI pool without a dedicated S-VOL.
+################################################################################
+resource "hitachi_vsp_snapshot" "ti_standard" {
+  serial              = 54321
+  state               = "create"
+  pvol_ldev_id        = 281
+  snapshot_pool_id    = 103 # HTI Pool ID
+  snapshot_group_name = "DB_SNAP_POOL"
+}
+
+output "snapshot_ti_std" {
+  value = hitachi_vsp_snapshot.ti_standard
+}
+
+################################################################################
+# Example 2: Thin Image (TI) Standard - Not Cloneable
+# Pattern: state="create" with svol
+# Result: Creates a pair with svol.
+################################################################################
+resource "hitachi_vsp_snapshot" "ti_standard_noclone" {
+  serial              = 54321
+  state               = "create"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 103
+  snapshot_group_name = "SG_NOCLONE_GROUP"
+}
+
+output "snapshot_noclone" {
+  value = hitachi_vsp_snapshot.ti_standard_noclone
+}
+
+################################################################################
+# Example 3: Thin Image (TI) Standard - Auto Clone
+# Pattern: state="create" + svol + is_clone=true + auto_clone=true.
+# Result: Creates a pair and triggers a background copy. Once complete, the 
+# snapshot pair is deleted, leaving an independent physical clone.
+################################################################################
+resource "hitachi_vsp_snapshot" "ti_standard_clone" {
+  serial              = 54321
+  state               = "create"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 1
+  snapshot_group_name = "SG_CLONE_GROUP"
+
+  can_cascade = true
+  is_clone    = true
+  auto_clone  = true     # Required for physical copy
+  copy_speed  = "medium" # Requires is_clone and auto_clone
+}
+
+# NOTE: after clone, the pair is automatically deleted. No output.
+
+################################################################################
+# Example 4: Pair Lifecycle Actions (Split / Resync / Restore)
+# Pattern: state="split" or "resync" or "restore" + pvol + mirror id
+################################################################################
+resource "hitachi_vsp_snapshot" "lifecycle_mgmt" {
+  serial              = 54321
+  state               = "split" # or resync, restore
+  pvol_ldev_id        = 281
+  mirror_unit_id      = 3 # Specifically targets Mirror Unit 3
+  snapshot_pool_id    = 103
+  snapshot_group_name = "SG_NOCLONE_GROUP"
+}
+
+output "snapshot_lifecyle" {
+  value = hitachi_vsp_snapshot.lifecycle_mgmt
+}
+
+################################################################################
+# Example 5: Pair TI Standard Clone
+# Pattern: state="clone" + pvol + mirror id
+# Requirements: Pair should be clonable (is_clone).
+# Result: Once complete, the snapshot pair is deleted, leaving an independent physical clone.
+################################################################################
+resource "hitachi_vsp_snapshot" "clone" {
+  serial              = 54321
+  state               = "clone"
+  pvol_ldev_id        = 281
+  mirror_unit_id      = 3 # Specifically targets Mirror Unit 3
+  snapshot_pool_id    = 103
+  snapshot_group_name = "SG_CLONE_GROUP"
+
+  can_cascade = true
+  is_clone    = true
+  copy_speed  = "medium"
+}
+
+# NOTE: after clone, the pair is automatically deleted. No output.
+
+################################################################################
+# Example 6: Thin Image Advanced (TIA) Create
+# Pattern: state="create"
+# Result: Creates a TIA pair
+################################################################################
+resource "hitachi_vsp_snapshot" "ti_advanced" {
+  serial              = 54321
+  state               = "create"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 103
+  snapshot_group_name = "SG_TIA_GROUP"
+
+  # TIA Requirements
+  can_cascade                  = true
+  is_data_reduction_force_copy = true
+}
+
+output "snapshot_tia" {
+  value = hitachi_vsp_snapshot.ti_advanced
+}
+
+################################################################################
+# Example 7: Thin Image Advanced (TIA) - Redirect-on-Write Virtual Clone
+# Pattern: state="vclone" + + pvol + mirror id.
+# Requirements: 
+#   - Pool must be HDP. 
+#   - Volumes must be DRS (Capacity Saving + DRS enabled).
+#   - can_cascade must be true. Default is true.
+################################################################################
+resource "hitachi_vsp_snapshot" "tia_vclone" {
+  serial              = 54321
+  state               = "vclone"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 5 # HDP Pool ID
+  snapshot_group_name = "TIA_ROW_GROUP"
+
+  # TIA Requirements
+  can_cascade                  = true
+  is_data_reduction_force_copy = true
+}
+
+output "snapshot_vclone_info" {
+  value = hitachi_vsp_snapshot.tia_vclone
+}
+
+################################################################################
+# Example 8: Thin Image Advanced (TIA) - Virtual Restore (Pair-Back & Revert)
+# Pattern: state="vrestore" + + pvol + mirror id.
+# Note: This reverts the P-VOL data to the point-in-time captured by the S-VOL.
+################################################################################
+resource "hitachi_vsp_snapshot" "tia_vrestore" {
+  serial              = 54321
+  state               = "vrestore"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 5 # HDP Pool ID
+  snapshot_group_name = "TIA_ROW_GROUP"
+
+  # TIA Requirements
+  can_cascade                  = true
+  is_data_reduction_force_copy = true
+}
+
+output "snapshot_vrestore_info" {
+  value = hitachi_vsp_snapshot.tia_vrestore
+}
+
+################################################################################
+# Example 9: Thin Image Advanced (TIA) - Update with Retention
+# Pattern: state="create" + retention_period_hours + auto_split for new snapshot
+#          state="create" + retention_period_hours for existing snapshot
+# Note: Creates a new snapshot or update existing snapshot that is already split
+#       and immediately applies a retention lock.
+#       The snapshot cannot be resync, restored, or deleted until the timer expires.
+################################################################################
+resource "hitachi_vsp_snapshot" "tia_update_with_lock" {
+  serial              = 54321
+  state               = "create"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 5
+  snapshot_group_name = "TIA_RECOVERY_GROUP"
+
+  retention_period_hours = 2
+  # auto_split = true # if for new snapshot create
+  is_data_reduction_force_copy = true
+}
+
+output "snapshot_retention" {
+  value = hitachi_vsp_snapshot.tia_update_with_lock
+}
+
+################################################################################
+# Example 10: Assign S-VOL
+# Pattern: state="create" + pvol + svol + mirror id
+# Note: Creates a new snapshot or update existing snapshot originally without svol
+################################################################################
+resource "hitachi_vsp_snapshot" "assign_svol" {
+  serial              = 54321
+  state               = "create"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 301 # The LDEV to be assigned as the S-VOL
+  snapshot_pool_id    = 5
+  snapshot_group_name = "TIA_ASSIGN_GROUP"
+}
+
+output "snapshot_assign_svol" {
+  value = hitachi_vsp_snapshot.assign_svol
+}
+
+################################################################################
+# Example 11: Unassign S-VOL
+# Pattern: state="create" + pvol + mirror id, no svol
+# Note: Creates a new snapshot without svol
+#       or update existing snapshot originally with svol.
+#       Removes the relationship between the P-VOL and S-VOL and
+#       deletes the S-VOL LDEV.
+################################################################################
+resource "hitachi_vsp_snapshot" "unassign_svol" {
+  serial       = 54321
+  state        = "create"
+  pvol_ldev_id = 281
+  # remove svol_ldev_id
+  snapshot_group_name = "TIA_UNASSIGN_GROUP"
+}
+
+output "snapshot_unassign_svol" {
+  value = hitachi_vsp_snapshot.unassign_svol
+}
+
+################################################################################
+# Example 12: Thin Image Advanced (TIA) - Pool Defragmentation
+# Pattern: state="defrag" + defrag_operation + pvol_ldev_id
+# Note: Used to optimize Thin Image pool capacity by reclaiming 
+#       fragmented space. Asynchronous operation can be "start" or "stop".
+################################################################################
+resource "hitachi_vsp_snapshot" "tia_pool_defrag" {
+  serial              = 54321
+  state               = "defrag"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_pool_id    = 5
+  snapshot_group_name = "TIA_ROW_GROUP"
+
+  defrag_operation = "start" # or "stop"
+}
+
+output "defrag_info" {
+  value = hitachi_vsp_snapshot.tia_pool_defrag
+}
+
+################################################################################
+# Example 13: Delete Tree (TI Std Recursive Cleanup) 
+# Pattern: state="deletetree" + pvol_ldev_id
+# Note: Deletes the specified snapshot and all cascaded child snapshots 
+#       associated with it in the hierarchy.
+################################################################################
+resource "hitachi_vsp_snapshot" "cleanup_branch" {
+  serial              = 54321
+  state               = "deletetree"
+  pvol_ldev_id        = 281
+  svol_ldev_id        = 283
+  snapshot_group_name = "TIA_ROW_GROUP"
+
+}
+
+output "deletetree_info" {
+  value = hitachi_vsp_snapshot.cleanup_branch
+}
+
+
+
+
+##############################################################
+##############################################################
+# Hitachi VSP Snapshot - Thin Image Standard Example Workflow
+##############################################################
+##############################################################
+
+##############################################################
+# 1. PRIMARY VOLUME (P-VOL)
+# Standard volume with Capacity Saving disabled.
+##############################################################
+
+resource "hitachi_vsp_volume" "pvol" {
+  serial          = 54321
+  pool_id         = 17
+  size_gb         = 1
+  capacity_saving = "disabled"
+}
+
+##############################################################
+# 2. SECONDARY VOLUME (S-VOL)
+# Target volume for the snapshot; matches P-VOL size.
+##############################################################
+
+resource "hitachi_vsp_volume" "svol" {
+  serial          = 54321
+  pool_id         = 17
+  size_gb         = hitachi_vsp_volume.pvol.size_gb # same as pvol
+  capacity_saving = "disabled"
+}
+
+##############################################################
+# 3. THIN IMAGE STANDARD SNAPSHOT
+# Establishes the relationship between P-VOL and S-VOL.
+##############################################################
+
+resource "hitachi_vsp_snapshot" "snapshot_ti_std" {
+  # --- Identity ---
+  serial              = 54321
+  state               = "create"
+  snapshot_group_name = "SG_TI_WORKFLOW"
+  snapshot_pool_id    = 103
+
+  # --- Logical Mapping (Linking Volumes) ---
+  # References the first element [0] of the computed volume list
+  pvol_ldev_id = hitachi_vsp_volume.pvol.volume[0].ldev_id
+  svol_ldev_id = hitachi_vsp_volume.svol.volume[0].ldev_id
+
+  # --- TI Standard Rules ---
+  # Force Copy is not required since capacity_saving is disabled
+  is_data_reduction_force_copy = false
+
+  # Standard TI allows cloning and cascading
+  # is_clone    = true
+  can_cascade = true
+
+  # mu_number = 3 # Uncomment to specify a Mirror Unit
+
+  # check output
+  lifecycle {
+    # Ensure this doesn't accidentally become a TIA (Redirect-on-Write) pair
+    postcondition {
+      condition     = self.snapshot[0].is_redirect_on_write == false
+      error_message = "Logic Error: Snapshot created as TIA (Redirect-on-Write), but HTI Standard was expected."
+    }
+
+    # Ensure the pair reached a healthy state (PAIR or PSUS)
+    postcondition {
+      condition     = contains(["PAIR", "COPY"], self.snapshot[0].status)
+      error_message = "Snapshot Failure: The pair is in an unhealthy status: ${self.snapshot[0].status}."
+    }
+  }
+}
+
+##############################################################
+# 4. OUTPUTS
+# These provide immediate visibility into the assigned IDs.
+##############################################################
+
+output "pvol_id" {
+  description = "Assigned LDEV ID for the Primary Volume"
+  value       = hitachi_vsp_volume.pvol.volume[0].ldev_id
+}
+
+output "svol_id" {
+  description = "Assigned LDEV ID for the Secondary Volume"
+  value       = hitachi_vsp_volume.svol.volume[0].ldev_id
+}
+
+output "snapshot_info" {
+  description = "Summary of the created snapshot pair"
+  value       = hitachi_vsp_snapshot.snapshot_ti_std
+}
+
+
+
+##############################################################
+##############################################################
+# Hitachi VSP Snapshot - Thin Image Advanced Example Workflow
+##############################################################
+##############################################################
+
+##############################################################
+# VARIABLES
+##############################################################
+
+variable "tia_hdp_pool_id" {
+  type        = number
+  default     = 17
+  description = "The HDP Pool ID where TIA volumes and snapshots will reside"
+}
+
+##############################################################
+# 1. PRIMARY VOLUME (P-VOL)
+##############################################################
+
+resource "hitachi_vsp_volume" "pvol" {
+  serial  = 54321
+  pool_id = var.tia_hdp_pool_id
+  size_gb = 1
+
+  # TIA Requirements: Capacity Saving and DRS must be enabled
+  capacity_saving                         = "compression_deduplication"
+  is_data_reduction_shared_volume_enabled = true
+
+  # check output
+  lifecycle {
+    # Verify the backend actually reports 'DRS' in the attributes list
+    postcondition {
+      condition     = contains(self.volume[0].attributes, "DRS")
+      error_message = "P-VOL hardware verification failed: The 'DRS' attribute is missing from the storage system response."
+    }
+
+    # Verify Capacity Saving mode matches TIA requirements
+    postcondition {
+      condition     = contains(["compression", "compression_deduplication"], self.volume[0].data_reduction_mode)
+      error_message = "P-VOL must have compression or deduplication active for TIA."
+    }
+  }
+}
+
+##############################################################
+# 2. SECONDARY VOLUME (S-VOL)
+##############################################################
+
+resource "hitachi_vsp_volume" "svol" {
+  serial  = 54321
+  pool_id = var.tia_hdp_pool_id
+  size_gb = hitachi_vsp_volume.pvol.size_gb # same as pvol
+
+  capacity_saving                         = "compression_deduplication"
+  is_data_reduction_shared_volume_enabled = true
+
+  # check output
+  lifecycle {
+    # Check the backend attributes for the 'DRS' string
+    postcondition {
+      condition     = contains(self.volume[0].attributes, "DRS")
+      error_message = "S-VOL hardware verification failed: The 'DRS' attribute is missing from the storage system response."
+    }
+
+    # TIA Requirement: S-VOL and P-VOL must share the same Pool ID
+    postcondition {
+      condition     = self.volume[0].pool_id == hitachi_vsp_volume.pvol.volume[0].pool_id
+      error_message = "TIA Compliance Error: S-VOL pool ID must match P-VOL pool ID for Redirect-on-Write."
+    }
+  }
+}
+
+##############################################################
+# 3. THIN IMAGE ADVANCED (TIA) SNAPSHOT
+##############################################################
+
+resource "hitachi_vsp_snapshot" "snapshot_tia" {
+  serial              = 54321
+  state               = "create"
+  snapshot_group_name = "SG_TIA_WORKFLOW"
+  snapshot_pool_id    = var.tia_hdp_pool_id
+
+  pvol_ldev_id = hitachi_vsp_volume.pvol.volume[0].ldev_id
+  svol_ldev_id = hitachi_vsp_volume.svol.volume[0].ldev_id
+
+  is_data_reduction_force_copy = true
+  can_cascade                  = true
+  is_clone                     = false
+
+  # check output
+  lifecycle {
+    # Ensure a TIA (Redirect-on-Write) pair
+    postcondition {
+      condition     = self.snapshot[0].is_redirect_on_write == true
+      error_message = "Hardware Mismatch: The pair was created, but the storage system did not flag it as a TIA (Redirect-on-Write) pair."
+    }
+
+    # Ensure the pair reached a healthy state (PAIR or PSUS)
+    postcondition {
+      condition     = contains(["PAIR", "PSUS"], self.snapshot[0].status)
+      error_message = "Snapshot Creation Failure: The pair is in ${self.snapshot[0].status} status."
+    }
+  }
+}
+
+##############################################################
+# 4. OUTPUTS
+##############################################################
+
+output "tia_resource_summary" {
+  value = {
+    pvol_ldev = hitachi_vsp_volume.pvol.volume[0].ldev_id
+    svol_ldev = hitachi_vsp_volume.svol.volume[0].ldev_id
+    pool_id   = var.tia_hdp_pool_id
+  }
+}
+
+output "snapshot_info" {
+  description = "Summary of the created snapshot pair"
+  value       = hitachi_vsp_snapshot.snapshot_tia
+}
+
+
+
+##############################################################
+##############################################################
+# Hitachi VSP - Assign S-VOL Workflow
+##############################################################
+##############################################################
+
+##############################################################
+# VARIABLES
+##############################################################
+variable "snapshot_group_name" {
+  type    = string
+  default = "SG_FLOATING_WORKFLOW"
+}
+variable "hdp_pool_id" {
+  type    = number
+  default = 0
+}
+variable "vol_size" {
+  type    = number
+  default = 1
+}
+variable "is_drs" {
+  type    = bool
+  default = true
+}
+
+##############################################################
+# 1. PRIMARY VOLUME (P-VOL)
+##############################################################
+resource "hitachi_vsp_volume" "pvol" {
+  serial  = var.serial_number
+  pool_id = var.hdp_pool_id
+  size_gb = var.vol_size
+
+  capacity_saving                         = var.is_drs ? "compression_deduplication" : null
+  is_data_reduction_shared_volume_enabled = var.is_drs
+}
+
+##############################################################
+# 2. FLOATING SNAPSHOT
+# Created without S-VOL LDEV ID.
+##############################################################
+resource "hitachi_vsp_snapshot" "floating_snap" {
+  serial              = var.serial_number
+  state               = "create"
+  snapshot_group_name = var.snapshot_group_name
+  snapshot_pool_id    = hitachi_vsp_volume.pvol.volume[0].pool_id
+
+  pvol_ldev_id = hitachi_vsp_volume.pvol.volume[0].ldev_id
+
+  # Note: svol_ldev_id is omitted to keep it "floating"
+
+  is_data_reduction_force_copy = var.is_drs
+}
+
+##############################################################
+# 3. SECONDARY VOLUME (S-VOL)
+# Created using the pool ID and size of P-VOL.
+##############################################################
+resource "hitachi_vsp_volume" "svol" {
+  serial  = var.serial_number
+  pool_id = var.hdp_pool_id
+  size_gb = var.vol_size
+
+  capacity_saving                         = var.is_drs ? "compression_deduplication" : null
+  is_data_reduction_shared_volume_enabled = var.is_drs
+}
+
+##############################################################
+# 4. ASSIGN S-VOL (STATE=CREATE)
+# Links the previously created S-VOL to the floating snapshot.
+##############################################################
+resource "hitachi_vsp_snapshot" "assign_svol" {
+  serial              = var.serial_number
+  state               = "create" # Triggers the assignment logic
+  snapshot_group_name = hitachi_vsp_snapshot.floating_snap.snapshot_group_name
+  snapshot_pool_id    = hitachi_vsp_volume.pvol.volume[0].pool_id
+  mirror_unit_id      = hitachi_vsp_snapshot.floating_snap.snapshot[0].mirror_unit_id
+
+  pvol_ldev_id = hitachi_vsp_volume.pvol.volume[0].ldev_id
+  svol_ldev_id = hitachi_vsp_volume.svol.volume[0].ldev_id
+
+  is_data_reduction_force_copy = var.is_drs
+
+  # Ensures the S-VOL and floating snapshot exist before assignment
+  depends_on = [
+    hitachi_vsp_volume.svol,
+    hitachi_vsp_snapshot.floating_snap
+  ]
+}
+
+##############################################################
+# OUTPUTS
+##############################################################
+
+output "pvol_ldev" {
+  value = hitachi_vsp_volume.pvol.volume[0].ldev_id
+}
+
+output "svol_ldev" {
+  value = hitachi_vsp_volume.svol.volume[0].ldev_id
+}
+
+output "floating_snaphot" {
+  value = hitachi_vsp_snapshot.floating_snap.snapshot
+}
+
+output "assigned_snapshot" {
+  value = hitachi_vsp_snapshot.assign_svol.snapshot
+}
+
+
+
+##############################################################
+##############################################################
+# Hitachi VSP - Unassign S-VOL Workflow
+##############################################################
+##############################################################
+
+##############################################################
+# VARIABLES
+##############################################################
+variable "snapshot_group_name" {
+  type    = string
+  default = "SG_FLOATING_WORKFLOW"
+}
+# Existing P-VOL and S-VOL
+variable "pvol_ldev_id" {
+  type    = number
+  default = 2239
+}
+variable "svol_ldev_id" {
+  type    = number
+  default = 2240
+}
+variable "hdp_pool_id" {
+  type    = number
+  default = 0
+}
+
+##############################################################
+# 1. UNASSIGN S-VOL (STATE=create with svol omitted)
+# This breaks the link between the P-VOL and the S-VOL.
+##############################################################
+resource "hitachi_vsp_snapshot" "unassign_svol" {
+  serial              = var.serial_number
+  state               = "create"
+  snapshot_group_name = var.snapshot_group_name
+  snapshot_pool_id    = var.hdp_pool_id
+  pvol_ldev_id        = var.pvol_ldev_id
+  mirror_unit_id      = 3
+  # Omit svol_ldev_id to trigger the unassign logic
+
+  # Optional: mu_number if you are using specific mirror units
+  # mu_number         = 3 
+}
+
+##############################################################
+# OUTPUTS
+##############################################################
+
+output "a_unassigned_snapshot" {
+  description = "Status of the snapshot after unassignment"
+  value       = hitachi_vsp_snapshot.unassign_svol.snapshot
+}
+
+output "b_released_svol_id" {
+  description = "The S-VOL LDEV ID that is unassigned and deleted"
+  value       = var.svol_ldev_id
+}
+
+
+
+##############################################################
+##############################################################
+# Hitachi VSP Snapshot - Thin Image No Cascade Example Workflow
+##############################################################
+##############################################################
+
+##############################################################
+# VARIABLES
+##############################################################
+variable "snapshot_group_name" {
+  type    = string
+  default = "SG_TI_WORKFLOW"
+}
+variable "hdp_pool_id" {
+  type    = number
+  default = 0
+}
+variable "hti_pool_id" {
+  type    = number
+  default = 3
+}
+variable "vol_size" {
+  type    = number
+  default = 1
+}
+
+##############################################################
+# 1. PRIMARY VOLUME (P-VOL)
+# Standard HDP volume.
+##############################################################
+resource "hitachi_vsp_volume" "pvol" {
+  serial  = var.serial_number
+  pool_id = var.hdp_pool_id
+  size_gb = var.vol_size
+}
+
+##############################################################
+# 2. SECONDARY VOLUME (S-VOL)
+# Created as a Snapshot V-VOL (pool_id = -1).
+##############################################################
+resource "hitachi_vsp_volume" "svol" {
+  serial  = var.serial_number
+  pool_id = -1 # Forces Snapshot V-VOL attribute
+  size_gb = var.vol_size
+}
+
+##############################################################
+# 3. DUMMY HOST GROUP (ANCHOR PATHS)
+##############################################################
+resource "hitachi_vsp_hostgroup" "dummy_path" {
+  serial         = var.serial_number
+  hostgroup_name = "TI_HG_DUMMY"
+  port_id        = "CL1-A"
+  host_mode      = "Standard"
+
+  # Map P-VOL
+  lun {
+    ldev_id = hitachi_vsp_volume.pvol.volume[0].ldev_id
+    lun     = 11
+  }
+
+  # Map S-VOL
+  lun {
+    ldev_id = hitachi_vsp_volume.svol.volume[0].ldev_id
+    lun     = 12
+  }
+
+  wwn {
+    host_wwn = "1234567890123456"
+  }
+
+  depends_on = [
+    hitachi_vsp_volume.pvol,
+    hitachi_vsp_volume.svol,
+  ]
+}
+
+##############################################################
+# 4. THIN IMAGE SNAPSHOT (NO CASCADE)
+##############################################################
+resource "hitachi_vsp_snapshot" "snapshot_no_cascade" {
+  serial              = var.serial_number
+  state               = "create"
+  snapshot_group_name = var.snapshot_group_name
+  snapshot_pool_id    = var.hti_pool_id
+
+  pvol_ldev_id = hitachi_vsp_volume.pvol.volume[0].ldev_id
+  svol_ldev_id = hitachi_vsp_volume.svol.volume[0].ldev_id
+
+  # Non-Cascade
+  can_cascade = false
+
+  depends_on = [
+    hitachi_vsp_hostgroup.dummy_path
+  ]
+}
+
+##############################################################
+# OUTPUTS
+# These provide immediate visibility into the assigned IDs.
+##############################################################
+
+output "pvol_id" {
+  description = "Assigned LDEV ID for the Primary Volume"
+  value       = hitachi_vsp_volume.pvol.volume[0].ldev_id
+}
+
+output "svol_id" {
+  description = "Assigned LDEV ID for the Secondary Volume"
+  value       = hitachi_vsp_volume.svol.volume[0].ldev_id
+}
+
+output "snapshot_info" {
+  description = "Summary of the created snapshot pair"
+  value       = hitachi_vsp_snapshot.snapshot_no_cascade
+}

@@ -63,8 +63,7 @@ var ResourceComputePortSchema = map[string]*schema.Schema{
 	// output
 	"compute_port": &schema.Schema{
 		Type:        schema.TypeList,
-		Computed:    true,
-		Optional:    true,
+		Required:    true,
 		Description: "Outputs information about the volume",
 		Elem: &schema.Resource{
 			Schema: VssbIscsiPortAuthInfoSchema,
@@ -86,8 +85,8 @@ var DataSourceVssbComputePortSchema = map[string]*schema.Schema{
 
 	// output
 	"compute_port": &schema.Schema{
-		Type:     schema.TypeList,
-		Computed: true,
+		Type:        schema.TypeList,
+		Computed:    true,
 		Optional:    true,
 		Description: "Outputs information about the compute port",
 		Elem: &schema.Resource{

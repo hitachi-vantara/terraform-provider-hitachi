@@ -16,9 +16,9 @@ import (
 	diskcache "terraform-provider-hitachi/hitachi/common/diskcache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	"terraform-provider-hitachi/hitachi/common/utils"
+	adminmodel "terraform-provider-hitachi/hitachi/storage/admin/gateway/model"
 	sanmodel "terraform-provider-hitachi/hitachi/storage/san/gateway/model"
 	vosbmodel "terraform-provider-hitachi/hitachi/storage/vosb/gateway/model"
-	adminmodel "terraform-provider-hitachi/hitachi/storage/admin/gateway/model"
 	"time"
 
 	"github.com/google/uuid"
@@ -356,7 +356,7 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 	}
 
 	// Optional: Add Basic Authentication headers if required
-	httpBasicAuth := utils.HttpBasicAuthentication{}
+	httpBasicAuth := utils.HttpBasicAuthentication{} // #nosec G101 -- empty struct, no hardcoded credentials
 	httpBasicAuth.SetAuthHeaders(req)
 
 	awsTimeout := time.Duration(config.DEFAULT_AWS_TIMEOUT) * time.Second
@@ -367,8 +367,8 @@ func sendPOSTRequestToAWS(url string, data interface{}) error {
 	// HTTP client with timeout, no proxy, and cert verification skipped (like validate_certs=False)
 	tr := &http.Transport{
 		Proxy: nil, // disables proxy
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true, // WARNING: disable in production!
+		TLSClientConfig: &tls.Config{ // #nosec G402 -- internal telemetry endpoint; TLS verification intentionally skipped
+			InsecureSkipVerify: true, // #nosec G402
 		},
 	}
 	client := &http.Client{

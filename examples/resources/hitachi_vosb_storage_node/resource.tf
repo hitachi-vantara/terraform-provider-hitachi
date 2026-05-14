@@ -112,9 +112,9 @@
 // - setup_user_password: password to use to log into the storage node to be added.
 
 resource "hitachi_vosb_storage_node" "storageNode" {
-  vosb_address = var.vosb_address
-  configuration_file = "/tmp/configuration.csv"
-  setup_user_password = "password"
+  vosb_address        = var.vosb_address
+  configuration_file  = "/tmp/configuration.csv"
+  setup_user_password = var.setup_user_password
 }
 
 output "node_output" {

@@ -206,7 +206,9 @@ func updateSnapshotGroupResourceState(d *schema.ResourceData, group *gwymodel.Sn
 			return diag.FromErr(err)
 		}
 	} else {
-		d.Set("snapshot_group", []map[string]interface{}{})
+		if err := d.Set("snapshot_group", []map[string]interface{}{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	// 2. Handle promoted vClone data
@@ -215,7 +217,9 @@ func updateSnapshotGroupResourceState(d *schema.ResourceData, group *gwymodel.Sn
 			return diag.FromErr(err)
 		}
 	} else {
-		d.Set("vclones", []map[string]interface{}{})
+		if err := d.Set("vclones", []map[string]interface{}{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return nil

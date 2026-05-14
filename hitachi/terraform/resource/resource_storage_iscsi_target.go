@@ -19,7 +19,6 @@ var syncIscsiTargetOperation = &sync.Mutex{}
 func ResourceStorageIscsiTarget() *schema.Resource {
 	return &schema.Resource{
 		Description: "VSP Storage iSCSI Target: The following request creates a iSCSI target and the iSCSI name for the port. The host mode and the host mode option can also be specified at the same time when the iSCSI target is created.",
-
 		CreateContext: resourceStorageIscsiTargetCreate,
 		ReadContext:   resourceStorageIscsiTargetRead,
 		UpdateContext: resourceStorageIscsiTargetUpdate,
@@ -44,7 +43,6 @@ func resourceStorageIscsiTargetCreate(ctx context.Context, d *schema.ResourceDat
 
 	iscsiTarget, err := impl.CreateIscsiTarget(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -54,11 +52,12 @@ func resourceStorageIscsiTargetCreate(ctx context.Context, d *schema.ResourceDat
 		*it,
 	}
 	if err := d.Set("iscsitarget", itList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("iscsi_target_number", iscsiTarget.IscsiTargetNumber)
+	if err := d.Set("iscsi_target_number", iscsiTarget.IscsiTargetNumber); err != nil {
+		return diag.FromErr(err)
+	}
 	createID := fmt.Sprintf("%s%d", iscsiTarget.PortID, iscsiTarget.IscsiTargetNumber)
 	d.SetId(createID)
 	log.WriteInfo("iscsi target created successfully")
@@ -88,6 +87,9 @@ func resourceStorageIscsiTargetRead(ctx context.Context, d *schema.ResourceData,
 	if err := d.Set("iscsitarget", itList); err != nil {
 		return diag.FromErr(err)
 	}
+	if err := d.Set("iscsi_target_number", iscsiTarget.IscsiTargetNumber); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(iscsiTarget.PortID + strconv.Itoa(iscsiTarget.IscsiTargetNumber))
 	log.WriteInfo("iscsiTarget read successfully")
@@ -107,7 +109,6 @@ func resourceStorageIscsiTargetUpdate(ctx context.Context, d *schema.ResourceDat
 
 	iscsiTarget, err := impl.UpdateIscsiTarget(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -117,11 +118,12 @@ func resourceStorageIscsiTargetUpdate(ctx context.Context, d *schema.ResourceDat
 		*hg,
 	}
 	if err := d.Set("iscsitarget", hgList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("iscsi_target_number", iscsiTarget.IscsiTargetNumber)
+	if err := d.Set("iscsi_target_number", iscsiTarget.IscsiTargetNumber); err != nil {
+		return diag.FromErr(err)
+	}
 	updatedID := fmt.Sprintf("%s%d", iscsiTarget.PortID, iscsiTarget.IscsiTargetNumber)
 	d.SetId(updatedID)
 	log.WriteInfo("iscsi target updated successfully")
@@ -141,15 +143,15 @@ func resourceStorageIscsiTargetDelete(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	d.SetId("")
 	log.WriteInfo("iscsi target deleted successfully")
 	return nil
 }
 
 func resourceStorageIscsiTargetCustomDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
 	// Fix console output
-	d.SetNewComputed("iscsitarget")
+	if err := d.SetNewComputed("iscsitarget"); err != nil {
+		return err
+	}
 
 	return validateLunIscsi(ctx, d, meta)
 }
@@ -164,7 +166,7 @@ func validateLunIscsi(ctx context.Context, d *schema.ResourceDiff, meta interfac
 		m := item.(map[string]interface{})
 
 		// Retrieve actual values
-		idVal := m["ldev_id"].(int)      // default = -1
+		idVal := m["ldev_id"].(int)         // default = -1
 		hexVal := m["ldev_id_hex"].(string) // default = ""
 
 		hasID := idVal != -1   // -1 = not provided

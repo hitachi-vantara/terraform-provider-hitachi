@@ -68,10 +68,16 @@ func DatasourceVspSnapshotFamilyRead(d *schema.ResourceData) diag.Diagnostics {
 		if err := d.Set("family_members", members); err != nil {
 			return diag.FromErr(err)
 		}
-		d.Set("total_members", len(members))
+		if err := d.Set("total_members", len(members)); err != nil {
+			return diag.FromErr(err)
+		}
 	} else {
-		d.Set("total_members", 0)
-		d.Set("family_members", []interface{}{})
+		if err := d.Set("total_members", 0); err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("family_members", []interface{}{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
@@ -108,10 +114,16 @@ func DatasourceVspVirtualCloneParentVolumeRead(d *schema.ResourceData) diag.Diag
 		if err := d.Set("parent_volumes_hex", parentLdevIdsHex); err != nil {
 			return diag.FromErr(err)
 		}
-		d.Set("parent_count", len(parentLdevIds))
+		if err := d.Set("parent_count", len(parentLdevIds)); err != nil {
+			return diag.FromErr(err)
+		}
 	} else {
-		d.Set("parent_volumes", []int{})
-		d.Set("parent_count", 0)
+		if err := d.Set("parent_volumes", []int{}); err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("parent_count", 0); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))

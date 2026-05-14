@@ -2,9 +2,10 @@ package terraform
 
 import (
 	"fmt"
+	"regexp"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"regexp"
 )
 
 // separate input and output schema for better readability, then combine them
@@ -809,17 +810,19 @@ func resourceAdminPortInputSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"serial": {
 			Type:        schema.TypeInt,
-			Required:    true,
-			Description: "Serial number of storage",
+			Optional:    true,
+			Computed:    true,
+			Description: "Serial number of storage. Required for create/update and import.",
 		},
 		"port_id": {
 			Type:        schema.TypeString,
-			Required:    true,
-			Description: "ID of the port to update.",
+			Optional:    true,
+			Computed:    true,
+			Description: "ID of the port to update. Required for create/update; optional for import.",
 		},
 		"port_speed": {
-			Type:        schema.TypeString,
-			Optional:    true,
+			Type:     schema.TypeString,
+			Optional: true,
 			Description: `Port speed setting. Valid values: NUMBER_0, NUMBER_1, NUMBER_4, NUMBER_8, NUMBER_10, NUMBER_16, NUMBER_25, NUMBER_32, NUMBER_64, NUMBER_100.
 	- Equivalences: NUMBER_0 = Auto, NUMBER_1 = 1Gbps, NUMBER_4 = 4Gbps, NUMBER_8 = 8Gbps, NUMBER_10 = 10Gbps, NUMBER_16 = 16Gbps, NUMBER_25 = 25Gbps, NUMBER_32 = 32Gbps, NUMBER_64 = 64Gbps, NUMBER_100 = 100Gbps.
 	- For iSCSI 10G (optical) ports, the speed is fixed at 10G, and any other specified value is ignored.`,

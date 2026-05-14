@@ -401,7 +401,8 @@ func resourceVspSnapshotInputSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"serial": {
 			Type:         schema.TypeInt,
-			Required:     true,
+			Optional:     true,
+			Computed:     true,
 			Description:  "Storage system serial number.",
 			ValidateFunc: validation.IntAtLeast(1),
 		},
@@ -469,28 +470,24 @@ func resourceVspSnapshotInputSchema() map[string]*schema.Schema {
 		"auto_split": {
 			Type:          schema.TypeBool,
 			Optional:      true,
-			Default:       false,
 			Description:   "Automatically split the pair during create, resync, or restore. Incompatible with CTG or clones. Cannot set with is_consistency_group, is_clone, or auto_clone.",
 			ConflictsWith: []string{"is_consistency_group", "is_clone", "auto_clone"},
 		},
 		"is_consistency_group": {
 			Type:          schema.TypeBool,
 			Optional:      true,
-			Default:       false,
 			Description:   "Enable snapshot group in Consistency Group (CTG) mode. Restricts individual split actions.",
 			ConflictsWith: []string{"auto_split"},
 		},
 		"is_clone": {
 			Type:          schema.TypeBool,
 			Optional:      true,
-			Default:       false,
 			Description:   "Enable the clone attribute. Must be true to use the 'clone' action. Only for TI Std. Must not specify auto_split or is_consistency_group. Requires can_cascade to be true",
 			ConflictsWith: []string{"auto_split"},
 		},
 		"auto_clone": {
 			Type:          schema.TypeBool,
 			Optional:      true,
-			Default:       false,
 			Description:   "Automatically clone the pair after creation. Requires is_clone to be true.",
 			ConflictsWith: []string{"auto_split"},
 		},
@@ -504,13 +501,11 @@ func resourceVspSnapshotInputSchema() map[string]*schema.Schema {
 		"can_cascade": {
 			Type:        schema.TypeBool,
 			Optional:    true,
-			Default:     true,
-			Description: "True if the pair can be a cascaded pair. Default is true.",
+			Description: "True if the pair can be a cascaded pair. If omitted, the storage system default is used.",
 		},
 		"is_data_reduction_force_copy": {
 			Type:        schema.TypeBool,
 			Optional:    true,
-			Default:     false,
 			Description: "Must be true if P-VOL has capacity saving enabled.",
 		},
 		"retention_period_hours": {

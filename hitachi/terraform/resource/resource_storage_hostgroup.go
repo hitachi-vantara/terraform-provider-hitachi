@@ -24,14 +24,45 @@ var syncHostGroupOperation = &sync.Mutex{}
 
 func ResourceStorageHostGroup() *schema.Resource {
 	return &schema.Resource{
-		Description:   `VSP Storage Host Group: The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.`,
+		Description: `VSP Storage Host Group: The following request creates a host group for the port. The host mode and the host mode option can also be specified at the same time when the host group is created.`,
+		Importer: &schema.ResourceImporter{
+			StateContext: importVspHostGroup,
+		},
 		CreateContext: resourceStorageHostGroupCreate,
 		ReadContext:   resourceStorageHostGroupRead,
-		UpdateContext: resourceStorageHostGroupCreate,
+		UpdateContext: resourceStorageHostGroupUpdate,
 		DeleteContext: resourceStorageHostGroupDelete,
 		Schema:        schemaimpl.ResourceHostGroupSchema,
 		CustomizeDiff: resourceMyResourceCustomDiffHostGroup,
 	}
+}
+
+func validateSanPortExistsForHostGroup(d *schema.ResourceData) error {
+	serial := d.Get("serial").(int)
+	portID, ok := d.GetOk("port_id")
+	if !ok {
+		return nil
+	}
+
+	storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
+	if err != nil {
+		return err
+	}
+
+	setting := reconcilermodel.StorageDeviceSettings{
+		Serial:   storageSetting.Serial,
+		Username: storageSetting.Username,
+		Password: storageSetting.Password,
+		MgmtIP:   storageSetting.MgmtIP,
+	}
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		return err
+	}
+
+	_, err = reconObj.GetStoragePortByPortId(portID.(string))
+	return err
 }
 
 func resourceStorageHostGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -46,9 +77,12 @@ func resourceStorageHostGroupCreate(ctx context.Context, d *schema.ResourceData,
 
 	serial := d.Get("serial").(int)
 
+	if err := validateSanPortExistsForHostGroup(d); err != nil {
+		return diag.FromErr(err)
+	}
+
 	hostGroup, err := impl.CreateHostGroup(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -58,11 +92,12 @@ func resourceStorageHostGroupCreate(ctx context.Context, d *schema.ResourceData,
 		*hg,
 	}
 	if err := d.Set("hostgroup", hgList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("hostgroup_number", hostGroup.HostGroupNumber)
+	if err := d.Set("hostgroup_number", hostGroup.HostGroupNumber); err != nil {
+		return diag.FromErr(err)
+	}
 	createID := fmt.Sprintf("%s,%d,%s", hostGroup.PortID, hostGroup.HostGroupNumber, hostGroup.HostGroupName)
 	d.SetId(createID)
 	log.WriteInfo("hg created successfully")
@@ -108,9 +143,12 @@ func resourceStorageHostGroupUpdate(ctx context.Context, d *schema.ResourceData,
 
 	serial := d.Get("serial").(int)
 
+	if err := validateSanPortExistsForHostGroup(d); err != nil {
+		return diag.FromErr(err)
+	}
+
 	hostGroup, err := impl.UpdateHostGroup(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -120,11 +158,12 @@ func resourceStorageHostGroupUpdate(ctx context.Context, d *schema.ResourceData,
 		*hg,
 	}
 	if err := d.Set("hostgroup", hgList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("hostgroup_number", hostGroup.HostGroupNumber)
+	if err := d.Set("hostgroup_number", hostGroup.HostGroupNumber); err != nil {
+		return diag.FromErr(err)
+	}
 	updatedID := fmt.Sprintf("%s,%d,%s", hostGroup.PortID, hostGroup.HostGroupNumber, hostGroup.HostGroupName)
 	d.SetId(updatedID)
 	log.WriteInfo("hg updated successfully")
@@ -143,8 +182,6 @@ func resourceStorageHostGroupDelete(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	d.SetId("")
 	log.WriteInfo("hg deleted successfully")
 	return nil
 }
@@ -154,59 +191,51 @@ func resourceMyResourceCustomDiffHostGroup(ctx context.Context, d *schema.Resour
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	serial := d.Get("serial").(int)
-
+	// Identity requirements (schema is Optional+Computed to support import with empty config).
 	if d.Id() == "" {
-		// create
-		storageSetting, err := cache.GetSanSettingsFromCache(strconv.Itoa(serial))
-		if err != nil {
-			return err
+		if d.Get("serial").(int) < 1 {
+			return fmt.Errorf("serial must be specified and must be >= 1")
 		}
-
-		setting := reconcilermodel.StorageDeviceSettings{
-			Serial:   storageSetting.Serial,
-			Username: storageSetting.Username,
-			Password: storageSetting.Password,
-			MgmtIP:   storageSetting.MgmtIP,
+		if strings.TrimSpace(d.Get("port_id").(string)) == "" {
+			return fmt.Errorf("port_id must be specified")
 		}
-
-		reconObj, err := reconimpl.NewEx(setting)
-		if err != nil {
-			log.WriteDebug("TFError| error in Reconciler NewEx, err: %v", err)
-			return err
-		}
-
-		// Validate allowed name format
-		pattern := `^[A-Za-z0-9.@_:-]{1,64}$`
-		reg := regexp.MustCompile(pattern)
-
-		hgName, ok := d.GetOk("hostgroup_name")
-		// Check if the value matches the pattern
-		if ok {
-			if !reg.MatchString(hgName.(string)) {
-				return fmt.Errorf("hostgroup_name must be 1–64 chars, alphanumeric or . @ _ : -, cannot start with '-'")
-			}
-			if strings.HasPrefix(hgName.(string), "-") {
-				return fmt.Errorf("hostgroup_name cannot start with a hyphen (-)")
-			}
-		}
-
-		// vlidate hostgroup_number ranges from 0 to 255
-		hg_number, ok := d.GetOk("hostgroup_number")
-		if ok {
-			hgNumberInt := hg_number.(int)
-			if hgNumberInt < 0 || hgNumberInt > 255 {
-				return fmt.Errorf("hostgroup_number Value should be between 0 and 255")
-			}
-		}
-		portId, ok := d.GetOk("port_id")
-		if ok {
-			_, err := reconObj.GetStoragePortByPortId(portId.(string))
-			if err != nil {
-				return fmt.Errorf("%v", err.Error())
-			}
+		if strings.TrimSpace(d.Get("hostgroup_name").(string)) == "" {
+			return fmt.Errorf("hostgroup_name must be specified")
 		}
 	} else {
+		if d.Get("serial").(int) < 1 {
+			return fmt.Errorf("serial must be known (import or config must provide it)")
+		}
+		if strings.TrimSpace(d.Get("port_id").(string)) == "" {
+			return fmt.Errorf("port_id must be known (import or config must provide it)")
+		}
+		if strings.TrimSpace(d.Get("hostgroup_name").(string)) == "" {
+			return fmt.Errorf("hostgroup_name must be known (import or config must provide it)")
+		}
+	}
+
+	// Validate allowed name format
+	pattern := `^[A-Za-z0-9.@_:-]{1,64}$`
+	reg := regexp.MustCompile(pattern)
+
+	if hgName, ok := d.GetOk("hostgroup_name"); ok {
+		if !reg.MatchString(hgName.(string)) {
+			return fmt.Errorf("hostgroup_name must be 1–64 chars, alphanumeric or . @ _ : -, cannot start with '-'")
+		}
+		if strings.HasPrefix(hgName.(string), "-") {
+			return fmt.Errorf("hostgroup_name cannot start with a hyphen (-)")
+		}
+	}
+
+	// validate hostgroup_number ranges from 0 to 255
+	if hgNumber, ok := d.GetOk("hostgroup_number"); ok {
+		hgNumberInt := hgNumber.(int)
+		if hgNumberInt < 0 || hgNumberInt > 255 {
+			return fmt.Errorf("hostgroup_number Value should be between 0 and 255")
+		}
+	}
+
+	if d.Id() != "" {
 		// update
 		storedPortID, storedHgNum, storedHgName, err := terrcommon.ParseHostGroupFromID(d.Id())
 		if err != nil {
@@ -285,7 +314,9 @@ func resourceMyResourceCustomDiffHostGroup(ctx context.Context, d *schema.Resour
 	//TODO:   hgModeOpt validation
 
 	// Fix console output
-	d.SetNewComputed("hostgroup")
+	if err := d.SetNewComputed("hostgroup"); err != nil {
+		return err
+	}
 
 	return validateLun(ctx, d, m)
 
@@ -301,7 +332,7 @@ func validateLun(ctx context.Context, d *schema.ResourceDiff, meta interface{}) 
 		m := item.(map[string]interface{})
 
 		// Retrieve actual values
-		idVal := m["ldev_id"].(int)      // default = -1
+		idVal := m["ldev_id"].(int)         // default = -1
 		hexVal := m["ldev_id_hex"].(string) // default = ""
 
 		hasID := idVal != -1   // -1 = not provided

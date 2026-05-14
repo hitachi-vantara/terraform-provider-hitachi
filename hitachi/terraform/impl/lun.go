@@ -387,7 +387,12 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*reconcilermodel.LunReq
 	}
 
 	// placement fields (read early so name handling can inspect them)
-	pool_id := d.Get("pool_id").(int)
+	var pool_id int
+	poolIDProvided := false
+	if v, ok := d.GetOkExists("pool_id"); ok {
+		pool_id = v.(int)
+		poolIDProvided = true
+	}
 	pool_name := d.Get("pool_name").(string)
 	paritygroup_id := d.Get("paritygroup_id").(string)
 	external_paritygroup_id := d.Get("external_paritygroup_id").(string)
@@ -396,7 +401,7 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*reconcilermodel.LunReq
 	if ok {
 		// For mainframe volumes created on a parity group, skip sending the
 		// label on create (the storage requires a follow-up update to set it).
-		skipLabel := isMainframe && paritygroup_id != "" && pool_id < 0 && pool_name == "" && external_paritygroup_id == "" && name.(string) != ""
+		skipLabel := isMainframe && paritygroup_id != "" && (!poolIDProvided || pool_id < 0) && pool_name == "" && external_paritygroup_id == "" && name.(string) != ""
 		if !skipLabel {
 			label := name.(string)
 			createInput.Name = &label
@@ -423,10 +428,9 @@ func CreateLunRequestFromSchema(d *schema.ResourceData) (*reconcilermodel.LunReq
 		}
 	}
 
-	log.WriteDebug("Pool ID=%v Pool Name=%v PG=%v ExPG=%v\n", pool_id, pool_name, paritygroup_id, external_paritygroup_id)
+	log.WriteDebug("Pool ID=%v (provided=%v) Pool Name=%v PG=%v ExPG=%v\n", pool_id, poolIDProvided, pool_name, paritygroup_id, external_paritygroup_id)
 
-	if pool_id >= -1 {
-		// pool_id_int := pool_id.(int)
+	if poolIDProvided {
 		createInput.PoolID = &pool_id
 	} else if pool_name != "" {
 		ppid, err := GetPoolIdFromPoolName(d, pool_name)
@@ -734,8 +738,9 @@ func UpdateLun(d *schema.ResourceData) (*sangatewaymodel.LogicalUnit, error) {
 
 	serial := d.Get("serial").(int)
 
-	// Mainframe vs block is driven ONLY by cylinder presence.
-	_, isMainframe := d.GetOk("cylinder")
+	// Mainframe vs block is driven by cylinder presence in config.
+	// For existing resources (including imports), allow inferring mainframe from state output.
+	isMainframe := isMainframeFromResourceData(d)
 
 	reconcilerUpdateLunRequest, err := UpdateLunRequestFromSchema(d)
 	if err != nil {
@@ -854,6 +859,44 @@ func UpdateLun(d *schema.ResourceData) (*sangatewaymodel.LogicalUnit, error) {
 	log.WriteInfo(mc.GetMessage(mc.INFO_UPDATE_LUN_END), reconcilerUpdateLunRequest.LdevID, setting.Serial)
 
 	return logicalUnit, nil
+}
+
+func isMainframeFromResourceData(d *schema.ResourceData) bool {
+	if d == nil {
+		return false
+	}
+	if _, ok := d.GetOk("cylinder"); ok {
+		return true
+	}
+	volRaw, ok := d.GetOk("volume")
+	if !ok {
+		return false
+	}
+	volList, ok := volRaw.([]interface{})
+	if !ok || len(volList) == 0 || volList[0] == nil {
+		return false
+	}
+	first, ok := volList[0].(map[string]interface{})
+	if !ok {
+		return false
+	}
+	if v, ok := first["cylinder"]; ok {
+		switch c := v.(type) {
+		case int:
+			return c > 0
+		case int64:
+			return c > 0
+		case float64:
+			return c > 0
+		}
+	}
+	if v, ok := first["emulation_type"]; ok {
+		if s, ok := v.(string); ok {
+			su := strings.ToUpper(s)
+			return strings.HasPrefix(su, "3390") || strings.Contains(su, "3390")
+		}
+	}
+	return false
 }
 
 func UpdateLunRequestFromSchema(d *schema.ResourceData) (*reconcilermodel.UpdateLunRequest, error) {

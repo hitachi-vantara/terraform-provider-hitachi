@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	// "fmt"
@@ -26,7 +27,6 @@ import (
 	// utils "terraform-provider-hitachi/hitachi/common/utils"
 	// reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
 	// reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
-	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -36,6 +36,13 @@ var syncHStorageNodeOperation = &sync.Mutex{}
 
 // validateVosbStorageNodeConfiguration validates the configuration based on cloud provider
 func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
+	// This resource's create operation is environment-specific, but after import (or after creation),
+	// users should be able to run `terraform plan` with an empty/minimal config without failing
+	// create-time validations.
+	if diff.Id() != "" {
+		return nil
+	}
+
 	var cloudProvider string
 	var configFile string
 	var exportedConfigFile string
@@ -100,7 +107,7 @@ func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.Reso
 		if configFile == "" {
 			return fmt.Errorf("configuration_file is required when expected_cloud_provider is 'baremetal'")
 		}
-	} else 	if cloudProvider == "google" {
+	} else if cloudProvider == "google" {
 		// For GPC: no additional parameters are required
 		if configFile != "" {
 			return fmt.Errorf("configuration_file should not be provided when expected_cloud_provider is 'google'")
@@ -121,7 +128,10 @@ func validateVosbStorageNodeConfiguration(ctx context.Context, diff *schema.Reso
 
 func ResourceVssbStorageNode() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP One SDS Block Storage Node: Registers the information of the storage node.",
+		Description: "VSP One SDS Block Storage Node: Registers the information of the storage node.",
+		Importer: &schema.ResourceImporter{
+			StateContext: importVosbStorageNode,
+		},
 		CreateContext: resourceVssbStorageNodeCreate,
 		ReadContext:   resourceVssbStorageNodeRead,
 		UpdateContext: resourceVssbStorageNodeUpdate,
@@ -157,6 +167,11 @@ func resourceVssbStorageNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	syncHStorageNodeOperation.Lock()
 	defer syncHStorageNodeOperation.Unlock()
 
+	vssbAddr, _ := d.Get("vosb_address").(string)
+	if strings.TrimSpace(vssbAddr) == "" {
+		return diag.FromErr(fmt.Errorf("vosb_address is required to create a storage node"))
+	}
+
 	log.WriteInfo("starting storage node creation")
 
 	err := impl.CreateVssbStorageNode(d)
@@ -190,7 +205,50 @@ func setOutput(d *schema.ResourceData) {
 }
 
 func resourceVssbStorageNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return datasourceimpl.DataSourceVssbStorageNodesRead(ctx, d, m)
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	nodeName := ""
+	if v, ok := d.GetOk("node_name"); ok {
+		nodeName = v.(string)
+	}
+
+	if nodeName != "" {
+		node, err := impl.GetVssbNode(d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		pList := []map[string]interface{}{
+			*impl.ConvertVssbStorageNodeToSchema(node),
+		}
+		if err := d.Set("storage_nodes", pList); err != nil {
+			return diag.FromErr(err)
+		}
+		if err := d.Set("node_name", node.Name); err != nil {
+			return diag.FromErr(err)
+		}
+		d.SetId(node.ID)
+		return nil
+	}
+
+	storageNodes, err := impl.GetVssbStorageNodes(d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	spList := []map[string]interface{}{}
+	for _, sp := range *storageNodes {
+		eachSp := impl.ConvertVssbStorageNodeToSchema(&sp)
+		spList = append(spList, *eachSp)
+	}
+	if err := d.Set("storage_nodes", spList); err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+	return nil
 }
 
 func resourceVssbStorageNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

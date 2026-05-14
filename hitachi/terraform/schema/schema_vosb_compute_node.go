@@ -45,12 +45,12 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "OS type",
 	},
-	"total_capacity": &schema.Schema{
+	"total_capacity_in_mb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
 		Description: "Total capacity in MB",
 	},
-	"used_capacity": &schema.Schema{
+	"used_capacity_in_mb": &schema.Schema{
 		Type:        schema.TypeInt,
 		Computed:    true,
 		Description: "Used capacity in MB",
@@ -124,13 +124,15 @@ var ComputeNodeInfoSchema = map[string]*schema.Schema{
 var ResourceVssbStorageComputeNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "The host name or the IP address (IPv4) of VSP One SDS Block.",
+		Optional:    true,
+		Computed:    true,
+		Description: "The host name or the IP address (IPv4) of VSP One SDS Block. Required for create/update and import.",
 	},
 	"compute_node_name": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "Name to be created",
+		Optional:    true,
+		Computed:    true,
+		Description: "Compute node nickname (required for create/update; used for import/read by name)",
 	},
 	"os_type": &schema.Schema{
 		Type:        schema.TypeString,

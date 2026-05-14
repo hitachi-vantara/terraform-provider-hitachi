@@ -9,3 +9,9 @@ variable "hitachi_storage_password" {
   description = "Password of the Hitachi storage system."
   sensitive   = true
 }
+
+variable "chap_user_password" {
+  description = "Password for the iSCSI CHAP user."
+  type        = string
+  sensitive   = true
+}

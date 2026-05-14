@@ -17,10 +17,7 @@ func ResourceAdminServerPath() *schema.Resource {
 		ReadContext:   resourceAdminServerPathRead,
 		UpdateContext: resourceAdminServerPathUpdate,
 		DeleteContext: resourceAdminServerPathDelete,
-		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
-		},
-		Schema: schemaimpl.ResourceAdminServerPathSchema,
+		Schema:        schemaimpl.ResourceAdminServerPathSchema,
 	}
 }
 

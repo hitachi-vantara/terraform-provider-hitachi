@@ -100,7 +100,7 @@ output "volume_count" {
 # -------------------------------------
 # Specify "volume_id" (required) and omit "number_of_volumes". Only one volume can be updated at a time.
 # You can increase capacity, change capacity_saving/compression_acceleration, or nickname parameters.
-resource "hitachi_vsp_one_volume" "volume" {
+resource "hitachi_vsp_one_volume" "volume_update" {
   serial   = var.serial_number
   pool_id  = 0
   capacity = "15G"
@@ -121,9 +121,35 @@ resource "hitachi_vsp_one_volume" "volume" {
 }
 
 output "volume_info" {
-  value = hitachi_vsp_one_volume.volume.volumes_info
+  value = hitachi_vsp_one_volume.volume_update.volumes_info
 }
 
 output "volume_count" {
-  value = hitachi_vsp_one_volume.volume.volume_count
+  value = hitachi_vsp_one_volume.volume_update.volume_count
 }
+
+
+################################################################################
+# Example: Import (existing volume)
+# -----------------------------------------------------------------------------
+# Use terraform import when the volume already exists on storage and
+# you want to bring it under Terraform management without re-creating it.
+# The import reads the current state from storage and writes it to tfstate.
+#
+# Import ID format: <serial>/<volume_id[,volume_id...]>
+#   - Single volume:    <serial>/<volume_id>
+#   - Multiple volumes: <serial>/<volume_id>,<volume_id>,...
+#
+# terraform import hitachi_vsp_one_volume.imported '810045/11326'
+# terraform import hitachi_vsp_one_volume.imported '810045/11326,11327,11328'
+
+# Minimal skeleton block required for `terraform import`.
+# Create this block in your .tf before running the import command.
+resource "hitachi_vsp_one_volume" "imported" {}
+
+output "imported_volume_id" {
+  value = hitachi_vsp_one_volume.imported.id
+}
+################################################################################
+
+

@@ -47,7 +47,6 @@ func resourceStorageLunCreate(ctx context.Context, d *schema.ResourceData, m int
 
 	logicalUnit, err := impl.CreateLun(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -57,11 +56,11 @@ func resourceStorageLunCreate(ctx context.Context, d *schema.ResourceData, m int
 		*lun,
 	}
 	if err := d.Set("volume", lunList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	//d.Set("ldev_id", logicalUnit.LdevID) // input may have an empty ldev_id
+	// Populate selector in state for post-create usability.
+	_ = d.Set("ldev_id", logicalUnit.LdevID)
 	d.SetId(strconv.Itoa(logicalUnit.LdevID))
 
 	log.WriteInfo("lun created successfully")
@@ -91,6 +90,8 @@ func resourceStorageLunRead(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
+	// Keep selector populated after refresh/import.
+	_ = d.Set("ldev_id", logicalUnit.LdevID)
 	d.SetId(strconv.Itoa(logicalUnit.LdevID))
 	log.WriteInfo("lun read successfully")
 
@@ -109,7 +110,6 @@ func resourceStorageLunUpdate(ctx context.Context, d *schema.ResourceData, m int
 
 	logicalUnit, err := impl.UpdateLun(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -119,11 +119,12 @@ func resourceStorageLunUpdate(ctx context.Context, d *schema.ResourceData, m int
 		*lun,
 	}
 	if err := d.Set("volume", lunList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("ldev_id", logicalUnit.LdevID) // input may have an empty ldev_id
+	if err := d.Set("ldev_id", logicalUnit.LdevID); err != nil { // input may have an empty ldev_id
+		return diag.FromErr(err)
+	}
 	d.SetId(strconv.Itoa(logicalUnit.LdevID))
 	log.WriteInfo("lun updated successfully")
 
@@ -141,8 +142,6 @@ func resourceStorageLunDelete(ctx context.Context, d *schema.ResourceData, m int
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	d.SetId("")
 	log.WriteInfo("lun deleted successfully")
 	return nil
 }
@@ -155,6 +154,18 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 	currentID := d.Id()
 	isCreate := currentID == ""
 	isUpdate := !isCreate
+
+	// Identity requirements (import should populate these into state).
+	serial := d.Get("serial").(int)
+	if isCreate {
+		if serial < 1 {
+			return fmt.Errorf("serial must be specified and must be >= 1")
+		}
+	} else {
+		if serial < 1 {
+			return fmt.Errorf("serial must be known (import or config must provide it)")
+		}
+	}
 
 	// -----------------------------------------------------
 	// Validate LDEV ID / HEX
@@ -171,7 +182,9 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 
 	if impl.IsReadExistingMode(d) {
 		log.WriteInfo("Validation| Detected 'Read Existing Volume' mode. Bypassing creation checks.")
-		d.SetNewComputed("volume")
+		if err := d.SetNewComputed("volume"); err != nil {
+			return err
+		}
 		return nil
 	}
 
@@ -247,8 +260,14 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 	isTse := d.Get("is_tse_volume").(bool)
 	isEse := d.Get("is_ese_volume").(bool)
 
-	// Mainframe volume is indicated ONLY by cylinder.
+	// Mainframe vs block:
+	// - On create: driven by cylinder presence in config.
+	// - On update/import: allow inference from current state (computed volume output),
+	//   so users can update mainframe-only fields without respecifying cylinder.
 	isMainframe := hasCylinder
+	if !isMainframe && isUpdate {
+		isMainframe = inferIsMainframeFromStateVolume(d)
+	}
 	if !isCreate && isMainframe {
 		// On updates, only ESE enablement is configurable among mainframe-specific fields.
 		// Other mainframe fields are immutable after creation.
@@ -257,10 +276,10 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 		}
 	}
 
-	// Mainframe-only fields are not valid unless cylinder is set.
+	// Mainframe-only fields are not valid for block volumes.
 	if !isMainframe {
 		if hasSSIDOnly || hasMpBlade || hasClpr || isTse || isEse || emulationProvided {
-			return fmt.Errorf("mainframe-only fields (cylinder/emulation_type/ssid/mp_blade_id/clpr_id/is_tse_volume/is_ese_volume) cannot be specified unless cylinder is set")
+			return fmt.Errorf("mainframe-only fields (cylinder/emulation_type/ssid/mp_blade_id/clpr_id/is_tse_volume/is_ese_volume) are only supported for mainframe volumes")
 		}
 	}
 
@@ -298,8 +317,11 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 	} else {
 		// Update: validate mainframe vs block constraints only when fields are present.
 		if isMainframe {
-			if cylinder <= 0 {
-				return fmt.Errorf("cylinder must be >= 1")
+			// Only validate cylinder bounds if user explicitly set it.
+			if hasCylinder {
+				if cylinder <= 0 {
+					return fmt.Errorf("cylinder must be >= 1")
+				}
 			}
 			if hasSizeGB {
 				return fmt.Errorf("size_gb cannot be specified for mainframe volumes; use cylinder")
@@ -338,12 +360,17 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 	// Pool or Parity Group validation
 	// -----------------------------------------------------
 
-	// pool_id: default -999
-	poolID := -999
-	if v, ok := d.GetOkExists("pool_id"); ok {
-		poolID = v.(int)
+	// Placement fields are create-only. For existing volumes (including imports),
+	// do not require them to be specified.
+	if isUpdate {
+		if d.HasChange("pool_id") || d.HasChange("pool_name") || d.HasChange("paritygroup_id") || d.HasChange("external_paritygroup_id") {
+			return fmt.Errorf("pool_id, pool_name, paritygroup_id, and external_paritygroup_id are create-only and cannot be changed")
+		}
 	}
-	hasPoolID := poolID >= -1
+
+	// pool_id (0 and -1 are valid, so use GetOkExists)
+	_, poolIDProvided := d.GetOkExists("pool_id")
+	hasPoolID := poolIDProvided
 
 	// pool_name
 	poolName, hasPoolName := d.Get("pool_name").(string)
@@ -363,28 +390,32 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 		hasExternalParityGroup = false
 	}
 
-	// exactly one of these must be specified
-	count := 0
-	if hasPoolID {
-		count++
-	}
-	if hasPoolName {
-		count++
-	}
-	if hasParityGroup {
-		count++
+	// On create, exactly one of these must be specified.
+	// On update/import, they are optional and are only used to strengthen validations.
+	if isCreate {
+		count := 0
+		if hasPoolID {
+			count++
+		}
+		if hasPoolName {
+			count++
+		}
+		if hasParityGroup {
+			count++
+		}
+		if hasExternalParityGroup {
+			count++
+		}
+		if count != 1 {
+			return fmt.Errorf("exactly one of pool_id, pool_name, paritygroup_id, or external_paritygroup_id must be specified")
+		}
 	}
 
-	if hasExternalParityGroup {
-		count++
-	}
-
-	if count != 1 {
-		return fmt.Errorf("exactly one of pool_id, pool_name, paritygroup_id, or external_paritygroup_id must be specified")
-	}
-
-	isDpPool := hasPoolID || hasPoolName
-	isPG := hasParityGroup || hasExternalParityGroup
+	// Placement type, if known.
+	// After import, configs often omit placement fields; in that case treat placement as unknown.
+	placementKnown := hasPoolID || hasPoolName || hasParityGroup || hasExternalParityGroup
+	isDpPool := placementKnown && (hasPoolID || hasPoolName)
+	isPG := placementKnown && (hasParityGroup || hasExternalParityGroup)
 
 	// -----------------------------------------------------
 	// Mainframe-specific validations (cylinder-driven)
@@ -401,29 +432,31 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 
 		// emulation_type is supported for mainframe volumes, including OPEN-V.
 
-		// 3390-A: dynamic pool mainframe volume
-		if is3390A {
-			if !isDpPool {
-				return fmt.Errorf("for emulation_type=3390-A, one of pool_id or pool_name must be specified")
+		if isCreate {
+			// 3390-A: dynamic pool mainframe volume
+			if is3390A {
+				if !isDpPool {
+					return fmt.Errorf("for emulation_type=3390-A, one of pool_id or pool_name must be specified")
+				}
+				if hasParityGroup {
+					return fmt.Errorf("for emulation_type=3390-A, paritygroup_id must not be specified")
+				}
 			}
-			if hasParityGroup {
-				return fmt.Errorf("for emulation_type=3390-A, paritygroup_id must not be specified")
-			}
-		}
 
-		// 3390-V: parity group mainframe volume
-		if is3390V {
-			if !hasParityGroup {
-				return fmt.Errorf("for emulation_type=3390-V, paritygroup_id must be specified")
+			// 3390-V: parity group mainframe volume
+			if is3390V {
+				if !hasParityGroup {
+					return fmt.Errorf("for emulation_type=3390-V, paritygroup_id must be specified")
+				}
+				if isDpPool {
+					return fmt.Errorf("for emulation_type=3390-V, pool_id/pool_name must not be specified")
+				}
 			}
-			if isDpPool {
-				return fmt.Errorf("for emulation_type=3390-V, pool_id/pool_name must not be specified")
-			}
-		}
 
-		// clpr_id is supported only for pool-based volumes.
-		if _, ok := d.GetOk("clpr_id"); ok && !isDpPool {
-			return fmt.Errorf("clpr_id can only be specified when creating pool-based volumes (pool_id or pool_name)")
+			// clpr_id is supported only for pool-based volumes.
+			if _, ok := d.GetOk("clpr_id"); ok && !isDpPool {
+				return fmt.Errorf("clpr_id can only be specified when creating pool-based volumes (pool_id or pool_name)")
+			}
 		}
 
 		// TSE and ESE are mutually exclusive.
@@ -443,6 +476,9 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 
 	// Flags (validated differently for mainframe vs block)
 	capacitySaving := d.Get("capacity_saving").(string)
+	if capacitySaving == "" {
+		capacitySaving = "disabled"
+	}
 	isShareEnabled := d.Get("is_data_reduction_shared_volume_enabled").(bool)
 	isAccelerationEnabled := d.Get("is_compression_acceleration_enabled").(bool)
 	_, hasAlua := d.GetOk("is_alua_enabled")
@@ -476,39 +512,79 @@ func resourceStorageLunValidation(ctx context.Context, d *schema.ResourceDiff, m
 	}
 
 	// Fix console output of "volume"
-	d.SetNewComputed("volume")
+	if err := d.SetNewComputed("volume"); err != nil {
+		return err
+	}
 
 	return nil
 }
 
-// importStorageLunState supports importing either "<serial>/<ldev>" or just "<ldev>".
-// If only <ldev> is provided, the resource config must include `serial`.
+func inferIsMainframeFromStateVolume(d *schema.ResourceDiff) bool {
+	if d == nil {
+		return false
+	}
+	volRaw := d.Get("volume")
+	volList, ok := volRaw.([]interface{})
+	if !ok || len(volList) == 0 || volList[0] == nil {
+		return false
+	}
+	first, ok := volList[0].(map[string]interface{})
+	if !ok {
+		return false
+	}
+	if v, ok := first["cylinder"]; ok {
+		switch c := v.(type) {
+		case int:
+			if c > 0 {
+				return true
+			}
+		case int64:
+			if c > 0 {
+				return true
+			}
+		case float64:
+			if c > 0 {
+				return true
+			}
+		}
+	}
+	if v, ok := first["emulation_type"]; ok {
+		if s, ok := v.(string); ok {
+			su := strings.ToUpper(s)
+			if strings.HasPrefix(su, "3390") || strings.Contains(su, "3390") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// importStorageLunState expects: <serial>/<ldev>
 func importStorageLunState(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	// id provided to import
-	id := d.Id()
-	// If id already contains '/', parse serial and ldev
-	if strings.Contains(id, "/") {
-		parts := strings.SplitN(id, "/", 2)
-		serialStr := parts[0]
-		ldevStr := parts[1]
-		serial, err := strconv.Atoi(serialStr)
-		if err != nil {
-			return nil, fmt.Errorf("invalid serial in import id: %s", serialStr)
-		}
-		// set serial in the config state so provider has it
-		if err := d.Set("serial", serial); err != nil {
-			return nil, err
-		}
-		d.SetId(ldevStr)
-		return []*schema.ResourceData{d}, nil
+	id := strings.TrimSpace(d.Id())
+	if id == "" {
+		return nil, fmt.Errorf("import id is empty")
 	}
-
-	// No serial in id; ensure serial is present in resource config
-	if _, ok := d.GetOk("serial"); !ok {
-		return nil, fmt.Errorf("import requires either '<serial>/<ldev>' or resource config must include 'serial'")
+	parts := strings.SplitN(id, "/", 2)
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid import id %q; expected '<serial>/<ldev_id>'", id)
 	}
-
-	// id is the ldev id; leave d.Id() as-is
+	serial, err := strconv.Atoi(strings.TrimSpace(parts[0]))
+	if err != nil {
+		return nil, fmt.Errorf("invalid serial %q in import id: %w", parts[0], err)
+	}
+	ldevStr := strings.TrimSpace(parts[1])
+	ldev, err := strconv.Atoi(ldevStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ldev_id %q in import id: %w", parts[1], err)
+	}
+	if err := d.Set("serial", serial); err != nil {
+		return nil, err
+	}
+	_ = d.Set("ldev_id", ldev)
+	// Resource native ID is the LDEV ID.
+	d.SetId(strconv.Itoa(ldev))
 	return []*schema.ResourceData{d}, nil
 }
 

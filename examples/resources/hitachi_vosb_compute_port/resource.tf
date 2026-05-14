@@ -13,6 +13,7 @@
 // this compute port for authentication purposes.
 //
 
+
 resource "hitachi_vosb_compute_port" "mycomputeport" {
   vosb_address            = "10.10.12.13"
   name                    = "001-iSCSI-002"

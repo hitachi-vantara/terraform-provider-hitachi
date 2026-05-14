@@ -3,7 +3,9 @@ package terraform
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strconv"
+	"strings"
 
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
@@ -24,6 +26,9 @@ func ResourceAdminPoolCreate(d *schema.ResourceData) diag.Diagnostics {
 	defer log.WriteExit()
 
 	serial := d.Get("serial").(int)
+	if serial < 1 {
+		return diag.Errorf("serial must be specified and must be >= 1")
+	}
 
 	// Build create parameters
 	params, err := buildCreateAdminPoolParams(d)
@@ -208,22 +213,41 @@ func buildCreateAdminPoolParams(d *schema.ResourceData) (gwymodel.CreateAdminPoo
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	nameRaw, ok := d.GetOk("name")
+	if !ok || strings.TrimSpace(nameRaw.(string)) == "" {
+		return gwymodel.CreateAdminPoolParams{}, fmt.Errorf("name must be specified")
+	}
+
 	params := gwymodel.CreateAdminPoolParams{
-		Name:                d.Get("name").(string),
+		Name:                nameRaw.(string),
 		IsEncryptionEnabled: d.Get("encryption").(bool),
 	}
 
 	// Build drives array from schema
-	drivesInput := d.Get("drive_configuration").([]interface{})
+	drivesRaw, ok := d.GetOk("drive_configuration")
+	if !ok {
+		return gwymodel.CreateAdminPoolParams{}, fmt.Errorf("drive_configuration must be specified")
+	}
+	drivesInput := drivesRaw.([]interface{})
+	if len(drivesInput) == 0 {
+		return gwymodel.CreateAdminPoolParams{}, fmt.Errorf("drive_configuration must include at least one block")
+	}
 	var drives []gwymodel.CreateAdminPoolDrive
 
 	for _, driveInterface := range drivesInput {
 		driveData := driveInterface.(map[string]interface{})
+		parityGroupType := ""
+		if v, ok := driveData["parity_group_type"]; ok && v != nil {
+			parityGroupType, _ = v.(string)
+		}
+		if parityGroupType == "" {
+			parityGroupType = "DDP"
+		}
 		drive := gwymodel.CreateAdminPoolDrive{
 			DriveTypeCode:   driveData["drive_type_code"].(string),
 			DataDriveCount:  driveData["data_drive_count"].(int),
 			RaidLevel:       driveData["raid_level"].(string),
-			ParityGroupType: driveData["parity_group_type"].(string),
+			ParityGroupType: parityGroupType,
 		}
 		drives = append(drives, drive)
 	}
@@ -279,8 +303,18 @@ func buildExpandAdminPoolParamsFromDriveConfig(d *schema.ResourceData) (*gwymode
 	// Get the old and new drive configurations
 	oldDrivesRaw, newDrivesRaw := d.GetChange("drive_configuration")
 
-	oldDrives := oldDrivesRaw.([]interface{})
-	newDrives := newDrivesRaw.([]interface{})
+	oldDrives := []interface{}{}
+	if oldDrivesRaw != nil {
+		if v, ok := oldDrivesRaw.([]interface{}); ok {
+			oldDrives = v
+		}
+	}
+	newDrives := []interface{}{}
+	if newDrivesRaw != nil {
+		if v, ok := newDrivesRaw.([]interface{}); ok {
+			newDrives = v
+		}
+	}
 
 	// If no new drives were added, no expansion needed
 	if len(newDrives) <= len(oldDrives) {
@@ -292,11 +326,18 @@ func buildExpandAdminPoolParamsFromDriveConfig(d *schema.ResourceData) (*gwymode
 	var additionalDrives []gwymodel.ExpandAdminPoolDrive
 	for i := len(oldDrives); i < len(newDrives); i++ {
 		driveMap := newDrives[i].(map[string]interface{})
+		parityGroupType := ""
+		if v, ok := driveMap["parity_group_type"]; ok && v != nil {
+			parityGroupType, _ = v.(string)
+		}
+		if parityGroupType == "" {
+			parityGroupType = "DDP"
+		}
 		drive := gwymodel.ExpandAdminPoolDrive{
 			DriveTypeCode:   driveMap["drive_type_code"].(string),
 			DataDriveCount:  driveMap["data_drive_count"].(int),
 			RaidLevel:       driveMap["raid_level"].(string),
-			ParityGroupType: driveMap["parity_group_type"].(string),
+			ParityGroupType: parityGroupType,
 		}
 		additionalDrives = append(additionalDrives, drive)
 	}
@@ -321,16 +362,21 @@ func setAdminPoolResourceData(d *schema.ResourceData, pool *gwymodel.AdminPool) 
 	log.WriteEnter()
 	defer log.WriteExit()
 
+	// Populate computed top-level fields to make imports/minimal configs stable.
+	if err := d.Set("name", pool.Name); err != nil {
+		return err
+	}
+
 	// Convert the pool data to the format expected by AdminPoolInfoSchema
 	poolData := map[string]interface{}{
 		"pool_id":                         pool.ID,
 		"name":                            pool.Name,
 		"status":                          pool.Status,
 		"encryption_status":               pool.Encryption,
-		"total_capacity":                  pool.TotalCapacity,
+		"total_capacity_in_mib":           pool.TotalCapacity,
 		"effective_capacity":              pool.EffectiveCapacity,
-		"used_capacity":                   pool.UsedCapacity,
-		"free_capacity":                   pool.FreeCapacity,
+		"used_capacity_in_mib":            pool.UsedCapacity,
+		"free_capacity_in_mib":            pool.FreeCapacity,
 		"number_of_volumes":               pool.NumberOfVolumes,
 		"number_of_tiers":                 pool.NumberOfTiers,
 		"number_of_drive_types":           pool.NumberOfDriveTypes,
@@ -348,7 +394,7 @@ func setAdminPoolResourceData(d *schema.ResourceData, pool *gwymodel.AdminPool) 
 				"drive_rpm":              drive.DriveRpm,
 				"drive_capacity":         drive.DriveCapacity,
 				"display_drive_capacity": drive.DisplayDriveCapacity,
-				"total_capacity":         drive.TotalCapacity,
+				"total_capacity_in_mib":  drive.TotalCapacity,
 				"number_of_drives":       drive.NumberOfDrives,
 				"raid_level":             drive.RaidLevel,
 				"parity_group_type":      drive.ParityGroupType,
@@ -514,10 +560,10 @@ func flattenAdminPoolListResponse(resp *gwymodel.AdminPoolListResponse) []map[st
 			"name":                            pool.Name,
 			"status":                          pool.Status,
 			"encryption_status":               pool.Encryption,
-			"total_capacity":                  pool.TotalCapacity,
+			"total_capacity_in_mib":           pool.TotalCapacity,
 			"effective_capacity":              pool.EffectiveCapacity,
-			"used_capacity":                   pool.UsedCapacity,
-			"free_capacity":                   pool.FreeCapacity,
+			"used_capacity_in_mib":            pool.UsedCapacity,
+			"free_capacity_in_mib":            pool.FreeCapacity,
 			"number_of_volumes":               pool.NumberOfVolumes,
 			"number_of_tiers":                 pool.NumberOfTiers,
 			"number_of_drive_types":           pool.NumberOfDriveTypes,
@@ -568,7 +614,7 @@ func flattenAdminPoolListResponse(resp *gwymodel.AdminPoolListResponse) []map[st
 					"drive_rpm":              drive.DriveRpm,
 					"drive_capacity":         drive.DriveCapacity,
 					"display_drive_capacity": drive.DisplayDriveCapacity,
-					"total_capacity":         drive.TotalCapacity,
+					"total_capacity_in_mib":  drive.TotalCapacity,
 					"number_of_drives":       drive.NumberOfDrives,
 					"raid_level":             drive.RaidLevel,
 					"parity_group_type":      drive.ParityGroupType,

@@ -308,7 +308,7 @@ func CreateIscsiTargetChapUserRequestFromSchema(d *schema.ResourceData) (*terraf
 
 	}
 
-	cupass, ok := d.GetOk("chap_user_password")
+	cupass, ok := d.GetOk("chap_user_password") // #nosec G101 -- schema attribute key, not a hardcoded credential
 	if ok {
 		pass := cupass.(string)
 		if len(pass) < 12 || len(pass) > 32 {
@@ -338,7 +338,12 @@ func DeleteIscsiTargetChapUser(d *schema.ResourceData) error {
 			return fmt.Errorf("no chap_user data in resource")
 		}
 		log.WriteDebug("chap_user: %+v", chap_user.([]map[string]interface{})[0])
-		portId, ok = chap_user.([]map[string]interface{})[0]["portId"]
+		// Output schema uses snake_case keys.
+		portId, ok = chap_user.([]map[string]interface{})[0]["port_id"]
+		if !ok {
+			// Backward compatibility for any older state that might have camelCase.
+			portId, ok = chap_user.([]map[string]interface{})[0]["portId"]
+		}
 		if !ok {
 			return fmt.Errorf("found no portId in chap_user")
 		}

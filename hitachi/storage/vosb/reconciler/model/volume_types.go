@@ -41,10 +41,12 @@ type Volumes struct {
 }
 
 type CreateVolume struct {
-	ID           *string  `json:"id,omitempty"`
-	Name         *string  `json:"name,omitempty"`
-	PoolName     *string  `json:"poolName"`
-	CapacityInGB *float32 `json:"capacityInGB"`
-	NickName     *string  `json:"nickname,omitempty"`
-	ComputeNodes []string `json:"computeNodes,omitempty"`
+	ID                  *string  `json:"id,omitempty"`
+	Name                *string  `json:"name,omitempty"`
+	PoolName            *string  `json:"poolName"`
+	CapacityInGB        *float32 `json:"capacityInGB"`
+	NickName            *string  `json:"nickname,omitempty"`
+	ComputeNodes        []string `json:"computeNodes,omitempty"`
+	StorageControllerId *string  `json:"storageControllerId,omitempty"`
+	FaultDomainId       *string  `json:"faultDomainId,omitempty"`
 }

@@ -7,7 +7,7 @@
 # - VSP One SDS Block and Cloud (AWS, GCP, Azure)
 # - VSP One SDS Block (Baremetal)
 # - VSP One Block 20 series
-# - VSP One Block High End
+# - VSP One Block 85
 # - VSP 5000 series
 # - VSP E series
 # - VSP F series
@@ -21,8 +21,8 @@
 # The provider supports three connection types:
 #
 # - `hitachi_vosb_provider`: For VSP One SDS Block and Cloud systems.
-# - 'hitachi_vsp_one_provider' : For VSP One Block 20 series, VSP One Block High End, and VSP E series.
-# - `san_storage_system`: For VSP One Block 20 series, VSP One Block High End, VSP 5000 series, VSP E series,
+# - 'hitachi_vsp_one_provider' : For VSP One Block 20 series, VSP One Block 85, and VSP E series.
+# - `san_storage_system`: For VSP One Block 20 series, VSP One Block 85, VSP 5000 series, VSP E series,
 #                         VSP F series, and VSP G series.
 #
 # Example configuration for VSP One SDS Block:
@@ -40,7 +40,7 @@
 # terraform {
 #   required_providers {
 #  hitachi = {
-#   version = "2.3.0"
+#   version = "2.4.0"
 #   source  = "localhost/hitachi-vantara/hitachi"
 #    }
 #  }
@@ -72,7 +72,7 @@
 terraform {
   required_providers {
     hitachi = {
-      version = "2.3.0"
+      version = "2.4.0"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }

@@ -78,3 +78,58 @@ func RunConcurrentOperations[T any](
 	log.WriteInfo("[%s] All operations completed in %v", label, time.Since(start))
 	return errs
 }
+
+// RunConcurrentFuncs executes a slice of different functions in parallel,
+// respecting the MaxConcurrentOps and ApiDelaySec settings.
+func RunConcurrentFuncs(
+	label string,
+	funcs []func() error,
+) []error {
+	log := commonlog.GetLogger()
+
+	if len(funcs) == 0 {
+		log.WriteInfo("[%s] No functions to execute.", label)
+		return nil
+	}
+
+	cfg := GetConcurrencyConfig()
+	log.WriteInfo("[%s] Starting %d tasks (MaxConcurrentOps=%d, ApiDelaySec=%dms)",
+		label, len(funcs), cfg.MaxConcurrentOps, cfg.ApiDelaySec)
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, cfg.MaxConcurrentOps)
+	errs := make([]error, len(funcs))
+
+	start := time.Now()
+
+	for i, fn := range funcs {
+		// 1. THROTTLE THE LAUNCH
+		// By sleeping here, before starting the goroutine, we ensure
+		// the API calls hit the Hitachi controller sequentially.
+		if cfg.ApiDelaySec > 0 && i > 0 {
+			time.Sleep(time.Duration(cfg.ApiDelaySec) * time.Millisecond)
+		}
+
+		sem <- struct{}{}
+		wg.Add(1)
+
+		go func(idx int, task func() error) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			errs[idx] = task()
+		}(i, fn)
+	}
+
+	wg.Wait()
+
+	// 2. THE SETTLE PERIOD (Optional but recommended for Hitachi)
+	// Even after wg.Wait(), the storage array might need a moment to
+	// clear internal locks before you can run a 'Create' command.
+	if cfg.ApiDelaySec > 0 {
+		time.Sleep(time.Duration(cfg.ApiDelaySec) * time.Millisecond)
+	}
+
+	log.WriteInfo("[%s] All tasks completed in %v", label, time.Since(start))
+	return errs
+}

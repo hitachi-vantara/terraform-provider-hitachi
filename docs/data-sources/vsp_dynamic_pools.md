@@ -105,6 +105,7 @@ output "dynamicpools" {
 
 ### Read-Only
 
+- `dynamic_pool_count` (Number) Number of dynamic pools returned by the data source
 - `dynamic_pools` (Block List) List of all dynamic pools retrieved from the storage system. (see [below for nested schema](#nestedblock--dynamic_pools))
 - `id` (String) The ID of this resource.
 

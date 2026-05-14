@@ -209,7 +209,7 @@ func ResourceAdminVolumeQosRead(d *schema.ResourceData) diag.Diagnostics {
 	// d.Set("volume_id", volumeID)
 	// d.Set("volume_id_hex", utils.IntToHexString(volumeID))
 
-	d.Set("threshold", []interface{}{
+	if err := d.Set("threshold", []interface{}{
 		map[string]interface{}{
 			"is_upper_iops_enabled":          resp.Threshold.IsUpperIopsEnabled,
 			"upper_iops":                     resp.Threshold.UpperIops,
@@ -223,8 +223,10 @@ func ResourceAdminVolumeQosRead(d *schema.ResourceData) diag.Diagnostics {
 			"response_priority":              resp.Threshold.ResponsePriority,
 			"target_response_time":           resp.Threshold.TargetResponseTime,
 		},
-	})
-	d.Set("alert_setting", []interface{}{
+	}); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("alert_setting", []interface{}{
 		map[string]interface{}{
 			"is_upper_alert_enabled":        resp.AlertSetting.IsUpperAlertEnabled,
 			"upper_alert_allowable_time":    resp.AlertSetting.UpperAlertAllowableTime,
@@ -233,14 +235,18 @@ func ResourceAdminVolumeQosRead(d *schema.ResourceData) diag.Diagnostics {
 			"is_response_alert_enabled":     resp.AlertSetting.IsResponseAlertEnabled,
 			"response_alert_allowable_time": resp.AlertSetting.ResponseAlertAllowableTime,
 		},
-	})
-	d.Set("alert_time", []interface{}{
+	}); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("alert_time", []interface{}{
 		map[string]interface{}{
 			"upper_alert_time":    resp.AlertTime.UpperAlertTime,
 			"lower_alert_time":    resp.AlertTime.LowerAlertTime,
 			"response_alert_time": resp.AlertTime.ResponseAlertTime,
 		},
-	})
+	}); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -357,7 +363,9 @@ func ResourceAdminVolumeQosUpdate(d *schema.ResourceData) diag.Diagnostics {
 		}
 		log.WriteDebug("TFDebug| ResourceAdminVolumeQosUpdate: updated QoS Threshold for volumeID=%d with settings=%v", volumeID, qosSettingsWithThreshold)
 		// Set the updated values in state
-		d.Set("threshold", []interface{}{th})
+		if err := d.Set("threshold", []interface{}{th}); err != nil {
+			return diag.FromErr(err)
+		}
 	} else {
 		log.WriteDebug("TFDebug| ResourceAdminVolumeQosUpdate: threshold not changed, skipping update for volumeID=%d", volumeID)
 	}
@@ -378,7 +386,9 @@ func ResourceAdminVolumeQosUpdate(d *schema.ResourceData) diag.Diagnostics {
 		}
 		log.WriteDebug("TFDebug| ResourceAdminVolumeQosUpdate: updated QoS Alert for volumeID=%d with settings=%v", volumeID, qosSettingsWithAlert)
 		// Set the updated values in state
-		d.Set("alert_setting", []interface{}{al})
+		if err := d.Set("alert_setting", []interface{}{al}); err != nil {
+			return diag.FromErr(err)
+		}
 	} else {
 		log.WriteDebug("TFDebug| ResourceAdminVolumeQosUpdate: alert_setting not changed, skipping update for volumeID=%d", volumeID)
 	}

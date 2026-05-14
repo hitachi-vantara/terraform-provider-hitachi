@@ -70,6 +70,7 @@ output "all_pav_aliases" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `pav_alias_count` (Number) Number of PAV alias entries returned by the data source.
 
 <a id="nestedblock--pav_aliases"></a>
 ### Nested Schema for `pav_aliases`

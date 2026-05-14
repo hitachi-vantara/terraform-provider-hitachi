@@ -31,7 +31,7 @@
 
 ## Introduction
 
-Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform 2.3.
+Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform 2.4.
 
 Hitachi Virtual Storage Platform One Block Storage Provider for HashiCorp Terraform enables
 IT and data center administrators to automate and manage the configuration of Hitachi block
@@ -54,7 +54,7 @@ sources and resources.
 terraform {
   required_providers {
     hitachi = {
-      version = "2.3"
+      version = "2.4"
       source = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -77,7 +77,7 @@ Terraform data sources/resources modules.
 terraform {
   required_providers {
     hitachi = {
-    version = "2.3.0"
+    version = "2.4.0"
     source  = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -99,7 +99,7 @@ provider "hitachi" {
 terraform {
   required_providers {
     hitachi = {
-      version = "2.3"
+      version = "2.4"
       source = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -127,7 +127,7 @@ SDS Block and Cloud.
 
 **hitachi_vsp_one_provider**
  (Block List) VSP One Block Administrator is a configuration
-management tool designed for VSP One Block 20 series, VSP One Block High End, and VSP
+management tool designed for VSP One Block 20 series, VSP One Block 85, and VSP
 E series storage systems, simplifying and streamlining storage management.
 - serial (Number) The serial number for VSP One Block Administrator
 - management_ip (String) Management IP for the VSP One Block Administrator
@@ -135,7 +135,7 @@ E series storage systems, simplifying and streamlining storage management.
 - password (String) Password for the VSP One Block Administrator
 
 **san_storage_system**
- (block list) VSP One Block 20 series, VSP One Block High End, VSP 5000 series, 
+ (block list) VSP One Block 20 series, VSP One Block 85, VSP 5000 series, 
 VSP E series, VSP F series, and VSP G series - all the VSP block storage systems present
 in the Hardware requirements table are enterprise and/or mid-range storage solutions designed
 to provide reliable and scalable block storage for a variety of environments. These systems focus
@@ -152,29 +152,30 @@ integrity.
 
 | VSP block storage systems | Microcode/Firmware |
 |---------------------------|--------------------|
-| VSP One Block 24 | A3-04-21-40/00 SVOS 10.4.1 |
-| VSP One Block 26 | A3-04-21-40/00 SVOS 10.4.1 |
-| VSP One Block 28 | A3-04-21-40/00 SVOS 10.4.1 |
-| VSP One Block High End | A0-05-21-00/00 SVOS 10.5.1 |
-| VSP 5100, 5500, 5100H, 5500H (SAS) | 90-09-29-00/00 SVOS 9.8.7|
-| VSP 5200, 5600, 5200H, 5200H (SAS) | 90-09-29-00/00 SVOS 9.8.7|
-| VSP E590, VSP E790 | 93-07-29-40/00 SVOS 9.8.7 |
-| VSP E990 | 93-07-29-60/00 SVOS 9.8.7 |
-| VSP E1090 | 93-07-29-80/00 SVOS 9.8.7 |
-| VSP F350, VSP F370, VSP F700, FSP F900 | 88-08-14-x0/00 SVOS 9.6.0 |
-| VSP G370, VSP G700, VSP G900 | 88-08-14-x0/00 SVOS 9.6.0 |
-| VSP G350 | 88-08-15-20/01 |
+| VSP One Block 24 | A3-05-21-40/00 SVOS 10.5.2|
+| VSP One Block 26 | A3-05-21-40/00 SVOS 10.5.2 |
+| VSP One Block 28 | A3-05-21-40/00 SVOS 10.5.2 |
+| VSP One Block 85 | A0-05-41-00_01 SVOS 10.5.3 |
+| VSP 5100, 5500, 5100H, 5500H (SAS) | 90-09-31-00/00 SVOS 9.8.7|
+| VSP 5200, 5600, 5200H, 5600H (SAS) | 90-09-31-00/00 SVOS 9.8.7|
+| VSP 5100, 5500, 5100H, 5500H (NVMe)    | 90-09-31-00/00 SVOS 9.8.7  |
+| VSP 5200, 5600, 5200H, 5600H (NVMe)    | 90-09-31-00/00 SVOS 9.8.7  |
+| VSP E590, VSP E790 | 93-07-30-x0/00 SVOS 9.8.7 |
+| VSP E990 | 93-07-30-x0/00 SVOS 9.8.7 |
+| VSP E1090 | 93-07-30-x0/00 SVOS 9.8.7 |
+| VSP F350, VSP F370, VSP F700, VSP F900 | 88-08-20-x0/00 SVOS 9.6.0 |
+| VSP G370, VSP G700, VSP G900 | 88-08-20-x0/00 SVOS 9.6.0 |
+| VSP G350 | 88-08-20-x0/00 SVOS 9.6.0 |
 
 The listed microcode versions are the minimum versions.
 
 | VSP One SDS Block and Cloud Systems | Storage software version |
 |-------------------------------------|--------------------------|
-| Bare Metal | 01.18.02.40 |
-| Cloud for AWS | 01.18.02.30 |
-| Cloud for Microsoft Azure | 01.18.02.50 |
-| Cloud for GCP | 01.18.02.60 |
+| Bare Metal | 01.19.00.30 |
+| Cloud for AWS | 01.19.00.30 |
+| Cloud for Microsoft Azure | 01.19.00.30 |
+| Cloud for GCP | 01.19.00.30 |
 
-Management of NVMe/TCP connections is not supported in the current release.
 
 The following user roles are required when registering the storage system
 user credentials:
@@ -204,6 +205,8 @@ Ensure the following are installed:
 - `uuidgen`
 - Standard runtime libraries (`glibc`, etc.)
 
+For any design restrictions / deployment planning please refer to the VSP storage model documentation for clarity.
+
 ---
 
 ## Build the Provider
@@ -220,7 +223,7 @@ cd <your hitachi terraform source code directory>
 
 Example output path:
 ```
-./rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.3-19.x86_64.rpm
+./rpmbuild/RPMS/x86_64/HV_Storage_Terraform-02.4-19.x86_64.rpm
 ```
 
 ### Build without RPM (for Developers)
@@ -246,18 +249,18 @@ Verify the Prequisites and dependencies
 1. From the Hitachi Vantara Support Portal (https://support.hitachivantara.com/en/anonymous-dashboard.html) 
 Downloads page (login credentials required), search for terraform, click Hardware Download, and then 
 download the VSP One Block Storage Provider for HashiCorp Terraform file. The Terraform modules are version
-2.3.
+2.4.
 
 2. Extract the following file from the distribution media kit installation TAR file:
-HV_Storage_Terraform-02.3-XX.x86_64.tar.gz file.
+HV_Storage_Terraform-02.4-XX.x86_64.tar.gz file.
 
 3. Extract the installation rpm file on the Linux server using the following command:
 
 ```bash
-tar -zxvf HV_Storage_Terraform-02.3-XX.x86_64.tar.gz
+tar -zxvf HV_Storage_Terraform-02.4-XX.x86_64.tar.gz
 ```
 
-4. Upload the HV_Storage_Terraform-02.3-XX.x86_64.rpm file to the Linux host
+4. Upload the HV_Storage_Terraform-02.4-XX.x86_64.rpm file to the Linux host
 where you want to install VSP One Block Storage Provider for HashiCorp Terraform.
 
 5. Install VSP One Block Storage Provider for HashiCorp Terraform.
@@ -265,7 +268,7 @@ where you want to install VSP One Block Storage Provider for HashiCorp Terraform
 - Enter:
 
 ```bash
-yum localinstall ./HV_Storage_Terraform-02.3-XX.x86_64.rpm
+yum localinstall ./HV_Storage_Terraform-02.4-XX.x86_64.rpm
 ```
 
 When prompted, input y to continue installation.
@@ -290,7 +293,7 @@ Preparing...                          ################################# [100%]
 [Tue Jun 17 11:13:25 EDT 2025] Starting pre-install checks
 [Tue Jun 17 11:13:27 EDT 2025] Pre-install checks passed
 Updating / installing...
-   1:HV_Storage_Terraform-02.3.0-50     ################################# [100%]
+   1:HV_Storage_Terraform-02.4.0-50     ################################# [100%]
 [Tue Jun 17 11:13:28 EDT 2025] Starting installation of HV_Storage_Terraform
 [Tue Jun 17 11:13:28 EDT 2025] WARN: Overwriting existing directories under /opt/hitachi/terraform
 [Tue Jun 17 11:13:28 EDT 2025] Installing terraform plugin for user1
@@ -310,13 +313,13 @@ Log:
 Verify:
 ```bash
 # Check the plugin terraform-provider-hitachi version (-v or --version)
-cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.3.0/linux_amd64
+cd ~/.terraform.d/plugins/localhost/hitachi-vantara/hitachi/2.4.0/linux_amd64
 ./terraform-provider-hitachi -v
 ```
 
 Example Output:
 ```text
-Hitachi Terraform Provider version: 2.3
+Hitachi Terraform Provider version: 2.4
 ```
 
 ---
@@ -332,7 +335,7 @@ terraform providers
 
 Example output:
 ```text
-provider[localhost/hitachi-vantara/hitachi] ~> 2.3
+provider[localhost/hitachi-vantara/hitachi] ~> 2.4
 ```
 
 ---
@@ -370,7 +373,7 @@ directory.
 ```
 [Tue Jun 17 11:13:14 EDT 2025] Starting uninstallation of HV_Storage_Terraform
 [Tue Jun 17 11:13:14 EDT 2025] WARN: Deleting /opt/hitachi/terraform and contents
-[Tue Jun 17 11:13:14 EDT 2025] Erasing terraform plugin 2.3.0 for user1
+[Tue Jun 17 11:13:14 EDT 2025] Erasing terraform plugin 2.4.0 for user1
 [Tue Jun 17 11:13:14 EDT 2025] Removing install directory /opt/hitachi/terraform
 [Tue Jun 17 11:13:14 EDT 2025] Erase complete
 [Tue Jun 17 11:13:14 EDT 2025] Uninstallation complete
@@ -424,7 +427,7 @@ Verify that the provider file is configured. For example:
 terraform {
   required_providers {
     hitachi = {
-      version = "2.3"
+      version = "2.4"
       source = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -446,7 +449,7 @@ Initializing the backend...
 Initializing provider plugins...
 - Reusing previous version of localhost/hitachi-vantara/hitachi from the dependency
 lock file
-- Using previously-installed localhost/hitachi-vantara/hitachi v2.3
+- Using previously-installed localhost/hitachi-vantara/hitachi v2.4
 
 Terraform has been successfully initialized!
 

@@ -69,7 +69,7 @@ Optional:
 - `drives` (Block List) Drive information for the storage pool. (see [below for nested schema](#nestedblock--data--drives))
 - `effective_capacity` (Number) The effective capacity of the storage pool in MiB.
 - `encryption_status` (String) The encryption status of the storage pool.
-- `free_capacity` (Number) The free capacity of the storage pool in MiB.
+- `free_capacity_in_mib` (Number) The free capacity of the storage pool in MiB.
 - `name` (String) The name of the storage pool.
 - `number_of_drive_types` (Number) Number of drive types in the pool.
 - `number_of_tiers` (Number) Number of tiers in the pool.
@@ -77,8 +77,8 @@ Optional:
 - `pool_id` (Number) The unique identifier of the storage pool.
 - `saving_effects` (Block List) Saving effects information for the storage pool. (see [below for nested schema](#nestedblock--data--saving_effects))
 - `status` (String) The current status of the storage pool.
-- `total_capacity` (Number) The total capacity of the storage pool in MiB.
-- `used_capacity` (Number) The used capacity of the storage pool in MiB.
+- `total_capacity_in_mib` (Number) The total capacity of the storage pool in MiB.
+- `used_capacity_in_mib` (Number) The used capacity of the storage pool in MiB.
 
 <a id="nestedblock--data--capacity_manage"></a>
 ### Nested Schema for `data.capacity_manage`
@@ -104,7 +104,7 @@ Optional:
 - `number_of_drives` (Number) Number of drives of this type.
 - `parity_group_type` (String) Parity group type for the drives.
 - `raid_level` (String) RAID level for the drives.
-- `total_capacity` (Number) Total capacity for this drive type in MiB.
+- `total_capacity_in_mib` (Number) Total capacity for this drive type in MiB.
 
 
 <a id="nestedblock--data--saving_effects"></a>

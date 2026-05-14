@@ -79,8 +79,8 @@ Read-Only:
 - `paths` (List of Object) (see [below for nested schema](#nestedobjatt--data--paths))
 - `protocol` (String)
 - `server_id` (Number)
-- `total_capacity` (Number)
-- `used_capacity` (Number)
+- `total_capacity_in_mib` (Number)
+- `used_capacity_in_mib` (Number)
 
 <a id="nestedobjatt--data--paths"></a>
 ### Nested Schema for `data.paths`

@@ -179,7 +179,6 @@ var LunInfoSchema = map[string]*schema.Schema{
 		Computed:    true,
 		Description: "Process mode for capacity saving (inline or post_process)",
 	},
-
 	"data_reduction_progress_rate": {
 		Type:        schema.TypeInt,
 		Computed:    true,
@@ -517,6 +516,7 @@ var DataLunsSchema = map[string]*schema.Schema{
 		Default:     false,
 		Description: "Include cache information for storage volumes. When set to true, cache-related fields will be populated.",
 	},
+
 	// output
 	"volumes": &schema.Schema{
 		Type:        schema.TypeList,
@@ -527,13 +527,19 @@ var DataLunsSchema = map[string]*schema.Schema{
 			Schema: LunInfoSchema,
 		},
 	},
+	"volume_count": {
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Number of volumes returned by the data source",
+	},
 }
 
 var ResourceLunSchema = map[string]*schema.Schema{
 	"serial": {
 		Type:        schema.TypeInt,
-		Required:    true,
-		Description: "Serial number of the storage system",
+		Optional:    true,
+		Computed:    true,
+		Description: "Serial number of the storage system. Required for create/update and import.",
 	},
 
 	"name": {
@@ -546,6 +552,7 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"ldev_id": {
 		Type:          schema.TypeInt,
 		Optional:      true,
+		Computed:      true,
 		Description:   "LDEV ID. Only one of ldev_id or ldev_id_hex may be specified, not both.",
 		ConflictsWith: []string{"ldev_id_hex"},
 		ValidateFunc:  validation.IntBetween(0, 65535),
@@ -566,7 +573,6 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"pool_id": {
 		Type:        schema.TypeInt,
 		Optional:    true,
-		Default:     -999, // 0 and -1 (snapshot vvol) are valid values
 		Description: "Pool ID. One of pool_id, pool_name, paritygroup_id, external_paritygroup_id must be set.",
 	},
 	"pool_name": {
@@ -605,7 +611,6 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"is_tse_volume": {
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Default:     false,
 		Description: "Mainframe only: Whether to create a virtual volume for FCSE (TSE).",
 		ConflictsWith: []string{
 			"is_ese_volume",
@@ -614,7 +619,6 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"is_ese_volume": {
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Default:     false,
 		Description: "Mainframe only: Whether to create a virtual volume for ESE.",
 		ConflictsWith: []string{
 			"is_tse_volume",
@@ -648,7 +652,6 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"capacity_saving": {
 		Type:        schema.TypeString,
 		Optional:    true,
-		Default:     "disabled",
 		Description: "Capacity saving mode: compression_deduplication, compression, or disabled.",
 		ValidateFunc: validation.StringInSlice([]string{
 			"compression_deduplication",
@@ -661,7 +664,6 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"volume_format_type": {
 		Type:        schema.TypeString,
 		Optional:    true,
-		Default:     "NONE",
 		Description: "(Update-only) Request LDEV format. Allowed values: QUICK, NORMAL, NONE (default/no-op).",
 		ValidateFunc: validation.StringInSlice([]string{
 			"QUICK",
@@ -672,7 +674,6 @@ var ResourceLunSchema = map[string]*schema.Schema{
 	"is_data_reduction_shared_volume_enabled": {
 		Type:        schema.TypeBool,
 		Optional:    true,
-		Default:     false,
 		Description: "Create a data reduction shared volume (TI Advanced). Must specify pool_id or pool_name and capacity_saving != disabled if true. Optional on create; ignored on update.",
 	},
 	"is_compression_acceleration_enabled": {

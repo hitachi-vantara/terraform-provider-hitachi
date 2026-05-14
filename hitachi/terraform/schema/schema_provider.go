@@ -34,7 +34,7 @@ var ProviderSchema = map[string]*schema.Schema{
 	"san_storage_system": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "VSP One Block 20 series, VSP One Block High End, VSP 5000 series, VSP E series, VSP F series, and VSP G series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. These systems focus on simplifying data storage management while ensuring high availability and data integrity.",
+		Description: "VSP One Block 20 series, VSP One Block 85, VSP 5000 series, VSP E series, VSP F series, and VSP G series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. These systems focus on simplifying data storage management while ensuring high availability and data integrity.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"serial": &schema.Schema{
@@ -64,7 +64,7 @@ var ProviderSchema = map[string]*schema.Schema{
 	"hitachi_vsp_one_provider": &schema.Schema{
 		Type:        schema.TypeList,
 		Optional:    true,
-		Description: "VSP One Block Administrator is a configuration management tool designed for VSP One Block 20 series, VSP One Block High End, and VSP E series storage systems, simplifying and streamlining storage management.",
+		Description: "VSP One Block Administrator is a configuration management tool designed for VSP One Block 20 series, VSP One Block 85, and VSP E series storage systems, simplifying and streamlining storage management.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"serial": &schema.Schema{

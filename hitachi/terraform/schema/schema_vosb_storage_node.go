@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-
 var DataVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
@@ -117,8 +116,8 @@ var VssbStorageNodeInfoSchema = map[string]*schema.Schema{
 		Description: "Status of the node",
 	},
 	"insufficient_resources_for_rebuild_capacity": &schema.Schema{
-		Type:        schema.TypeList,
-		Computed:    true,
+		Type:     schema.TypeList,
+		Computed: true,
 		// MaxItems:    1,
 		Description: "Insufficient resources for rebuild capacity of node",
 		Elem: &schema.Resource{
@@ -138,8 +137,8 @@ var VssbStorageNodeInfoSchema = map[string]*schema.Schema{
 		},
 	},
 	"rebuildable_resources": &schema.Schema{
-		Type:        schema.TypeList,
-		Computed:    true,
+		Type:     schema.TypeList,
+		Computed: true,
 		// MaxItems:    1,
 		Description: "Rebuildable resources information",
 		Elem: &schema.Resource{
@@ -158,8 +157,16 @@ var VssbStorageNodeInfoSchema = map[string]*schema.Schema{
 var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Optional:    true,
+		Computed:    true,
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block. Required for create/update and import.",
+	},
+	"node_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Computed:    true,
+		Description: "Name of the storage node (used for import and read by name)",
+		//Default:     "",
 	},
 	"configuration_file": &schema.Schema{
 		Type:        schema.TypeString,
@@ -196,11 +203,6 @@ var ResourceVssbStorageNodeSchema = map[string]*schema.Schema{
 			"google", "azure", "aws", "baremetal",
 		}, false),
 	},
-	// "node_name": &schema.Schema{
-	// 	Type:        schema.TypeString,
-	// 	Required:    false,
-	// 	Description: "Storage node name to be added",
-	// },		
 	// output
 	"storage_nodes": &schema.Schema{
 		Type:        schema.TypeList,

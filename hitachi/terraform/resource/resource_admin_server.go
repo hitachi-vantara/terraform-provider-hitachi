@@ -19,7 +19,7 @@ func ResourceAdminServer() *schema.Resource {
 		UpdateContext: resourceAdminServerUpdate,
 		DeleteContext: resourceAdminServerDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: importAdminServer,
 		},
 		Schema:        schemaimpl.ResourceAdminServerSchema,
 		CustomizeDiff: resourceAdminServerCustomizeDiff,
@@ -43,6 +43,31 @@ func resourceAdminServerDelete(ctx context.Context, d *schema.ResourceData, m in
 }
 
 func resourceAdminServerCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	// Create-only requirements (kept out of schema to allow import with minimal config).
+	if d.Id() == "" {
+		serialRaw, ok := d.GetOk("serial")
+		if !ok || serialRaw.(int) < 1 {
+			return fmt.Errorf("serial must be specified and must be >= 1")
+		}
+		nicknameRaw, ok := d.GetOk("server_nickname")
+		if !ok || nicknameRaw.(string) == "" {
+			return fmt.Errorf("server_nickname must be specified")
+		}
+
+		reserved := false
+		if v, ok := d.GetOkExists("is_reserved"); ok {
+			reserved = v.(bool)
+		}
+		if !reserved {
+			if _, ok := d.GetOk("protocol"); !ok {
+				return fmt.Errorf("protocol is required when is_reserved is false")
+			}
+			if _, ok := d.GetOk("os_type"); !ok {
+				return fmt.Errorf("os_type is required when is_reserved is false")
+			}
+		}
+	}
+
 	if err := validateHostGroups(ctx, d, meta); err != nil {
 		return err
 	}

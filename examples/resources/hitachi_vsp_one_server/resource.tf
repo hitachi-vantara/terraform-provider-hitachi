@@ -78,3 +78,24 @@ resource "hitachi_vsp_one_server" "isci_server" {
 output "iscsi_server_info" {
   value = hitachi_vsp_one_server.isci_server.data
 }
+
+
+################################################################################
+# Example: Import (existing server)
+# -----------------------------------------------------------------------------
+# Use terraform import when the server already exists on storage and
+# you want to bring it under Terraform management without re-creating it.
+# The import reads the current state from storage and writes it to tfstate.
+#
+# Import ID format: <serial>/<server_id>
+#
+# terraform import hitachi_vsp_one_server.imported '810045/12'
+
+# Minimal skeleton block required for `terraform import`.
+# Create this block in your .tf before running the import command.
+resource "hitachi_vsp_one_server" "imported" {}
+
+output "imported_server_id" {
+  value = hitachi_vsp_one_server.imported.id
+}
+################################################################################

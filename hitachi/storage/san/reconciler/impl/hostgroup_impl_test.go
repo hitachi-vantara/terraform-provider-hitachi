@@ -218,4 +218,3 @@ func xTestCreateHostGroup(t *testing.T) {
 	}
 	t.Logf("Response: %v", resp)
 }
-

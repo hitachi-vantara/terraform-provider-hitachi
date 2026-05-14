@@ -3,6 +3,7 @@ package terraform
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	// "fmt"
 
@@ -30,7 +31,10 @@ var syncHComputeNodeOperation = &sync.Mutex{}
 
 func ResourceVssbStorageComputeNode() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP One SDS Block Compute Node: Registers the information of the compute node.",
+		Description: "VSP One SDS Block Compute Node: Registers the information of the compute node.",
+		Importer: &schema.ResourceImporter{
+			StateContext: importVosbComputeNode,
+		},
 		CreateContext: resourceVssbStorageComputeNodeCreate,
 		ReadContext:   resourceVssbStorageComputeNodeRead,
 		UpdateContext: resourceVssbStorageComputeNodeUpdate,
@@ -40,26 +44,13 @@ func ResourceVssbStorageComputeNode() *schema.Resource {
 	}
 }
 
-func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
-	log := commonlog.GetLogger()
-	log.WriteEnter()
-	defer log.WriteExit()
-
+func validateVssbComputeNodeConnections(d *schema.ResourceData) error {
 	vssbAddr := d.Get("vosb_address").(string)
-
 	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
 	if err != nil {
 		return err
 	}
 
-	// // Local Check
-	// name, ok := d.GetOk("target_chap_user_name")
-	// if !ok {
-	// 	log.WriteDebug("TFDebug | target_chap_user_name: %s", name.(string))
-	// 	return fmt.Errorf("name is required")
-	// }
-
-	// REST API Check
 	setting := reconcilermodel.StorageDeviceSettings{
 		Username:       storageSetting.Username,
 		Password:       storageSetting.Password,
@@ -68,57 +59,73 @@ func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, 
 
 	reconObj, err := reconimpl.NewEx(setting)
 	if err != nil {
-		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
 		return err
 	}
+
 	connection, ok := d.GetOk("iscsi_connection")
-	if ok {
-		iscsiConn := connection.(*schema.Set).List()
-		// Get All Storage Ports
-		storagePorts, err := reconObj.GetStoragePorts()
-		if err != nil {
-			log.WriteDebug("TFError| error in GetStoragePorts, err: %v", err)
-			return err
+	if !ok {
+		return nil
+	}
+
+	iscsiConn := connection.(*schema.Set).List()
+	storagePorts, err := reconObj.GetStoragePorts()
+	if err != nil {
+		return err
+	}
+
+	for _, conn := range iscsiConn {
+		v := conn.(map[string]interface{})
+		iqnName := v["iscsi_initiator"].(string)
+		if iqnName != "" && !utils.IsIqn(iqnName) {
+			return fmt.Errorf("iscsi_initiator %s is invalid", iqnName)
 		}
 
+		portNames, _ := v["port_names"].([]interface{})
+		for _, value := range portNames {
+			portName, ok := value.(string)
+			if !ok {
+				continue
+			}
+			portFound := false
+			if storagePorts.Data != nil {
+				for _, port := range storagePorts.Data {
+					if port.Nickname == portName {
+						portFound = true
+						break
+					}
+				}
+			}
+			if !portFound {
+				return fmt.Errorf("port name %s is invalid", portName)
+			}
+		}
+	}
+
+	return nil
+}
+
+func resourceComputeNodeCustomDiff(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	// Only do deterministic schema validations here (no API calls).
+	if connection, ok := d.GetOk("iscsi_connection"); ok {
+		iscsiConn := connection.(*schema.Set).List()
 		for _, conn := range iscsiConn {
 			v := conn.(map[string]interface{})
-			// Check IQN value
 			iqnName := v["iscsi_initiator"].(string)
-			if (iqnName != "") && (!utils.IsIqn(iqnName)) {
+			if iqnName != "" && !utils.IsIqn(iqnName) {
 				log.WriteDebug("TFDebug | iqnName: %s", iqnName)
 				return fmt.Errorf("iscsi_initiator %s is invalid", iqnName)
-			}
-
-			/// TODO - FIX ME - Array is not working for Plan
-			portNames := v["port_names"].([]interface{})
-			for _, value := range portNames {
-				switch typedValue := value.(type) {
-				case string:
-					{
-						// TODO-FIXME - Code execution is not coming inside
-						// Check if Port Name Exist
-						portFound := false
-						if storagePorts.Data != nil {
-							for _, port := range storagePorts.Data {
-								if port.Nickname == typedValue {
-									portFound = true
-									break
-								}
-							}
-							// If Input Port is invalid
-							if !portFound {
-								return fmt.Errorf("port name %s is invalid", typedValue)
-							}
-						}
-					} // Case End
-				} // Switch End
 			}
 		}
 	}
 
 	// fix for ResourceVssbStorageComputeNodeSchema 'compute_nodes' not updated in console output
-	d.SetNewComputed("compute_nodes")
+	if err := d.SetNewComputed("compute_nodes"); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -134,8 +141,6 @@ func resourceVssbStorageComputeNodeDelete(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	d.SetId("")
 	log.WriteInfo("compute node resource deleted successfully")
 	return nil
 }
@@ -147,10 +152,21 @@ func resourceVssbStorageComputeNodeCreate(ctx context.Context, d *schema.Resourc
 	syncHComputeNodeOperation.Lock()
 	defer syncHComputeNodeOperation.Unlock()
 
+	vssbAddr, _ := d.Get("vosb_address").(string)
+	if strings.TrimSpace(vssbAddr) == "" {
+		return diag.FromErr(fmt.Errorf("vosb_address is required to create a compute node"))
+	}
+
+	if strings.TrimSpace(d.Get("compute_node_name").(string)) == "" {
+		return diag.FromErr(fmt.Errorf("compute_node_name is required to create a compute node"))
+	}
+
 	log.WriteInfo("starting compute node creation")
+	if err := validateVssbComputeNodeConnections(d); err != nil {
+		return diag.FromErr(err)
+	}
 	computeNode, err := impl.CreateVssbComputeNode(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -160,12 +176,15 @@ func resourceVssbStorageComputeNodeCreate(ctx context.Context, d *schema.Resourc
 		*cpn,
 	}
 	if err := d.Set("compute_nodes", cpnList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("name", computeNode.Node.Nickname)
-	d.Set("os_type", computeNode.Node.OsType)
+	if err := d.Set("compute_node_name", computeNode.Node.Nickname); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("os_type", computeNode.Node.OsType); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(computeNode.Node.ID)
 	log.WriteInfo("compute node created successfully")
 	return nil
@@ -183,9 +202,18 @@ func resourceVssbStorageComputeNodeUpdate(ctx context.Context, d *schema.Resourc
 	defer syncHComputeNodeOperation.Unlock()
 
 	log.WriteInfo("starting compute node update")
+	vssbAddr, _ := d.Get("vosb_address").(string)
+	if strings.TrimSpace(vssbAddr) == "" {
+		return diag.FromErr(fmt.Errorf("vosb_address is required to update a compute node"))
+	}
+	if strings.TrimSpace(d.Get("compute_node_name").(string)) == "" {
+		return diag.FromErr(fmt.Errorf("compute_node_name is required to update a compute node"))
+	}
+	if err := validateVssbComputeNodeConnections(d); err != nil {
+		return diag.FromErr(err)
+	}
 	computeNode, err := impl.UpdateVssbComputeNode(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -195,12 +223,15 @@ func resourceVssbStorageComputeNodeUpdate(ctx context.Context, d *schema.Resourc
 		*cpn,
 	}
 	if err := d.Set("compute_nodes", cpnList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	d.Set("name", computeNode.Node.Nickname)
-	d.Set("os_type", computeNode.Node.OsType)
+	if err := d.Set("compute_node_name", computeNode.Node.Nickname); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("os_type", computeNode.Node.OsType); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(computeNode.Node.ID)
 	log.WriteInfo("compute node updated successfully")
 	return nil

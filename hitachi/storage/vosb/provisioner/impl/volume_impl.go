@@ -406,7 +406,7 @@ func (psm *vssbStorageManager) GetComputeNodesbyComputeNodeId(computeNodeIds *[]
 
 }
 
-func (psm *vssbStorageManager) CreateVolume(name string, nickName string, poolId string, capacity float32) (*int, error) {
+func (psm *vssbStorageManager) CreateVolume(name string, nickName string, poolId string, capacity float32, storageControllerId *string, faultDomainId *string) (*int, error) {
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
@@ -434,10 +434,12 @@ func (psm *vssbStorageManager) CreateVolume(name string, nickName string, poolId
 		BaseName: &nickName,
 	}
 	reqBody := &vssbgatewaymodel.CreateVolumeRequestGwy{
-		PoolID:        &poolId,
-		NameParam:     Name,
-		NickNameParam: nickname,
-		Capacity:      &capacityGBInt,
+		PoolID:              &poolId,
+		NameParam:           Name,
+		NickNameParam:       nickname,
+		Capacity:            &capacityGBInt,
+		StorageControllerId: storageControllerId,
+		FaultDomainId:       faultDomainId,
 	}
 	volId, err := gatewayObj.CreateVolume(reqBody)
 	if err != nil {
@@ -498,7 +500,7 @@ func (psm *vssbStorageManager) UpdateVolume(serverId string, name, nickName stri
 		return err
 	}
 	reqbody := vssbgatewaymodel.UpdateVolumeReq{
-		Name: name,
+		Name:     name,
 		NickName: nickName,
 	}
 	err = gatewayObj.UpdateVolume(&serverId, &reqbody)

@@ -67,8 +67,8 @@ Read-Only:
 - `os_type` (String) OS type
 - `paths` (Block List) Path/iSCSI connections details (see [below for nested schema](#nestedblock--compute_nodes--paths))
 - `port_details` (Block List) Port Details of the iSCSI connection (see [below for nested schema](#nestedblock--compute_nodes--port_details))
-- `total_capacity` (Number) Total capacity in MB
-- `used_capacity` (Number) Used capacity in MB
+- `total_capacity_in_mb` (Number) Total capacity in MB
+- `used_capacity_in_mb` (Number) Used capacity in MB
 
 <a id="nestedblock--compute_nodes--paths"></a>
 ### Nested Schema for `compute_nodes.paths`

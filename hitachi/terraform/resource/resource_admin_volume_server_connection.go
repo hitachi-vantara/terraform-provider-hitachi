@@ -97,8 +97,12 @@ func resourceAdminVolumeServerConnectionCustomizeDiff(ctx context.Context, d *sc
 	log.WriteInfo("Volume input validation passed.")
 
 	// Mark computed fields for refresh
-	d.SetNewComputed("connections_info")
-	d.SetNewComputed("connections_count")
+	if err := d.SetNewComputed("connections_info"); err != nil {
+		return err
+	}
+	if err := d.SetNewComputed("connections_count"); err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -159,7 +159,9 @@ func ResourceVspSnapshotRead(d *schema.ResourceData) diag.Diagnostics {
 	}
 
 	// Update the state with all returned metadata
-	updateSnapshotResourceState(d, result)
+	if err := updateSnapshotResourceState(d, result); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -214,33 +216,41 @@ func ResourceVspSnapshotApply(d *schema.ResourceData) diag.Diagnostics {
 		return diag.FromErr(err)
 	}
 
-	updateSnapshotResourceState(d, result)
+	if err := updateSnapshotResourceState(d, result); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }
 
 // ------------------- Helpers -------------------
 
-func updateSnapshotResourceState(d *schema.ResourceData, result *recmodel.ReconcileSnapshotResult) {
+func updateSnapshotResourceState(d *schema.ResourceData, result *recmodel.ReconcileSnapshotResult) error {
 	log := commonlog.GetLogger()
 
 	if result == nil {
-		return
+		return nil
 	}
 
 	// 1. Handle Snapshot list (ensure it's never nil)
 	if result.Snapshot != nil {
-		d.Set("snapshot", convertSnapshotsToSchema([]gwymodel.Snapshot{*result.Snapshot}))
+		if err := d.Set("snapshot", convertSnapshotsToSchema([]gwymodel.Snapshot{*result.Snapshot})); err != nil {
+			return err
+		}
 		// Set ID from the snapshot
 		d.SetId(result.Snapshot.SnapshotID)
 	} else {
 		// Use an empty slice to avoid the "of object" null error
-		d.Set("snapshot", []map[string]interface{}{})
+		if err := d.Set("snapshot", []map[string]interface{}{}); err != nil {
+			return err
+		}
 	}
 
 	// 2. Handle vClone list (ensure it's never nil)
 	if result.VcloneFamily != nil {
-		d.Set("vclone", convertVcloneFamilyToSchema(result.VcloneFamily))
+		if err := d.Set("vclone", convertVcloneFamilyToSchema(result.VcloneFamily)); err != nil {
+			return err
+		}
 
 		// CRITICAL FIX: If the Snapshot is gone, we MUST provide a persistent ID.
 		// If d.Id() is currently empty, use the S-VOL LDEV ID.
@@ -248,10 +258,14 @@ func updateSnapshotResourceState(d *schema.ResourceData, result *recmodel.Reconc
 			d.SetId(strconv.Itoa(result.VcloneFamily.LdevID))
 		}
 	} else {
-		d.Set("vclone", []map[string]interface{}{})
+		if err := d.Set("vclone", []map[string]interface{}{}); err != nil {
+			return err
+		}
 	}
 
-	d.Set("additional_info", convertUniversalInfoToSchema(result.UniversalInfo))
+	if err := d.Set("additional_info", convertUniversalInfoToSchema(result.UniversalInfo)); err != nil {
+		return err
+	}
 
 	// 3. Safety Check: If after all logic the ID is STILL empty,
 	// Terraform will throw "Root object absent". We must force an ID.
@@ -259,6 +273,8 @@ func updateSnapshotResourceState(d *schema.ResourceData, result *recmodel.Reconc
 		log.WriteDebug("No state id")
 		d.SetId("No snapshot found")
 	}
+
+	return nil
 }
 
 func convertSnapshotsToSchema(snapshots []gwymodel.Snapshot) []map[string]interface{} {
