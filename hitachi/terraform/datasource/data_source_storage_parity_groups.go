@@ -55,6 +55,10 @@ func DataSourceStorageParityGroupsRead(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("parity_group_count", len(pgList)); err != nil {
+		return diag.FromErr(err)
+	}
+
 	_, ok := d.GetOk("parity_group_ids")
 	if !ok {
 		if err := d.Set("parity_group_ids", []string{}); err != nil {

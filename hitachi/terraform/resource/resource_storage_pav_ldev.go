@@ -14,7 +14,7 @@ import (
 
 func ResourceVspPavLdev() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP PAV LDEV: The following request assigns/unassigns alias LDEVs for a base LDEV.",
+		Description: "VSP PAV LDEV: The following request assigns/unassigns alias LDEVs for a base LDEV.",
 		CreateContext: resourceVspPavLdevCreate,
 		ReadContext:   resourceVspPavLdevRead,
 		UpdateContext: resourceVspPavLdevUpdate,
@@ -29,7 +29,6 @@ func resourceVspPavLdevCreate(ctx context.Context, d *schema.ResourceData, m int
 	defer log.WriteExit()
 
 	if err := impl.AssignPavAlias(d); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -82,8 +81,6 @@ func resourceVspPavLdevDelete(ctx context.Context, d *schema.ResourceData, m int
 	if err := impl.UnassignPavAlias(d); err != nil {
 		return diag.FromErr(err)
 	}
-
-	d.SetId("")
 	return nil
 }
 

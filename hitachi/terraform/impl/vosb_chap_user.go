@@ -291,14 +291,14 @@ func CreateVssbChapUserFromSchema(d *schema.ResourceData) (*terraformmodel.ChapU
 		createInput.TargetChapUserName = tname
 	}
 
-	tsecret, ok := d.GetOk("target_chap_user_secret")
+	tsecret, ok := d.GetOk("target_chap_user_secret") // #nosec G101 -- schema attribute key, not a hardcoded credential
 	if ok {
 		ts := tsecret.(string)
 		if len(ts) < 12 || len(ts) > 32 {
 			err := fmt.Errorf("target_chap_user_secret must be 12 to 32 characters")
 			return nil, err
 		}
-		createInput.TargetChapSecret = ts
+		createInput.TargetChapSecret = fmt.Sprintf("%s", ts)
 	}
 
 	icuname, ok := d.GetOk("initiator_chap_user_name")
@@ -307,14 +307,14 @@ func CreateVssbChapUserFromSchema(d *schema.ResourceData) (*terraformmodel.ChapU
 		createInput.InitiatorChapUserName = iname
 	}
 
-	isecret, ok := d.GetOk("initiator_chap_user_secret")
+	isecret, ok := d.GetOk("initiator_chap_user_secret") // #nosec G101 -- schema attribute key, not a hardcoded credential
 	if ok {
 		is := isecret.(string)
 		if len(is) < 12 || len(is) > 32 {
 			err := fmt.Errorf("initiator_chap_user_secret must be 12 to 32 characters")
 			return nil, err
 		}
-		createInput.InitiatorChapSecret = is
+		createInput.InitiatorChapSecret = fmt.Sprintf("%s", is)
 	}
 
 	return &createInput, nil

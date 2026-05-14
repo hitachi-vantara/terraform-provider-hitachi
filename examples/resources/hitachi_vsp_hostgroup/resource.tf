@@ -14,6 +14,29 @@
 # https://docs.hitachivantara.com/r/en-us/svos/9.8.7/mk-97hm85026/managing-logical-volumes/configuring-hosts/host-modes-and-host-mode-options-for-host-facing-host-ports
 #
 
+################################################################################
+# Example: Import (existing hostgroup)
+# -----------------------------------------------------------------------------
+# Use terraform import when the hostgroup already exists on storage and
+# you want to bring it under Terraform management without re-creating it.
+# The import reads the current state from storage and writes it to tfstate.
+#
+# Import ID formats:
+# - <serial>/<port_id>,<hostgroup_name>
+# - <serial>/<port_id>,<hostgroup_number>,<hostgroup_name>  (use when name is not unique on the port)
+#
+# terraform import hitachi_vsp_hostgroup.imported '12345/CL1-A,TESTING-HOSTGROUP'
+# terraform import hitachi_vsp_hostgroup.imported '12345/CL1-A,23,TESTING-HOSTGROUP'
+
+# Minimal skeleton block required for `terraform import`.
+# Create this block in your .tf before running the import command.
+resource "hitachi_vsp_hostgroup" "imported" {}
+
+output "imported_hostgroup_id" {
+  value = hitachi_vsp_hostgroup.imported.id
+}
+################################################################################
+
 
 resource "hitachi_vsp_hostgroup" "myhg" {
   serial           = 12345

@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
@@ -16,7 +17,10 @@ var syncPortOperation = &sync.Mutex{}
 
 func ResourceAdminPort() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage ports in VSP One storage.",
+		Description: "Manage ports in VSP One storage.",
+		Importer: &schema.ResourceImporter{
+			StateContext: importAdminPort,
+		},
 		CreateContext: resourceAdminPortCreate,
 		ReadContext:   resourceAdminPortRead,
 		UpdateContext: resourceAdminPortUpdate,
@@ -59,11 +63,34 @@ func resourceAdminPortUpdate(ctx context.Context, d *schema.ResourceData, m inte
 func resourceAdminPortDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Dummy delete implementation - no actual API call performed
 	// This is a placeholder to satisfy Terraform's validation requirements
-	d.SetId("")
 	return nil
 }
 
 func resourceAdminPortCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
-	d.SetNewComputed("port_info")
+	if d.Id() == "" {
+		// Create path requires explicit selectors.
+		serialRaw, ok := d.GetOk("serial")
+		if !ok || serialRaw.(int) < 1 {
+			return fmt.Errorf("serial must be specified and must be >= 1")
+		}
+		portRaw, ok := d.GetOk("port_id")
+		if !ok || portRaw.(string) == "" {
+			return fmt.Errorf("port_id must be specified")
+		}
+	} else {
+		// Update/imported resources can rely on state-populated values.
+		serial := d.Get("serial").(int)
+		if serial < 1 {
+			return fmt.Errorf("serial must be known (import or config must provide it)")
+		}
+		portID := d.Get("port_id").(string)
+		if portID == "" {
+			return fmt.Errorf("port_id must be known (import or config must provide it)")
+		}
+	}
+
+	if err := d.SetNewComputed("port_info"); err != nil {
+		return err
+	}
 	return nil
 }

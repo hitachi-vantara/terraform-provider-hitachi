@@ -20,7 +20,6 @@ import (
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 
 	//resourceimpl "terraform-provider-hitachi/hitachi/terraform/resource"
-
 	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
 
@@ -50,11 +49,8 @@ func resourceVssbComputrPortDelete(ctx context.Context, d *schema.ResourceData, 
 
 	_, err := impl.AllowChapUsersToAccessComputePort(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
-
-	d.SetId("")
 	log.WriteInfo("chap user resource deleted successfully")
 	return nil
 }
@@ -69,7 +65,6 @@ func resourceVssbComputrPortCreate(ctx context.Context, d *schema.ResourceData, 
 	log.WriteInfo("starting associating chap users with port")
 	portInfo, err := impl.AllowChapUsersToAccessComputePort(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -79,7 +74,6 @@ func resourceVssbComputrPortCreate(ctx context.Context, d *schema.ResourceData, 
 		*cp,
 	}
 	if err := d.Set("compute_port", cuList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -101,7 +95,6 @@ func resourceVssbComputrPortUpdate(ctx context.Context, d *schema.ResourceData, 
 	log.WriteInfo("starting associating chap users with port")
 	portInfo, err := impl.AllowChapUsersToAccessComputePort(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 	//cp := impl.ConvertVssbPortDetailSettingsToSchema(portInfo)
@@ -112,7 +105,6 @@ func resourceVssbComputrPortUpdate(ctx context.Context, d *schema.ResourceData, 
 		*cp,
 	}
 	if err := d.Set("compute_port", cuList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -159,6 +151,5 @@ func VssbStorageComputePortCustomDiff(ctx context.Context, d *schema.ResourceDif
 		*/
 		log.WriteInfo("compute port updated successfully")
 	}
-
 	return nil
 }

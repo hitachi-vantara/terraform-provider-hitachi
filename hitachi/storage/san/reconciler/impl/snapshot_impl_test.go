@@ -73,7 +73,7 @@ func xTestReconcileReadSnapshot(t *testing.T) {
 	}
 
 	t.Run("Reading Existing Snapshot", func(t *testing.T) {
-		snapshot, err := psm.reconcileReadSnapshot(input)
+		snapshot, err := psm.ReconcileReadExistingSnapshotVclone(input)
 		if err != nil {
 			t.Fatalf("Backend call failed: %v", err)
 		}
@@ -213,23 +213,6 @@ func xTestReconcileGetMultipleSnapshotsRangeAll(t *testing.T) {
 		t.Logf("Response:\n%s", string(data))
 		t.Logf("Range query returned %d snapshots", len(resp.Data))
 	})
-}
-
-// go test -v -run ^TestReconcileSnapshotCreate_ParseCheck$
-func xTestReconcileSnapshotCreate_ParseCheck(t *testing.T) {
-	psm, _ := newSnapshotTestManager()
-
-	// Testing the helper used inside reconcileSnapshotCreate
-	testID := "123,1"
-	pvol, mu, err := psm.parseSnapshotResID(testID)
-
-	if err != nil {
-		t.Fatalf("Failed to parse valid ID: %v", err)
-	}
-
-	if *pvol != 123 || *mu != 1 {
-		t.Errorf("Expected 123,1 but got %d,%d", *pvol, *mu)
-	}
 }
 
 // go test -v -run ^TestReconcileSnapshotCreate_No_Svol$

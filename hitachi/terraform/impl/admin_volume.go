@@ -38,7 +38,19 @@ func DatasourceAdminOneVolumeRead(d *schema.ResourceData) diag.Diagnostics {
 		return diag.FromErr(err)
 	}
 	if finalLdev == nil {
-		return diag.FromErr(fmt.Errorf("either volume_id or volume_id_hex must be specified"))
+		// Post-create/import, users may omit selector fields. For single-volume
+		// resources, the resource ID itself is the volume ID.
+		id := strings.TrimSpace(d.Id())
+		idParts := strings.Split(id, ",")
+		if len(idParts) == 1 {
+			if v, parseErr := strconv.Atoi(strings.TrimSpace(idParts[0])); parseErr == nil {
+				finalLdev = &v
+				_ = d.Set("volume_id", v)
+			}
+		}
+		if finalLdev == nil {
+			return diag.FromErr(fmt.Errorf("either volume_id or volume_id_hex must be specified"))
+		}
 	}
 	volumeID := *finalLdev
 
@@ -165,7 +177,11 @@ func ResourceAdminVolumeRead(d *schema.ResourceData) diag.Diagnostics {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	serial := d.Get("serial").(int)
+	serialRaw, ok := d.GetOk("serial")
+	if !ok {
+		return diag.Errorf("serial must be specified (set it in config or import using '<serial>/<volume_id[,volume_id...]>' )")
+	}
+	serial := serialRaw.(int)
 	idStr := d.Id()
 	if idStr == "" {
 		return diag.Errorf("volume IDs in state are empty")
@@ -226,6 +242,9 @@ func ResourceAdminVolumeRead(d *schema.ResourceData) diag.Diagnostics {
 	}
 
 	setResourceIDFromVolumeIDs(d, existingIDs)
+	if len(existingIDs) == 1 {
+		setSingleVolumeSelectors(d, existingIDs[0])
+	}
 
 	log.WriteInfo("volumes read successfully")
 	return diags
@@ -236,7 +255,11 @@ func ResourceAdminVolumeDelete(d *schema.ResourceData) diag.Diagnostics {
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	serial := d.Get("serial").(int)
+	serialRaw, ok := d.GetOk("serial")
+	if !ok {
+		return diag.Errorf("serial must be specified")
+	}
+	serial := serialRaw.(int)
 	idStr := d.Id()
 	if idStr == "" {
 		return diag.Errorf("resource ID is empty")
@@ -283,7 +306,11 @@ func ResourceAdminVolumeCreate(d *schema.ResourceData) diag.Diagnostics {
 
 	log.WriteInfo("starting volume create/update")
 
-	serial := d.Get("serial").(int)
+	serialRaw, ok := d.GetOk("serial")
+	if !ok {
+		return diag.Errorf("serial must be specified")
+	}
+	serial := serialRaw.(int)
 
 	params, _, err := buildCreateVolumeParams(d)
 	if err != nil {
@@ -302,9 +329,18 @@ func ResourceAdminVolumeCreate(d *schema.ResourceData) diag.Diagnostics {
 	}
 
 	setResourceIDFromVolumeIDs(d, volumeIDs)
+	if len(volumeIDs) == 1 {
+		setSingleVolumeSelectors(d, volumeIDs[0])
+	}
 
 	log.WriteInfo("volumes created successfully")
 	return ResourceAdminVolumeRead(d)
+}
+
+func setSingleVolumeSelectors(d *schema.ResourceData, volumeID int) {
+	// Intentionally prefer volume_id to avoid state/config conflicts.
+	// Users who want to drive updates via volume_id_hex can still set it in config.
+	_ = d.Set("volume_id", volumeID)
 }
 
 func ResourceAdminVolumeUpdate(d *schema.ResourceData) diag.Diagnostics {
@@ -314,7 +350,34 @@ func ResourceAdminVolumeUpdate(d *schema.ResourceData) diag.Diagnostics {
 
 	log.WriteInfo("starting volume update")
 
-	serial := d.Get("serial").(int)
+	// If nothing that actually changes the backend volume has changed, treat this as a no-op.
+	// This is especially important after import, where users may keep `volume_id` in config
+	// as a selector but don't intend to update anything.
+	mutableFields := []string{
+		"capacity",
+		"pool_id",
+		"nickname_param",
+		"capacity_saving",
+		"is_data_reduction_share_enabled",
+		"compression_acceleration",
+	}
+	changed := false
+	for _, f := range mutableFields {
+		if d.HasChange(f) {
+			changed = true
+			break
+		}
+	}
+	if !changed {
+		log.WriteInfo("no updatable fields changed; skipping update")
+		return ResourceAdminVolumeRead(d)
+	}
+
+	serialRaw, ok := d.GetOk("serial")
+	if !ok {
+		return diag.Errorf("serial must be specified")
+	}
+	serial := serialRaw.(int)
 
 	finalLdev, err := terrcommon.ExtractLdevFields(d, "volume_id", "volume_id_hex")
 	if err != nil {
@@ -330,7 +393,7 @@ func ResourceAdminVolumeUpdate(d *schema.ResourceData) diag.Diagnostics {
 		return diag.Errorf("'number_of_volumes' cannot be set during update — use 'volume_id' instead")
 	}
 
-	params, _, err := buildCreateVolumeParams(d)
+	params, err := buildUpdateVolumeParams(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -350,6 +413,55 @@ func ResourceAdminVolumeUpdate(d *schema.ResourceData) diag.Diagnostics {
 	// as other volumes may still exist in the resource
 	log.WriteInfo(fmt.Sprintf("volume %d updated successfully", volumeID))
 	return ResourceAdminVolumeRead(d)
+}
+
+func buildUpdateVolumeParams(d *schema.ResourceData) (gwymodel.CreateVolumeParams, error) {
+	var params gwymodel.CreateVolumeParams
+
+	// For update, only set fields that the user actually specified.
+	// This allows updating e.g. capacity_saving without requiring create-only args.
+	if v, ok := d.GetOkExists("pool_id"); ok {
+		params.PoolID = v.(int)
+	}
+
+	if v, ok := d.GetOk("capacity"); ok {
+		miB, err := utils.ParseCapacityToMiB(v.(string))
+		if err != nil {
+			return params, fmt.Errorf("invalid capacity: %v", err)
+		}
+		params.Capacity = miB
+	}
+
+	if v, ok := d.GetOk("capacity_saving"); ok {
+		val := v.(string)
+		params.SavingSetting = &val
+	}
+	if v, ok := d.GetOk("is_data_reduction_share_enabled"); ok {
+		val := v.(bool)
+		params.IsDataReductionShareEnabled = &val
+	}
+
+	if nicknameParam, ok := d.GetOk("nickname_param"); ok {
+		list := nicknameParam.([]interface{})
+		if len(list) > 0 {
+			m := list[0].(map[string]interface{})
+			baseName, _ := m["base_name"].(string)
+			if strings.TrimSpace(baseName) != "" {
+				nickname := gwymodel.VolumeNicknameParam{BaseName: baseName}
+				if val, exists := m["start_number"]; exists {
+					n := val.(int)
+					nickname.StartNumber = &n
+				}
+				if val, exists := m["number_of_digits"]; exists {
+					n := val.(int)
+					nickname.NumberOfDigits = &n
+				}
+				params.NicknameParam = nickname
+			}
+		}
+	}
+
+	return params, nil
 }
 
 // ------------------- Helpers -------------------
@@ -412,7 +524,7 @@ func convertOneVolumeInfoToSchema(v *gwymodel.VolumeInfoByID) map[string]interfa
 
 	m := map[string]interface{}{
 		"volume_id":                    v.ID,
-		"volume_id_hex":                   utils.IntToHexString(v.ID),
+		"volume_id_hex":                utils.IntToHexString(v.ID),
 		"pool_id":                      v.PoolID,
 		"total_capacity_mb":            v.TotalCapacity,
 		"used_capacity_mb":             v.UsedCapacity,
@@ -506,7 +618,7 @@ func convertMultipleVolumeInfosListToSchema(volumes *gwymodel.VolumeInfoList) []
 	for i, v := range volumes.Data {
 		m := map[string]interface{}{
 			"volume_id":                       v.ID,
-			"volume_id_hex":                      utils.IntToHexString(v.ID),
+			"volume_id_hex":                   utils.IntToHexString(v.ID),
 			"pool_id":                         v.PoolID,
 			"total_capacity_mb":               v.TotalCapacity,
 			"used_capacity_mb":                v.UsedCapacity,
@@ -542,8 +654,12 @@ func convertMultipleVolumeInfosListToSchema(volumes *gwymodel.VolumeInfoList) []
 func buildCreateVolumeParams(d *schema.ResourceData) (gwymodel.CreateVolumeParams, int, error) {
 	var params gwymodel.CreateVolumeParams
 
-	// Required: pool_id
-	params.PoolID = d.Get("pool_id").(int)
+	// Required for create/update: pool_id (0 is valid, so use GetOkExists)
+	poolIDRaw, ok := d.GetOkExists("pool_id")
+	if !ok {
+		return params, 0, fmt.Errorf("pool_id must be specified")
+	}
+	params.PoolID = poolIDRaw.(int)
 
 	// Required: capacity
 	capacityStr, ok := d.GetOk("capacity")

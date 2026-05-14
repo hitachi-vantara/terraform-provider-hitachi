@@ -78,6 +78,11 @@ var DataPavAliasSchema = map[string]*schema.Schema{
 		Description: "PAV alias information.",
 		Elem:        &schema.Resource{Schema: PavAliasSchema},
 	},
+	"pav_alias_count": {
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Number of PAV alias entries returned by the data source.",
+	},
 }
 
 // ResourceVspPavLdevSchema defines schema for hitachi_vsp_pav_ldev resource.

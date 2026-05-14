@@ -21,7 +21,7 @@ description: |-
 # - VSP One SDS Block and Cloud (AWS, GCP, Azure)
 # - VSP One SDS Block (Baremetal)
 # - VSP One Block 20 series
-# - VSP One Block High End
+# - VSP One Block 85
 # - VSP 5000 series
 # - VSP E series
 # - VSP F series
@@ -35,8 +35,8 @@ description: |-
 # The provider supports three connection types:
 #
 # - `hitachi_vosb_provider`: For VSP One SDS Block and Cloud systems.
-# - 'hitachi_vsp_one_provider' : For VSP One Block 20 series, VSP One Block High End, and VSP E series.
-# - `san_storage_system`: For VSP One Block 20 series, VSP One Block High End, VSP 5000 series, VSP E series,
+# - 'hitachi_vsp_one_provider' : For VSP One Block 20 series, VSP One Block 85, and VSP E series.
+# - `san_storage_system`: For VSP One Block 20 series, VSP One Block 85, VSP 5000 series, VSP E series,
 #                         VSP F series, and VSP G series.
 #
 # Example configuration for VSP One SDS Block:
@@ -54,7 +54,7 @@ description: |-
 # terraform {
 #   required_providers {
 #  hitachi = {
-#   version = "2.3.0"
+#   version = "2.4.0"
 #   source  = "localhost/hitachi-vantara/hitachi"
 #    }
 #  }
@@ -86,7 +86,7 @@ description: |-
 terraform {
   required_providers {
     hitachi = {
-      version = "2.3.0"
+      version = "2.4.0"
       source  = "localhost/hitachi-vantara/hitachi"
     }
   }
@@ -107,8 +107,8 @@ provider "hitachi" {
 ### Optional
 
 - `hitachi_vosb_provider` (Block List) VSP One SDS Block and Cloud combines VSP One SDS Block, which creates virtual storage systems from general-purpose servers, with VSP One SDS Cloud, which enables deployment on AWS, Google Cloud Platform (GCP), and Microsoft Azure. (see [below for nested schema](#nestedblock--hitachi_vosb_provider))
-- `hitachi_vsp_one_provider` (Block List) VSP One Block Administrator is a configuration management tool designed for VSP One Block 20 series, VSP One Block High End, and VSP E series storage systems, simplifying and streamlining storage management. (see [below for nested schema](#nestedblock--hitachi_vsp_one_provider))
-- `san_storage_system` (Block List) VSP One Block 20 series, VSP One Block High End, VSP 5000 series, VSP E series, VSP F series, and VSP G series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. These systems focus on simplifying data storage management while ensuring high availability and data integrity. (see [below for nested schema](#nestedblock--san_storage_system))
+- `hitachi_vsp_one_provider` (Block List) VSP One Block Administrator is a configuration management tool designed for VSP One Block 20 series, VSP One Block 85, and VSP E series storage systems, simplifying and streamlining storage management. (see [below for nested schema](#nestedblock--hitachi_vsp_one_provider))
+- `san_storage_system` (Block List) VSP One Block 20 series, VSP One Block 85, VSP 5000 series, VSP E series, VSP F series, and VSP G series are enterprise storage solutions designed to provide reliable and scalable block storage for a variety of environments. These systems focus on simplifying data storage management while ensuring high availability and data integrity. (see [below for nested schema](#nestedblock--san_storage_system))
 
 <a id="nestedblock--hitachi_vosb_provider"></a>
 ### Nested Schema for `hitachi_vosb_provider`

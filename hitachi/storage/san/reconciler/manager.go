@@ -70,4 +70,10 @@ type SanStorageManager interface {
 	ReconcileGetMultipleSnapshotGroups(includePairs bool) (*gatewaymodel.SnapshotGroupListResponse, error)
 	ReconcileSnapshotGroup(input reconcilermodel.SnapshotGroupReconcilerInput) (*gatewaymodel.SnapshotGroup, error)
 	ReconcileSnapshotGroupVFamily(input reconcilermodel.SnapshotGroupReconcilerInput) (*gatewaymodel.SnapshotGroup, []gatewaymodel.SnapshotFamily, error)
+
+	// NVME SUBSYSTEM
+	ReconcileGetNvmSubsystem(subsystemID int) (*gatewaymodel.NvmSubsystem, error)
+	ReconcileGetMultipleNvmSubsystems(input reconcilermodel.NvmSubsystemGetMultipleInput) (*gatewaymodel.NvmSubsystems, error)
+	ReconcileNvmSubsystemApply(input reconcilermodel.NvmSubsystemReconcilerInput) (*gatewaymodel.NvmSubsystem, error)
+	ReconcileNvmSubsystemDelete(id int) error
 }

@@ -61,7 +61,7 @@ def validate_input(data):
 
     for key, expected in schema.items():
         if key not in data:
-            logger.error(f"Missing key: {key}")
+            logger.error("Required key missing in data")
             return False
 
         value = data[key]
@@ -69,11 +69,11 @@ def validate_input(data):
         if isinstance(expected, tuple):
             expected_type, validator = expected
             if not isinstance(value, expected_type) or not validator(value):
-                logger.error(f"Invalid value for {key}: {value}")
+                logger.error("Validation failed for a field")
                 return False
         else:
             if not isinstance(value, expected):
-                logger.error(f"Incorrect type for {key}: {value}")
+                logger.error("Validation failed for a field")
                 return False
 
     return True

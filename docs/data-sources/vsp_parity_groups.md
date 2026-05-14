@@ -132,6 +132,7 @@ For VSP G350, G370, G700, G900, VSP F350, F370, F700, F900:
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `parity_group_count` (Number) Total number of parity groups returned by the data source
 - `parity_groups` (Block List) Parity groups output (see [below for nested schema](#nestedblock--parity_groups))
 
 <a id="nestedblock--parity_groups"></a>

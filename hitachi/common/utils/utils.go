@@ -20,136 +20,6 @@ import (
 	"unicode"
 )
 
-// these funcs are not used in the code
-/*
-func GetOutputValue(value interface{}) interface{} {
-	log := commonlog.GetLogger()
-
-	valArray, okArray := value.([]interface{})
-	if okArray {
-		// log.WriteInfo("It's an array : %+v\n", valArray)
-		outArray := make([]interface{}, 0)
-		for _, item := range valArray {
-			outMap := GetOutputValue(item)
-			outArray = append(outArray, outMap)
-
-		}
-		return outArray
-	} else {
-		valMap, okMap := value.(map[string]interface{})
-		if okMap {
-			// log.WriteInfo("It's a map : %+v\n", valMap)
-			outMap := map[string]interface{}{}
-			for k, v := range valMap {
-				outMap[ToSnakeCase(k)] = GetOutputValue(v)
-			}
-			return outMap
-		} else {
-			// log.WriteInfo("It's primitive type : %+v\n", value)
-			return value
-		}
-	}
-}
-
-func PopulateOutput(value interface{}) []interface{} {
-	lastValueInArray := make([]interface{}, 0)
-	lastValue := GetOutputValue(value)
-	valMap, okMap := lastValue.(map[string]interface{})
-	if okMap {
-		// log.WriteInfo("Last value is a map : %+v\n", lastValue)
-		lastValueInArray = append(lastValueInArray, valMap)
-	} else {
-		// log.WriteInfo("Last value is an array : %+v\n", lastValue)
-		lastValueInArray = lastValue.([]interface{})
-	}
-
-	log.WriteInfo("Output Schema Value: %s\n", ConvertToJson(lastValueInArray))
-	return lastValueInArray
-}
-
-func ToSnakeCase(str string) string {
-	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
-	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
-
-	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
-	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
-	return strings.ToLower(snake)
-}
-
-func IsInterfaceArray(v interface{}) bool {
-	log := commonlog.GetLogger()
-
-	switch x := v.(type) {
-	case []interface{}:
-		log.WriteDebug("[]interface, len:", len(x))
-		return true
-	case interface{}:
-		log.WriteDebug("interface:", x)
-		return false
-	default:
-		log.WriteDebugf("Unsupported type: %T\n", x)
-		return false
-	}
-}
-
-func ConvertToJson(m interface{}) string {
-	log := commonlog.GetLogger()
-
-	b, err := json.Marshal(m)
-	if err != nil {
-		log.WriteError(err)
-	}
-	return string(b)
-}
-
-func SaveOutputToFile(resourceName string, id string, output interface{}) error {
-	log := commonlog.GetLogger()
-
-	name := "output/" + resourceName + "_" + id + ".out"
-	_ = os.Mkdir("output", os.ModeDir|os.ModePerm)
-
-	file, err := json.MarshalIndent(output, "", " ")
-	if err != nil {
-		log.WriteError(err)
-		return err
-	}
-
-	err = ioutil.WriteFile(name, file, 0644)
-	if err != nil {
-		log.WriteError(err)
-		return err
-	}
-
-	return nil
-}
-
-func SaveDataToFile(dirPath, fileName string, data interface{}) error {
-	log := commonlog.GetLogger()
-
-	err := os.MkdirAll(dirPath, os.ModeDir|os.ModePerm)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	filePath := dirPath + "/" + fileName
-
-	jsonString, err := json.MarshalIndent(data, "", " ")
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	err = ioutil.WriteFile(filePath, jsonString, 0644)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-
-	return nil
-}
-*/
-
 // TransformSizeToUnit --
 func TransformSizeToUnit(size uint64) string {
 	if size >= TERABYTES {
@@ -299,15 +169,6 @@ func DecodeBase64EncodedString(strvalue string) (string, error) {
 	return strings.TrimSuffix(bytes.NewBuffer(uDec).String(), "\n"), nil
 }
 
-func IsParityGroupPresent(parityGroupId string, parityGroupIDs []string) bool {
-	for _, pg_id := range parityGroupIDs {
-		if pg_id == parityGroupId {
-			return true
-		}
-	}
-	return false
-}
-
 // GetStringSliceDiff - see demo https://go.dev/play/p/rljfryR0Ek_n
 //
 //	added - new elements added to the new slice
@@ -349,6 +210,55 @@ func MapKeysToSlice[K comparable, V any](m map[K]V) []K {
 	return keys
 }
 
+// IntSliceEqual returns true if two integer slices contain the same elements,
+// regardless of order. It returns false if lengths differ or elements don't match.
+func IntSliceEqual(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	// Create a frequency map for the first slice
+	counts := make(map[int]int)
+	for _, val := range a {
+		counts[val]++
+	}
+
+	// Check against the second slice
+	for _, val := range b {
+		if counts[val] == 0 {
+			return false
+		}
+		counts[val]--
+	}
+
+	return true
+}
+
+// StringSliceEqual returns true if two string slices contain the same elements,
+// regardless of order. It returns false if lengths differ or elements don't match.
+func StringSliceEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	// Create a frequency map for the first slice
+	counts := make(map[string]int)
+	for _, val := range a {
+		counts[val]++
+	}
+
+	// Check against the second slice
+	for _, val := range b {
+		if counts[val] == 0 {
+			// Element in b doesn't exist in a or appears more times than in a
+			return false
+		}
+		counts[val]--
+	}
+
+	return true
+}
+
 func IsIqn(value string) (isIqn bool) {
 	index := strings.Index(strings.ToLower(value), "iqn.")
 	if index == 0 {
@@ -359,25 +269,23 @@ func IsIqn(value string) (isIqn bool) {
 	return isIqn
 }
 
-func IsWwn(value string) bool {
-	index := strings.Index(strings.ToLower(value), "wwwn.")
-	if index == 0 {
-		return true
-	} else {
-		return false
-	}
+func RemoveDuplicateFromStringArray(input []string) []string {
+    return DeduplicateByField(input, func(s string) string { return s })
 }
 
-func RemoveDuplicateFromStringArray(input []string) (output []string) {
-	bucket := make(map[string]bool)
-	var result []string
-	for _, str := range input {
-		if _, ok := bucket[str]; !ok {
-			bucket[str] = true
-			result = append(result, str)
-		}
-	}
-	return result
+// DeduplicateByField deduplicates a slice of any type T based on a key of type K.
+// The keySelector function defines which field to use for uniqueness.
+func DeduplicateByField[T any, K comparable](input []T, keySelector func(T) K) []T {
+    bucket := make(map[K]bool)
+    var result []T
+    for _, entry := range input {
+        key := keySelector(entry)
+        if _, ok := bucket[key]; !ok {
+            bucket[key] = true
+            result = append(result, entry)
+        }
+    }
+    return result
 }
 
 func IsValidUUID(uuid string) bool {
@@ -401,12 +309,12 @@ func ConvertInterfaceToSlice(interface_obj []interface{}) []string {
 }
 
 func CapitalizeFirst(s string) string {
-    if s == "" {
-        return s
-    }
-    runes := []rune(s)
-    runes[0] = unicode.ToUpper(runes[0])
-    return string(runes)
+	if s == "" {
+		return s
+	}
+	runes := []rune(s)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
 }
 
 // IntToHexString converts an int to uppercase hex with 0x prefix.
@@ -448,4 +356,3 @@ func ParseLdev(ldevID *int, ldevHex *string) (int, error) {
 
 // helper to convert a value to a pointer
 func Ptr[T any](v T) *T { return &v }
-

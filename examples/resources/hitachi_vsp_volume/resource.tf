@@ -62,6 +62,30 @@
 //
 // 
 
+////////////////////////////////////////////////////////////////////////////////
+// Example: Import (existing volume)
+// -----------------------------------------------------------------------------
+// Use terraform import when the volume already exists on storage and
+// you want to bring it under Terraform management without re-creating it.
+// The import reads the current state from storage and writes it to tfstate.
+//
+// Import ID format: <serial>/<ldev_id>
+//
+// terraform import hitachi_vsp_volume.imported '12345/6640'
+
+// Minimal skeleton block required for `terraform import`.
+// Create this block in your .tf before running the import command.
+resource "hitachi_vsp_volume" "imported" {}
+
+output "imported_vsp_volume_id" {
+  value = hitachi_vsp_volume.imported.id
+}
+// Notes:
+// - After import, create-only placement fields (pool_id/pool_name/paritygroup_id/external_paritygroup_id)
+//   are NOT required. If you add them later, Terraform may plan changes that the API cannot apply.
+// - To expand capacity, update size_gb to a larger value. Shrink is not supported.
+////////////////////////////////////////////////////////////////////////////////
+
 // Example Snapshot Vvol
 resource "hitachi_vsp_volume" "myVvol" {
   serial  = 12345

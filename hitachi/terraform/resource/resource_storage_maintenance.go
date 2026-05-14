@@ -73,6 +73,5 @@ func resourceStorageMaintenanceUpdate(ctx context.Context, d *schema.ResourceDat
 
 func resourceStorageMaintenanceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Resource intentionally performs no destroy action; simply remove state.
-	d.SetId("")
 	return nil
 }

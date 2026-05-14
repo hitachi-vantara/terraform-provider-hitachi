@@ -164,13 +164,13 @@ func DeleteVssbComputeNodeResource(d *schema.ResourceData) error {
 func ConvertVssbComputeNodeToSchema(computeNode *terraformmodel.Server) *map[string]interface{} {
 
 	compNode := map[string]interface{}{
-		"id":                computeNode.ID,
-		"nickname":          computeNode.Nickname,
-		"number_of_volumes": computeNode.NumberOfVolumes,
-		"os_type":           computeNode.OsType,
-		"total_capacity":    computeNode.TotalCapacity,
-		"used_capacity":     computeNode.UsedCapacity,
-		"number_of_paths":   computeNode.NumberOfPaths,
+		"id":                   computeNode.ID,
+		"nickname":             computeNode.Nickname,
+		"number_of_volumes":    computeNode.NumberOfVolumes,
+		"os_type":              computeNode.OsType,
+		"total_capacity_in_mb": computeNode.TotalCapacity,
+		"used_capacity_in_mb":  computeNode.UsedCapacity,
+		"number_of_paths":      computeNode.NumberOfPaths,
 	}
 	pa := []map[string]interface{}{}
 
@@ -190,13 +190,13 @@ func ConvertVssbComputeNodeToSchema(computeNode *terraformmodel.Server) *map[str
 func ConvertVssbComputeNodeWithPathDetailsToSchema(computeNode *terraformmodel.ComputeNodeWithPathDetails) *map[string]interface{} {
 
 	compNode := map[string]interface{}{
-		"id":                computeNode.Node.ID,
-		"nickname":          computeNode.Node.Nickname,
-		"number_of_volumes": computeNode.Node.NumberOfVolumes,
-		"os_type":           computeNode.Node.OsType,
-		"total_capacity":    computeNode.Node.TotalCapacity,
-		"used_capacity":     computeNode.Node.UsedCapacity,
-		"number_of_paths":   computeNode.Node.NumberOfPaths,
+		"id":                   computeNode.Node.ID,
+		"nickname":             computeNode.Node.Nickname,
+		"number_of_volumes":    computeNode.Node.NumberOfVolumes,
+		"os_type":              computeNode.Node.OsType,
+		"total_capacity_in_mb": computeNode.Node.TotalCapacity,
+		"used_capacity_in_mb":  computeNode.Node.UsedCapacity,
+		"number_of_paths":      computeNode.Node.NumberOfPaths,
 	}
 	pa := []map[string]interface{}{}
 
@@ -214,9 +214,9 @@ func ConvertVssbComputeNodeWithPathDetailsToSchema(computeNode *terraformmodel.C
 
 	for _, item := range computeNode.ComputePaths.Data {
 		data := map[string]interface{}{
-			"port_id":         item.PortId,
+			"port_id":                item.PortId,
 			"target_port_identifier": item.PortName,
-			"port_name":       item.PortNickname,
+			"port_name":              item.PortNickname,
 		}
 		pa2 = append(pa2, data)
 	}

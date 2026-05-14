@@ -33,7 +33,7 @@ func adminPoolInfoSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "The encryption status of the storage pool.",
 		},
-		"total_capacity": {
+		"total_capacity_in_mib": {
 			Type:        schema.TypeInt,
 			Optional:    true,
 			Description: "The total capacity of the storage pool in MiB.",
@@ -43,12 +43,12 @@ func adminPoolInfoSchema() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "The effective capacity of the storage pool in MiB.",
 		},
-		"used_capacity": {
+		"used_capacity_in_mib": {
 			Type:        schema.TypeInt,
 			Optional:    true,
 			Description: "The used capacity of the storage pool in MiB.",
 		},
-		"free_capacity": {
+		"free_capacity_in_mib": {
 			Type:        schema.TypeInt,
 			Optional:    true,
 			Description: "The free capacity of the storage pool in MiB.",
@@ -203,7 +203,7 @@ func adminPoolInfoSchema() map[string]*schema.Schema {
 						Optional:    true,
 						Description: "Capacity of the drive and unit of measurement (GB or TB)",
 					},
-					"total_capacity": {
+					"total_capacity_in_mib": {
 						Type:        schema.TypeInt,
 						Optional:    true,
 						Description: "Total capacity for this drive type in MiB.",
@@ -245,25 +245,26 @@ func resourceAdminPoolInputSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"serial": {
 			Type:        schema.TypeInt,
-			Required:    true,
-			Description: "Serial number of the storage system.",
+			Optional:    true,
+			Computed:    true,
+			Description: "Serial number of the storage system. Required for create/update and import.",
 		},
 		"name": {
 			Type:         schema.TypeString,
-			Required:     true,
-			Description:  "The name of the storage pool.",
+			Optional:     true,
+			Computed:     true,
+			Description:  "The name of the storage pool. Required for create; optional for import.",
 			ValidateFunc: validatePoolName,
 		},
 		"encryption": {
 			Type:        schema.TypeBool,
 			Optional:    true,
-			Default:     false,
 			Description: "Whether encryption is enabled for the storage pool.",
 		},
 		"drive_configuration": {
 			Type:        schema.TypeList,
-			Required:    true,
-			Description: "The list of drives for the storage pool. Adding new drive blocks will trigger pool expansion.",
+			Optional:    true,
+			Description: "The list of drives for the storage pool. Required for create. Adding new drive blocks will trigger pool expansion.",
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
 					"drive_type_code": {
@@ -286,8 +287,7 @@ func resourceAdminPoolInputSchema() map[string]*schema.Schema {
 					"parity_group_type": {
 						Type:         schema.TypeString,
 						Optional:     true,
-						Default:      "DDP",
-						Description:  "The parity group type for the drives. Must be DDP.",
+						Description:  "The parity group type for the drives. Must be DDP. If omitted, defaults to DDP.",
 						ValidateFunc: validation.StringInSlice([]string{"DDP"}, false),
 					},
 				},

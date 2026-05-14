@@ -38,10 +38,12 @@ type Volumes struct {
 
 // CreateLunRequestGwy .
 type CreateVolumeRequestGwy struct {
-	Capacity      *int32        `json:"capacity"`
-	PoolID        *string       `json:"poolId"`
-	NickNameParam NickNameParam `json:"nicknameParam,omitempty"`
-	NameParam     NameParam     `json:"nameParam,omitempty"`
+	Capacity            *int32        `json:"capacity"`
+	PoolID              *string       `json:"poolId"`
+	NickNameParam       NickNameParam `json:"nicknameParam,omitempty"`
+	NameParam           NameParam     `json:"nameParam,omitempty"`
+	StorageControllerId *string       `json:"storageControllerId,omitempty"`
+	FaultDomainId       *string       `json:"faultDomainId,omitempty"`
 }
 
 type NickNameParam struct {

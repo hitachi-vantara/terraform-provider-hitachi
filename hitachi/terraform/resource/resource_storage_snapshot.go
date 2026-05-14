@@ -19,7 +19,10 @@ var syncSnapshotOperation = &sync.Mutex{}
 
 func ResourceVspSnapshot() *schema.Resource {
 	return &schema.Resource{
-		Description:   `Vsp Snapshot Resource: Manages Thin Image and Thin Image Advanced pairs. Supports actions such as create, split, resync, restore, clone, and vclone.`,
+		Description: `Vsp Snapshot Resource: Manages Thin Image and Thin Image Advanced pairs. Supports actions such as create, split, resync, restore, clone, and vclone.`,
+		Importer: &schema.ResourceImporter{
+			StateContext: importVspSnapshot,
+		},
 		CreateContext: resourceVspSnapshotCreate,
 		ReadContext:   resourceVspSnapshotRead,
 		UpdateContext: resourceVspSnapshotUpdate,
@@ -56,6 +59,22 @@ func resourceVspSnapshotDelete(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceVspSnapshotCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
 	log := commonlog.GetLogger()
+
+	// Identity requirement: serial must be provided on create and known on update/import.
+	serial := d.Get("serial").(int)
+	if d.Id() == "" {
+		if serial < 1 {
+			err := fmt.Errorf("serial must be specified and must be >= 1")
+			log.WriteError("TFError| %v", err)
+			return err
+		}
+	} else {
+		if serial < 1 {
+			err := fmt.Errorf("serial must be known (import or config must provide it)")
+			log.WriteError("TFError| %v", err)
+			return err
+		}
+	}
 
 	// --- 1. CREATE PHASE VALIDATION ---
 	if d.Id() == "" {
@@ -112,9 +131,15 @@ func resourceVspSnapshotCustomizeDiff(ctx context.Context, d *schema.ResourceDif
 		}
 	}
 
-	d.SetNewComputed("snapshot")
-	d.SetNewComputed("vclone")
-	d.SetNewComputed("additional_info")
+	if err := d.SetNewComputed("snapshot"); err != nil {
+		return err
+	}
+	if err := d.SetNewComputed("vclone"); err != nil {
+		return err
+	}
+	if err := d.SetNewComputed("additional_info"); err != nil {
+		return err
+	}
 	return nil
 }
 

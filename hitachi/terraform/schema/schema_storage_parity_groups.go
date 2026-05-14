@@ -228,4 +228,9 @@ var DataParityGroupsSchema = map[string]*schema.Schema{
 			Schema: ParityGroupsInfoSchema,
 		},
 	},
+	"parity_group_count": &schema.Schema{
+		Type:        schema.TypeInt,
+		Computed:    true,
+		Description: "Total number of parity groups returned by the data source",
+	},
 }

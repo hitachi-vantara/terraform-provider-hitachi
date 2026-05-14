@@ -54,6 +54,10 @@ func DataSourceStorageDynamicPoolsRead(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("dynamic_pool_count", len(dpList)); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
 	log.WriteInfo("all dynamic pools read successfully")

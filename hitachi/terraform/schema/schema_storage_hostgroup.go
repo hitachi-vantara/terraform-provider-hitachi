@@ -202,13 +202,15 @@ var DataHostGroupsSchema = map[string]*schema.Schema{
 var ResourceHostGroupSchema = map[string]*schema.Schema{
 	"serial": &schema.Schema{
 		Type:        schema.TypeInt,
-		Required:    true,
-		Description: "Serial number of the storage system",
+		Optional:    true,
+		Computed:    true,
+		Description: "Serial number of the storage system. Required for create/update and import.",
 	},
 	"port_id": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "Port ID to be specified",
+		Optional:    true,
+		Computed:    true,
+		Description: "Port ID. Required for create/update and import.",
 	},
 	"hostgroup_number": &schema.Schema{
 		Type:        schema.TypeInt,
@@ -218,8 +220,9 @@ var ResourceHostGroupSchema = map[string]*schema.Schema{
 	},
 	"hostgroup_name": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "HostGroup name to be specified to create the group",
+		Optional:    true,
+		Computed:    true,
+		Description: "HostGroup name. Required for create/update and import.",
 	},
 	"host_mode": &schema.Schema{
 		Type:        schema.TypeString,

@@ -135,6 +135,7 @@ func AllowChapUsersToAccessComputePort(d *schema.ResourceData) (*terraformmodel.
 
 	}
 
+
 	target_chap_users, ok := d.Get("target_chap_users").([]interface{})
 	if !ok {
 		err := fmt.Errorf("target_chap_users is not specified, please specify target_chap_users, empty list[] to remove chap users from the port")

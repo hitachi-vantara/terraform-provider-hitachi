@@ -61,3 +61,24 @@ output "backup_pool_info" {
   description = "Backup pool details including ID and configuration"
   value = hitachi_vsp_one_pool.backup_pool.data
 }
+
+
+################################################################################
+# Example: Import (existing pool)
+# -----------------------------------------------------------------------------
+# Use terraform import when the pool already exists on storage and
+# you want to bring it under Terraform management without re-creating it.
+# The import reads the current state from storage and writes it to tfstate.
+#
+# Import ID format: <serial>/<pool_id>
+#
+# terraform import hitachi_vsp_one_pool.imported '810045/0'
+
+# Minimal skeleton block required for `terraform import`.
+# Create this block in your .tf before running the import command.
+resource "hitachi_vsp_one_pool" "imported" {}
+
+output "imported_pool_id" {
+  value = hitachi_vsp_one_pool.imported.id
+}
+################################################################################

@@ -107,4 +107,38 @@ type SanStorageManager interface {
 	// SNAPSHOT TREE
 	DeleteSnapshotTree(request sangatewaymodel.DeleteSnapshotTreeRequest) (string, error)
 	DeleteGarbageData(request sangatewaymodel.DeleteGarbageDataRequest) (string, error)
+
+	// NVME SUBSYSTEM
+	GetAllNvmSubsystems(params sangatewaymodel.GetNvmSubsystemsParams) (*sangatewaymodel.NvmSubsystems, error)
+	GetNvmSubsystem(subsystemID int) (*sangatewaymodel.NvmSubsystem, error)
+	CreateNvmSubsystem(request sangatewaymodel.CreateNvmSubsystemRequest) (string, error)
+	UpdateNvmSubsystem(subsystemID int, request sangatewaymodel.UpdateNvmSubsystemRequest) (string, error)
+	DeleteNvmSubsystem(subsystemID int) (string, error)
+
+	// NVM SUBSYSTEM PORT
+	GetNvmSubsystemPort(subsystemID int, portID string) (*sangatewaymodel.NvmSubsystemPort, error)
+	GetNvmSubsystemPorts(subsystemID int) (*sangatewaymodel.NvmSubsystemPorts, error)
+	AddNvmSubsystemPort(request sangatewaymodel.AddNvmSubsystemPortRequest) (string, error)
+	DeleteNvmSubsystemPort(subsystemID int, portID string) (string, error)
+
+	// HOST NQN
+	GetAllHostNqns(subsystemID int) (*sangatewaymodel.HostNqns, error)
+	GetHostNqn(subsystemID int, hostNqn string) (*sangatewaymodel.HostNqnInfo, error)
+	RegisterHostNqn(request sangatewaymodel.RegisterHostNqnRequest) (string, error)
+	SetHostNqnNickname(subsystemID int, hostNqn string, request sangatewaymodel.SetHostNqnNicknameRequest) (string, error)
+	DeleteHostNqn(subsystemID int, hostNqn string) (string, error)
+	DeleteLoginHostNqn(portID string) (string, error)
+
+	// NAMESPACE
+	GetNamespace(subsystemID int, namespaceID int) (*sangatewaymodel.Namespace, error)
+	GetAllNamespaces(subsystemID int) (*sangatewaymodel.Namespaces, error)
+	CreateNamespace(request sangatewaymodel.CreateNamespaceRequest) (string, error)
+	SetNamespaceNickname(subsystemID int, namespaceID int, request sangatewaymodel.SetNamespaceNicknameRequest) (string, error)
+	DeleteNamespace(subsystemID int, namespaceID int) (string, error)
+
+	// NAMESPACE PATH (MAPPING)
+	GetNamespacePaths(params sangatewaymodel.GetNamespacePathsParams) (*sangatewaymodel.NamespacePathsResponse, error)
+	GetNamespacePathDetail(subsystemID int, hostNqn string, namespaceID int) (*sangatewaymodel.NamespacePath, error)
+	RegisterNamespacePath(request sangatewaymodel.RegisterNamespacePathRequest) (string, error)
+	DeleteNamespacePath(subsystemID int, hostNqn string, namespaceID int) (string, error)
 }

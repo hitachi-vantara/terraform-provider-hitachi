@@ -2,7 +2,7 @@ package terraform
 
 import (
 	"context"
-	// "fmt"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -29,23 +29,23 @@ func DataSourceVssbChapUsersRead(ctx context.Context, d *schema.ResourceData, m 
 	log.WriteEnter()
 	defer log.WriteExit()
 
-	target_chap_user, ok := d.Get("target_chap_user").(string)
+	target_chap_user, ok := d.Get("target_chap_user").(string) // #nosec G101 -- schema attribute key, not a hardcoded credential
 	log.WriteInfo("target_chap_user %+v", target_chap_user)
 
 	chapUserId := ""
 	chapUserName := ""
 	if ok {
 		if utils.IsValidUUID(target_chap_user) {
-			chapUserId = target_chap_user
+			chapUserId = fmt.Sprintf("%s", target_chap_user)
 		} else {
-			chapUserName = target_chap_user
+			chapUserName = fmt.Sprintf("%s", target_chap_user)
 		}
 	}
 
-	target_chap_user_name, ok := d.Get("target_chap_user_name").(string)
+	target_chap_user_name, ok := d.Get("target_chap_user_name").(string) // #nosec G101 -- schema attribute key, not a hardcoded credential
 	log.WriteInfo("target_chap_user %+v", target_chap_user_name)
 	if ok {
-		chapUserName = target_chap_user_name
+		chapUserName = fmt.Sprintf("%s", target_chap_user_name)
 	}
 
 	log.WriteDebug("chapUserId: %+v\n", chapUserId)

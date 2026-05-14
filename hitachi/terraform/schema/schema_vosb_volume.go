@@ -11,15 +11,15 @@ var DataVolumeSchema = map[string]*schema.Schema{
 		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block system.",
 	},
 	"compute_node_name": &schema.Schema{
-		Type:     schema.TypeString,
-		Optional: true,
+		Type:        schema.TypeString,
+		Optional:    true,
 		Description: "Compute node name",
 	},
 	// output
 	"volumes": &schema.Schema{
-		Type:     schema.TypeList,
-		Computed: true,
-		Optional: true,
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
 		Description: "Volumes output",
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,
@@ -30,13 +30,15 @@ var DataVolumeSchema = map[string]*schema.Schema{
 var ResourceVolumeSchema = map[string]*schema.Schema{
 	"vosb_address": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
+		Optional:    true,
+		Computed:    true,
+		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block. Required for create/update and import.",
 	},
 	"name": &schema.Schema{
 		Type:        schema.TypeString,
-		Required:    true,
-		Description: "Name of the volume server",
+		Optional:    true,
+		Computed:    true,
+		Description: "Name of the volume. Required for create; optional for import (it will be populated during Read).",
 	},
 	"storage_pool": &schema.Schema{
 		Type:        schema.TypeString,
@@ -57,10 +59,21 @@ var ResourceVolumeSchema = map[string]*schema.Schema{
 		},
 		Description: "List of compute nodes to be attached to the volume. To remove all the nodes from the volume declare compute_nodes = []",
 	},
+
 	"nick_name": &schema.Schema{
 		Type:        schema.TypeString,
 		Optional:    true,
 		Description: "Nickname of the volume",
+	},
+	"storage_controller_name": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "Name of the storage controller that should manage the volume. Mutually exclusive with `fault_domain_id`.",
+	},
+	"fault_domain_id": &schema.Schema{
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "UUID of the fault domain that should manage the volume. Mutually exclusive with `storage_controller_name`.",
 	},
 	// output
 	"volume": &schema.Schema{
@@ -80,15 +93,15 @@ var VolumeNodeSchema = map[string]*schema.Schema{
 		Description: "The host name or the IP address (IPv4) of the VSP One SDS Block.",
 	},
 	"volume_name": &schema.Schema{
-		Type:     schema.TypeString,
-		Required: true,
+		Type:        schema.TypeString,
+		Required:    true,
 		Description: "Volume name",
 	},
 	// output
 	"volume": &schema.Schema{
-		Type:     schema.TypeList,
-		Computed: true,
-		Optional: true,
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
 		Description: "Volume output",
 		Elem: &schema.Resource{
 			Schema: VolumeInfoSchema,

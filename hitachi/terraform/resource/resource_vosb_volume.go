@@ -15,7 +15,6 @@ import (
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
 	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
-	datasourceimpl "terraform-provider-hitachi/hitachi/terraform/datasource"
 	impl "terraform-provider-hitachi/hitachi/terraform/impl"
 	mc "terraform-provider-hitachi/hitachi/terraform/message-catalog"
 	schemaimpl "terraform-provider-hitachi/hitachi/terraform/schema"
@@ -28,7 +27,10 @@ var syncCreateVolOpertation = &sync.Mutex{}
 
 func ResourceVssbStorageCreateVolume() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP One SDS Block Volume: CRUD operations of a volume.",
+		Description: "VSP One SDS Block Volume: CRUD operations of a volume.",
+		Importer: &schema.ResourceImporter{
+			StateContext: importVosbVolume,
+		},
 		CreateContext: resourceCreateVolume,
 		Schema:        schemaimpl.ResourceVolumeSchema,
 		ReadContext:   resourceReadVolume,
@@ -36,6 +38,50 @@ func ResourceVssbStorageCreateVolume() *schema.Resource {
 		DeleteContext: resourceDeleteVolume,
 		CustomizeDiff: resourceMyResourceCustomDiff,
 	}
+}
+
+func validateVssbVolumeComputeNodes(d *schema.ResourceData) error {
+	computeNodesRaw, ok := d.GetOk("compute_nodes")
+	if !ok {
+		return nil
+	}
+	computeNodes, ok := computeNodesRaw.([]interface{})
+	if !ok || len(computeNodes) == 0 {
+		return nil
+	}
+
+	vssbAddr := d.Get("vosb_address").(string)
+	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
+	if err != nil {
+		return err
+	}
+
+	setting := reconcilermodel.StorageDeviceSettings{
+		Username:       storageSetting.Username,
+		Password:       storageSetting.Password,
+		ClusterAddress: storageSetting.ClusterAddress,
+	}
+
+	reconObj, err := reconimpl.NewEx(setting)
+	if err != nil {
+		return err
+	}
+
+	noNodes := []string{}
+	for _, node := range computeNodes {
+		nodeName, ok := node.(string)
+		if !ok {
+			continue
+		}
+		_, err := reconObj.GetComputeNodeInformationByName(nodeName, "")
+		if err != nil {
+			noNodes = append(noNodes, nodeName)
+		}
+	}
+	if len(noNodes) > 0 {
+		return fmt.Errorf("no compute node found for then given compute node names: %s", strings.Join(noNodes, ", "))
+	}
+	return nil
 }
 
 func resourceCreateVolume(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -46,11 +92,17 @@ func resourceCreateVolume(ctx context.Context, d *schema.ResourceData, m interfa
 	syncCreateVolOpertation.Lock()
 	defer syncCreateVolOpertation.Unlock()
 
-	log.WriteInfo("starting volume create")
+	if d.Id() == "" {
+		log.WriteInfo("starting volume create")
+	} else {
+		log.WriteInfo("starting volume update")
+	}
+	if err := validateVssbVolumeComputeNodes(d); err != nil {
+		return diag.FromErr(err)
+	}
 
 	volumeData, err := impl.CreateVolume(d)
 	if err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -67,9 +119,10 @@ func resourceCreateVolume(ctx context.Context, d *schema.ResourceData, m interfa
 		}
 	}
 
-	d.Set("volume", nil) // clear old state first
+	if err := d.Set("volume", nil); err != nil { // clear old state first
+		return diag.FromErr(err)
+	}
 	if err := d.Set("volume", volList); err != nil {
-		d.SetId("")
 		return diag.FromErr(err)
 	}
 
@@ -82,7 +135,6 @@ func resourceCreateVolume(ctx context.Context, d *schema.ResourceData, m interfa
 		log.WriteDebug("[DEBUG] Volume data: %s", string(volJSON))
 	}
 
-	d.SetId("")
 	d.SetId(volumeData.ID)
 	log.WriteInfo("volume created successfully")
 
@@ -116,7 +168,35 @@ func resourceDeleteVolume(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceReadVolume(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return datasourceimpl.DataSourceVssbVolumeNodesRead(ctx, d, m)
+	log := commonlog.GetLogger()
+	log.WriteEnter()
+	defer log.WriteExit()
+
+	volumeNode, err := impl.GetVssbVolumeNode(d)
+	if err != nil {
+		// Treat not-found as a removed resource.
+		if strings.Contains(strings.ToLower(err.Error()), "not found") {
+			d.SetId("")
+			return nil
+		}
+		return diag.FromErr(err)
+	}
+	volume := impl.ConvertVssbVolumesToSchema(volumeNode)
+	log.WriteDebug("vol: %+v\n", *volume)
+	volumeList := []map[string]interface{}{
+		*volume,
+	}
+	if err := d.Set("volume", volumeList); err != nil {
+		return diag.FromErr(err)
+	}
+	// Keep selectors populated in state for post-import updates.
+	if volumeNode != nil {
+		_ = d.Set("name", volumeNode.Name)
+	}
+
+	d.SetId(volumeNode.ID)
+	log.WriteInfo("all vssb volume read successfully")
+	return nil
 }
 
 // CustomDiff is intended for schema-based validations only.
@@ -132,49 +212,68 @@ func resourceMyResourceCustomDiff(ctx context.Context, d *schema.ResourceDiff, m
 	log := commonlog.GetLogger()
 	log.WriteEnter()
 	defer log.WriteExit()
-	vssbAddr := d.Get("vosb_address").(string)
 
-	storageSetting, err := cache.GetVssbSettingsFromCache(vssbAddr)
-	if err != nil {
-		return err
-	}
+	// Only do deterministic schema validations here (no API calls).
 
-	setting := reconcilermodel.StorageDeviceSettings{
-		Username:       storageSetting.Username,
-		Password:       storageSetting.Password,
-		ClusterAddress: storageSetting.ClusterAddress,
-	}
+	currentID := d.Id()
+	isCreate := currentID == ""
+	isUpdate := !isCreate
 
-	reconObj, err := reconimpl.NewEx(setting)
-	if err != nil {
-		log.WriteDebug("TFError| error in Reconciler NewEx, err: %v", err)
-		return err
-	}
-
-	name, ok := d.GetOk("name")
-	if !ok {
-
-		log.WriteDebug("name: %s", name.(string))
-		return fmt.Errorf("name is required")
-	}
-
-	computeNodes := d.Get("compute_nodes")
-	computeNodeCheck := d.GetRawConfig().GetAttr("compute_nodes").IsNull()
-	if !computeNodeCheck {
-		noNodes := []string{}
-		for _, node := range computeNodes.([]interface{}) {
-			_, err := reconObj.GetComputeNodeInformationByName(node.(string), "")
-			if err != nil {
-				noNodes = append(noNodes, node.(string))
-			}
+	// Enforce create-only required fields.
+	// (Schema keeps them Optional so imports/updates don't require respecifying them.)
+	if isCreate {
+		if v, ok := d.GetOk("vosb_address"); !ok || strings.TrimSpace(v.(string)) == "" {
+			return fmt.Errorf("vosb_address is required for create")
 		}
-		if len(noNodes) > 0 {
-			return fmt.Errorf("no compute node found for then given compute node names: %s", strings.Join(noNodes, ", "))
+		if v, ok := d.GetOk("name"); !ok || strings.TrimSpace(v.(string)) == "" {
+			return fmt.Errorf("name is required for create")
+		}
+		if v, ok := d.GetOk("storage_pool"); !ok || strings.TrimSpace(v.(string)) == "" {
+			return fmt.Errorf("storage_pool is required for create")
+		}
+		cap, ok := d.GetOk("capacity_gb")
+		if !ok {
+			return fmt.Errorf("capacity_gb is required for create")
+		}
+		if cap.(float64) <= 0 {
+			return fmt.Errorf("capacity_gb must be greater than zero")
+		}
+	}
+
+	// Name is required for update/apply as well (backend reconciler dereferences it).
+	if v, ok := d.GetOk("name"); !ok || strings.TrimSpace(v.(string)) == "" {
+		return fmt.Errorf("name must be specified (set it in config or import the resource so it is populated in state)")
+	}
+
+	// storage_pool is create-only (pool migration is not supported here)
+	if isUpdate && d.HasChange("storage_pool") {
+		return fmt.Errorf("storage_pool is create-only and cannot be changed")
+	}
+
+	// Prevent capacity shrink; allow expand.
+	if d.HasChange("capacity_gb") {
+		oldRaw, newRaw := d.GetChange("capacity_gb")
+		oldVal, okOld := oldRaw.(float64)
+		newVal, okNew := newRaw.(float64)
+		if okNew && newVal <= 0 {
+			return fmt.Errorf("capacity_gb must be greater than zero")
+		}
+		if okOld && okNew && oldVal > 0 && newVal < oldVal {
+			return fmt.Errorf("capacity_gb cannot be decreased (old %.2f, new %.2f)", oldVal, newVal)
+		}
+	}
+
+	// Mutually exclusive controller selectors (kept deterministic)
+	if _, scOk := d.GetOk("storage_controller_name"); scOk {
+		if _, fdOk := d.GetOk("fault_domain_id"); fdOk {
+			return fmt.Errorf("storage_controller_name and fault_domain_id are mutually exclusive")
 		}
 	}
 
 	// fix for 'volume' not updated in console output
-	d.SetNewComputed("volume")
+	if err := d.SetNewComputed("volume"); err != nil {
+		return err
+	}
 
 	return nil
 }

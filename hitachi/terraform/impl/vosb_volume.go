@@ -6,6 +6,7 @@ import (
 	// "context"
 	"errors"
 	"fmt"
+	"strings"
 
 	// "io/ioutil"
 
@@ -13,6 +14,8 @@ import (
 
 	cache "terraform-provider-hitachi/hitachi/common/cache"
 	commonlog "terraform-provider-hitachi/hitachi/common/log"
+	provimpl "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/impl"
+	provmodel "terraform-provider-hitachi/hitachi/storage/vosb/provisioner/model"
 	reconimpl "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/impl"
 	reconcilermodel "terraform-provider-hitachi/hitachi/storage/vosb/reconciler/model"
 
@@ -81,31 +84,36 @@ func GetVssbVolumeNode(d *schema.ResourceData) (*terraformmodel.Volume, error) {
 		return nil, err
 	}
 
-	setting := reconcilermodel.StorageDeviceSettings{
+	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_VOLUME_INFO_BEGIN))
+	volumeName := ""
+	if volName, ok := d.GetOk("volume_name"); ok {
+		volumeName = strings.TrimSpace(volName.(string))
+	} else if v, ok := d.GetOk("name"); ok {
+		volumeName = strings.TrimSpace(v.(string))
+	} else if raw := d.Get("name"); raw != nil {
+		if s, ok := raw.(string); ok {
+			volumeName = strings.TrimSpace(s)
+		}
+	}
+	volumeID := strings.TrimSpace(d.Id())
+	if volumeName == "" && volumeID == "" {
+		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_VOLUME_INFO_FAILED))
+		return nil, errors.New("either volume_name/name must be specified or the resource id must be set")
+	}
+
+	// Use provisioner lookup that supports id or name.
+	provSetting := provmodel.StorageDeviceSettings{
 		Username:       storageSetting.Username,
 		Password:       storageSetting.Password,
 		ClusterAddress: storageSetting.ClusterAddress,
 	}
-
-	reconObj, err := reconimpl.NewEx(setting)
+	provObj, err := provimpl.NewEx(provSetting)
 	if err != nil {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
 		return nil, err
 	}
 
-	log.WriteInfo(mc.GetMessage(mc.INFO_GET_ALL_VOLUME_INFO_BEGIN))
-	var volumeName string = ""
-	volName, ok := d.GetOk("volume_name")
-	if !ok {
-		volumeName = d.Get("name").(string)
-	} else {
-		volumeName = volName.(string)
-	}
-	if volumeName == "" {
-		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_VOLUME_INFO_FAILED))
-		return nil, errors.New("either volume_name or name parameter is required")
-	}
-	reconStoragePools, err := reconObj.GetVolumeDetails(volumeName)
+	reconStoragePools, err := provObj.GetVolumeDetailsByIdOrName(volumeID, volumeName)
 	if err != nil {
 		log.WriteDebug("TFError| error getting GetAllStoragePools, err: %v", err)
 		log.WriteError(mc.GetMessage(mc.ERR_GET_ALL_VOLUME_INFO_FAILED))
@@ -263,9 +271,16 @@ func DeleteVolume(d *schema.ResourceData) error {
 		log.WriteDebug("TFError| error in terraform NewEx, err: %v", err)
 		return err
 	}
-	name, ok := d.GetOk("name")
-	if !ok {
-		return fmt.Errorf("name is the mandatory field")
+	name := ""
+	if v, ok := d.GetOkExists("name"); ok {
+		name, _ = v.(string)
+	} else if raw := d.Get("name"); raw != nil {
+		name, _ = raw.(string)
+	}
+	name = strings.TrimSpace(name)
+	if name == "" {
+		// Best-effort: use state ID for logging.
+		name = d.State().ID
 	}
 
 	log.WriteInfo(mc.GetMessage(mc.INFO_DELETE_VOLUME_BEGIN), name)
@@ -293,12 +308,31 @@ func CreateVolumeReqFromSchema(d *schema.ResourceData) (*terraformmodel.CreateVo
 
 	createInput.ID = d.Id()
 
-	name, ok := d.GetOk("name")
-	if !ok {
-		return nil, fmt.Errorf("name is the mandatory field")
-	} else {
-		createInput.Name = name.(string)
+	name := ""
+	if v, ok := d.GetOkExists("name"); ok {
+		name, _ = v.(string)
+	} else if raw := d.Get("name"); raw != nil {
+		name, _ = raw.(string)
 	}
+	name = strings.TrimSpace(name)
+	if name == "" {
+		// Best-effort: derive from computed volume output after import/refresh.
+		if v, ok := d.GetOk("volume"); ok {
+			if list, ok := v.([]interface{}); ok && len(list) > 0 {
+				if m, ok := list[0].(map[string]interface{}); ok {
+					if rawName, ok := m["name"]; ok {
+						if s, ok := rawName.(string); ok {
+							name = strings.TrimSpace(s)
+						}
+					}
+				}
+			}
+		}
+	}
+	if name == "" {
+		return nil, fmt.Errorf("name is the mandatory field")
+	}
+	createInput.Name = name
 	storagePool, ok := d.GetOk("storage_pool")
 	if ok {
 		createInput.PoolName = storagePool.(string)
@@ -323,6 +357,35 @@ func CreateVolumeReqFromSchema(d *schema.ResourceData) (*terraformmodel.CreateVo
 		createInput.ComputeNodes = nodes
 	} else {
 		createInput.ComputeNodes = nil
+	}
+
+	// storage controller name / fault domain id handling
+	scName, scOk := d.GetOk("storage_controller_name")
+	fdId, fdOk := d.GetOk("fault_domain_id")
+	if scOk && fdOk {
+		return nil, fmt.Errorf("storage_controller_name and fault_domain_id are mutually exclusive")
+	}
+	if scOk {
+		nodeName := scName.(string)
+		// reuse data-source impl to fetch nodes and match by name
+		nodes, err := GetVssbStorageNodes(d)
+		if err != nil {
+			return nil, err
+		}
+		found := false
+		for _, n := range *nodes {
+			if n.Name == nodeName {
+				createInput.StorageControllerId = n.ID
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, fmt.Errorf("storage controller with name '%s' not found", nodeName)
+		}
+	}
+	if fdOk {
+		createInput.FaultDomainId = fdId.(string)
 	}
 
 	return &createInput, nil

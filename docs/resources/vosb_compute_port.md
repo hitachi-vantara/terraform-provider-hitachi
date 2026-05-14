@@ -28,6 +28,7 @@ VSP One SDS Block Compute Port: Allows CHAP users to access the compute port.
 // this compute port for authentication purposes.
 //
 
+
 resource "hitachi_vosb_compute_port" "mycomputeport" {
   vosb_address            = "10.10.12.13"
   name                    = "001-iSCSI-002"
@@ -50,13 +51,13 @@ output "chapuser_association_with_computeport" {
 	- CHAP: CHAP authentication.
 	- CHAPComplyingWithInitiatorSetting: Complies with the setting of the compute node. If the setting is "CHAP", CHAP authentication is performed. If the setting is "None", no authentication is required.
 	- None: No authentication is performed.
+- `compute_port` (Block List, Min: 1) Outputs information about the volume (see [below for nested schema](#nestedblock--compute_port))
 - `name` (String) Name of the port
 - `target_chap_users` (List of String) List of CHAP users to be attached to the compute port.
 - `vosb_address` (String) The host name or the IP address (IPv4) of the VSP One SDS Block.
 
 ### Read-Only
 
-- `compute_port` (Block List) Outputs information about the volume (see [below for nested schema](#nestedblock--compute_port))
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--compute_port"></a>

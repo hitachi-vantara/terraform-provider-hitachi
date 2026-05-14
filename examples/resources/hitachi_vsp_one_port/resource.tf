@@ -89,3 +89,24 @@ output "port_output" {
   value       = hitachi_vsp_one_port.port_security_update.port_info
   description = "Updated port information including security settings"
 }
+
+
+################################################################################
+# Example: Import (existing port)
+# -----------------------------------------------------------------------------
+# Use terraform import when the port already exists on storage and
+# you want to bring it under Terraform management without re-creating it.
+# The import reads the current state from storage and writes it to tfstate.
+#
+# Import ID format: <serial>/<port_id>
+#
+# terraform import hitachi_vsp_one_port.imported '810045/CL1-A'
+
+# Minimal skeleton block required for `terraform import`.
+# Create this block in your .tf before running the import command.
+resource "hitachi_vsp_one_port" "imported" {}
+
+output "imported_port_id" {
+  value = hitachi_vsp_one_port.imported.id
+}
+################################################################################

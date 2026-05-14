@@ -16,7 +16,7 @@ var syncAddDrivesToPoolOperation = &sync.Mutex{}
 
 func ResourceVssbAddDrivesToPool() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP One SDS Block: Add drives to a storage pool.",
+		Description: "VSP One SDS Block: Add drives to a storage pool.",
 		CreateContext: resourceVssbAddDrivesToPoolCreate,
 		ReadContext:   resourceVssbAddDrivesToPoolRead,
 		UpdateContext: resourceVssbAddDrivesToPoolUpdate,
@@ -49,7 +49,9 @@ func resourceVssbAddDrivesToPoolCreate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	d.SetId(fmt.Sprintf("add-drives-%s", d.Get("storage_pool_name").(string)))
-	d.Set("status", "Drives added successfully")
+	if err := d.Set("status", "Drives added successfully"); err != nil {
+		return diag.FromErr(err)
+	}
 	log.WriteInfo("Drives added to storage pool successfully")
 	return nil
 }
@@ -61,7 +63,6 @@ func resourceVssbAddDrivesToPoolUpdate(ctx context.Context, d *schema.ResourceDa
 
 func resourceVssbAddDrivesToPoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// No real deletion here; it's a one-time action
-	d.SetId("")
 	return nil
 }
 

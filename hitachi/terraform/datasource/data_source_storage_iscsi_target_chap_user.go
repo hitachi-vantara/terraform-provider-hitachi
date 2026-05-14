@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"strings"
 
 	// "fmt"
 
@@ -45,6 +46,33 @@ func DataSourceStorageChapUserRead(ctx context.Context, d *schema.ResourceData, 
 
 	if err := d.Set("chap_user", cuList); err != nil {
 		return diag.FromErr(err)
+	}
+
+	// Keep top-level lookup fields in sync with the actual object so imports can be
+	// managed without requiring these arguments in configuration.
+	if err := d.Set("serial", serial); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("port_id", chapUser.PortID); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("iscsi_target_number", chapUser.HostGroupNumber); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("chap_user_name", chapUser.ChapUserName); err != nil {
+		return diag.FromErr(err)
+	}
+	chapUserType := ""
+	switch strings.ToUpper(strings.TrimSpace(chapUser.WayOfChapUser)) {
+	case "INI":
+		chapUserType = "initiator"
+	case "TAR":
+		chapUserType = "target"
+	}
+	if chapUserType != "" {
+		if err := d.Set("chap_user_type", chapUserType); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	d.SetId(chapUser.ChapUserID)

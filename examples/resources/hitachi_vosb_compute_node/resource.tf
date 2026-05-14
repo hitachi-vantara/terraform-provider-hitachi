@@ -6,6 +6,25 @@
 // using its block interface and allows you to manage its configuration
 // using Terraform.
 //
+################################################################################
+// Example: Import (existing compute node)
+// -----------------------------------------------------------------------------
+// Use terraform import when the compute node already exists on storage and
+// you want to bring it under Terraform management without re-creating it.
+// The import reads the current state from storage and writes it to tfstate.
+//
+// Import ID format: <vosb_address>/<compute_node_name>
+//
+// terraform import hitachi_vosb_compute_node.imported 10.10.12.13/ComputeNode-RESTAPI123
+
+// Minimal skeleton block required for `terraform import`.
+// Create this block in your .tf before running the import command.
+resource "hitachi_vosb_compute_node" "imported" {}
+
+output "imported_computenode_id" {
+  value = hitachi_vosb_compute_node.imported.id
+}
+################################################################################
 
 //////////////////////////////// iscsi_connection /////////////////////////////////
 // Customize the values of the parameters (vosb_address, compute_node_name, os_type),

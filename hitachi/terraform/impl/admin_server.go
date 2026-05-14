@@ -26,6 +26,9 @@ func ResourceAdminServerCreate(d *schema.ResourceData) diag.Diagnostics {
 	defer log.WriteExit()
 
 	serial := d.Get("serial").(int)
+	if serial < 1 {
+		return diag.Errorf("serial must be specified and must be >= 1")
+	}
 
 	// Build create parameters
 	params, err := buildCreateAdminServerParams(d)
@@ -271,6 +274,9 @@ func buildCreateAdminServerParams(d *schema.ResourceData) (gwymodel.CreateAdminS
 		ServerNickname: d.Get("server_nickname").(string),
 		IsReserved:     d.Get("is_reserved").(bool),
 	}
+	if strings.TrimSpace(params.ServerNickname) == "" {
+		return params, fmt.Errorf("server_nickname must be specified")
+	}
 
 	// Protocol and OsType are required if not reserved
 	if !params.IsReserved {
@@ -428,6 +434,11 @@ func extractServerIDFromResourceID(resourceID string) (int, error) {
 }
 
 func setAdminServerAttributes(d *schema.ResourceData, serverInfo *gwymodel.AdminServerInfo) error {
+	// Populate computed top-level field to keep imports/minimal configs stable.
+	if err := d.Set("server_nickname", serverInfo.Nickname); err != nil {
+		return fmt.Errorf("failed to set server_nickname: %w", err)
+	}
+
 	// Create the data block data
 	serverInfoData := map[string]interface{}{
 		"server_id":                     serverInfo.ID,
@@ -435,8 +446,8 @@ func setAdminServerAttributes(d *schema.ResourceData, serverInfo *gwymodel.Admin
 		"protocol":                      serverInfo.Protocol,
 		"os_type":                       serverInfo.OsType,
 		"os_type_options":               serverInfo.OsTypeOptions,
-		"total_capacity":                serverInfo.TotalCapacity,
-		"used_capacity":                 serverInfo.UsedCapacity,
+		"total_capacity_in_mib":         serverInfo.TotalCapacity,
+		"used_capacity_in_mib":          serverInfo.UsedCapacity,
 		"number_of_volumes":             serverInfo.NumberOfVolumes,
 		"number_of_paths":               serverInfo.NumberOfPaths,
 		"paths":                         flattenAdminServerPaths(serverInfo.Paths),
@@ -483,8 +494,8 @@ func flattenAdminServerListResponse(resp *gwymodel.AdminServerListResponse) []ma
 			"nickname":                 server.Nickname,
 			"protocol":                 server.Protocol,
 			"os_type":                  server.OsType,
-			"total_capacity":           server.TotalCapacity,
-			"used_capacity":            server.UsedCapacity,
+			"total_capacity_in_mib":    server.TotalCapacity,
+			"used_capacity_in_mib":     server.UsedCapacity,
 			"number_of_paths":          server.NumberOfPaths,
 			"is_inconsistent":          server.IsInconsistent,
 			"modification_in_progress": server.ModificationInProgress,
@@ -506,8 +517,8 @@ func flattenAdminServerInfoResponse(resp *gwymodel.AdminServerInfo) map[string]i
 		"protocol":                      resp.Protocol,
 		"os_type":                       resp.OsType,
 		"os_type_options":               resp.OsTypeOptions,
-		"total_capacity":                resp.TotalCapacity,
-		"used_capacity":                 resp.UsedCapacity,
+		"total_capacity_in_mib":         resp.TotalCapacity,
+		"used_capacity_in_mib":          resp.UsedCapacity,
 		"number_of_volumes":             resp.NumberOfVolumes,
 		"number_of_paths":               resp.NumberOfPaths,
 		"paths":                         flattenAdminServerPaths(resp.Paths),

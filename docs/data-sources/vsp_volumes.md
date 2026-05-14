@@ -102,6 +102,7 @@ output "volumes1" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `volume_count` (Number) Number of volumes returned by the data source
 
 <a id="nestedblock--volumes"></a>
 ### Nested Schema for `volumes`

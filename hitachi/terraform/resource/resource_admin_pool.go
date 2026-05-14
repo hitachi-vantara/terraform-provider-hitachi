@@ -19,7 +19,7 @@ func ResourceAdminPool() *schema.Resource {
 		UpdateContext: resourceAdminPoolUpdate,
 		DeleteContext: resourceAdminPoolDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: importAdminPool,
 		},
 		Schema:        schemaimpl.ResourceAdminPoolSchema(),
 		CustomizeDiff: resourceAdminPoolCustomiseDiff,
@@ -44,6 +44,27 @@ func resourceAdminPoolDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 // resourceAdminPoolCustomiseDiff performs custom validation for VSP One pool configuration
 func resourceAdminPoolCustomiseDiff(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
+	// Create-only requirements (kept out of the schema to allow import with minimal config).
+	if diff.Id() == "" {
+		if serialRaw, ok := diff.GetOk("serial"); !ok || serialRaw.(int) < 1 {
+			return fmt.Errorf("serial must be specified and must be >= 1")
+		}
+		if nameRaw, ok := diff.GetOk("name"); !ok || nameRaw.(string) == "" {
+			return fmt.Errorf("name must be specified")
+		}
+		drivesRaw, ok := diff.GetOk("drive_configuration")
+		if !ok {
+			return fmt.Errorf("drive_configuration must be specified")
+		}
+		drives := drivesRaw.([]interface{})
+		if len(drives) == 0 {
+			return fmt.Errorf("drive_configuration must include at least one block")
+		}
+		if err := validateDriveBlocks(drives); err != nil {
+			return err
+		}
+	}
+
 	// Validate thresholds
 	if err := validateThresholds(ctx, diff, v); err != nil {
 		return err
@@ -59,14 +80,16 @@ func resourceAdminPoolCustomiseDiff(ctx context.Context, diff *schema.ResourceDi
 		return err
 	}
 
-	diff.SetNewComputed("data")
+	if err := diff.SetNewComputed("data"); err != nil {
+		return err
+	}
 	return nil
 }
 
 // validateThresholds validates that threshold warning and depletion are properly configured
 func validateThresholds(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
-	warningRaw, warningExists := diff.GetOk("threshold_warning")
-	depletionRaw, depletionExists := diff.GetOk("threshold_depletion")
+	warningRaw, warningExists := diff.GetOkExists("threshold_warning")
+	depletionRaw, depletionExists := diff.GetOkExists("threshold_depletion")
 
 	// If one threshold is specified, both must be specified
 	if (warningExists && !depletionExists) || (!warningExists && depletionExists) {
@@ -88,7 +111,8 @@ func validateThresholds(ctx context.Context, diff *schema.ResourceDiff, v interf
 
 // validateEncryptionImmutability validates that encryption setting is not changed after creation
 func validateEncryptionImmutability(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
-	if diff.HasChange("encryption") {
+	// Immutable after creation.
+	if diff.Id() != "" && diff.HasChange("encryption") {
 		return fmt.Errorf("encryption setting is immutable; recreate the resource to change encryption")
 	}
 	return nil
@@ -101,8 +125,17 @@ func validateDriveConfigurationChanges(ctx context.Context, diff *schema.Resourc
 	}
 
 	oldDrivesRaw, newDrivesRaw := diff.GetChange("drive_configuration")
-	oldDrives := oldDrivesRaw.([]interface{})
-	newDrives := newDrivesRaw.([]interface{})
+	oldDrives, _ := oldDrivesRaw.([]interface{})
+	newDrives, _ := newDrivesRaw.([]interface{})
+
+	// Validate blocks whenever drive_configuration is set/changed.
+	if err := validateDriveBlocks(newDrives); err != nil {
+		return err
+	}
+
+	// NOTE: For imported resources, Terraform won't have any prior drive_configuration in state.
+	// We treat the first configured drive_configuration as an explicit expansion request
+	// (i.e., "add these drives"). After the first apply, append-only semantics apply.
 
 	// If drives are being removed, that's not allowed
 	if len(newDrives) < len(oldDrives) {
@@ -125,5 +158,29 @@ func validateDriveConfigurationChanges(ctx context.Context, diff *schema.Resourc
 		}
 	}
 
+	return nil
+}
+
+func validateDriveBlocks(blocks []interface{}) error {
+	for i, b := range blocks {
+		m, ok := b.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("drive_configuration[%d] must be an object", i)
+		}
+
+		raidLevel, _ := m["raid_level"].(string)
+		dataDriveCount, _ := m["data_drive_count"].(int)
+
+		switch raidLevel {
+		case "RAID5":
+			if dataDriveCount < 5 {
+				return fmt.Errorf("drive_configuration[%d].data_drive_count must be >= 5 for RAID5", i)
+			}
+		case "RAID6":
+			if dataDriveCount < 9 {
+				return fmt.Errorf("drive_configuration[%d].data_drive_count must be >= 9 for RAID6", i)
+			}
+		}
+	}
 	return nil
 }

@@ -55,7 +55,9 @@ func DataSourceStorageDynamicPoolRead(ctx context.Context, d *schema.ResourceDat
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.Set("pool_name", dynamicPool.PoolName)
+		if err := d.Set("pool_name", dynamicPool.PoolName); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	if pName != "" {
 		// fetch dynamic pool info by pool name
@@ -64,7 +66,9 @@ func DataSourceStorageDynamicPoolRead(ctx context.Context, d *schema.ResourceDat
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.Set("pool_id", dynamicPool.PoolID)
+		if err := d.Set("pool_id", dynamicPool.PoolID); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	dpList := []map[string]interface{}{}

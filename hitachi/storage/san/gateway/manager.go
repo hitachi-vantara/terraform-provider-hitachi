@@ -110,4 +110,38 @@ type SanStorageManager interface {
 	// SNAPSHOT TREE
 	DeleteSnapshotTree(request sanmodel.DeleteSnapshotTreeRequest) (string, error)
 	DeleteGarbageData(request sanmodel.DeleteGarbageDataRequest) (string, error)
+
+	// NVME SUBSYSTEM
+	GetAllNvmSubsystems(params sanmodel.GetNvmSubsystemsParams) (*sanmodel.NvmSubsystems, error)
+	GetNvmSubsystem(subsystemID int) (*sanmodel.NvmSubsystem, error)
+	CreateNvmSubsystem(request sanmodel.CreateNvmSubsystemRequest) (string, error)
+	UpdateNvmSubsystem(subsystemID int, request sanmodel.UpdateNvmSubsystemRequest) (string, error)
+	DeleteNvmSubsystem(subsystemID int) (string, error)
+
+	// NVM SUBSYSTEM PORT
+	GetNvmSubsystemPort(subsystemID int, portID string) (*sanmodel.NvmSubsystemPort, error)
+	GetNvmSubsystemPorts(subsystemID int) (*sanmodel.NvmSubsystemPorts, error)
+	AddNvmSubsystemPort(request sanmodel.AddNvmSubsystemPortRequest) (string, error)
+	DeleteNvmSubsystemPort(subsystemID int, portID string) (string, error)
+
+	// HOST NQN
+	GetAllHostNqns(subsystemID int) (*sanmodel.HostNqns, error)
+	GetHostNqn(subsystemID int, hostNqn string) (*sanmodel.HostNqnInfo, error)
+	RegisterHostNqn(request sanmodel.RegisterHostNqnRequest) (string, error)
+	SetHostNqnNickname(subsystemID int, hostNqn string, request sanmodel.SetHostNqnNicknameRequest) (string, error)
+	DeleteHostNqn(subsystemID int, hostNqn string) (string, error)
+	DeleteLoginHostNqn(portID string) (string, error)
+
+	// NAMESPACE
+	GetNamespace(subsystemID int, namespaceID int) (*sanmodel.Namespace, error)
+	GetAllNamespaces(subsystemID int) (*sanmodel.Namespaces, error)
+	CreateNamespace(request sanmodel.CreateNamespaceRequest) (string, error)
+	SetNamespaceNickname(subsystemID int, namespaceID int, request sanmodel.SetNamespaceNicknameRequest) (string, error)
+	DeleteNamespace(subsystemID int, namespaceID int) (string, error)
+
+	// NAMESPACE PATH (MAPPING)
+	GetNamespacePaths(params sanmodel.GetNamespacePathsParams) (*sanmodel.NamespacePathsResponse, error)
+	GetNamespacePathDetail(subsystemID int, hostNqn string, namespaceID int) (*sanmodel.NamespacePath, error)
+	RegisterNamespacePath(request sanmodel.RegisterNamespacePathRequest) (string, error)
+	DeleteNamespacePath(subsystemID int, hostNqn string, namespaceID int) (string, error)
 }

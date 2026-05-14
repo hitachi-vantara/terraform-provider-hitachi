@@ -21,7 +21,7 @@ var syncRestoreConfigFileOperation = &sync.Mutex{}
 
 func ResourceVssbConfigurationFile() *schema.Resource {
 	return &schema.Resource{
-		Description:   "VSP One SDS Block: Create and/or download configuration definition file of the storage system.",
+		Description: "VSP One SDS Block: Create and/or download configuration definition file of the storage system.",
 		CreateContext: resourceVssbConfigurationFileCreate,
 		ReadContext:   resourceVssbConfigurationFileRead,
 		UpdateContext: resourceVssbConfigurationFileUpdate,
@@ -48,8 +48,12 @@ func resourceVssbConfigurationFileCreate(ctx context.Context, d *schema.Resource
 	// Just set a random ID since there's no persisted object.
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
-	d.Set("output_file_path", finalPath)
-	d.Set("status", "Configuration file operation successful")
+	if err := d.Set("output_file_path", finalPath); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("status", "Configuration file operation successful"); err != nil {
+		return diag.FromErr(err)
+	}
 	log.WriteInfo("Configuration file operation successful")
 	log.WriteInfo(fmt.Sprintf("Output file: %s", finalPath))
 
@@ -63,7 +67,6 @@ func resourceVssbConfigurationFileUpdate(ctx context.Context, d *schema.Resource
 
 func resourceVssbConfigurationFileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Nothing to delete; this is a one-time operation.
-	d.SetId("")
 	return nil
 }
 

@@ -399,13 +399,14 @@ func resourceAdminVolumeInputSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"serial": {
 			Type:        schema.TypeInt,
-			Required:    true,
-			Description: "Serial number of the storage system",
+			Optional:    true,
+			Computed:    true,
+			Description: "Serial number of the storage system. Required for create/update and import.",
 		},
 		"capacity": {
 			Type:        schema.TypeString,
-			Required:    true,
-			Description: "Volume capacity with unit suffix (M, G, or T). Example: 500M, 100G, or 1T. Maximum 256T (268,435,456MiB). Minimum 47M.",
+			Optional:    true,
+			Description: "Volume capacity with unit suffix (M, G, or T). Required for create/update, optional for import. Example: 500M, 100G, or 1T. Maximum 256T (268,435,456MiB). Minimum 47M.",
 			ValidateFunc: func(v interface{}, k string) (ws []string, es []error) {
 				s := v.(string)
 				miB, err := utils.ParseCapacityToMiB(s)
@@ -429,9 +430,9 @@ func resourceAdminVolumeInputSchema() map[string]*schema.Schema {
 
 		"nickname_param": {
 			Type:        schema.TypeList,
-			Required:    true,
+			Optional:    true,
 			MaxItems:    1,
-			Description: "Nickname configuration. The combined base name and numeric suffix must not exceed 32 characters.",
+			Description: "Nickname configuration. Required for create/update, optional for import. The combined base name and numeric suffix must not exceed 32 characters.",
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
 					"base_name": {
@@ -461,8 +462,7 @@ func resourceAdminVolumeInputSchema() map[string]*schema.Schema {
 		"capacity_saving": {
 			Type:        schema.TypeString,
 			Optional:    true,
-			Default:     "DISABLE",
-			Description: "Capacity reduction setting. Valid values: DEDUPLICATION_AND_COMPRESSION, COMPRESSION, DISABLE.",
+			Description: "Capacity reduction setting. Optional for create/update; if omitted, the storage system default is used. Valid values: DEDUPLICATION_AND_COMPRESSION, COMPRESSION, DISABLE.",
 			ValidateFunc: validation.StringInSlice([]string{
 				"DEDUPLICATION_AND_COMPRESSION",
 				"COMPRESSION",
@@ -473,14 +473,14 @@ func resourceAdminVolumeInputSchema() map[string]*schema.Schema {
 		"is_data_reduction_share_enabled": {
 			Type:        schema.TypeBool,
 			Optional:    true,
-			Default:     false,
-			Description: "Enable shared data reduction. Only allowed if capacity_saving != DISABLE.",
+			Description: "Enable shared data reduction. Optional for create/update; if omitted, the storage system default is used. Only allowed if capacity_saving != DISABLE.",
 		},
 
 		"pool_id": {
 			Type:         schema.TypeInt,
-			Required:     true,
-			Description:  "Pool ID in which the volume is created.",
+			Optional:     true,
+			Computed:     true,
+			Description:  "Pool ID in which the volume is created. Required for create/update, optional for import.",
 			ValidateFunc: validation.IntAtLeast(0),
 		},
 
@@ -488,6 +488,7 @@ func resourceAdminVolumeInputSchema() map[string]*schema.Schema {
 		"volume_id": {
 			Type:     schema.TypeInt,
 			Optional: true,
+			Computed: true,
 			Description: `Specifies the ID of the volume to modify. Required for updates. Not allowed for create.
 
 	- Only one of volume_id or volume_id_hex may be specified, not both.",
@@ -501,6 +502,7 @@ func resourceAdminVolumeInputSchema() map[string]*schema.Schema {
 		"volume_id_hex": {
 			Type:     schema.TypeString,
 			Optional: true,
+			Computed: true,
 			Description: `Specifies the ID of the volume to modify in hexadecimal format. Required for updates. Not allowed for create.
 
 	- Only one of volume_id or volume_id_hex may be specified, not both.",

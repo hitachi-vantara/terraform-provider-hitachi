@@ -70,5 +70,5 @@ Read-Only:
 - `os_type` (String)
 - `protocol` (String)
 - `server_id` (Number)
-- `total_capacity` (Number)
-- `used_capacity` (Number)
+- `total_capacity_in_mib` (Number)
+- `used_capacity_in_mib` (Number)

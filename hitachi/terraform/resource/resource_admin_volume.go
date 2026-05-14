@@ -21,7 +21,10 @@ var syncVolumeOperation = &sync.Mutex{}
 
 func ResourceAdminVolume() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage volumes in VSP One storage.",
+		Description: "Manage volumes in VSP One storage.",
+		Importer: &schema.ResourceImporter{
+			StateContext: importAdminVolume,
+		},
 		CreateContext: resourceAdminVolumeCreate,
 		ReadContext:   resourceAdminVolumeRead,
 		UpdateContext: resourceAdminVolumeUpdate,
@@ -57,6 +60,24 @@ func resourceAdminVolumeDelete(ctx context.Context, d *schema.ResourceData, m in
 }
 
 func resourceAdminVolumeCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	// Schema is intentionally permissive to allow import with minimal configuration.
+	// For create, enforce the required inputs here to keep a good UX (fail fast at plan time).
+	if d.Id() == "" {
+		if _, ok := d.GetOk("serial"); !ok {
+			return fmt.Errorf("serial must be specified for create")
+		}
+		// pool_id=0 is a valid value, so we must use GetOkExists.
+		if _, ok := d.GetOkExists("pool_id"); !ok {
+			return fmt.Errorf("pool_id must be specified for create")
+		}
+		if _, ok := d.GetOk("capacity"); !ok {
+			return fmt.Errorf("capacity must be specified for create")
+		}
+		if _, ok := d.GetOk("nickname_param"); !ok {
+			return fmt.Errorf("nickname_param must be specified for create")
+		}
+	}
+
 	if err := ValidateNicknameParamValues(d); err != nil {
 		return err
 	}
@@ -67,8 +88,6 @@ func resourceAdminVolumeCustomizeDiff(ctx context.Context, d *schema.ResourceDif
 		return err
 	}
 
-	d.SetNewComputed("volumes_info")
-	d.SetNewComputed("volume_count")
 	return nil
 }
 
@@ -221,6 +240,11 @@ func ValidateNicknameParamValues(d volumeDiff) error {
 
 func ValidateDataReductionSettingsValues(d volumeDiff) error {
 	savingSetting, _ := d.Get("capacity_saving").(string)
+	if savingSetting == "" {
+		// capacity_saving may be omitted (especially for import-only configs).
+		// Treat it as DISABLE for validation checks.
+		savingSetting = "DISABLE"
+	}
 	// isShareEnabled, _ := d.Get("is_data_reduction_share_enabled").(bool)
 	// Commented out as this combination is required for DRS Volumes
 	// if isShareEnabled && savingSetting == "DISABLE" {

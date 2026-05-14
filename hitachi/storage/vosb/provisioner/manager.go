@@ -28,7 +28,7 @@ type VssbStorageManager interface {
 	GetVolumeDetails(volumeName string) (*vssbmodel.Volume, error)
 	GetVolumeDetailsByName(volumeName string) (*vssbmodel.Volume, error)
 	GetVolumeDetailsByIdOrName(id, volumeName string) (*vssbmodel.Volume, error)
-	CreateVolume(name string, nickName string, poolName string, capacity float32) (*int, error)
+	CreateVolume(name string, nickName string, poolName string, capacity float32, storageControllerId *string, faultDomainId *string) (*int, error)
 	AddVolumeToComputeNode(volumeName string, computeNodeName string) (*int, error)
 	UpdateVolume(serverId string, name, nickName string) error
 	ExpandVolume(serverId string, additionalCapacity *int32) error
